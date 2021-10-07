@@ -16,7 +16,7 @@ Concepts:
 
 AWS provides a high level way of interacting with DynamoDB for CRUD operations - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBMapper.html 
 
-#### Design metadata entity (proposal)
+#### Design metadata entity - first draft
 
 Table: Metadata
 
@@ -36,7 +36,5 @@ Global secondary indexes:
 
 #### Maintenance
 
-Options for creating tables:
-* use terraform
-* Use a gradle task to create tables and indexes
+Use terraform to create and update tables. 
    
