@@ -2,6 +2,9 @@ plugins {
     id 'application'
 }
 
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
 repositories {
     mavenCentral()
 }
@@ -12,10 +15,20 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testImplementation 'org.assertj:assertj-core:3.21.0'
+
+    implementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.84'
 }
 
 application {
     mainClass = 'uk.nhs.digital.docstore.App'
+}
+
+jar {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
 }
 
 tasks.named('test') {
