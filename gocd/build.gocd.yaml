@@ -1,0 +1,63 @@
+format_version: 4
+pipelines:
+  "document-store-prototype":
+    group: document-store
+    label_template: "${git[:8]}"
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - .git*
+          - .idea/**/*.*
+          - documentation/**/*.*
+          - gradle/**/*.*
+    stages:
+      - build:
+          clean_workspace: true
+          jobs:
+            build:
+              artifacts:
+                - build:
+                    source: app/build/libs
+                    destination: jars
+                - test:
+                    source: app/build/test-results
+                    destination: test-reports
+              tasks:
+                - exec:
+                    command: ./gradlew
+                    arguments:
+                      - classes
+                - exec:
+                    command: ./gradlew
+                    arguments:
+                      - check
+                - exec:
+                    command: ./gradlew
+                    arguments:
+                      - assemble
+      - deploy:
+          clean_workspace: true
+          jobs:
+            terraform:
+              tasks:
+                - fetch:
+                    stage: build
+                    job: build
+                    source: jars
+                - exec:
+                    command: terraform
+                    arguments:
+                      - init
+                - exec:
+                    command: terraform
+                    arguments:
+                      - plan
+                      - -var
+                      - lambda_jar_filename=app.jar
+                      - -out=statefile
+                - exec:
+                    command: terraform
+                    arguments:
+                      - apply
+                      - statefile
