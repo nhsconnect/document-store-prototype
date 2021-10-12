@@ -25,17 +25,13 @@ pipelines:
                     destination: test-reports
               tasks:
                 - exec:
-                    command: ./gradlew
+                    command: dojo
                     arguments:
-                      - classes
+                      - "./gradlew classes"
                 - exec:
-                    command: ./gradlew
+                    command: dojo
                     arguments:
-                      - check
-                - exec:
-                    command: ./gradlew
-                    arguments:
-                      - assemble
+                      - "./gradlew assemble"
       - deploy:
           clean_workspace: true
           jobs:
@@ -46,18 +42,14 @@ pipelines:
                     job: build
                     source: jars
                 - exec:
-                    command: terraform
+                    command: dojo
                     arguments:
-                      - init
+                      - "terraform init"
                 - exec:
-                    command: terraform
+                    command: dojo
                     arguments:
-                      - plan
-                      - -var
-                      - lambda_jar_filename=app.jar
-                      - -out=statefile
+                      - "terraform plan -var lambda_jar_filename=app.jar -out=statefile"
                 - exec:
-                    command: terraform
+                    command: dojo
                     arguments:
-                      - apply
-                      - statefile
+                      - "terraform apply statefile"
