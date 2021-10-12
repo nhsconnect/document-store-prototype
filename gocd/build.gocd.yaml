@@ -43,19 +43,22 @@ pipelines:
                     source: jars
                 - exec:
                     command: dojo
+                    working_directory: terraform
                     arguments:
                       - -c
-                      - Dojofile-infra
+                      - ../Dojofile-infra
                       - "terraform init"
                 - exec:
                     command: dojo
+                    working_directory: terraform
                     arguments:
                       - -c
-                      - Dojofile-infra
+                      - ../Dojofile-infra
                       - "terraform plan -var lambda_jar_filename=app.jar -out=statefile"
                 - exec:
                     command: dojo
+                    working_directory: terraform
                     arguments:
                       - -c
-                      - Dojofile-infra
+                      - ../Dojofile-infra
                       - "terraform apply statefile"
