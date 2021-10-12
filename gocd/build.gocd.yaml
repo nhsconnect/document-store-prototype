@@ -44,12 +44,18 @@ pipelines:
                 - exec:
                     command: dojo
                     arguments:
+                      - -c
+                      - Dojofile-infra
                       - "terraform init"
                 - exec:
                     command: dojo
                     arguments:
+                      - -c
+                      - Dojofile-infra
                       - "terraform plan -var lambda_jar_filename=app.jar -out=statefile"
                 - exec:
                     command: dojo
                     arguments:
+                      - -c
+                      - Dojofile-infra
                       - "terraform apply statefile"
