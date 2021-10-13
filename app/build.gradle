@@ -31,6 +31,12 @@ dependencies {
     e2eTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.84'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
 jar {
     from compileJava
     from processResources
