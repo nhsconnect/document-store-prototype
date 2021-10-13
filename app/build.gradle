@@ -2,11 +2,23 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
-
 repositories {
     mavenCentral()
+}
+
+sourceSets {
+    e2eTest {
+        compileClasspath += sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+        java {
+            srcDirs 'src/e2eTest'
+        }
+    }
+}
+
+configurations {
+    e2eTestImplementation.extendsFrom(testImplementation)
+    e2eTestRuntimeOnly.extendsFrom(testRuntimeOnly)
 }
 
 dependencies {
@@ -16,7 +28,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testImplementation 'org.assertj:assertj-core:3.21.0'
 
-    implementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.84'
+    e2eTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.84'
 }
 
 jar {
@@ -29,4 +41,11 @@ jar {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+task e2eTest(type: Test, group: "verification") {
+    useJUnitPlatform()
+
+    testClassesDirs = sourceSets.e2eTest.output.classesDirs
+    classpath = sourceSets.e2eTest.runtimeClasspath
 }

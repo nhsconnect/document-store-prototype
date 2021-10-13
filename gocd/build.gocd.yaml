@@ -27,11 +27,7 @@ pipelines:
                 - exec:
                     command: dojo
                     arguments:
-                      - "./gradlew classes"
-                - exec:
-                    command: dojo
-                    arguments:
-                      - "./gradlew assemble"
+                      - "./gradlew build"
       - deploy:
           clean_workspace: true
           jobs:
