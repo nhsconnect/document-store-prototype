@@ -38,6 +38,10 @@ pipelines:
                     job: build
                     source: jars
                 - exec:
+                    command: ls
+                    arguments:
+                      - -R
+                - exec:
                     command: dojo
                     arguments:
                       - -c
