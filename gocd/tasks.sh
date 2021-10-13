@@ -27,7 +27,7 @@ plan-deploy)
   cd terraform
   assume_ci_role
   terraform init
-  terraform plan -var lambda_jar_filename=jars/libs/app.jar -out=tfplan
+  terraform plan -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
   ;;
 deploy)
   cd terraform
