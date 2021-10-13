@@ -33,6 +33,6 @@ deploy)
   cd terraform
   assume_ci_role
   terraform init
-  terraform apply planfile
+  terraform apply tfplan
   ;;
 esac

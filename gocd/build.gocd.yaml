@@ -43,3 +43,9 @@ pipelines:
                       - -c
                       - Dojofile-infra
                       - 'gocd/tasks.sh plan-deploy'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - 'gocd/tasks.sh deploy'
