@@ -9,7 +9,6 @@ terraform {
   backend "s3" {
     bucket = "docstore-terraform-state"
     key = "document-store/terraform.tfstate"
-    region = var.region
     encrypt = true
   }
 }
