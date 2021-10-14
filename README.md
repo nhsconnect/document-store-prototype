@@ -21,14 +21,15 @@ There is also a suite of E2e tests within the e2eTest source set which require l
 ### Running E2e Tests
 
 Steps:
-1. Run localstack: 
+1. Configure localstack: 
 ```
 SERVICES=apigateway,lambda,s3,iam,logs,dynamodb localstack start
+aws s3api create-bucket --bucket document-store-terraform-state --endpoint-url=http://localhost:4566
 ```
 2. From the terraform subdirectory, run these commands:
 ```
-terraform init
-terraform apply -var-file=local.tfvars
+AWS_S3_ENDPOINT=http://localhost:4566 terraform init -backend-config="force_path_style=true"
+AWS_S3_ENDPOINT=http://localhost:4566 terraform apply -var-file=local.tfvars
 ```
 
 3. From the project root directory, run the E2e tests:
