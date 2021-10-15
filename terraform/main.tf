@@ -44,6 +44,19 @@ resource "aws_lambda_function" "hello_world_lambda" {
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 }
 
+resource "aws_lambda_function" "get_doc_ref_lambda" {
+  handler       = "uk.nhs.digital.docstore.RetrieveDocumentReferenceHandler::handleRequest"
+  function_name = "RetrieveDocumentReferenceHandler"
+  runtime       = "java11"
+  role          = aws_iam_role.lambda_execution_role.arn
+
+  timeout = 5
+
+  filename = var.lambda_jar_filename
+
+  source_code_hash = filebase64sha256(var.lambda_jar_filename)
+}
+
 resource "aws_iam_role" "lambda_execution_role" {
   name = "LambdaExecution"
 
@@ -71,52 +84,31 @@ resource "aws_api_gateway_rest_api" "lambda_api" {
   name = "DocStoreAPI"
 }
 
-resource "aws_api_gateway_resource" "proxy" {
+module "hello_endpoint"{
+  source = "./modules/api_gateway_endpoint"
+  api_gateway_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_resource_id = aws_api_gateway_rest_api.lambda_api.root_resource_id
+  lambda_arn = aws_lambda_function.hello_world_lambda.invoke_arn
+  path_part = "hello"
+}
+
+module "doc_ref_endpoint"{
+  source = "./modules/api_gateway_endpoint"
+  api_gateway_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_resource_id = aws_api_gateway_resource.doc_ref_resource.id
+  lambda_arn = aws_lambda_function.get_doc_ref_lambda.invoke_arn
+  path_part = "{id+}"
+}
+resource "aws_api_gateway_resource" "doc_ref_resource" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
-  path_part   = "{proxy+}"
+  path_part   = "DocumentReference"
 }
-
-resource "aws_api_gateway_method" "proxy_method" {
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  resource_id   = aws_api_gateway_resource.proxy.id
-  http_method   = "ANY"
-  authorization = "AWS_IAM"
-}
-
-resource "aws_api_gateway_integration" "lambda_integration" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_method.proxy_method.resource_id
-  http_method = aws_api_gateway_method.proxy_method.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.hello_world_lambda.invoke_arn
-}
-
-
-resource "aws_api_gateway_method" "proxy_root" {
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  resource_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
-  http_method   = "ANY"
-  authorization = "AWS_IAM"
-}
-
-resource "aws_api_gateway_integration" "lambda_root_integration" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_method.proxy_root.resource_id
-  http_method = aws_api_gateway_method.proxy_root.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.hello_world_lambda.invoke_arn
-}
-
 
 resource "aws_api_gateway_deployment" "api_deploy" {
   depends_on = [
-    aws_api_gateway_integration.lambda_integration,
-    aws_api_gateway_integration.lambda_root_integration,
+    module.doc_ref_endpoint,
+    module.hello_endpoint
   ]
 
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
@@ -124,7 +116,7 @@ resource "aws_api_gateway_deployment" "api_deploy" {
 }
 
 
-resource "aws_lambda_permission" "api_gateway" {
+resource "aws_lambda_permission" "api_gateway_permission_for_hello" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.hello_world_lambda.arn
@@ -135,6 +127,16 @@ resource "aws_lambda_permission" "api_gateway" {
   source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
+resource "aws_lambda_permission" "api_gateway_permission_for_get_doc_ref" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_doc_ref_lambda.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The "/*/*" portion grants access from any method on any resource
+  # within the API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
+}
 
 output "base_url" {
   value = aws_api_gateway_deployment.api_deploy.invoke_url

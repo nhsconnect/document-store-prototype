@@ -24,7 +24,10 @@ configurations {
 dependencies {
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-lambda-java-events:3.9.0'
+    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.5.4'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:5.5.1'
 
+    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testImplementation 'org.assertj:assertj-core:3.21.0'
 

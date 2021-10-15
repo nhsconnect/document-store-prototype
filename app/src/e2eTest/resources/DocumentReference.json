@@ -1,0 +1,31 @@
+{
+  "resourceType": "DocumentReference",
+  "id": "1234",
+  "meta": {
+    "profile": [
+      "https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-GPC-DocumentReference-1"
+    ]
+  },
+  "identifier": [
+    {
+      "system": "https://fhir.nhs.uk/Id/cross-care-setting-identifier",
+      "value": "bb237762-dde2-11e9-9d36-2a2ae2dbcce4"
+    }
+  ],
+  "status": "current",
+  "type": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "824331000000106",
+        "display": "Inpatient final discharge letter"
+      }
+    ]
+  },
+  "subject": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "12345"
+    }
+  }
+}
