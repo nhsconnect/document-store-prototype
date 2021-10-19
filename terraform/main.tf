@@ -98,7 +98,7 @@ module "doc_ref_endpoint" {
   api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
   parent_resource_id = aws_api_gateway_resource.doc_ref_resource.id
   lambda_arn         = aws_lambda_function.get_doc_ref_lambda.invoke_arn
-  path_part          = "{id+}"
+  path_part          = "{id}"
 }
 
 resource "aws_api_gateway_resource" "doc_ref_resource" {

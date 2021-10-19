@@ -17,7 +17,7 @@ public class RetrieveDocumentReferenceE2eTest {
 
     @Test
     void returnsDocumentReferenceResource() throws IOException, InterruptedException {
-        var request = HttpRequest.newBuilder(BaseUriHelper.getBaseUri().resolve("DocumentReference/").resolve("1234"))
+        var request = HttpRequest.newBuilder(BaseUriHelper.getBaseUri().resolve("DocumentReference/1234"))
                 .GET()
                 .build();
 
