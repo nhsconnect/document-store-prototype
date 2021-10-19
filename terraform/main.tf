@@ -7,9 +7,9 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "document-store-terraform-state"
-    key = "document-store/terraform.tfstate"
-    region = "eu-west-2"
+    bucket  = "document-store-terraform-state"
+    key     = "document-store/terraform.tfstate"
+    region  = "eu-west-2"
     encrypt = true
   }
 }
@@ -84,21 +84,22 @@ resource "aws_api_gateway_rest_api" "lambda_api" {
   name = "DocStoreAPI"
 }
 
-module "hello_endpoint"{
-  source = "./modules/api_gateway_endpoint"
-  api_gateway_id = aws_api_gateway_rest_api.lambda_api.id
+module "hello_endpoint" {
+  source             = "./modules/api_gateway_endpoint"
+  api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
   parent_resource_id = aws_api_gateway_rest_api.lambda_api.root_resource_id
-  lambda_arn = aws_lambda_function.hello_world_lambda.invoke_arn
-  path_part = "hello"
+  lambda_arn         = aws_lambda_function.hello_world_lambda.invoke_arn
+  path_part          = "hello"
 }
 
-module "doc_ref_endpoint"{
-  source = "./modules/api_gateway_endpoint"
-  api_gateway_id = aws_api_gateway_rest_api.lambda_api.id
+module "doc_ref_endpoint" {
+  source             = "./modules/api_gateway_endpoint"
+  api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
   parent_resource_id = aws_api_gateway_resource.doc_ref_resource.id
-  lambda_arn = aws_lambda_function.get_doc_ref_lambda.invoke_arn
-  path_part = "{id+}"
+  lambda_arn         = aws_lambda_function.get_doc_ref_lambda.invoke_arn
+  path_part          = "{id+}"
 }
+
 resource "aws_api_gateway_resource" "doc_ref_resource" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
@@ -108,13 +109,12 @@ resource "aws_api_gateway_resource" "doc_ref_resource" {
 resource "aws_api_gateway_deployment" "api_deploy" {
   depends_on = [
     module.doc_ref_endpoint,
-    module.hello_endpoint
+    module.hello_endpoint,
   ]
 
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   stage_name  = var.api_gateway_stage
 }
-
 
 resource "aws_lambda_permission" "api_gateway_permission_for_hello" {
   statement_id  = "AllowAPIGatewayInvoke"

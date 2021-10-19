@@ -4,22 +4,21 @@ variable "region" {
 }
 
 variable "lambda_jar_filename" {
-  type = string
+  type    = string
   default = "../app/build/libs/app.jar"
 }
 
 variable "api_gateway_stage" {
-  type = string
+  type    = string
   default = "prod"
 }
 
 variable "disable_aws_remote_checks" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "aws_endpoint" {
-  type = string
+  type    = string
   default = ""
 }
-
