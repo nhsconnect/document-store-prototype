@@ -50,7 +50,8 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
 
-  timeout = 5
+  timeout     = 15
+  memory_size = 448
 
   filename = var.lambda_jar_filename
 
