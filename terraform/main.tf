@@ -123,9 +123,6 @@ resource "aws_api_gateway_deployment" "api_deploy" {
     redeployment = sha1(jsonencode(aws_api_gateway_rest_api.lambda_api.body))
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_lambda_permission" "api_gateway_permission_for_hello" {

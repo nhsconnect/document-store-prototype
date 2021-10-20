@@ -4,7 +4,7 @@ variable "lambda_arn" {}
 variable "path_part" {}
 
 variable http_method {
-  type = "string"
+  type = string
 }
 
 resource "aws_api_gateway_resource" "proxy" {
