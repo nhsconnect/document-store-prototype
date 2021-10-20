@@ -3,6 +3,10 @@ variable "parent_resource_id" {}
 variable "lambda_arn" {}
 variable "path_part" {}
 
+variable http_method {
+  type = "string"
+}
+
 resource "aws_api_gateway_resource" "proxy" {
   rest_api_id = var.api_gateway_id
   parent_id   = var.parent_resource_id
@@ -12,7 +16,7 @@ resource "aws_api_gateway_resource" "proxy" {
 resource "aws_api_gateway_method" "proxy_method" {
   rest_api_id   = var.api_gateway_id
   resource_id   = aws_api_gateway_resource.proxy.id
-  http_method   = "ANY"
+  http_method   = var.http_method
   authorization = "AWS_IAM"
 }
 

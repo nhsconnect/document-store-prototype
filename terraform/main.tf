@@ -91,6 +91,7 @@ module "hello_endpoint" {
   parent_resource_id = aws_api_gateway_rest_api.lambda_api.root_resource_id
   lambda_arn         = aws_lambda_function.hello_world_lambda.invoke_arn
   path_part          = "hello"
+  http_method        = "GET"
 }
 
 module "doc_ref_endpoint" {
@@ -99,6 +100,7 @@ module "doc_ref_endpoint" {
   parent_resource_id = aws_api_gateway_resource.doc_ref_resource.id
   lambda_arn         = aws_lambda_function.get_doc_ref_lambda.invoke_arn
   path_part          = "{id}"
+  http_method        = "GET"
 }
 
 resource "aws_api_gateway_resource" "doc_ref_resource" {
