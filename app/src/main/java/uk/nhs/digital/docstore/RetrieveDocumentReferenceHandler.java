@@ -23,6 +23,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
     }
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
+        System.out.println("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
         var resource = store.getById(event.getPathParameters().get("id"));
@@ -42,8 +43,11 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
                                                     .setDisplay("No record found"))))));
         }
 
+        System.out.println("Retrieved the request object - about to transform it into JSON");
+
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
 
+        System.out.println("Processing finished - about to return the response");
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
                 .withHeaders(Map.of("Content-Type", "application/fhir+json"))
