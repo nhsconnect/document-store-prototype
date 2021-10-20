@@ -52,7 +52,11 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-task e2eTest(type: Test, group: "verification") {
+//noinspection GroovyAssignabilityCheck
+tasks.register('e2eTest', Test) {
+    group 'verification'
+    description 'Run all end-to-end tests against LocalStack.'
+
     useJUnitPlatform()
 
     testClassesDirs = sourceSets.e2eTest.output.classesDirs
