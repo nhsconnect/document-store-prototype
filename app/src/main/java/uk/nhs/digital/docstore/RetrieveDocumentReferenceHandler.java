@@ -9,6 +9,8 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.OperationOutcome;
 
+import java.util.Map;
+
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.NOTFOUND;
 
@@ -28,6 +30,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         if (resource == null) {
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(404)
+                    .withHeaders(Map.of("Content-Type", "application/fhir+json"))
                     .withBody(jsonParser.encodeResourceToString(new OperationOutcome()
                             .addIssue(new OperationOutcome.OperationOutcomeIssueComponent()
                                     .setSeverity(ERROR)
@@ -43,6 +46,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
 
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
+                .withHeaders(Map.of("Content-Type", "application/fhir+json"))
                 .withBody(resourceAsJson);
     }
 }

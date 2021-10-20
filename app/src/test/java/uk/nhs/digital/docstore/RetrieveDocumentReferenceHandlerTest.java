@@ -18,6 +18,7 @@ class RetrieveDocumentReferenceHandlerTest {
         var response = handler.handleRequest(requestEvent, null);
 
         assertThat(response.getStatusCode()).isEqualTo(404);
+        assertThat(response.getHeaders()).containsEntry("Content-Type", "application/fhir+json");
         assertThatJson(response.getBody()).isEqualTo("{\n" +
                 "  \"resourceType\": \"OperationOutcome\",\n" +
                 "  \"issue\": [{\n" +

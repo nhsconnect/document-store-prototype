@@ -24,6 +24,7 @@ public class RetrieveDocumentReferenceE2eTest {
         var response = newHttpClient().send(request, HttpResponse.BodyHandlers.ofString(UTF_8));
 
         assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.headers().firstValue("Content-Type")).contains("application/fhir+json");
 
         String content = getContentFromResource("DocumentReference.json");
 
