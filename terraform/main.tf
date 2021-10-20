@@ -120,7 +120,11 @@ resource "aws_api_gateway_deployment" "api_deploy" {
 
 
   triggers = {
-    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.lambda_api.body))
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_rest_api.lambda_api.body,
+      module.doc_ref_endpoint,
+      module.hello_endpoint
+      ]))
   }
 
 }
