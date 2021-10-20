@@ -9,12 +9,12 @@ import java.net.http.HttpResponse.BodyHandlers;
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.nhs.digital.docstore.BaseUriHelper.getBaseUri;
 
 public class HelloWorldE2eTest {
-
     @Test
     void returnsHelloWorldResponse() throws IOException, InterruptedException {
-        var request = HttpRequest.newBuilder(BaseUriHelper.getBaseUri().resolve("hello"))
+        var request = HttpRequest.newBuilder(getBaseUri().resolve("hello"))
                 .GET()
                 .build();
 

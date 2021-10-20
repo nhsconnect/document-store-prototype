@@ -12,12 +12,12 @@ import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.nhs.digital.docstore.BaseUriHelper.getBaseUri;
 
 public class RetrieveDocumentReferenceE2eTest {
-
     @Test
     void returnsDocumentReferenceResource() throws IOException, InterruptedException {
-        var request = HttpRequest.newBuilder(BaseUriHelper.getBaseUri().resolve("DocumentReference/1234"))
+        var request = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/1234"))
                 .GET()
                 .build();
 
@@ -36,5 +36,4 @@ public class RetrieveDocumentReferenceE2eTest {
         File file = new File(classLoader.getResource(resourcePath).getFile());
         return new String(Files.readAllBytes(file.toPath()));
     }
-
 }
