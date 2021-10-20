@@ -9,12 +9,19 @@ import java.net.URI;
 import java.util.List;
 
 public class BaseUriHelper {
-    private static final String BASE_URI_PATH = "http://localhost:4566/restapis/";
-    private static final String USER_REQUEST_PATH = "_user_request_/";
+    private static final String AWS_REGION = "eu-west-2";
+    private static final String DEFAULT_HOST = "localhost";
+    private static final int DEFAULT_PORT = 4566;
 
-    static URI getBaseUri() {
+    @SuppressWarnings("HttpUrlsUsage")
+    public static final String BASE_URI_TEMPLATE = "http://%s:%d";
+    public static final String BASE_PATH_TEMPLATE = "/restapis/%s/%s/_user_request_/";
+
+    public static URI getBaseUri() {
+        var baseUri = String.format(BASE_URI_TEMPLATE, getHost(), DEFAULT_PORT);
+
         AmazonApiGateway amazonApiGatewayClient = AmazonApiGatewayClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:4566", "eu-west-2"))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION))
                 .build();
 
         List<RestApi> apis = amazonApiGatewayClient
@@ -34,6 +41,12 @@ public class BaseUriHelper {
                 .getItem();
         String stageName = stages.get(0).getStageName();
 
-        return URI.create(BASE_URI_PATH).resolve(restApiId + "/").resolve(stageName + "/").resolve(USER_REQUEST_PATH);
+        return URI.create(baseUri)
+                .resolve(String.format(BASE_PATH_TEMPLATE, restApiId, stageName));
+    }
+
+    private static String getHost() {
+        String host = System.getenv("DS_TEST_HOST");
+        return (host != null) ? host : DEFAULT_HOST;
     }
 }

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+SERVICES=s3,lambda,dynamodb,iam,apigateway,logs localstack start

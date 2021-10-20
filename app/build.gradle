@@ -2,6 +2,8 @@ plugins {
     id 'java'
 }
 
+apply from: 'tasks.gradle'
+
 repositories {
     mavenCentral()
 }
@@ -50,15 +52,4 @@ jar {
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-//noinspection GroovyAssignabilityCheck
-tasks.register('e2eTest', Test) {
-    group 'verification'
-    description 'Run all end-to-end tests against LocalStack.'
-
-    useJUnitPlatform()
-
-    testClassesDirs = sourceSets.e2eTest.output.classesDirs
-    classpath = sourceSets.e2eTest.runtimeClasspath
 }

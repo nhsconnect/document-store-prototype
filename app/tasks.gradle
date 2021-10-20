@@ -1,0 +1,58 @@
+//file:noinspection HttpUrlsUsage
+
+//noinspection GroovyAssignabilityCheck
+tasks.register('bootstrapLocalStack', Exec) {
+    def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
+
+    group 'localstack'
+    description 'Configure the LocalStack environment to support Terraform.'
+
+    executable = 'aws'
+    args = ['s3api', 'create-bucket', '--bucket=document-store-terraform-state', "--endpoint-url=http://${dockerHostname}:4566"]
+}
+
+//noinspection GroovyAssignabilityCheck
+tasks.register('initializeTerraform', Exec) {
+    def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
+
+    group 'localstack'
+    description 'Initialize Terraform plugins.'
+    mustRunAfter bootstrapLocalStack
+
+    executable = 'terraform'
+    args = ['init', '-backend-config=force_path_style=true']
+    environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
+    workingDir = '../terraform'
+
+    onlyIf {
+        !file('../terraform/.terraform').exists()
+    }
+}
+
+//noinspection GroovyAssignabilityCheck
+tasks.register('deployToLocalStack', Exec) {
+    def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
+
+    group 'localstack'
+    description 'Apply Terraform definitions to LocalStack.'
+    mustRunAfter jar, initializeTerraform
+
+    executable = 'terraform'
+    args = ['apply', '-var-file=local.tfvars', "-var=aws_endpoint=http://${dockerHostname}:4566"]
+    environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
+    workingDir = '../terraform'
+
+    standardInput = System.in
+}
+
+//noinspection GroovyAssignabilityCheck
+tasks.register('e2eTest', Test) {
+    group 'verification'
+    description 'Run all end-to-end tests against LocalStack.'
+    dependsOn jar, deployToLocalStack
+
+    useJUnitPlatform()
+
+    testClassesDirs = sourceSets.e2eTest.output.classesDirs
+    classpath = sourceSets.e2eTest.runtimeClasspath
+}
