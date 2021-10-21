@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.PerformanceOptionsEnum;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -20,6 +21,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
 
     public RetrieveDocumentReferenceHandler() {
         this.fhirContext = FhirContext.forR4();
+        this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
     }
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
