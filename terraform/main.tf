@@ -87,6 +87,23 @@ resource "aws_iam_role_policy_attachment" "lambda_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
+  name = "get_document_reference_policy"
+  role = aws_iam_role.lambda_execution_role.id
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement":[{
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+      ],
+      "Resource": aws_dynamodb_table.doc_ref_store.arn
+    }
+    ]
+  })
+}
+
 resource "aws_api_gateway_rest_api" "lambda_api" {
   name = "DocStoreAPI"
 }
