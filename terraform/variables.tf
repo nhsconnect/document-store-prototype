@@ -22,3 +22,8 @@ variable "aws_endpoint" {
   type    = string
   default = ""
 }
+
+variable "dynamodb_endpoint" {
+  type    = string
+  default = null
+}

@@ -56,6 +56,12 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
   filename = var.lambda_jar_filename
 
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
+
+  environment {
+    variables = {
+      DYNAMODB_ENDPOINT = var.dynamodb_endpoint
+    }
+  }
 }
 
 resource "aws_iam_role" "lambda_execution_role" {

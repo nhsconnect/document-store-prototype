@@ -6,9 +6,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.*;
 
 import java.util.Map;
 
@@ -28,9 +26,9 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         System.out.println("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
-        var resource = store.getById(event.getPathParameters().get("id"));
+        var metadata = store.getById(event.getPathParameters().get("id"));
 
-        if (resource == null) {
+        if (metadata == null) {
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(404)
                     .withHeaders(Map.of("Content-Type", "application/fhir+json"))
@@ -47,6 +45,12 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
 
         System.out.println("Retrieved the request object - about to transform it into JSON");
 
+        var resource = new DocumentReference()
+                .setSubject(new Reference()
+                .setIdentifier(new Identifier()
+                        .setSystem("https://fhir.nhs.uk/Id/nhs-number")
+                        .setValue(metadata.getNhsNumber())))
+                .setId(metadata.getId());
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
 
         System.out.println("Processing finished - about to return the response");

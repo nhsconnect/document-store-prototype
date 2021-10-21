@@ -38,7 +38,7 @@ tasks.register('deployToLocalStack', Exec) {
     mustRunAfter jar, initializeTerraform
 
     executable = 'terraform'
-    args = ['apply', '-var-file=local.tfvars', "-var=aws_endpoint=http://${dockerHostname}:4566"]
+    args = ['apply', '-var-file=local.tfvars', "-var=aws_endpoint=http://${dockerHostname}:4566", "-var=dynamodb_endpoint=http://172.17.0.2:4566", "-auto-approve"]
     environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
     workingDir = '../terraform'
 

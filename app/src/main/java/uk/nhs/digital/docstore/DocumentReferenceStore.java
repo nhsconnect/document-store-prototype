@@ -1,31 +1,26 @@
 package uk.nhs.digital.docstore;
 
-import org.hl7.fhir.r4.model.DocumentReference;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Reference;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
 public class DocumentReferenceStore {
-    private final Map<String, DocumentReference> referencesById = new HashMap<>();
+    private final DynamoDBMapper mapper;
+    private static final String AWS_REGION = "eu-west-2";
 
     public DocumentReferenceStore() {
-        referencesById.put("1234", (DocumentReference) new DocumentReference()
-                .setSubject(new Reference()
-                        .setIdentifier(new Identifier()
-                                .setSystem("https://fhir.nhs.uk/Id/nhs-number")
-                                .setValue("12345")))
-                .setId("1234"));
-        referencesById.put("5678", (DocumentReference) new DocumentReference()
-                .setSubject(new Reference()
-                        .setIdentifier(new Identifier()
-                                .setSystem("https://fhir.nhs.uk/Id/nhs-number")
-                                .setValue("56789")))
-                .setId("5678"));
+        AmazonDynamoDBClientBuilder clientBuilder = AmazonDynamoDBClientBuilder.standard();
+        var dynamodbEndpoint = System.getenv("DYNAMODB_ENDPOINT");
+        if (dynamodbEndpoint != null) {
+            clientBuilder = clientBuilder.withEndpointConfiguration(new AwsClientBuilder
+                    .EndpointConfiguration(dynamodbEndpoint, AWS_REGION));
+        }
+        AmazonDynamoDB dynamodbClient = clientBuilder.build();
+        this.mapper = new DynamoDBMapper(dynamodbClient);
     }
 
-    public DocumentReference getById(String id) {
-        return referencesById.get(id);
+    public DocumentReferenceMetadata getById(String id) {
+        return mapper.load(DocumentReferenceMetadata.class, id);
     }
 }
