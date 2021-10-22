@@ -29,6 +29,7 @@ dependencies {
     implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.5.4'
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:5.5.1'
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.92'
+    implementation 'ch.qos.logback:logback-classic:1.2.6'
 
     testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
