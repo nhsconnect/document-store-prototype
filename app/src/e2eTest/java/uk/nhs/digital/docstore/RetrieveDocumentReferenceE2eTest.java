@@ -1,15 +1,12 @@
 package uk.nhs.digital.docstore;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.apigateway.AmazonApiGateway;
-import com.amazonaws.services.apigateway.AmazonApiGatewayClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.DeleteItemRequest;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,8 +14,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -29,39 +27,73 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.nhs.digital.docstore.BaseUriHelper.getBaseUri;
 
 public class RetrieveDocumentReferenceE2eTest {
+    @SuppressWarnings("HttpUrlsUsage")
+    private static final String BASE_URI_TEMPLATE = "http://%s:%d";
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 4566;
+    private static final String S3_KEY = "abcd";
+    private static final String S3_VALUE = "content";
+    private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
 
-    @SuppressWarnings("HttpUrlsUsage")
-    public static final String BASE_URI_TEMPLATE = "http://%s:%d";
+    private static String getHost() {
+        String host = System.getenv("DS_TEST_HOST");
+        return (host != null) ? host : DEFAULT_HOST;
+    }
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         var baseUri = String.format(BASE_URI_TEMPLATE, getHost(), DEFAULT_PORT);
-        AmazonDynamoDB dynamodbClient = AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION))
-                .build();
-        ScanResult scanResult = dynamodbClient.scan("DocumentReferenceMetadata", List.of("ID"));
-        scanResult.getItems().forEach(item -> dynamodbClient.deleteItem("DocumentReferenceMetadata", item));
+        var awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
 
-        dynamodbClient.putItem("DocumentReferenceMetadata", Map.of("ID", new AttributeValue("1234"), "NhsNumber", new AttributeValue("12345")));
+        AmazonDynamoDB dynamoDbClient = AmazonDynamoDBClientBuilder.standard()
+                .withEndpointConfiguration(awsEndpointConfiguration)
+                .build();
+        ScanResult scanResult = dynamoDbClient.scan("DocumentReferenceMetadata", List.of("ID"));
+        scanResult.getItems()
+                .forEach(item -> dynamoDbClient.deleteItem("DocumentReferenceMetadata", item));
+
+        var s3Client = AmazonS3ClientBuilder.standard()
+                .withEndpointConfiguration(awsEndpointConfiguration)
+                .enablePathStyleAccess()
+                .build();
+        var terraformOutput = getContentFromResource("terraform.json");
+        String documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
+        s3Client.putObject(documentStoreBucketName, S3_KEY, S3_VALUE);
+
+        dynamoDbClient.putItem(
+                "DocumentReferenceMetadata",
+                Map.of(
+                        "ID", new AttributeValue("1234"),
+                        "NhsNumber", new AttributeValue("12345"),
+                        "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
+                        "ContentType", new AttributeValue("text/plain")));
     }
 
     @Test
     void returnsDocumentReferenceResource() throws IOException, InterruptedException {
-        var request = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/1234"))
+        String expectedDocumentReference = getContentFromResource("DocumentReference.json");
+        var documentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/1234"))
                 .GET()
                 .build();
 
-        var response = newHttpClient().send(request, HttpResponse.BodyHandlers.ofString(UTF_8));
+        var documentReferenceResponse = newHttpClient().send(documentReferenceRequest, BodyHandlers.ofString(UTF_8));
 
-        assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        var documentReference = documentReferenceResponse.body();
+        assertThat(documentReferenceResponse.statusCode()).isEqualTo(200);
+        assertThat(documentReferenceResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(documentReference)
+                .whenIgnoringPaths("$.content")
+                .isEqualTo(expectedDocumentReference);
 
-        String content = getContentFromResource("DocumentReference.json");
-
-        assertThatJson(response.body()).isEqualTo(content);
+        String preSignedUrl = JsonPath.<String>read(documentReference, "$.content[0].attachment.url")
+                .replace(INTERNAL_DOCKER_HOST, getHost());
+        var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
+                .GET()
+                .timeout(Duration.ofSeconds(2))
+                .build();
+        var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
+        assertThat(documentResponse.body()).isEqualTo(S3_VALUE);
     }
 
     @Test
@@ -70,7 +102,7 @@ public class RetrieveDocumentReferenceE2eTest {
                 .GET()
                 .build();
 
-        var response = newHttpClient().send(request, HttpResponse.BodyHandlers.ofString(UTF_8));
+        var response = newHttpClient().send(request, BodyHandlers.ofString(UTF_8));
 
         assertThat(response.statusCode()).isEqualTo(404);
         assertThat(response.headers().firstValue("Content-Type")).contains("application/fhir+json");
@@ -94,10 +126,5 @@ public class RetrieveDocumentReferenceE2eTest {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(resourcePath).getFile());
         return new String(Files.readAllBytes(file.toPath()));
-    }
-
-    private static String getHost() {
-        String host = System.getenv("DS_TEST_HOST");
-        return (host != null) ? host : DEFAULT_HOST;
     }
 }

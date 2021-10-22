@@ -7,14 +7,17 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.hl7.fhir.r4.model.*;
+import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
 
 import java.util.Map;
 
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.NOTFOUND;
 
+@SuppressWarnings("unused")
 public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private final DocumentReferenceStore store = new DocumentReferenceStore();
+    private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
+    private final DocumentStore documentStore = new DocumentStore();
     private final FhirContext fhirContext;
 
     public RetrieveDocumentReferenceHandler() {
@@ -26,7 +29,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         System.out.println("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
-        var metadata = store.getById(event.getPathParameters().get("id"));
+        var metadata = metadataStore.getById(event.getPathParameters().get("id"));
 
         if (metadata == null) {
             return new APIGatewayProxyResponseEvent()
@@ -43,13 +46,19 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
                                                     .setDisplay("No record found"))))));
         }
 
-        System.out.println("Retrieved the request object - about to transform it into JSON");
+        System.out.println("Retrieved the requested object. Creating the pre-signed URL");
+        var preSignedUri = documentStore.generatePreSignedUrl(DocumentDescriptor.from(metadata));
 
+        System.out.println("Created the pre-signed URL - about to transform it into JSON");
         var resource = new DocumentReference()
                 .setSubject(new Reference()
                 .setIdentifier(new Identifier()
                         .setSystem("https://fhir.nhs.uk/Id/nhs-number")
                         .setValue(metadata.getNhsNumber())))
+                .addContent(new DocumentReference.DocumentReferenceContentComponent()
+                        .setAttachment(new Attachment()
+                                .setUrl(preSignedUri.toString())
+                                .setContentType(metadata.getContentType())))
                 .setId(metadata.getId());
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
 

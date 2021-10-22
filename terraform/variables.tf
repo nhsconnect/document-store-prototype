@@ -27,3 +27,8 @@ variable "dynamodb_endpoint" {
   type    = string
   default = ""
 }
+
+variable "s3_endpoint" {
+  type    = string
+  default = ""
+}

@@ -59,7 +59,9 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
 
   environment {
     variables = {
-      DYNAMODB_ENDPOINT = var.dynamodb_endpoint
+      DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
+      DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
+      S3_ENDPOINT                = var.s3_endpoint
     }
   }
 }
@@ -92,14 +94,33 @@ resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
   role = aws_iam_role.lambda_execution_role.id
 
   policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement":[{
-      "Effect": "Allow",
-      "Action": [
-        "dynamodb:GetItem",
-      ],
-      "Resource": aws_dynamodb_table.doc_ref_store.arn
-    }
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "dynamodb:GetItem",
+        ],
+        "Resource" : aws_dynamodb_table.doc_ref_store.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "s3_get_document_data_policy" {
+  name = "get_document_data_policy"
+  role = aws_iam_role.lambda_execution_role.id
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:GetObject",
+        ],
+        "Resource" : aws_s3_bucket.document_store.arn
+      }
     ]
   })
 }
@@ -146,9 +167,8 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_rest_api.lambda_api.body,
       module.doc_ref_endpoint,
       module.hello_endpoint
-      ]))
+    ]))
   }
-
 }
 
 resource "aws_lambda_permission" "api_gateway_permission_for_hello" {
@@ -171,8 +191,4 @@ resource "aws_lambda_permission" "api_gateway_permission_for_get_doc_ref" {
   # The "/*/*" portion grants access from any method on any resource
   # within the API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
-}
-
-output "base_url" {
-  value = aws_api_gateway_deployment.api_deploy.invoke_url
 }

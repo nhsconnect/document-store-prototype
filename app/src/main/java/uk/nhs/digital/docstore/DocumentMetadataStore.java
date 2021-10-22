@@ -5,12 +5,13 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
-public class DocumentReferenceStore {
-    private final DynamoDBMapper mapper;
+public class DocumentMetadataStore {
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_ENDPOINT = "";
 
-    public DocumentReferenceStore() {
+    private final DynamoDBMapper mapper;
+
+    public DocumentMetadataStore() {
         AmazonDynamoDBClientBuilder clientBuilder = AmazonDynamoDBClientBuilder.standard();
         var dynamodbEndpoint = System.getenv("DYNAMODB_ENDPOINT");
         if (!dynamodbEndpoint.equals(DEFAULT_ENDPOINT)) {
@@ -21,7 +22,7 @@ public class DocumentReferenceStore {
         this.mapper = new DynamoDBMapper(dynamodbClient);
     }
 
-    public DocumentReferenceMetadata getById(String id) {
-        return mapper.load(DocumentReferenceMetadata.class, id);
+    public DocumentMetadata getById(String id) {
+        return mapper.load(DocumentMetadata.class, id);
     }
 }

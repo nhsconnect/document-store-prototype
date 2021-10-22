@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled
-class DocumentReferenceStoreTest {
-    private DocumentReferenceStore store;
+class DocumentMetadataStoreTest {
+    private DocumentMetadataStore store;
 
     @BeforeEach
     void setUp() {
-        store = new DocumentReferenceStore();
+        store = new DocumentMetadataStore();
     }
 
     @Test

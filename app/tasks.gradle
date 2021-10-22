@@ -38,18 +38,33 @@ tasks.register('deployToLocalStack', Exec) {
     mustRunAfter jar, initializeTerraform
 
     executable = 'terraform'
-    args = ['apply', '-var-file=local.tfvars', "-var=aws_endpoint=http://${dockerHostname}:4566", "-var=dynamodb_endpoint=http://172.17.0.2:4566", "-auto-approve"]
+    args = ['apply', '-var-file=local.tfvars', "-var=aws_endpoint=http://${dockerHostname}:4566",
+            '-var=dynamodb_endpoint=http://172.17.0.2:4566', '-var=s3_endpoint=http://172.17.0.2:4566', '-auto-approve']
+    environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
+    workingDir = '../terraform'
+}
+
+//noinspection GroovyAssignabilityCheck
+tasks.register('storeTerraformOutput', Exec) {
+    def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
+
+    group 'localstack'
+    description 'Write Terraform output to test resources.'
+    mustRunAfter deployToLocalStack
+
+    executable = 'terraform'
+    args = ['output', '-json']
     environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
     workingDir = '../terraform'
 
-    standardInput = System.in
+    standardOutput = new FileOutputStream("${sourceSets.e2eTest.output.resourcesDir.toPath().resolve("terraform.json")}")
 }
 
 //noinspection GroovyAssignabilityCheck
 tasks.register('e2eTest', Test) {
     group 'verification'
     description 'Run all end-to-end tests against LocalStack.'
-    dependsOn jar, deployToLocalStack
+    dependsOn jar, deployToLocalStack, storeTerraformOutput
 
     useJUnitPlatform()
 

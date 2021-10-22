@@ -5,9 +5,12 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 @DynamoDBTable(tableName = "DocumentReferenceMetadata")
-public class DocumentReferenceMetadata {
+@SuppressWarnings("unused")
+public class DocumentMetadata {
     private String id;
     private String nhsNumber;
+    private String location;
+    private String contentType;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -27,4 +30,21 @@ public class DocumentReferenceMetadata {
         this.nhsNumber = nhsNumber;
     }
 
+    @DynamoDBAttribute(attributeName = "Location")
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    @DynamoDBAttribute(attributeName = "ContentType")
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 }
