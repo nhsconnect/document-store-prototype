@@ -66,6 +66,28 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
   }
 }
 
+resource "aws_lambda_function" "create_doc_ref_lambda" {
+  handler       = "uk.nhs.digital.docstore.CreateDocumentReferenceHandler::handleRequest"
+  function_name = "CreateDocumentReferenceHandler"
+  runtime       = "java11"
+  role          = aws_iam_role.lambda_execution_role.arn
+
+  timeout     = 15
+  memory_size = 448
+
+  filename = var.lambda_jar_filename
+
+  source_code_hash = filebase64sha256(var.lambda_jar_filename)
+
+  environment {
+    variables = {
+      DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
+      DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
+      S3_ENDPOINT                = var.s3_endpoint
+    }
+  }
+}
+
 resource "aws_iam_role" "lambda_execution_role" {
   name = "LambdaExecution"
 
@@ -100,6 +122,7 @@ resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
         "Effect" : "Allow",
         "Action" : [
           "dynamodb:GetItem",
+          "dynamodb:PutItem",
         ],
         "Resource" : aws_dynamodb_table.doc_ref_store.arn
       }
@@ -147,6 +170,23 @@ module "doc_ref_endpoint" {
   http_method        = "GET"
 }
 
+resource "aws_api_gateway_method" "create_doc_ref_method" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.doc_ref_resource.id
+  http_method   = "POST"
+  authorization = "AWS_IAM"
+}
+
+resource "aws_api_gateway_integration" "create_doc_ref_integration" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_method.create_doc_ref_method.resource_id
+  http_method = aws_api_gateway_method.create_doc_ref_method.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.create_doc_ref_lambda.invoke_arn
+}
+
 resource "aws_api_gateway_resource" "doc_ref_resource" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
@@ -156,6 +196,7 @@ resource "aws_api_gateway_resource" "doc_ref_resource" {
 resource "aws_api_gateway_deployment" "api_deploy" {
   depends_on = [
     module.doc_ref_endpoint,
+    aws_api_gateway_method.create_doc_ref_method,
     module.hello_endpoint,
   ]
 
@@ -166,6 +207,7 @@ resource "aws_api_gateway_deployment" "api_deploy" {
     redeployment = sha1(jsonencode([
       aws_api_gateway_rest_api.lambda_api.body,
       module.doc_ref_endpoint,
+      aws_api_gateway_method.create_doc_ref_method,
       module.hello_endpoint
     ]))
   }
@@ -186,6 +228,17 @@ resource "aws_lambda_permission" "api_gateway_permission_for_get_doc_ref" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.get_doc_ref_lambda.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The "/*/*" portion grants access from any method on any resource
+  # within the API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "api_gateway_permission_for_create_doc_ref" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.create_doc_ref_lambda.arn
   principal     = "apigateway.amazonaws.com"
 
   # The "/*/*" portion grants access from any method on any resource
