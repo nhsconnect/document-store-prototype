@@ -1,0 +1,18 @@
+{
+  "resourceType": "DocumentReference",
+  "id": "<generated>",
+  "subject": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "34567"
+    }
+  },
+  "content": [
+    {
+      "attachment": {
+        "url": "<generated>",
+        "contentType": "text/plain"
+      }
+    }
+  ]
+}

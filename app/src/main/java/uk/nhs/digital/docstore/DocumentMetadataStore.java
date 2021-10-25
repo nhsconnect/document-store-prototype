@@ -4,6 +4,9 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import org.hl7.fhir.r4.model.DocumentReference;
+
+import java.util.UUID;
 
 public class DocumentMetadataStore {
     private static final String AWS_REGION = "eu-west-2";
@@ -24,5 +27,11 @@ public class DocumentMetadataStore {
 
     public DocumentMetadata getById(String id) {
         return mapper.load(DocumentMetadata.class, id);
+    }
+
+    public DocumentMetadata save(DocumentMetadata documentMetadata) {
+        documentMetadata.setId(UUID.randomUUID().toString());
+        mapper.save(documentMetadata);
+        return documentMetadata;
     }
 }

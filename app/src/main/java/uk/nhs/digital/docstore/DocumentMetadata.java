@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import org.hl7.fhir.r4.model.DocumentReference;
 
 @DynamoDBTable(tableName = "DocumentReferenceMetadata")
 @SuppressWarnings("unused")
@@ -46,5 +47,12 @@ public class DocumentMetadata {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public static DocumentMetadata from(DocumentReference reference) {
+        var documentMetadata = new DocumentMetadata();
+        documentMetadata.setNhsNumber(reference.getSubject().getIdentifier().getValue());
+        documentMetadata.setContentType(reference.getContent().get(0).getAttachment().getContentType());
+        return documentMetadata;
     }
 }
