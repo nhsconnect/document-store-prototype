@@ -30,7 +30,6 @@ provider "aws" {
     iam        = var.aws_endpoint
     lambda     = var.aws_endpoint
     s3         = var.aws_endpoint
-    kms        = var.aws_endpoint
   }
 }
 
