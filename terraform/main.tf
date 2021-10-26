@@ -57,8 +57,6 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
 
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
-  publish = true
-
   environment {
     variables = {
       DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
@@ -66,13 +64,6 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
       S3_ENDPOINT                = var.s3_endpoint
     }
   }
-}
-
-
-resource "aws_lambda_provisioned_concurrency_config" "get_doc_ref" {
-  function_name                     = aws_lambda_function.get_doc_ref_lambda.function_name
-  provisioned_concurrent_executions = 1
-  qualifier                         = aws_lambda_function.get_doc_ref_lambda.version
 }
 
 resource "aws_lambda_function" "create_doc_ref_lambda" {
