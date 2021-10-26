@@ -71,7 +71,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
                                 .setUrl(preSignedUri.toString())
                                 .setContentType(metadata.getContentType())))
                 .setId(metadata.getId());
-        var resourceAsJson = jsonParser.encodeResourceToString(resource);
+        var resourceAsJson = new SimpleJsonEncoder().encodeDocumentReferenceToString(metadata, preSignedUri);
 
         logger.debug("Processing finished - about to return the response");
         return new APIGatewayProxyResponseEvent()
