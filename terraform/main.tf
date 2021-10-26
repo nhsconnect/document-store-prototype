@@ -84,6 +84,8 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
 
   filename = var.lambda_jar_filename
 
+  publish = true
+
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
   environment {
