@@ -142,6 +142,7 @@ resource "aws_iam_role_policy" "s3_get_document_data_policy" {
         "Effect" : "Allow",
         "Action" : [
           "s3:GetObject",
+          "s3:PutObject",
         ],
         "Resource" : "${aws_s3_bucket.document_store.arn}/*"
       }
