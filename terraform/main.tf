@@ -123,6 +123,7 @@ resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
         "Action" : [
           "dynamodb:GetItem",
           "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
         ],
         "Resource" : aws_dynamodb_table.doc_ref_store.arn
       }
