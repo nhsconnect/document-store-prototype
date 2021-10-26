@@ -194,11 +194,6 @@ resource "aws_api_gateway_resource" "doc_ref_resource" {
 }
 
 resource "aws_api_gateway_deployment" "api_deploy" {
-  depends_on = [
-    module.doc_ref_endpoint,
-    aws_api_gateway_method.create_doc_ref_method,
-    module.hello_endpoint,
-  ]
 
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   stage_name  = var.api_gateway_stage
@@ -207,8 +202,10 @@ resource "aws_api_gateway_deployment" "api_deploy" {
     redeployment = sha1(jsonencode([
       aws_api_gateway_rest_api.lambda_api.body,
       module.doc_ref_endpoint,
+      module.hello_endpoint,
       aws_api_gateway_method.create_doc_ref_method,
-      module.hello_endpoint
+      aws_api_gateway_resource.doc_ref_resource,
+      aws_api_gateway_integration.create_doc_ref_integration,
     ]))
   }
 }
