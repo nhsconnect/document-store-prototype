@@ -57,6 +57,8 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
 
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
+  publish = true
+
   environment {
     variables = {
       DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
@@ -83,8 +85,6 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
   memory_size = 448
 
   filename = var.lambda_jar_filename
-
-  publish = true
 
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
