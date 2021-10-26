@@ -66,6 +66,13 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
   }
 }
 
+
+resource "aws_lambda_provisioned_concurrency_config" "get_doc_ref" {
+  function_name                     = aws_lambda_function.get_doc_ref_lambda.function_name
+  provisioned_concurrent_executions = 1
+  qualifier                         = aws_lambda_function.get_doc_ref_lambda.version
+}
+
 resource "aws_lambda_function" "create_doc_ref_lambda" {
   handler       = "uk.nhs.digital.docstore.CreateDocumentReferenceHandler::handleRequest"
   function_name = "CreateDocumentReferenceHandler"
