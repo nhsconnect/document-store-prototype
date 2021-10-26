@@ -57,14 +57,23 @@ tasks.register('storeTerraformOutput', Exec) {
     environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
     workingDir = '../terraform'
 
-    standardOutput = new FileOutputStream("${sourceSets.e2eTest.output.resourcesDir.toPath().resolve("terraform.json")}")
+    standardOutput = new FileOutputStream("terraform.json")
 }
 
+//noinspection GroovyAssignabilityCheck
+tasks.register("copyTerraformOutput" ,Copy) {
+    mustRunAfter storeTerraformOutput
+    from '../terraform.json'
+    into sourceSets.e2eTest.output.resourcesDir.toPath()
+    doLast {
+        delete '../terraform.json'
+    }
+}
 //noinspection GroovyAssignabilityCheck
 tasks.register('e2eTest', Test) {
     group 'verification'
     description 'Run all end-to-end tests against LocalStack.'
-    dependsOn jar, deployToLocalStack, storeTerraformOutput
+    dependsOn jar, deployToLocalStack, storeTerraformOutput, copyTerraformOutput
 
     useJUnitPlatform()
 
