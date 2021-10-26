@@ -10,6 +10,8 @@ import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -17,6 +19,9 @@ import java.util.Map;
 public class CreateDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
     private final FhirContext fhirContext;
+    private static final Logger logger
+            = LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
+
 
     public CreateDocumentReferenceHandler() {
         this.fhirContext = FhirContext.forR4();
@@ -25,18 +30,20 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-        System.out.println("API Gateway event received - processing starts");
+        logger.debug("API Gateway event received - processing starts");
 
         var jsonParser = fhirContext.newJsonParser();
 
         var inputDocumentReference = jsonParser.parseResource(DocumentReference.class, input.getBody());
 
+        logger.debug("Saving DocumentReference to DynamoDB");
         var documentMetadata = DocumentMetadata.from(inputDocumentReference);
 
         var savedDocumentMetadata = metadataStore.save(documentMetadata);
 
         String hostHeader = input.getHeaders().get("Host");
 
+        logger.debug("Generating response body");
         var resource = new DocumentReference()
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
@@ -50,7 +57,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
         String locationHeader = "https://" + hostHeader + "/DocumentReference/" + savedDocumentMetadata.getId();
 
-        System.out.println("Processing finished - about to return the response");
+        logger.debug("Processing finished - about to return the response");
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(201)
                 .withHeaders(Map.of("Content-Type", "application/fhir+json", "Location", locationHeader))
