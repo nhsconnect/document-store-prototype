@@ -41,8 +41,6 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
 
         var savedDocumentMetadata = metadataStore.save(documentMetadata);
 
-        String hostHeader = input.getHeaders().get("Host");
-
         logger.debug("Generating response body");
         var resource = new DocumentReference()
                 .setSubject(new Reference()
@@ -55,12 +53,13 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                                 .setContentType(savedDocumentMetadata.getContentType())))
                 .setId(savedDocumentMetadata.getId());
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
-        String locationHeader = "https://" + hostHeader + "/DocumentReference/" + savedDocumentMetadata.getId();
 
         logger.debug("Processing finished - about to return the response");
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(201)
-                .withHeaders(Map.of("Content-Type", "application/fhir+json", "Location", locationHeader))
+                .withHeaders(Map.of(
+                        "Content-Type", "application/fhir+json",
+                        "Location", "DocumentReference/" + savedDocumentMetadata.getId()))
                 .withBody(resourceAsJson);
     }
 }

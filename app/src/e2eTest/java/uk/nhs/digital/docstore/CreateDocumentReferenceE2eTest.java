@@ -78,7 +78,7 @@ public class CreateDocumentReferenceE2eTest {
         assertThat(documentReferenceResponse.headers().firstValue("Content-Type"))
                 .contains("application/fhir+json");
         assertThat(documentReferenceResponse.headers().firstValue("Location"))
-                .hasValueSatisfying(location -> assertThat(location).endsWith("/DocumentReference/"+id));
+                .hasValue("DocumentReference/"+id);
         assertThatJson(documentReference)
                 .whenIgnoringPaths("$.id", "$.content[*].attachment.url")
                 .isEqualTo(expectedDocumentReference);
