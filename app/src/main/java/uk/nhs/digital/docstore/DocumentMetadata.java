@@ -49,10 +49,11 @@ public class DocumentMetadata {
         this.contentType = contentType;
     }
 
-    public static DocumentMetadata from(DocumentReference reference) {
+    public static DocumentMetadata from(DocumentReference reference, DocumentStore.DocumentDescriptor documentDescriptor) {
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setNhsNumber(reference.getSubject().getIdentifier().getValue());
         documentMetadata.setContentType(reference.getContent().get(0).getAttachment().getContentType());
+        documentMetadata.setLocation(documentDescriptor.toLocation());
         return documentMetadata;
     }
 }

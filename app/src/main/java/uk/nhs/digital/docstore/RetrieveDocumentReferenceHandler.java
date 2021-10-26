@@ -25,7 +25,7 @@ import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.NOTFOUND;
 @SuppressWarnings("unused")
 public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-    private final DocumentStore documentStore = new DocumentStore();
+    private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
     private final FhirContext fhirContext;
 
     private static final Logger logger

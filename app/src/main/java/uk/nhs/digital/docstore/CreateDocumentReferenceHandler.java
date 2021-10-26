@@ -18,6 +18,7 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class CreateDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
+    private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
     private final FhirContext fhirContext;
     private static final Logger logger
             = LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
@@ -37,9 +38,10 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
         var inputDocumentReference = jsonParser.parseResource(DocumentReference.class, input.getBody());
 
         logger.debug("Saving DocumentReference to DynamoDB");
-        var documentMetadata = DocumentMetadata.from(inputDocumentReference);
-
+        var documentDescriptorAndURL = documentStore.generateDocumentDescriptorAndURL();
+        var documentMetadata = DocumentMetadata.from(inputDocumentReference, documentDescriptorAndURL.getDocumentDescriptor());
         var savedDocumentMetadata = metadataStore.save(documentMetadata);
+
 
         logger.debug("Generating response body");
         var resource = new DocumentReference()
@@ -49,7 +51,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                                 .setValue(savedDocumentMetadata.getNhsNumber())))
                 .addContent(new DocumentReference.DocumentReferenceContentComponent()
                         .setAttachment(new Attachment()
-                                .setUrl("ignore-this")
+                                .setUrl(documentDescriptorAndURL.getDocumentUrl())
                                 .setContentType(savedDocumentMetadata.getContentType())))
                 .setId(savedDocumentMetadata.getId());
         var resourceAsJson = jsonParser.encodeResourceToString(resource);

@@ -4,6 +4,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
@@ -13,11 +14,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 
 import static java.net.http.HttpClient.newHttpClient;
@@ -31,6 +35,9 @@ public class CreateDocumentReferenceE2eTest {
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 4566;
+    private String documentStoreBucketName;
+    private AmazonS3 s3Client;
+    private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
 
     private static String getHost() {
         String host = System.getenv("DS_TEST_HOST");
@@ -49,12 +56,12 @@ public class CreateDocumentReferenceE2eTest {
         scanResult.getItems()
                 .forEach(item -> dynamoDbClient.deleteItem("DocumentReferenceMetadata", item));
 
-        var s3Client = AmazonS3ClientBuilder.standard()
+        s3Client = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(awsEndpointConfiguration)
                 .enablePathStyleAccess()
                 .build();
         var terraformOutput = getContentFromResource("terraform.json");
-        String documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
+        documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
         s3Client.listObjects(documentStoreBucketName)
                 .getObjectSummaries()
                 .forEach(s3Object -> s3Client.deleteObject(documentStoreBucketName, s3Object.getKey()));
@@ -63,25 +70,49 @@ public class CreateDocumentReferenceE2eTest {
     @Test
     void returnsCreatedDocumentReference() throws IOException, InterruptedException {
         String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
-        var documentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference"))
+        var createDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference"))
                 .POST(BodyPublishers.ofString(getContentFromResource("CreateDocumentReferenceRequest.json")))
                 .header("Content-Type", "application/fhir+json")
                 .header("Accept", "application/fhir+json")
                 .build();
 
-        var documentReferenceResponse = newHttpClient().send(documentReferenceRequest, BodyHandlers.ofString(UTF_8));
+        var createdDocumentReferenceResponse = newHttpClient().send(createDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
 
-        var documentReference = documentReferenceResponse.body();
+        var documentReference = createdDocumentReferenceResponse.body();
         String id = JsonPath.read(documentReference, "$.id");
-        assertThat(documentReferenceResponse.statusCode())
+        assertThat(createdDocumentReferenceResponse.statusCode())
                 .isEqualTo(201);
-        assertThat(documentReferenceResponse.headers().firstValue("Content-Type"))
+        assertThat(createdDocumentReferenceResponse.headers().firstValue("Content-Type"))
                 .contains("application/fhir+json");
-        assertThat(documentReferenceResponse.headers().firstValue("Location"))
+        assertThat(createdDocumentReferenceResponse.headers().firstValue("Location"))
                 .hasValue("DocumentReference/"+id);
         assertThatJson(documentReference)
                 .whenIgnoringPaths("$.id", "$.content[*].attachment.url")
                 .isEqualTo(expectedDocumentReference);
+
+        String documentUploadURL = JsonPath.<String>read(documentReference, "$.content[0].attachment.url")
+                .replace(INTERNAL_DOCKER_HOST, getHost());
+        URI documentUploadUri = URI.create(documentUploadURL);
+        var documentUploadRequest = HttpRequest.newBuilder(documentUploadUri)
+                .PUT(BodyPublishers.ofString("hello"))
+                .build();
+        var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
+        assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
+
+        var retrieveDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/"+id))
+                .GET()
+                .build();
+
+        var retrievedDocumentReferenceResponse = newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
+        assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
+        String preSignedUrl = JsonPath.<String>read(retrievedDocumentReferenceResponse.body(), "$.content[0].attachment.url")
+                .replace(INTERNAL_DOCKER_HOST, getHost());
+        var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
+                .GET()
+                .timeout(Duration.ofSeconds(2))
+                .build();
+        var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
+        assertThat(documentResponse.body()).isEqualTo("hello");
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
