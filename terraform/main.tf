@@ -108,8 +108,6 @@ resource "aws_lambda_function" "document_uploaded_lambda" {
       S3_ENDPOINT                = var.s3_endpoint
     }
   }
-
-
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
@@ -147,6 +145,7 @@ resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
         "Action" : [
           "dynamodb:GetItem",
           "dynamodb:PutItem",
+          "dynamodb:Query",
           "dynamodb:UpdateItem",
         ],
         "Resource" : aws_dynamodb_table.doc_ref_store.arn
