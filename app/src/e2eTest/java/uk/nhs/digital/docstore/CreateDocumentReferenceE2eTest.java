@@ -1,42 +1,29 @@
 package uk.nhs.digital.docstore;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.model.ScanResult;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.jayway.jsonpath.JsonPath;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.helpers.AuthorizationEnhancer;
+import uk.nhs.digital.docstore.helpers.AwsIamEnhancer;
+import uk.nhs.digital.docstore.helpers.NoAuthEnhancer;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
-import java.util.List;
 
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.nhs.digital.docstore.BaseUriHelper.getBaseUri;
+import static uk.nhs.digital.docstore.BaseUriHelper.getBaseUriFromEnv;
 
 public class CreateDocumentReferenceE2eTest {
-    private static final String BASE_URI_TEMPLATE = "http://%s:%d";
-    private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_HOST = "localhost";
-    private static final int DEFAULT_PORT = 4566;
-    private String documentStoreBucketName;
-    private AmazonS3 s3Client;
     private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
 
     private static String getHost() {
@@ -44,37 +31,20 @@ public class CreateDocumentReferenceE2eTest {
         return (host != null) ? host : DEFAULT_HOST;
     }
 
-    @BeforeEach
-    void setUp() throws IOException {
-        var baseUri = String.format(BASE_URI_TEMPLATE, getHost(), DEFAULT_PORT);
-        var awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
-
-        AmazonDynamoDB dynamoDbClient = AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(awsEndpointConfiguration)
-                .build();
-        ScanResult scanResult = dynamoDbClient.scan("DocumentReferenceMetadata", List.of("ID"));
-        scanResult.getItems()
-                .forEach(item -> dynamoDbClient.deleteItem("DocumentReferenceMetadata", item));
-
-        s3Client = AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(awsEndpointConfiguration)
-                .enablePathStyleAccess()
-                .build();
-        var terraformOutput = getContentFromResource("terraform.json");
-        documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
-        s3Client.listObjects(documentStoreBucketName)
-                .getObjectSummaries()
-                .forEach(s3Object -> s3Client.deleteObject(documentStoreBucketName, s3Object.getKey()));
-    }
-
     @Test
-    void returnsCreatedDocumentReference() throws IOException, InterruptedException {
+    void returnsCreatedDocumentReference() throws IOException, InterruptedException, URISyntaxException {
+        boolean isLocalStack = System.getenv("DOCUMENT_STORE_BASE_URI") == null;
+        AuthorizationEnhancer authorizationEnhancer = isLocalStack ? new NoAuthEnhancer() : new AwsIamEnhancer();
+        URI apiGatewayEndpoint = getBaseUriFromEnv();
+
         String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
-        var createDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference"))
-                .POST(BodyPublishers.ofString(getContentFromResource("CreateDocumentReferenceRequest.json")))
+        String content = getContentFromResource("CreateDocumentReferenceRequest.json");
+        HttpRequest.Builder original = HttpRequest.newBuilder(apiGatewayEndpoint.resolve("DocumentReference"))
+                .POST(BodyPublishers.ofString(content))
                 .header("Content-Type", "application/fhir+json")
-                .header("Accept", "application/fhir+json")
-                .build();
+                .header("Accept", "application/fhir+json");
+
+        var createDocumentReferenceRequest = authorizationEnhancer.enhanceWithAuthorization(original, apiGatewayEndpoint, content).build();
 
         var createdDocumentReferenceResponse = newHttpClient().send(createDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
 
@@ -99,9 +69,8 @@ public class CreateDocumentReferenceE2eTest {
         var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
 
-        var retrieveDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/"+id))
-                .GET()
-                .build();
+        HttpRequest.Builder builder = HttpRequest.newBuilder(apiGatewayEndpoint.resolve("DocumentReference/" + id));
+        var retrieveDocumentReferenceRequest = authorizationEnhancer.enhanceWithAuthorization(builder.GET(), apiGatewayEndpoint,null).build();
 
         var retrievedDocumentReferenceResponse = newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
         assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);

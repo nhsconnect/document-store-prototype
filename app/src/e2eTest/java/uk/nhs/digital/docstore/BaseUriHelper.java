@@ -45,6 +45,14 @@ public class BaseUriHelper {
                 .resolve(String.format(BASE_PATH_TEMPLATE, restApiId, stageName));
     }
 
+    public static URI getBaseUriFromEnv() {
+        String documentStoreBaseUri = System.getenv("DOCUMENT_STORE_BASE_URI");
+        if (documentStoreBaseUri == null) {
+            return getBaseUri();
+        }
+        return URI.create(documentStoreBaseUri);
+    }
+
     private static String getHost() {
         String host = System.getenv("DS_TEST_HOST");
         return (host != null) ? host : DEFAULT_HOST;

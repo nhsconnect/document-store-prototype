@@ -41,6 +41,19 @@ simulate AWS. Since we are using the open source version of LocalStack, we are u
 Steps 1 and 2 only need to be performed once before starting the E2E tests. Once LocalStack is running, the third step
 can be done in isolation to apply any changes and re-run the tests.
 
+### Running test harness
+A subset of the end-to-end tests can be run as tests against any existing document store endpoint
+
+```bash
+ DOCUMENT_STORE_BASE_URI=<replace with api endpoint> ./gradlew testHarness
+```
+
+For the prototype setup, run this before to set the AWS credentials needed to sign the API requests
+
+```bash
+eval $(assume-role doc-store)
+```
+
 ### Environment variables
 
 LocalStack and the E2E tests support a native Docker service running on `localhost`. Other setups, such as Docker

@@ -80,3 +80,18 @@ tasks.register('e2eTest', Test) {
     testClassesDirs = sourceSets.e2eTest.output.classesDirs
     classpath = sourceSets.e2eTest.runtimeClasspath
 }
+
+//noinspection GroovyAssignabilityCheck
+tasks.register('testHarness', Test) {
+    group 'verification'
+    description 'Run all test harness'
+
+    useJUnitPlatform()
+
+    testClassesDirs = sourceSets.e2eTest.output.classesDirs
+    classpath = sourceSets.e2eTest.runtimeClasspath
+
+    filter {
+        includeTestsMatching "uk.nhs.digital.docstore.CreateDocumentReferenceE2eTest"
+    }
+}
