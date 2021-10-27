@@ -40,7 +40,9 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
+        logger.debug("Processing - after loading fhir context");
         var metadata = metadataStore.getById(event.getPathParameters().get("id"));
+        logger.debug("API Gateway event received - processing starts");
 
         if (metadata == null) {
             return new APIGatewayProxyResponseEvent()
