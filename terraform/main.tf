@@ -88,6 +88,27 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
   }
 }
 
+resource "aws_lambda_function" "document_uploaded_lambda" {
+  handler       = "uk.nhs.digital.docstore.DocumentUploadedEventHandler::handleRequest"
+  function_name = "DocumentUploadedEventHandler"
+  runtime       = "java11"
+  role          = aws_iam_role.lambda_execution_role.arn
+
+  filename = var.lambda_jar_filename
+
+  source_code_hash = filebase64sha256(var.lambda_jar_filename)
+
+  environment {
+    variables = {
+      DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
+      DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
+      S3_ENDPOINT                = var.s3_endpoint
+    }
+  }
+
+
+}
+
 resource "aws_iam_role" "lambda_execution_role" {
   name = "LambdaExecution"
 
@@ -243,4 +264,12 @@ resource "aws_lambda_permission" "api_gateway_permission_for_create_doc_ref" {
   # The "/*/*" portion grants access from any method on any resource
   # within the API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "s3_permission_for_document_upload_event" {
+  statement_id  = "AllowExecutionFromS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.document_uploaded_lambda.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.document_store.arn
 }
