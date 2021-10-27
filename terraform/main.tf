@@ -145,10 +145,27 @@ resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
         "Action" : [
           "dynamodb:GetItem",
           "dynamodb:PutItem",
-          "dynamodb:Query",
           "dynamodb:UpdateItem",
         ],
         "Resource" : aws_dynamodb_table.doc_ref_store.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
+  name = "dynamodb_query_locations_policy"
+  role = aws_iam_role.lambda_execution_role.id
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "dynamodb:Query",
+        ],
+        "Resource" : "${aws_dynamodb_table.doc_ref_store.arn}/index/LocationsIndex"
       }
     ]
   })
