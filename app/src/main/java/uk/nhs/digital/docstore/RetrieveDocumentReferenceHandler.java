@@ -19,6 +19,8 @@ import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
 
 import java.util.Map;
 
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.NOTFOUND;
 
@@ -72,6 +74,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
                         .setAttachment(new Attachment()
                                 .setUrl(preSignedUri.toString())
                                 .setContentType(metadata.getContentType())))
+                .setDocStatus(metadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
                 .setId(metadata.getId());
         var resourceAsJson = new SimpleJsonEncoder().encodeDocumentReferenceToString(metadata, preSignedUri);
 

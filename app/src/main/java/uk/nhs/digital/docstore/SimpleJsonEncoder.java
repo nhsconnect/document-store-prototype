@@ -13,7 +13,8 @@ public class SimpleJsonEncoder {
             return docReferenceTemplate.replaceAll("\\$id\\$", metadata.getId())
                     .replaceAll("\\$nhsNumber\\$", metadata.getNhsNumber())
                     .replaceAll("\\$contentType\\$", metadata.getContentType())
-                    .replaceAll("\\$contentUrl\\$", presignedUrl.toString());
+                    .replaceAll("\\$contentUrl\\$", presignedUrl.toString())
+                    .replaceAll("\\$docStatus\\$", metadata.isDocumentUploaded() ? "final" : "preliminary");
         } catch (IOException e) {
             throw new RuntimeException("Missing template file");
         }

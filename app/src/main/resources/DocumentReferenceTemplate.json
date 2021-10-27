@@ -14,5 +14,6 @@
         "url": "$contentUrl$"
       }
     }
-  ]
+  ],
+  "docStatus": "$docStatus$"
 }

@@ -12,6 +12,7 @@ public class DocumentMetadata {
     private String nhsNumber;
     private String location;
     private String contentType;
+    private boolean documentUploaded;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -47,6 +48,15 @@ public class DocumentMetadata {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    @DynamoDBAttribute(attributeName = "DocumentUploaded")
+    public boolean isDocumentUploaded() {
+        return documentUploaded;
+    }
+
+    public void setDocumentUploaded(boolean documentUploaded) {
+        this.documentUploaded = documentUploaded;
     }
 
     public static DocumentMetadata from(DocumentReference reference, DocumentStore.DocumentDescriptor documentDescriptor) {
