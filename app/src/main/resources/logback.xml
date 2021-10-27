@@ -14,6 +14,7 @@
 				<jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
 					<prettyPrint>false</prettyPrint>
 				</jsonFormatter>
+				<appendLineSeparator>true</appendLineSeparator>
 			</layout>
 		</encoder>
 	</appender>
