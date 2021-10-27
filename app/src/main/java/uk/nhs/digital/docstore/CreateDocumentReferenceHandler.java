@@ -15,14 +15,17 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
+
 @SuppressWarnings("unused")
 public class CreateDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-    private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
-    private final FhirContext fhirContext;
     private static final Logger logger
             = LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
 
+    private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
+    private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
+    private final FhirContext fhirContext;
 
     public CreateDocumentReferenceHandler() {
         this.fhirContext = FhirContext.forR4();
@@ -32,7 +35,6 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         logger.debug("API Gateway event received - processing starts");
-
         var jsonParser = fhirContext.newJsonParser();
 
         var inputDocumentReference = jsonParser.parseResource(DocumentReference.class, input.getBody());
@@ -41,7 +43,6 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
         var documentDescriptorAndURL = documentStore.generateDocumentDescriptorAndURL();
         var documentMetadata = DocumentMetadata.from(inputDocumentReference, documentDescriptorAndURL.getDocumentDescriptor());
         var savedDocumentMetadata = metadataStore.save(documentMetadata);
-
 
         logger.debug("Generating response body");
         var resource = new DocumentReference()
@@ -53,6 +54,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                         .setAttachment(new Attachment()
                                 .setUrl(documentDescriptorAndURL.getDocumentUrl())
                                 .setContentType(savedDocumentMetadata.getContentType())))
+                .setDocStatus(savedDocumentMetadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
                 .setId(savedDocumentMetadata.getId());
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
 

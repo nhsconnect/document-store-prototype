@@ -1,8 +1,6 @@
 package uk.nhs.digital.docstore;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import org.hl7.fhir.r4.model.DocumentReference;
 
 @DynamoDBTable(tableName = "DocumentReferenceMetadata")
@@ -12,7 +10,7 @@ public class DocumentMetadata {
     private String nhsNumber;
     private String location;
     private String contentType;
-    private boolean documentUploaded;
+    private Boolean documentUploaded;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -32,7 +30,7 @@ public class DocumentMetadata {
         this.nhsNumber = nhsNumber;
     }
 
-    @DynamoDBAttribute(attributeName = "Location")
+    @DynamoDBIndexHashKey(attributeName = "Location", globalSecondaryIndexName = "LocationsIndex")
     public String getLocation() {
         return location;
     }
@@ -51,11 +49,11 @@ public class DocumentMetadata {
     }
 
     @DynamoDBAttribute(attributeName = "DocumentUploaded")
-    public boolean isDocumentUploaded() {
+    public Boolean isDocumentUploaded() {
         return documentUploaded;
     }
 
-    public void setDocumentUploaded(boolean documentUploaded) {
+    public void setDocumentUploaded(Boolean documentUploaded) {
         this.documentUploaded = documentUploaded;
     }
 
@@ -64,6 +62,7 @@ public class DocumentMetadata {
         documentMetadata.setNhsNumber(reference.getSubject().getIdentifier().getValue());
         documentMetadata.setContentType(reference.getContent().get(0).getAttachment().getContentType());
         documentMetadata.setLocation(documentDescriptor.toLocation());
+        documentMetadata.setDocumentUploaded(false);
         return documentMetadata;
     }
 }

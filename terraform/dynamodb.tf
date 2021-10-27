@@ -8,4 +8,15 @@ resource "aws_dynamodb_table" "doc_ref_store" {
     name = "ID"
     type = "S"
   }
+
+  attribute {
+    name = "Location"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "LocationsIndex"
+    hash_key        = "Location"
+    projection_type = "KEYS_ONLY"
+  }
 }

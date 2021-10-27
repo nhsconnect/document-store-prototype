@@ -94,6 +94,7 @@ resource "aws_lambda_function" "document_uploaded_lambda" {
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
 
+  timeout     = 10
   memory_size = 256
 
   filename = var.lambda_jar_filename

@@ -55,7 +55,7 @@ public class CreateDocumentReferenceE2eTest {
         assertThat(createdDocumentReferenceResponse.headers().firstValue("Content-Type"))
                 .contains("application/fhir+json");
         assertThat(createdDocumentReferenceResponse.headers().firstValue("Location"))
-                .hasValue("DocumentReference/"+id);
+                .hasValue("DocumentReference/" + id);
         assertThatJson(documentReference)
                 .whenIgnoringPaths("$.id", "$.content[*].attachment.url")
                 .isEqualTo(expectedDocumentReference);
@@ -69,11 +69,18 @@ public class CreateDocumentReferenceE2eTest {
         var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
 
-        HttpRequest.Builder builder = HttpRequest.newBuilder(apiGatewayEndpoint.resolve("DocumentReference/" + id));
-        var retrieveDocumentReferenceRequest = authorizationEnhancer.enhanceWithAuthorization(builder.GET(), apiGatewayEndpoint,null).build();
+        var retrieveDocumentReferenceRequest = authorizationEnhancer.enhanceWithAuthorization(
+                        HttpRequest.newBuilder(apiGatewayEndpoint.resolve("DocumentReference/" + id)).GET(),
+                        apiGatewayEndpoint,
+                        null)
+                .build();
 
         var retrievedDocumentReferenceResponse = newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
         assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
+        assertThatJson(retrievedDocumentReferenceResponse.body())
+                .inPath("$.docStatus")
+                .isEqualTo("final");
+
         String preSignedUrl = JsonPath.<String>read(retrievedDocumentReferenceResponse.body(), "$.content[0].attachment.url")
                 .replace(INTERNAL_DOCKER_HOST, getHost());
         var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
