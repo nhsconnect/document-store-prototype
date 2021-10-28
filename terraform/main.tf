@@ -294,6 +294,8 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_method.create_doc_ref_method,
       aws_api_gateway_resource.doc_ref_resource,
       aws_api_gateway_integration.create_doc_ref_integration,
+      aws_api_gateway_method.doc_ref_search_method,
+      aws_api_gateway_integration.doc_ref_search_integration,
     ]))
   }
 }
