@@ -7,12 +7,12 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
 @SuppressWarnings("unused")
@@ -27,12 +27,10 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         var jsonParser = fhirContext.newJsonParser();
-        int total = 0;
-        List<Bundle.BundleEntryComponent> searchResults = new ArrayList<>();
+        var searchResults = new ArrayList<BundleEntryComponent>();
 
         if (requestEvent.getQueryStringParameters().get("subject:identifier").equals("https://fhir.nhs.uk/Id/nhs-number|12345")) {
-            total = 1;
-            searchResults.add(new Bundle.BundleEntryComponent()
+            searchResults.add(new BundleEntryComponent()
                     .setResource(new DocumentReference()
                             .setSubject(new Reference()
                                     .setIdentifier(new Identifier()
@@ -44,16 +42,13 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         }
 
         var bundle = new Bundle()
-                .setTotal(total)
+                .setTotal(searchResults.size())
                 .setType(Bundle.BundleType.SEARCHSET)
                 .setEntry(searchResults);
-        String body = jsonParser.encodeResourceToString(bundle);
-
 
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
-                .withHeaders(Map.of(
-                        "Content-Type", "application/fhir+json"))
-                .withBody(body);
+                .withHeaders(Map.of("Content-Type", "application/fhir+json"))
+                .withBody(jsonParser.encodeResourceToString(bundle));
     }
 }

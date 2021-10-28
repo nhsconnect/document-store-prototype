@@ -25,14 +25,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.nhs.digital.docstore.BaseUriHelper.getBaseUri;
 
 public class DocumentReferenceSearchE2eTest {
-
     private static final String BASE_URI_TEMPLATE = "http://%s:%d";
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 4566;
     private static final String S3_KEY = "abcd";
     private static final String S3_VALUE = "content";
-    private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
 
     private static String getHost() {
         String host = System.getenv("DS_TEST_HOST");
@@ -77,6 +75,7 @@ public class DocumentReferenceSearchE2eTest {
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+
         assertThat(searchResponse.statusCode()).isEqualTo(200);
         assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(searchResponse.body())
@@ -87,12 +86,12 @@ public class DocumentReferenceSearchE2eTest {
     @Test
     void returnsMatchingResults() throws IOException, InterruptedException {
         String expectedSearchResponse = getContentFromResource("NHSNumberSearchResponse.json");
-        System.out.println(getBaseUri());
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C12345"))
                 .GET()
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+
         assertThat(searchResponse.statusCode()).isEqualTo(200);
         assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(searchResponse.body())
@@ -105,10 +104,4 @@ public class DocumentReferenceSearchE2eTest {
         File file = new File(classLoader.getResource(resourcePath).getFile());
         return new String(Files.readAllBytes(file.toPath()));
     }
-
-
-    // return one match
-    // return multiple matches
-    // return link for final objects (maybe check links???)
-    // return error for wrong parameters
 }
