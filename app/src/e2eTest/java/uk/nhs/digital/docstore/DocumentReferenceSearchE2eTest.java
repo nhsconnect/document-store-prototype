@@ -79,7 +79,25 @@ public class DocumentReferenceSearchE2eTest {
         var searchResponse = newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
         assertThat(searchResponse.statusCode()).isEqualTo(200);
         assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
-        assertThatJson(searchResponse.body()).isEqualTo(expectedEmptySearchResponse);
+        assertThatJson(searchResponse.body())
+                .whenIgnoringPaths("$.meta")
+                .isEqualTo(expectedEmptySearchResponse);
+    }
+
+    @Test
+    void returnsMatchingResults() throws IOException, InterruptedException {
+        String expectedSearchResponse = getContentFromResource("NHSNumberSearchResponse.json");
+        System.out.println(getBaseUri());
+        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C12345"))
+                .GET()
+                .build();
+
+        var searchResponse = newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+        assertThat(searchResponse.statusCode()).isEqualTo(200);
+        assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(searchResponse.body())
+                .whenIgnoringPaths("$.meta")
+                .isEqualTo(expectedSearchResponse);
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
@@ -89,9 +107,8 @@ public class DocumentReferenceSearchE2eTest {
     }
 
 
-    // return empty list (should be empty)
     // return one match
-    // return multiple matches (maybe check links???)
-    // return no link for prelim objects
+    // return multiple matches
+    // return link for final objects (maybe check links???)
     // return error for wrong parameters
 }

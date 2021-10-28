@@ -1,0 +1,21 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "fullUrl": "http://172.17.0.2:4566/DocumentReference/1234",
+      "resource": {
+        "resourceType": "DocumentReference",
+        "id": "1234",
+        "subject": {
+          "identifier": {
+            "system": "https://fhir.nhs.uk/Id/nhs-number",
+            "value": "12345"
+          }
+        },
+        "docStatus": "preliminary"
+      }
+    }
+  ]
+}

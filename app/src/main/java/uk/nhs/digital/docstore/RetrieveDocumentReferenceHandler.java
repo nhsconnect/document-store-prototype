@@ -67,9 +67,9 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         logger.debug("Created the pre-signed URL - about to transform it into JSON");
         var resource = new DocumentReference()
                 .setSubject(new Reference()
-                .setIdentifier(new Identifier()
-                        .setSystem("https://fhir.nhs.uk/Id/nhs-number")
-                        .setValue(metadata.getNhsNumber())))
+                        .setIdentifier(new Identifier()
+                                .setSystem("https://fhir.nhs.uk/Id/nhs-number")
+                                .setValue(metadata.getNhsNumber())))
                 .addContent(new DocumentReference.DocumentReferenceContentComponent()
                         .setAttachment(new Attachment()
                                 .setUrl(preSignedUri.toString())
