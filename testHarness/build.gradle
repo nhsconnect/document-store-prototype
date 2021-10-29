@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testImplementation 'org.assertj:assertj-core:3.21.0'
+    testImplementation 'com.jayway.jsonpath:json-path:2.6.0'
+    testImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
+
+}
+
+sourceSets{
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+jar {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
