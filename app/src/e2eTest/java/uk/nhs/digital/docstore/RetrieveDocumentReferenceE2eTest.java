@@ -24,7 +24,7 @@ import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.nhs.digital.docstore.BaseUriHelper.getBaseUri;
+import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
 
 public class RetrieveDocumentReferenceE2eTest {
     @SuppressWarnings("HttpUrlsUsage")

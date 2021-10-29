@@ -9,7 +9,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.nhs.digital.docstore.BaseUriHelper.getBaseUri;
+import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
 
 public class HelloWorldE2eTest {
     @Test

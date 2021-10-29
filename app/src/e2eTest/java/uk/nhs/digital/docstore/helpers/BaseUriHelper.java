@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.helpers;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.apigateway.AmazonApiGateway;
