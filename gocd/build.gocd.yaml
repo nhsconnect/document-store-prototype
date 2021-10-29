@@ -32,9 +32,10 @@ pipelines:
           clean_workspace: true
           jobs:
             terraform:
-              - build:
-                  source: api_gateway_url_artifact
-                  destination: properties
+              artifacts:
+                - build:
+                    source: api_gateway_url_artifact
+                    destination: properties
               tasks:
                 - fetch:
                     stage: build
