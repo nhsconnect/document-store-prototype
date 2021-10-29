@@ -2,9 +2,7 @@ package uk.nhs.digital.docstore;
 
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.helpers.AuthorizationEnhancer;
-import uk.nhs.digital.docstore.helpers.AwsIamEnhancer;
-import uk.nhs.digital.docstore.helpers.NoAuthEnhancer;
+import uk.nhs.digital.docstore.helpers.AuthorizedRequestBuilderFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,15 +27,6 @@ public class CreateDocumentReferenceE2eTest {
     private static String getHost() {
         String host = System.getenv("DS_TEST_HOST");
         return (host != null) ? host : DEFAULT_HOST;
-    }
-
-    static class AuthorizedRequestBuilderFactory {
-        public static HttpRequest.Builder newBuilder(URI endpoint, String path, String content) throws URISyntaxException {
-            boolean isLocalStack = System.getenv("DOCUMENT_STORE_BASE_URI") == null;
-            AuthorizationEnhancer authorizationEnhancer = isLocalStack ? new NoAuthEnhancer() : new AwsIamEnhancer();
-            HttpRequest.Builder original = HttpRequest.newBuilder(endpoint.resolve(path));
-            return authorizationEnhancer.enhanceWithAuthorization(original, endpoint, content);
-        }
     }
 
     @Test
