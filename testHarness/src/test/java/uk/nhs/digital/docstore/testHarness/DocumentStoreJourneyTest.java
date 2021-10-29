@@ -3,7 +3,6 @@ package uk.nhs.digital.docstore.testHarness;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.testHarness.helpers.AuthorizedRequestBuilderFactory;
-import uk.nhs.digital.docstore.testHarness.helpers.BaseUriHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CreateDocumentReferenceE2eTest {
+public class DocumentStoreJourneyTest {
     private static final String DEFAULT_HOST = "localhost";
     private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
 
@@ -31,7 +30,7 @@ public class CreateDocumentReferenceE2eTest {
 
     @Test
     void returnsCreatedDocumentReference() throws IOException, InterruptedException, URISyntaxException {
-        URI apiGatewayEndpoint = BaseUriHelper.getBaseUriFromEnv();
+        URI  apiGatewayEndpoint = URI.create(System.getenv("DOCUMENT_STORE_BASE_URI"));
 
         String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
         String content = getContentFromResource("CreateDocumentReferenceRequest.json");
