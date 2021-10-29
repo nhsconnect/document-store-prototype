@@ -39,5 +39,5 @@ extract-api-url)
   cd terraform
   assume_ci_role
   terraform init
-  terrraform output -raw api_gateway_url > ../api_gateway_url_artifact
+  terraform output -raw api_gateway_url > ../api_gateway_url_artifact
 esac
