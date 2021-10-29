@@ -358,3 +358,7 @@ output "api_gateway_rest_api_id" {
 output "api_gateway_rest_api_stage" {
   value = aws_api_gateway_deployment.api_deploy.stage_name
 }
+
+output "api_gateway_url" {
+  value = aws_api_gateway_deployment.api_deploy.invoke_url
+}

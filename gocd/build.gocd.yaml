@@ -32,6 +32,9 @@ pipelines:
           clean_workspace: true
           jobs:
             terraform:
+              - build:
+                  source: api_gateway_url_artifact
+                  destination: properties
               tasks:
                 - fetch:
                     stage: build
@@ -49,3 +52,24 @@ pipelines:
                       - -c
                       - Dojofile-infra
                       - 'gocd/tasks.sh deploy'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - 'gocd/tasks.sh extract-api-url'
+      - testHarness:
+          clean_workspace: true
+          jobs:
+            runTestHarness:
+              environment_variables:
+                API_AUTH: IAM
+              tasks:
+                - fetch:
+                    stage: deploy
+                    job: terraform
+                    source: properties
+                - exec:
+                    command: dojo
+                    arguments:
+                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) ./gradlew testHarness:test"
