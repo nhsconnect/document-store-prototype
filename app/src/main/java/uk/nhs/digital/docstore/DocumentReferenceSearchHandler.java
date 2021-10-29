@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.Bundle.BundleType.SEARCHSET;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
 @SuppressWarnings("unused")
@@ -65,7 +66,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
 
     private BundleEntryComponent toBundleEntries(DocumentMetadata metadata) {
         return new BundleEntryComponent()
-                .setFullUrl("/DocumentReference/1234")
+                .setFullUrl("/DocumentReference/" + metadata.getId())
                 .setResource(toDocumentReference(metadata));
     }
 
@@ -74,8 +75,8 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
                                 .setSystem("https://fhir.nhs.uk/Id/nhs-number")
-                                .setValue("12345")))
-                .setDocStatus(PRELIMINARY)
-                .setId("1234");
+                                .setValue(metadata.getNhsNumber())))
+                .setDocStatus(metadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
+                .setId(metadata.getId());
     }
 }

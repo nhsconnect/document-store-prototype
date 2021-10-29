@@ -1,13 +1,27 @@
 {
   "resourceType": "Bundle",
   "type": "searchset",
-  "total": 1,
+  "total": 2,
   "entry": [
     {
       "fullUrl": "/DocumentReference/1234",
       "resource": {
         "resourceType": "DocumentReference",
         "id": "1234",
+        "subject": {
+          "identifier": {
+            "system": "https://fhir.nhs.uk/Id/nhs-number",
+            "value": "12345"
+          }
+        },
+        "docStatus": "final"
+      }
+    },
+    {
+      "fullUrl": "/DocumentReference/2345",
+      "resource": {
+        "resourceType": "DocumentReference",
+        "id": "2345",
         "subject": {
           "identifier": {
             "system": "https://fhir.nhs.uk/Id/nhs-number",

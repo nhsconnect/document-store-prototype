@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
@@ -57,14 +57,18 @@ public class DocumentReferenceSearchE2eTest {
         String documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
         s3Client.putObject(documentStoreBucketName, S3_KEY, S3_VALUE);
 
-        dynamoDbClient.putItem(
-                "DocumentReferenceMetadata",
-                Map.of(
-                        "ID", new AttributeValue("1234"),
-                        "NhsNumber", new AttributeValue("12345"),
-                        "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
-                        "ContentType", new AttributeValue("text/plain"),
-                        "DocumentUploaded", new AttributeValue().withBOOL(true)));
+        dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
+                "ID", new AttributeValue("1234"),
+                "NhsNumber", new AttributeValue("12345"),
+                "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
+                "ContentType", new AttributeValue("text/plain"),
+                "DocumentUploaded", new AttributeValue().withBOOL(true)));
+        dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
+                "ID", new AttributeValue("2345"),
+                "NhsNumber", new AttributeValue("12345"),
+                "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, "somewhere")),
+                "Content-Type", new AttributeValue("application/pdf"),
+                "DocumentUploaded", new AttributeValue().withBOOL(false)));
     }
 
     @Test
@@ -74,7 +78,7 @@ public class DocumentReferenceSearchE2eTest {
                 .GET()
                 .build();
 
-        var searchResponse = newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+        var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
 
         assertThat(searchResponse.statusCode()).isEqualTo(200);
         assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
@@ -90,7 +94,7 @@ public class DocumentReferenceSearchE2eTest {
                 .GET()
                 .build();
 
-        var searchResponse = newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+        var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
 
         assertThat(searchResponse.statusCode()).isEqualTo(200);
         assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
