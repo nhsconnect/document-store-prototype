@@ -40,4 +40,7 @@ extract-api-url)
   assume_ci_role
   terraform init
   terraform output api_gateway_url > ../api_gateway_url_artifact
+  ;;
+assume-ci-role)
+  assume_ci_role
 esac

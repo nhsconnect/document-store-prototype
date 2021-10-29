@@ -73,11 +73,9 @@ pipelines:
                 - exec:
                     command: dojo
                     arguments:
-                      - "cat properties/api_gateway_url_artifact"
-                - exec:
-                    command: dojo
-                    arguments:
-                      - "ls -lsa"
+                      - -c
+                      - Dojofile-infra
+                      - "gocd/task.sh assume-ci-role"
                 - exec:
                     command: dojo
                     arguments:
