@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DocumentReference;
+import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Reference;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
 
+import java.net.URL;
 import java.util.Map;
 
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
@@ -61,22 +63,29 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
                                                     .setDisplay("No record found"))))));
         }
 
-        logger.debug("Retrieved the requested object. Creating the pre-signed URL");
-        var preSignedUri = documentStore.generatePreSignedUrl(DocumentDescriptor.from(metadata));
+        DocumentReferenceContentComponent contentComponent = null;
+        URL preSignedUrl = null;
+        if (metadata.isDocumentUploaded()) {
+            logger.debug("Retrieved the requested object. Creating the pre-signed URL");
+            preSignedUrl = documentStore.generatePreSignedUrl(DocumentDescriptor.from(metadata));
+            contentComponent = new DocumentReferenceContentComponent()
+                    .setAttachment(new Attachment()
+                            .setUrl(preSignedUrl.toString())
+                            .setContentType(metadata.getContentType()));
+        } else {
+            logger.debug("Skipping pre-signed URL: it's not been uploaded yet.");
+        }
 
-        logger.debug("Created the pre-signed URL - about to transform it into JSON");
+        logger.debug("About to transform response into JSON");
         var resource = new DocumentReference()
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
                                 .setSystem("https://fhir.nhs.uk/Id/nhs-number")
                                 .setValue(metadata.getNhsNumber())))
-                .addContent(new DocumentReference.DocumentReferenceContentComponent()
-                        .setAttachment(new Attachment()
-                                .setUrl(preSignedUri.toString())
-                                .setContentType(metadata.getContentType())))
+                .addContent(contentComponent)
                 .setDocStatus(metadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
                 .setId(metadata.getId());
-        var resourceAsJson = new SimpleJsonEncoder().encodeDocumentReferenceToString(metadata, preSignedUri);
+        var resourceAsJson = new SimpleJsonEncoder().encodeDocumentReferenceToString(metadata, preSignedUrl);
 
         logger.debug("Processing finished - about to return the response");
         return new APIGatewayProxyResponseEvent()

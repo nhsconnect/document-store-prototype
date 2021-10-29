@@ -1,11 +1,11 @@
 {
   "resourceType": "DocumentReference",
-  "id": "1234",
+  "id": "3456",
   "subject": {
     "identifier": {
       "system": "https://fhir.nhs.uk/Id/nhs-number",
-      "value": "12345"
+      "value": "56789"
     }
   },
-  "docStatus": "final"
+  "docStatus": "preliminary"
 }

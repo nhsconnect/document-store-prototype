@@ -61,19 +61,23 @@ public class RetrieveDocumentReferenceE2eTest {
         String documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
         s3Client.putObject(documentStoreBucketName, S3_KEY, S3_VALUE);
 
-        dynamoDbClient.putItem(
-                "DocumentReferenceMetadata",
-                Map.of(
-                        "ID", new AttributeValue("1234"),
-                        "NhsNumber", new AttributeValue("12345"),
-                        "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
-                        "ContentType", new AttributeValue("text/plain"),
-                        "DocumentUploaded", new AttributeValue().withBOOL(true)));
+        dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
+                "ID", new AttributeValue("1234"),
+                "NhsNumber", new AttributeValue("12345"),
+                "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
+                "ContentType", new AttributeValue("text/plain"),
+                "DocumentUploaded", new AttributeValue().withBOOL(true)));
+        dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
+                "ID", new AttributeValue("3456"),
+                "NhsNumber", new AttributeValue("56789"),
+                "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
+                "ContentType", new AttributeValue("image/jpeg"),
+                "DocumentUploaded", new AttributeValue().withBOOL(false)));
     }
 
     @Test
     void returnsDocumentReferenceResource() throws IOException, InterruptedException {
-        String expectedDocumentReference = getContentFromResource("DocumentReference.json");
+        String expectedDocumentReference = getContentFromResource("retrieve/document-reference.json");
         var documentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/1234"))
                 .GET()
                 .build();
@@ -84,7 +88,7 @@ public class RetrieveDocumentReferenceE2eTest {
         assertThat(documentReferenceResponse.statusCode()).isEqualTo(200);
         assertThat(documentReferenceResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(documentReference)
-                .whenIgnoringPaths("$.content")
+                .whenIgnoringPaths("$.content[*].attachment.url")
                 .isEqualTo(expectedDocumentReference);
 
         String preSignedUrl = JsonPath.<String>read(documentReference, "$.content[0].attachment.url")
@@ -98,7 +102,26 @@ public class RetrieveDocumentReferenceE2eTest {
     }
 
     @Test
+    void excludesContentPropertiesIfTheDocumentHasNotBeenUploaded() throws IOException, InterruptedException {
+        String expectedDocumentReference = getContentFromResource("retrieve/preliminary-document-reference.json");
+        var documentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/3456"))
+                .GET()
+                .build();
+
+        var documentReferenceResponse = newHttpClient().send(documentReferenceRequest, BodyHandlers.ofString(UTF_8));
+
+        var documentReference = documentReferenceResponse.body();
+        assertThat(documentReferenceResponse.statusCode())
+                .isEqualTo(200);
+        assertThat(documentReferenceResponse.headers().firstValue("Content-Type"))
+                .contains("application/fhir+json");
+        assertThatJson(documentReference)
+                .isEqualTo(expectedDocumentReference);
+    }
+
+    @Test
     void returnsErrorWhenNoMatchingDocumentIsFound() throws IOException, InterruptedException {
+        String expectedOutcome = getContentFromResource("retrieve/not-found.json");
         var request = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/does-not-exist"))
                 .GET()
                 .build();
@@ -107,20 +130,7 @@ public class RetrieveDocumentReferenceE2eTest {
 
         assertThat(response.statusCode()).isEqualTo(404);
         assertThat(response.headers().firstValue("Content-Type")).contains("application/fhir+json");
-        assertThatJson(response.body()).isEqualTo("{\n" +
-                "  \"resourceType\": \"OperationOutcome\",\n" +
-                "  \"issue\": [{\n" +
-                "    \"severity\": \"error\",\n" +
-                "    \"code\": \"not-found\",\n" +
-                "    \"details\": {\n" +
-                "      \"coding\": [{\n" +
-                "        \"system\": \"https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1\",\n" +
-                "        \"code\": \"NO_RECORD_FOUND\",\n" +
-                "        \"display\": \"No record found\"\n" +
-                "      }]\n" +
-                "    }\n" +
-                "  }]\n" +
-                "}");
+        assertThatJson(response.body()).isEqualTo(expectedOutcome);
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {

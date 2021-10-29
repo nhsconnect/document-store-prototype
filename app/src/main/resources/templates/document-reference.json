@@ -1,0 +1,12 @@
+{
+  "resourceType": "DocumentReference",
+  "id": "$id$",
+  "subject": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "$nhsNumber$"
+    }
+  },
+  $content$
+  "docStatus": "$docStatus$"
+}

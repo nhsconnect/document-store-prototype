@@ -1,0 +1,8 @@
+"content": [
+  {
+    "attachment": {
+      "contentType": "$contentType$",
+      "url": "$contentUrl$"
+    }
+  }
+],

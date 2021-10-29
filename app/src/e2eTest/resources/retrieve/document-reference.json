@@ -1,19 +1,18 @@
 {
   "resourceType": "DocumentReference",
-  "id": "$id$",
+  "id": "1234",
   "subject": {
     "identifier": {
       "system": "https://fhir.nhs.uk/Id/nhs-number",
-      "value": "$nhsNumber$"
+      "value": "12345"
     }
   },
+  "docStatus": "final",
   "content": [
     {
       "attachment": {
-        "contentType": "$contentType$",
-        "url": "$contentUrl$"
+        "contentType": "text/plain"
       }
     }
-  ],
-  "docStatus": "$docStatus$"
+  ]
 }
