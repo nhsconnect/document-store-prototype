@@ -75,7 +75,7 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - "gocd/task.sh assume-ci-role"
+                      - "gocd/tasks.sh assume-ci-role"
                 - exec:
                     command: dojo
                     arguments:
