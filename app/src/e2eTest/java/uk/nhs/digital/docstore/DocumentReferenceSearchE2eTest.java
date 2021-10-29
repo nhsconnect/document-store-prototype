@@ -115,6 +115,22 @@ public class DocumentReferenceSearchE2eTest {
         assertThat(documentResponse.body()).isEqualTo(S3_VALUE);
     }
 
+    @Test
+    void supportsChainingSearchSyntax() throws IOException, InterruptedException {
+        String expectedSearchResponse = getContentFromResource("NHSNumberSearchResponse.json");
+        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject.identifier=https://fhir.nhs.uk/Id/nhs-number%7C12345"))
+                .GET()
+                .build();
+
+        var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
+
+        assertThat(searchResponse.statusCode()).isEqualTo(200);
+        assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(searchResponse.body())
+                .whenIgnoringPaths("$.meta", "$.entry[*].resource.content[*].attachment.url")
+                .isEqualTo(expectedSearchResponse);
+    }
+
     private String getContentFromResource(String resourcePath) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(resourcePath).getFile());

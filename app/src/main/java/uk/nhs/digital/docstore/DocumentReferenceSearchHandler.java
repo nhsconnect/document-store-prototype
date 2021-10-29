@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,7 +56,9 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     }
 
     private String getNhsNumberFrom(Map<String, String> queryParameters) {
-        String subject = queryParameters.get("subject:identifier");
+        String subject = Optional.ofNullable(queryParameters.get("subject:identifier"))
+                .or(() -> Optional.ofNullable(queryParameters.get("subject.identifier")))
+                .orElseThrow();
         Matcher matcher = SUBJECT_IDENTIFIER_PATTERN.matcher(subject);
         if (matcher.matches()) {
             return matcher.group("identifier");
