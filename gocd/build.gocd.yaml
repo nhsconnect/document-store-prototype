@@ -27,7 +27,7 @@ pipelines:
                 - exec:
                     command: dojo
                     arguments:
-                      - "./gradlew build"
+                      - "./gradlew app:build"
       - deploy:
           clean_workspace: true
           jobs:
