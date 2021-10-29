@@ -44,15 +44,23 @@ can be done in isolation to apply any changes and re-run the tests.
 ### Running test harness
 A subset of the end-to-end tests can be run as tests against any existing document store endpoint
 
+Against AWS
 ```bash
- DOCUMENT_STORE_BASE_URI=<replace with api endpoint> ./gradlew testHarness
+ DOCUMENT_STORE_BASE_URI=<replace with api endpoint> API_AUTH=IAM ./gradlew testHarness:test
 ```
 
-For the prototype setup, run this before to set the AWS credentials needed to sign the API requests
+Against LocalStack
+```bash
+ DOCUMENT_STORE_BASE_URI=<replace with api endpoint> ./gradlew testHarness:test
+```
+
+When running against the AWS deployed API, run this before to set the AWS credentials needed to sign the API requests
 
 ```bash
 eval $(assume-role doc-store)
 ```
+
+When running against localstack the `DOCUMENT_STORE_BASE_URI` is `http://localhost:4566/restapis/<replace with rest api id>/<replace with stage name>/_user_request_/` where both the `rest api id` and `stage name` can be found in terraform output
 
 ### Environment variables
 

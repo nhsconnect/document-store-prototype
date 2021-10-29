@@ -350,3 +350,11 @@ resource "aws_lambda_permission" "s3_permission_for_document_upload_event" {
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.document_store.arn
 }
+
+output "api_gateway_rest_api_id" {
+  value = aws_api_gateway_deployment.api_deploy.rest_api_id
+}
+
+output "api_gateway_rest_api_stage" {
+  value = aws_api_gateway_deployment.api_deploy.stage_name
+}

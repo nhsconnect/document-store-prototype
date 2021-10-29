@@ -8,7 +8,7 @@ public class AuthorizedRequestBuilderFactory {
         public static HttpRequest.Builder newBuilder(URI endpoint, String path, String content) throws URISyntaxException {
             HttpRequest.Builder original = HttpRequest.newBuilder(endpoint.resolve(path));
 
-            boolean isLocalStack = System.getenv("DOCUMENT_STORE_BASE_URI") == null;
+            boolean isLocalStack = System.getenv("API_AUTH") == null;
             if (isLocalStack) {
                return original;
             }
