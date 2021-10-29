@@ -120,8 +120,4 @@ public class DocumentReferenceSearchE2eTest {
         File file = new File(classLoader.getResource(resourcePath).getFile());
         return new String(Files.readAllBytes(file.toPath()));
     }
-
-    // return multiple matches
-    // return link for final objects (maybe check links???)
-    // return error for wrong parameters
 }
