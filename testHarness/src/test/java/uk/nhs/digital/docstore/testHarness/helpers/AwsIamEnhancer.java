@@ -32,9 +32,8 @@ public class AwsIamEnhancer implements AuthorizationEnhancer {
     }
 
     @Override
-    public HttpRequest.Builder enhanceWithAuthorization(HttpRequest.Builder original, URI endpoint, String content) throws URISyntaxException {
+    public HttpRequest.Builder enhanceWithAuthorization(HttpRequest.Builder original, URI endpoint, String resourcePath, String content) throws URISyntaxException {
         HttpRequest httpRequest = original.build();
-        String resourcePath = httpRequest.uri().toString().split(endpoint.toString())[1];
         DefaultRequest<String> awsAuthorization = getAWSAuthorization(endpoint, resourcePath, HttpMethodName.fromValue(httpRequest.method()), content);
         original.header("X-Amz-Date", awsAuthorization.getHeaders().get("x-amz-date"))
                 .header("X-Amz-Security-Token", awsAuthorization.getHeaders().get("x-amz-security-token"))

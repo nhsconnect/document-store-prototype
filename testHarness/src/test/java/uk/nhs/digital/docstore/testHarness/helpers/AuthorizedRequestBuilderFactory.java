@@ -13,6 +13,6 @@ public class AuthorizedRequestBuilderFactory {
                return original;
             }
 
-            return new AwsIamEnhancer().enhanceWithAuthorization(original, endpoint, content);
+            return new AwsIamEnhancer().enhanceWithAuthorization(original, endpoint, path, content);
         }
 }
