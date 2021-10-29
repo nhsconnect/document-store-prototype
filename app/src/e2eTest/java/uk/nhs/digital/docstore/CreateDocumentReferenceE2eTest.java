@@ -31,20 +31,27 @@ public class CreateDocumentReferenceE2eTest {
         return (host != null) ? host : DEFAULT_HOST;
     }
 
+    static class AuthorizedRequestBuilderFactory {
+        public static HttpRequest.Builder newBuilder(URI endpoint, String path, String content) throws URISyntaxException {
+            boolean isLocalStack = System.getenv("DOCUMENT_STORE_BASE_URI") == null;
+            AuthorizationEnhancer authorizationEnhancer = isLocalStack ? new NoAuthEnhancer() : new AwsIamEnhancer();
+            HttpRequest.Builder original = HttpRequest.newBuilder(endpoint.resolve(path));
+            return authorizationEnhancer.enhanceWithAuthorization(original, endpoint, content);
+        }
+    }
+
     @Test
     void returnsCreatedDocumentReference() throws IOException, InterruptedException, URISyntaxException {
-        boolean isLocalStack = System.getenv("DOCUMENT_STORE_BASE_URI") == null;
-        AuthorizationEnhancer authorizationEnhancer = isLocalStack ? new NoAuthEnhancer() : new AwsIamEnhancer();
         URI apiGatewayEndpoint = getBaseUriFromEnv();
 
         String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
         String content = getContentFromResource("CreateDocumentReferenceRequest.json");
-        HttpRequest.Builder original = HttpRequest.newBuilder(apiGatewayEndpoint.resolve("DocumentReference"))
+
+        var createDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newBuilder(apiGatewayEndpoint, "DocumentReference", content)
                 .POST(BodyPublishers.ofString(content))
                 .header("Content-Type", "application/fhir+json")
-                .header("Accept", "application/fhir+json");
-
-        var createDocumentReferenceRequest = authorizationEnhancer.enhanceWithAuthorization(original, apiGatewayEndpoint, content).build();
+                .header("Accept", "application/fhir+json")
+                .build();
 
         var createdDocumentReferenceResponse = newHttpClient().send(createDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
 
@@ -69,10 +76,8 @@ public class CreateDocumentReferenceE2eTest {
         var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
 
-        var retrieveDocumentReferenceRequest = authorizationEnhancer.enhanceWithAuthorization(
-                        HttpRequest.newBuilder(apiGatewayEndpoint.resolve("DocumentReference/" + id)).GET(),
-                        apiGatewayEndpoint,
-                        null)
+        var retrieveDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newBuilder(apiGatewayEndpoint,"DocumentReference/" + id, null )
+                .GET()
                 .build();
 
         var retrievedDocumentReferenceResponse = newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
