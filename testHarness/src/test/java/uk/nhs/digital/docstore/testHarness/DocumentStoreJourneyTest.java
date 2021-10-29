@@ -30,7 +30,9 @@ public class DocumentStoreJourneyTest {
 
     @Test
     void returnsCreatedDocumentReference() throws IOException, InterruptedException, URISyntaxException {
-        URI  apiGatewayEndpoint = URI.create(System.getenv("DOCUMENT_STORE_BASE_URI"));
+        String docStoreUrl = System.getenv("DOCUMENT_STORE_BASE_URI");
+        System.out.println("Doc store url:" + docStoreUrl);
+        URI  apiGatewayEndpoint = URI.create(docStoreUrl);
 
         String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
         String content = getContentFromResource("CreateDocumentReferenceRequest.json");
