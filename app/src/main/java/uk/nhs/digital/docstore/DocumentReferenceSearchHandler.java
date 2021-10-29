@@ -5,12 +5,10 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.DocumentReference;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Reference;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -27,6 +25,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     private static final Pattern SUBJECT_IDENTIFIER_PATTERN = Pattern.compile("^(?:(?<system>.*?)(?<!\\\\)\\|)?(?<identifier>.*)$");
 
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
+    private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
     private final FhirContext fhirContext;
 
     public DocumentReferenceSearchHandler() {
@@ -71,11 +70,21 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     }
 
     private DocumentReference toDocumentReference(DocumentMetadata metadata) {
+        DocumentReference.DocumentReferenceContentComponent contentComponent = null;
+        if (metadata.isDocumentUploaded()) {
+            URL preSignedUrl = documentStore.generatePreSignedUrl(DocumentStore.DocumentDescriptor.from(metadata));
+            contentComponent = new DocumentReference.DocumentReferenceContentComponent()
+                    .setAttachment(new Attachment()
+                            .setContentType(metadata.getContentType())
+                            .setUrl(preSignedUrl.toExternalForm()));
+        }
+
         return (DocumentReference) new DocumentReference()
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
                                 .setSystem("https://fhir.nhs.uk/Id/nhs-number")
                                 .setValue(metadata.getNhsNumber())))
+                .addContent(contentComponent)
                 .setDocStatus(metadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
                 .setId(metadata.getId());
     }

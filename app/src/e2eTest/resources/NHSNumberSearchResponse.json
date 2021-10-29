@@ -14,7 +14,15 @@
             "value": "12345"
           }
         },
-        "docStatus": "final"
+        "docStatus": "final",
+        "content": [
+          {
+            "attachment": {
+              "contentType": "text/plain",
+              "url": "<generated>"
+            }
+          }
+        ]
       }
     },
     {

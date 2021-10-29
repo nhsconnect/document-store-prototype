@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ public class DocumentReferenceSearchE2eTest {
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 4566;
+    private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
     private static final String S3_KEY = "abcd";
     private static final String S3_VALUE = "content";
 
@@ -99,8 +102,17 @@ public class DocumentReferenceSearchE2eTest {
         assertThat(searchResponse.statusCode()).isEqualTo(200);
         assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(searchResponse.body())
-                .whenIgnoringPaths("$.meta")
+                .whenIgnoringPaths("$.meta", "$.entry[*].resource.content[*].attachment.url")
                 .isEqualTo(expectedSearchResponse);
+
+        String preSignedUrl = JsonPath.<String>read(searchResponse.body(), "$.entry[0].resource.content[0].attachment.url")
+                .replace(INTERNAL_DOCKER_HOST, getHost());
+        var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
+                .GET()
+                .timeout(Duration.ofSeconds(2))
+                .build();
+        var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
+        assertThat(documentResponse.body()).isEqualTo(S3_VALUE);
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
@@ -108,4 +120,8 @@ public class DocumentReferenceSearchE2eTest {
         File file = new File(classLoader.getResource(resourcePath).getFile());
         return new String(Files.readAllBytes(file.toPath()));
     }
+
+    // return multiple matches
+    // return link for final objects (maybe check links???)
+    // return error for wrong parameters
 }
