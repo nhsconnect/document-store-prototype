@@ -51,6 +51,16 @@ public class DocumentMetadataStore {
         return items.get(0);
     }
 
+    public List<DocumentMetadata> findByNhsNumber(String nhsNumber) {
+        return mapper.query(
+                DocumentMetadata.class,
+                new DynamoDBQueryExpression<DocumentMetadata>()
+                        .withIndexName("NhsNumberIndex")
+                        .withKeyConditionExpression("NhsNumber = :nhsNumber")
+                        .withExpressionAttributeValues(Map.of(":nhsNumber", new AttributeValue(nhsNumber)))
+                        .withConsistentRead(false));
+    }
+
     public DocumentMetadata save(DocumentMetadata documentMetadata) {
         if (documentMetadata.getId() == null) {
             documentMetadata.setId(UUID.randomUUID().toString());
