@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.testHarness;
 
 import com.jayway.jsonpath.JsonPath;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.testHarness.helpers.AuthorizedRequestBuilderFactory;
 
@@ -47,7 +48,6 @@ public class DocumentStoreJourneyTest {
         var createdDocumentReferenceResponse = newHttpClient().send(createDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
 
         var documentReference = createdDocumentReferenceResponse.body();
-        System.out.println(documentReference);
         String id = JsonPath.read(documentReference, "$.id");
         assertThat(createdDocumentReferenceResponse.statusCode())
                 .isEqualTo(201);
@@ -69,10 +69,11 @@ public class DocumentStoreJourneyTest {
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
 
 
+        Awaitility.setDefaultTimeout(20, TimeUnit.SECONDS);
         with()
-                .pollDelay(1, TimeUnit.SECONDS)
+                .pollDelay(3, TimeUnit.SECONDS)
                 .and()
-                .pollInterval(2, TimeUnit.SECONDS)
+                .pollInterval(3, TimeUnit.SECONDS)
                 .await()
                 .until(documentIsFinal(docStoreUrl, id));
 
