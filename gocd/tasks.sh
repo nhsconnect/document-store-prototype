@@ -54,7 +54,6 @@ extract-api-url)
 export-aws-creds)
   assume_ci_role
   export_aws_credentials
-  ls -lsa
   ;;
 run-test-harness)
   source ./temp_aws_credentials.sh
