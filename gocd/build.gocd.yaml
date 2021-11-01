@@ -75,7 +75,7 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - "gocd/tasks.sh export_aws_creds"
+                      - "gocd/tasks.sh export-aws-creds"
                 - exec:
                     command: ls
                 - exec:
