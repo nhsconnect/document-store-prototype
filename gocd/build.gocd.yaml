@@ -75,8 +75,8 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - "gocd/tasks.sh assume-ci-role"
+                      - "gocd/tasks.sh export_aws_creds"
                 - exec:
                     command: dojo
                     arguments:
-                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) ./gradlew testHarness:test"
+                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) gocd/tasks.sh run-test-harness"

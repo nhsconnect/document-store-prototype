@@ -21,6 +21,16 @@ function assume_ci_role() {
   export AWS_SESSION_TOKEN="${sts[2]}"
 }
 
+function export_aws_credentials() {
+  export_aws_access_key="export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
+  export_aws_secret_access_key="export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
+  export_aws_session_token="export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN"
+  echo "${export_aws_access_key}
+${export_aws_secret_access_key}
+${export_aws_session_token}" > temp_aws_credentials.sh
+chmod +x temp_aws_credentials.sh
+}
+
 readonly command="$1"
 case "${command}" in
 plan-deploy)
@@ -41,6 +51,13 @@ extract-api-url)
   terraform init
   terraform output api_gateway_url > ../api_gateway_url_artifact
   ;;
-assume-ci-role)
+export-aws-creds)
   assume_ci_role
+  export_aws_credentials
+  ;;
+run-test-harness)
+  source ./temp_aws_credentials.sh
+  rm temp_aws_credentials.sh
+  ./gradlew testHarness:test
+  ;;
 esac
