@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import static java.util.stream.Collectors.toList;
 
 public class DocumentReferenceSearchService {
-    private static final Pattern SUBJECT_IDENTIFIER_PATTERN = Pattern.compile("^(?:(?<system>.*?)(?<!\\\\)\\|)?(?<identifier>.*)$");
+    private static final Pattern SUBJECT_IDENTIFIER_PATTERN = Pattern.compile("^(?<systempart>(?<system>.*?)(?<!\\\\)\\|)?(?<identifier>.*)$");
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
 
     private final DocumentMetadataStore metadataStore;
@@ -53,7 +53,7 @@ public class DocumentReferenceSearchService {
         if (!matcher.matches() || matcher.group("identifier").isBlank()) {
             throw new InvalidSubjectIdentifierException(subject);
         }
-        if (!NHS_NUMBER_SYSTEM_ID.equals(matcher.group("system"))) {
+        if (matcher.group("systempart") != null && !NHS_NUMBER_SYSTEM_ID.equals(matcher.group("system"))) {
             throw new UnrecognisedSubjectIdentifierSystemException(matcher.group("system"));
         }
 

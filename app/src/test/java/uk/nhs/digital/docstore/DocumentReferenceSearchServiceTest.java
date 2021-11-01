@@ -48,6 +48,30 @@ class DocumentReferenceSearchServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
+            NHS_NUMBER_SYSTEM_ID + "|123456789",
+            "123456789",
+    })
+    void supportsDifferentIdentifierSyntaxes(String identifier) throws MalformedURLException {
+        String nhsNumber = "123456789";
+        var metadataTemplate = theMetadata()
+                .withNhsNumber(nhsNumber)
+                .withDocumentUploaded(true);
+        when(metadataStore.findByNhsNumber(nhsNumber))
+                .thenReturn(List.of(metadataTemplate.build()));
+        when(documentStore.generatePreSignedUrl(any()))
+                .thenReturn(new URL("https://example.org/"));
+
+        List<Document> documents = searchService.findByParameters(
+                Map.of(SUBJECT_ID_PARAM_NAME, identifier));
+
+        assertThat(documents)
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(new Document(metadataTemplate.build(),
+                        new URL("https://example.org/")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
             SUBJECT_ID_PARAM_NAME,
             "subject.identifier",
     })
