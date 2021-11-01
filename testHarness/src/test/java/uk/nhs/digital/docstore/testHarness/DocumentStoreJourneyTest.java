@@ -47,6 +47,7 @@ public class DocumentStoreJourneyTest {
         var createdDocumentReferenceResponse = newHttpClient().send(createDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
 
         var documentReference = createdDocumentReferenceResponse.body();
+        System.out.println(documentReference);
         String id = JsonPath.read(documentReference, "$.id");
         assertThat(createdDocumentReferenceResponse.statusCode())
                 .isEqualTo(201);
