@@ -65,4 +65,15 @@ public class DocumentMetadata {
         documentMetadata.setDocumentUploaded(false);
         return documentMetadata;
     }
+
+    @Override
+    public String toString() {
+        return "DocumentMetadata{" +
+                "id='" + id + '\'' +
+                ", nhsNumber='" + nhsNumber + '\'' +
+                ", location='" + location + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", documentUploaded=" + documentUploaded +
+                '}';
+    }
 }
