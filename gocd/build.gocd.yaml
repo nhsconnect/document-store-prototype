@@ -77,6 +77,8 @@ pipelines:
                       - Dojofile-infra
                       - "gocd/tasks.sh export_aws_creds"
                 - exec:
+                    command: ls
+                - exec:
                     command: dojo
                     arguments:
                       - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) gocd/tasks.sh run-test-harness"
