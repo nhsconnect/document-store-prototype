@@ -10,13 +10,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.with;
 
 public class DocumentStoreJourneyTest {
     private static final String DEFAULT_HOST = "localhost";
@@ -62,25 +67,39 @@ public class DocumentStoreJourneyTest {
         var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
 
-        var retrieveDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newBuilder(docStoreUrl,"DocumentReference/" + id,"GET", null )
+
+        with()
+                .pollDelay(1, TimeUnit.SECONDS)
+                .and()
+                .pollInterval(2, TimeUnit.SECONDS)
+                .await()
+                .until(documentIsFinal(docStoreUrl, id));
+
+        var retrievedDocumentReferenceResponse = getDocumentRessponse(docStoreUrl, id);
+        assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
+
+        String preSignedUrl = JsonPath.<String>read(retrievedDocumentReferenceResponse.body(), "$.content[0].attachment.url")
+                .replace(INTERNAL_DOCKER_HOST, getHost());
+        var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
+                .GET()
+                .timeout(Duration.ofSeconds(2))
+                .build();
+        var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
+        assertThat(documentResponse.body()).isEqualTo("hello");
+    }
+
+    private Callable<Boolean> documentIsFinal(String docStoreUrl, String id) {
+        return () -> {
+            HttpResponse<String> retrievedDocumentReferenceResponse = getDocumentRessponse(docStoreUrl, id);
+            return JsonPath.read(retrievedDocumentReferenceResponse.body(), "$.docStatus").equals("final");
+            };
+    }
+
+    private HttpResponse<String> getDocumentRessponse(String docStoreUrl, String id) throws URISyntaxException, IOException, InterruptedException {
+        var retrieveDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newBuilder(docStoreUrl, "DocumentReference/" + id, "GET", null)
                 .build();
 
-        var retrievedDocumentReferenceResponse = newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
-        assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
-// temporarly commenting out as there it is an async behaviour
-//        assertThatJson(retrievedDocumentReferenceResponse.body())
-//                .inPath("$.docStatus")
-//                .isEqualTo("final");
-
-//
-//        String preSignedUrl = JsonPath.<String>read(retrievedDocumentReferenceResponse.body(), "$.content[0].attachment.url")
-//                .replace(INTERNAL_DOCKER_HOST, getHost());
-//        var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
-//                .GET()
-//                .timeout(Duration.ofSeconds(2))
-//                .build();
-//        var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
-//        assertThat(documentResponse.body()).isEqualTo("hello");
+        return newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
