@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Extension;
 
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,13 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         var jsonParser = fhirContext.newJsonParser();
 
-        List<Document> documents = searchService.findByParameters(requestEvent.getQueryStringParameters());
-        Bundle bundle = bundleMapper.toBundle(documents);
+        Bundle bundle;
+        try {
+            List<Document> documents = searchService.findByParameters(requestEvent.getQueryStringParameters());
+            bundle = bundleMapper.toBundle(documents);
+        } catch (Exception e) {
+            return transform(e, jsonParser);
+        }
 
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
