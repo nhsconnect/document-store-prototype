@@ -5,21 +5,25 @@ import java.net.URISyntaxException;
 import java.net.http.HttpRequest;
 
 public class AuthorizedRequestBuilderFactory {
-        public static HttpRequest.Builder newBuilder(String endpoint, String path, String method, String content) throws URISyntaxException {
-            HttpRequest.Builder original = HttpRequest.newBuilder(new URI(endpoint+"/"+path));
-            if (method.equals("GET")) {
-                original.GET();
-            }
+    public static HttpRequest.Builder newPostBuilder(String endpoint, String path, String content) throws URISyntaxException {
+        HttpRequest.Builder original = HttpRequest.newBuilder(new URI(endpoint + "/" + path));
+        original.POST(HttpRequest.BodyPublishers.ofString(content));
+        return addAuth(original, endpoint, path, content);
+    }
 
-            if (method.equals("POST")) {
-                original.POST(HttpRequest.BodyPublishers.ofString(content));
-            }
+    public static HttpRequest.Builder newGetBuilder(String endpoint, String path) throws URISyntaxException {
+        HttpRequest.Builder original = HttpRequest.newBuilder(new URI(endpoint + "/" + path));
+        original.GET();
+        return addAuth(original, endpoint, path, null);
+    }
 
-            boolean isLocalStack = System.getenv("API_AUTH") == null;
-            if (isLocalStack) {
-               return original;
-            }
+    public static HttpRequest.Builder addAuth(HttpRequest.Builder original, String endpoint, String path, String content) throws URISyntaxException {
 
-            return new AwsIamEnhancer().enhanceWithAuthorization(original, new URI(endpoint), path, content);
+        boolean isLocalStack = System.getenv("API_AUTH") == null;
+        if (isLocalStack) {
+            return original;
         }
+
+        return new AwsIamEnhancer().enhanceWithAuthorization(original, new URI(endpoint), path, content);
+    }
 }

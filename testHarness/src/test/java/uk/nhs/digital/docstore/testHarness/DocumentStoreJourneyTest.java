@@ -1,7 +1,6 @@
 package uk.nhs.digital.docstore.testHarness;
 
 import com.jayway.jsonpath.JsonPath;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.testHarness.helpers.AuthorizedRequestBuilderFactory;
 
@@ -22,7 +21,7 @@ import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.with;
+import static org.awaitility.Awaitility.waitAtMost;
 
 public class DocumentStoreJourneyTest {
     private static final String DEFAULT_HOST = "localhost";
@@ -40,7 +39,7 @@ public class DocumentStoreJourneyTest {
         String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
         String content = getContentFromResource("CreateDocumentReferenceRequest.json");
 
-        var createDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newBuilder(docStoreUrl, "DocumentReference", "POST", content)
+        var createDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newPostBuilder(docStoreUrl, "DocumentReference", content)
                 .header("Content-Type", "application/fhir+json")
                 .header("Accept", "application/fhir+json")
                 .build();
@@ -69,15 +68,12 @@ public class DocumentStoreJourneyTest {
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
 
 
-        Awaitility.setDefaultTimeout(20, TimeUnit.SECONDS);
-        with()
-                .pollDelay(3, TimeUnit.SECONDS)
-                .and()
-                .pollInterval(3, TimeUnit.SECONDS)
-                .await()
-                .until(documentIsFinal(docStoreUrl, id));
+        waitAtMost(20, TimeUnit.SECONDS)
+                        .pollDelay(2, TimeUnit.SECONDS)
+                        .pollInterval(3, TimeUnit.SECONDS)
+                        .until(documentIsFinal(docStoreUrl, id));
 
-        var retrievedDocumentReferenceResponse = getDocumentRessponse(docStoreUrl, id);
+        var retrievedDocumentReferenceResponse = getDocumentResponse(docStoreUrl, id);
         assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
 
         String preSignedUrl = JsonPath.<String>read(retrievedDocumentReferenceResponse.body(), "$.content[0].attachment.url")
@@ -92,14 +88,13 @@ public class DocumentStoreJourneyTest {
 
     private Callable<Boolean> documentIsFinal(String docStoreUrl, String id) {
         return () -> {
-            HttpResponse<String> retrievedDocumentReferenceResponse = getDocumentRessponse(docStoreUrl, id);
+            HttpResponse<String> retrievedDocumentReferenceResponse = getDocumentResponse(docStoreUrl, id);
             return JsonPath.read(retrievedDocumentReferenceResponse.body(), "$.docStatus").equals("final");
             };
     }
 
-    private HttpResponse<String> getDocumentRessponse(String docStoreUrl, String id) throws URISyntaxException, IOException, InterruptedException {
-        var retrieveDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newBuilder(docStoreUrl, "DocumentReference/" + id, "GET", null)
-                .build();
+    private HttpResponse<String> getDocumentResponse(String docStoreUrl, String id) throws URISyntaxException, IOException, InterruptedException {
+        var retrieveDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newGetBuilder(docStoreUrl, "DocumentReference/" + id).build();
 
         return newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
     }
