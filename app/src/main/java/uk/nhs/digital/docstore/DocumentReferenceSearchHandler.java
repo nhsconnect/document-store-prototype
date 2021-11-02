@@ -30,9 +30,15 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         var jsonParser = fhirContext.newJsonParser();
+        var errorResponseGenerator = new ErrorResponseGenerator();
 
-        List<Document> documents = searchService.findByParameters(requestEvent.getQueryStringParameters());
-        Bundle bundle = bundleMapper.toBundle(documents);
+        Bundle bundle;
+        try {
+            List<Document> documents = searchService.findByParameters(requestEvent.getQueryStringParameters());
+            bundle = bundleMapper.toBundle(documents);
+        } catch (Exception e) {
+            return errorResponseGenerator.errorResponse(e, jsonParser);
+        }
 
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)

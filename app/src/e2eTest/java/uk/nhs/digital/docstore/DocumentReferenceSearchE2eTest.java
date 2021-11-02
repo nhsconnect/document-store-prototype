@@ -76,7 +76,7 @@ public class DocumentReferenceSearchE2eTest {
 
     @Test
     void returnsEmptyBundleWhenNoMatchesFound() throws IOException, InterruptedException {
-        String expectedEmptySearchResponse = getContentFromResource("EmptyNHSNumberSearchResponse.json");
+        String expectedEmptySearchResponse = getContentFromResource("search/empty-nhs-number-response.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7Cdoesnt-exist"))
                 .GET()
                 .build();
@@ -92,7 +92,7 @@ public class DocumentReferenceSearchE2eTest {
 
     @Test
     void returnsMatchingResults() throws IOException, InterruptedException {
-        String expectedSearchResponse = getContentFromResource("NHSNumberSearchResponse.json");
+        String expectedSearchResponse = getContentFromResource("search/nhs-number-response.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C12345"))
                 .GET()
                 .build();
@@ -115,9 +115,28 @@ public class DocumentReferenceSearchE2eTest {
         assertThat(documentResponse.body()).isEqualTo(S3_VALUE);
     }
 
+    @Test
+    void returnsBadRequestIfSearchParametersAreInvalid() throws IOException, InterruptedException {
+        String expectedErrorResponse = getContentFromResource("search/unrecognised-subject-identifier.json");
+        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject.identifier=unknown-system%7Cvalue"))
+                .GET()
+                .build();
+
+        var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
+
+        assertThat(searchResponse.statusCode())
+                .isEqualTo(400);
+        assertThat(searchResponse.headers().firstValue("Content-Type"))
+                .contains("application/fhir+json");
+        assertThatJson(searchResponse.body())
+                .isEqualTo(expectedErrorResponse);
+    }
+
     private String getContentFromResource(String resourcePath) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(resourcePath).getFile());
         return new String(Files.readAllBytes(file.toPath()));
     }
 }
+
+//TODO: invalid parameter code + searchexception + runtimeexception + extract repeated code
