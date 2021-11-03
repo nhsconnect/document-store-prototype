@@ -37,7 +37,8 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
 
         Bundle bundle;
         try {
-            List<Document> documents = searchService.findByParameters(requestEvent.getQueryStringParameters());
+            Map<String, String> searchParameters = (requestEvent.getQueryStringParameters() == null ? Map.of() : requestEvent.getQueryStringParameters());
+            List<Document> documents = searchService.findByParameters(searchParameters);
             bundle = bundleMapper.toBundle(documents);
         } catch (Exception e) {
             logger.error("Unable to perform search", e);
