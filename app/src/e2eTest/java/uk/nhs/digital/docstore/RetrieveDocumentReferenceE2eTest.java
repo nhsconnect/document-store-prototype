@@ -66,7 +66,8 @@ public class RetrieveDocumentReferenceE2eTest {
                 "NhsNumber", new AttributeValue("12345"),
                 "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
                 "ContentType", new AttributeValue("text/plain"),
-                "DocumentUploaded", new AttributeValue().withBOOL(true)));
+                "DocumentUploaded", new AttributeValue().withBOOL(true),
+                "Description", new AttributeValue("uploaded document")));
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("3456"),
                 "NhsNumber", new AttributeValue("56789"),

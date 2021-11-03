@@ -47,6 +47,7 @@ public class BundleMapper {
                                 .setValue(document.getNhsNumber())))
                 .addContent(contentComponent)
                 .setDocStatus(document.isUploaded() ? FINAL : PRELIMINARY)
+                .setDescription(document.getDescription())
                 .setId(document.getReferenceId());
     }
 }

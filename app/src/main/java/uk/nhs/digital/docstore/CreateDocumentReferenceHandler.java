@@ -55,6 +55,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                                 .setUrl(documentDescriptorAndURL.getDocumentUrl())
                                 .setContentType(savedDocumentMetadata.getContentType())))
                 .setDocStatus(savedDocumentMetadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
+                .setDescription(savedDocumentMetadata.getDescription())
                 .setId(savedDocumentMetadata.getId());
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
 

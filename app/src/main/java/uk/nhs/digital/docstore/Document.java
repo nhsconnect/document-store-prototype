@@ -31,6 +31,10 @@ public class Document {
         return metadata.isDocumentUploaded();
     }
 
+    public String getDescription() {
+        return metadata.getDescription();
+    }
+
     @Override
     public String toString() {
         return "Document{" +

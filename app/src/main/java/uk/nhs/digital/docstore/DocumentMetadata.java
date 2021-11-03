@@ -11,6 +11,7 @@ public class DocumentMetadata {
     private String location;
     private String contentType;
     private Boolean documentUploaded;
+    private String description;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -57,12 +58,22 @@ public class DocumentMetadata {
         this.documentUploaded = documentUploaded;
     }
 
+    @DynamoDBAttribute(attributeName = "Description")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public static DocumentMetadata from(DocumentReference reference, DocumentStore.DocumentDescriptor documentDescriptor) {
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setNhsNumber(reference.getSubject().getIdentifier().getValue());
         documentMetadata.setContentType(reference.getContent().get(0).getAttachment().getContentType());
         documentMetadata.setLocation(documentDescriptor.toLocation());
         documentMetadata.setDocumentUploaded(false);
+        documentMetadata.setDescription(reference.getDescription());
         return documentMetadata;
     }
 
@@ -74,6 +85,7 @@ public class DocumentMetadata {
                 ", location='" + location + '\'' +
                 ", contentType='" + contentType + '\'' +
                 ", documentUploaded=" + documentUploaded +
+                ", description='" + description + '\'' +
                 '}';
     }
 }
