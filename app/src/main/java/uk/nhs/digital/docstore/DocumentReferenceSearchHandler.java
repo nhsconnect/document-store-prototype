@@ -6,6 +6,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.hl7.fhir.r4.model.Bundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING
 
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    private static final Logger logger = LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
     private final BundleMapper bundleMapper = new BundleMapper();
     private final DocumentReferenceSearchService searchService;
     private final FhirContext fhirContext;
@@ -37,6 +40,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
             List<Document> documents = searchService.findByParameters(requestEvent.getQueryStringParameters());
             bundle = bundleMapper.toBundle(documents);
         } catch (Exception e) {
+            logger.error("Unable to perform search", e);
             return errorResponseGenerator.errorResponse(e, jsonParser);
         }
 
