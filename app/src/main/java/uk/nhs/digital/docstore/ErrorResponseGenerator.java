@@ -13,7 +13,6 @@ import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.CODEINVALID;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.EXCEPTION;
 
 public class ErrorResponseGenerator {
-
     public APIGatewayProxyResponseEvent errorResponse(Exception e, IParser jsonParser) {
         int statusCode = 500;
         OperationOutcome.IssueType issueType = EXCEPTION;
@@ -35,6 +34,11 @@ public class ErrorResponseGenerator {
             issueType = CODEINVALID;
             errorCode = "INVALID_PARAMETER";
             errorDisplay = "Invalid parameter";
+        } else if (e instanceof UnrecognisedCodingSystemException) {
+            statusCode = 400;
+            issueType = CODEINVALID;
+            errorCode = "INVALID_CODE_SYSTEM";
+            errorDisplay = "Invalid code system";
         }
 
         return new APIGatewayProxyResponseEvent()

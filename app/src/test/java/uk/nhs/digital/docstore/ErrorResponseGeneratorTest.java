@@ -64,6 +64,20 @@ public class ErrorResponseGeneratorTest {
     }
 
     @Test
+    void returnsBadRequestIfDocumentTypeCodingSystemIsInvalid() throws IOException {
+        String expectedErrorResponse = getContentFromResource("create/unsupported-coding-system-response.json");
+
+        var createResponse = errorResponseGenerator.errorResponse(new UnrecognisedCodingSystemException("coding-system"), jsonParser);
+
+        assertThat(createResponse.getStatusCode())
+                .isEqualTo(400);
+        assertThat(createResponse.getHeaders().get("Content-Type"))
+                .isEqualTo("application/fhir+json");
+        assertThatJson(createResponse.getBody())
+                .isEqualTo(expectedErrorResponse);
+    }
+
+    @Test
     void returnInternalServerErrorForOtherErrors() throws IOException {
         String expectedErrorResponse = getContentFromResource("search/internal-server-error-response.json");
 

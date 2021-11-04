@@ -9,9 +9,9 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptorAndURL;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
@@ -26,6 +26,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
 
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
     private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
+    private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final FhirContext fhirContext;
 
     public CreateDocumentReferenceHandler() {
@@ -38,12 +39,19 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
-        var inputDocumentReference = jsonParser.parseResource(NHSDocumentReference.class, input.getBody());
+        DocumentMetadata savedDocumentMetadata;
+        DocumentDescriptorAndURL documentDescriptorAndURL;
+        try {
+            var inputDocumentReference = jsonParser.parseResource(NHSDocumentReference.class, input.getBody());
+            validateDocumentReference(inputDocumentReference);
 
-        logger.debug("Saving DocumentReference to DynamoDB");
-        var documentDescriptorAndURL = documentStore.generateDocumentDescriptorAndURL();
-        var documentMetadata = DocumentMetadata.from(inputDocumentReference, documentDescriptorAndURL.getDocumentDescriptor());
-        var savedDocumentMetadata = metadataStore.save(documentMetadata);
+            logger.debug("Saving DocumentReference to DynamoDB");
+            documentDescriptorAndURL = documentStore.generateDocumentDescriptorAndURL();
+            var documentMetadata = DocumentMetadata.from(inputDocumentReference, documentDescriptorAndURL.getDocumentDescriptor());
+            savedDocumentMetadata = metadataStore.save(documentMetadata);
+        } catch (Exception e) {
+            return errorResponseGenerator.errorResponse(e, jsonParser);
+        }
 
         logger.debug("Generating response body");
         var type = new CodeableConcept()
@@ -77,5 +85,14 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                         "Content-Type", "application/fhir+json",
                         "Location", "DocumentReference/" + savedDocumentMetadata.getId()))
                 .withBody(resourceAsJson);
+    }
+
+    private void validateDocumentReference(NHSDocumentReference documentReference) {
+        CodeableConcept documentType = documentReference.getType();
+        for (Coding coding : documentType.getCoding()) {
+            if (!DOCUMENT_TYPE_CODING_SYSTEM.equals(coding.getSystem())) {
+                throw new UnrecognisedCodingSystemException(coding.getSystem());
+            }
+        }
     }
 }

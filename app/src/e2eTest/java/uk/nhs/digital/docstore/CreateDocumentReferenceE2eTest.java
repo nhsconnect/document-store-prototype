@@ -65,9 +65,9 @@ public class CreateDocumentReferenceE2eTest {
 
     @Test
     void returnsCreatedDocumentReference() throws IOException, InterruptedException {
-        String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
+        String expectedDocumentReference = getContentFromResource("create/CreatedDocumentReference.json");
         var createDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference"))
-                .POST(BodyPublishers.ofString(getContentFromResource("CreateDocumentReferenceRequest.json")))
+                .POST(BodyPublishers.ofString(getContentFromResource("create/CreateDocumentReferenceRequest.json")))
                 .header("Content-Type", "application/fhir+json")
                 .header("Accept", "application/fhir+json")
                 .build();
@@ -116,6 +116,25 @@ public class CreateDocumentReferenceE2eTest {
                 .build();
         var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
         assertThat(documentResponse.body()).isEqualTo("hello");
+    }
+
+    @Test
+    void returnsBadRequestIfCodingSystemIsNotSupported() throws IOException, InterruptedException {
+        String expectedErrorResponse = getContentFromResource("create/unsupported-coding-system-response.json");
+        var createRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference"))
+                .POST(BodyPublishers.ofString(getContentFromResource("create/unsupported-coding-system-request.json")))
+                .header("Content-Type", "application/fhir+json")
+                .header("Accept", "application/fhir+json")
+                .build();
+
+        var errorResponse = newHttpClient().send(createRequest, BodyHandlers.ofString(UTF_8));
+
+        assertThat(errorResponse.statusCode())
+                .isEqualTo(400);
+        assertThat(errorResponse.headers().firstValue("Content-Type"))
+                .contains("application/fhir+json");
+        assertThatJson(errorResponse.body())
+                .isEqualTo(expectedErrorResponse);
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
