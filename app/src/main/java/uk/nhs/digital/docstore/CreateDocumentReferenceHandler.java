@@ -6,10 +6,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import org.hl7.fhir.r4.model.Attachment;
-import org.hl7.fhir.r4.model.DocumentReference;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +34,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
-        var inputDocumentReference = jsonParser.parseResource(DocumentReference.class, input.getBody());
+        var inputDocumentReference = jsonParser.parseResource(NHSDocumentReference.class, input.getBody());
 
         logger.debug("Saving DocumentReference to DynamoDB");
         var documentDescriptorAndURL = documentStore.generateDocumentDescriptorAndURL();
@@ -45,12 +42,13 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
         var savedDocumentMetadata = metadataStore.save(documentMetadata);
 
         logger.debug("Generating response body");
-        var resource = new DocumentReference()
+        var resource = new NHSDocumentReference()
+                .setCreated(new DateTimeType(savedDocumentMetadata.getCreated()))
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
                                 .setSystem("https://fhir.nhs.uk/Id/nhs-number")
                                 .setValue(savedDocumentMetadata.getNhsNumber())))
-                .addContent(new DocumentReference.DocumentReferenceContentComponent()
+                .addContent(new NHSDocumentReference.DocumentReferenceContentComponent()
                         .setAttachment(new Attachment()
                                 .setUrl(documentDescriptorAndURL.getDocumentUrl())
                                 .setContentType(savedDocumentMetadata.getContentType())))

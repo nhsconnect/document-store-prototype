@@ -66,7 +66,8 @@ public class DocumentReferenceSearchE2eTest {
                 "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
                 "ContentType", new AttributeValue("text/plain"),
                 "DocumentUploaded", new AttributeValue().withBOOL(true),
-                "Description", new AttributeValue("uploaded document")));
+                "Description", new AttributeValue("uploaded document"),
+                "Created", new AttributeValue("2021-11-04T15:57:30Z")));
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("2345"),
                 "NhsNumber", new AttributeValue("12345"),
@@ -103,7 +104,7 @@ public class DocumentReferenceSearchE2eTest {
         assertThat(searchResponse.statusCode()).isEqualTo(200);
         assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(searchResponse.body())
-                .whenIgnoringPaths("$.meta", "$.entry[*].resource.content[*].attachment.url")
+                .whenIgnoringPaths("$.meta", "$.entry[*].resource.content[*].attachment.url", "$.entry[*].resource.meta")
                 .isEqualTo(expectedSearchResponse);
 
         String preSignedUrl = JsonPath.<String>read(searchResponse.body(), "$.entry[0].resource.content[0].attachment.url")

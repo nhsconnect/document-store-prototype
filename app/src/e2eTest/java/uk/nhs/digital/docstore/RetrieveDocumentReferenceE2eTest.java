@@ -67,7 +67,8 @@ public class RetrieveDocumentReferenceE2eTest {
                 "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
                 "ContentType", new AttributeValue("text/plain"),
                 "DocumentUploaded", new AttributeValue().withBOOL(true),
-                "Description", new AttributeValue("uploaded document")));
+                "Description", new AttributeValue("uploaded document"),
+                "Created", new AttributeValue("2021-11-04T15:57:30Z")));
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("3456"),
                 "NhsNumber", new AttributeValue("56789"),
@@ -89,7 +90,7 @@ public class RetrieveDocumentReferenceE2eTest {
         assertThat(documentReferenceResponse.statusCode()).isEqualTo(200);
         assertThat(documentReferenceResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(documentReference)
-                .whenIgnoringPaths("$.content[*].attachment.url")
+                .whenIgnoringPaths("$.content[*].attachment.url", "$.meta")
                 .isEqualTo(expectedDocumentReference);
 
         String preSignedUrl = JsonPath.<String>read(documentReference, "$.content[0].attachment.url")
@@ -117,6 +118,7 @@ public class RetrieveDocumentReferenceE2eTest {
         assertThat(documentReferenceResponse.headers().firstValue("Content-Type"))
                 .contains("application/fhir+json");
         assertThatJson(documentReference)
+                .whenIgnoringPaths("$.meta")
                 .isEqualTo(expectedDocumentReference);
     }
 
@@ -131,7 +133,9 @@ public class RetrieveDocumentReferenceE2eTest {
 
         assertThat(response.statusCode()).isEqualTo(404);
         assertThat(response.headers().firstValue("Content-Type")).contains("application/fhir+json");
-        assertThatJson(response.body()).isEqualTo(expectedOutcome);
+        assertThatJson(response.body())
+                .whenIgnoringPaths("$.meta")
+                .isEqualTo(expectedOutcome);
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {

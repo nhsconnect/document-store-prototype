@@ -40,7 +40,8 @@ public class BundleMapper {
                             .setUrl(document.getPreSignedUrl().toExternalForm()));
         }
 
-        return (DocumentReference) new DocumentReference()
+        return (DocumentReference) new NHSDocumentReference()
+                .setCreated(new DateTimeType(document.getCreated()))
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
                                 .setSystem(NHS_NUMBER_SYSTEM_ID)

@@ -6,14 +6,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import org.hl7.fhir.r4.model.Attachment;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DocumentReference;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.OperationOutcome;
-import org.hl7.fhir.r4.model.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
@@ -64,7 +58,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         }
 
         DocumentReferenceContentComponent contentComponent = null;
-        URL preSignedUrl = null;
+        URL preSignedUrl;
         if (metadata.isDocumentUploaded()) {
             logger.debug("Retrieved the requested object. Creating the pre-signed URL");
             preSignedUrl = documentStore.generatePreSignedUrl(DocumentDescriptor.from(metadata));
@@ -77,7 +71,8 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         }
 
         logger.debug("About to transform response into JSON");
-        var resource = new DocumentReference()
+        var resource = new NHSDocumentReference()
+                .setCreated(new DateTimeType(metadata.getCreated()))
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
                                 .setSystem("https://fhir.nhs.uk/Id/nhs-number")

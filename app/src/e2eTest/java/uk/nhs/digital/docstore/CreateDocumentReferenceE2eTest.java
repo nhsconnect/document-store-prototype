@@ -83,7 +83,7 @@ public class CreateDocumentReferenceE2eTest {
         assertThat(createdDocumentReferenceResponse.headers().firstValue("Location"))
                 .hasValue("DocumentReference/" + id);
         assertThatJson(documentReference)
-                .whenIgnoringPaths("$.id", "$.content[*].attachment.url")
+                .whenIgnoringPaths("$.id", "$.content[*].attachment.url", "$.meta")
                 .isEqualTo(expectedDocumentReference);
 
         String documentUploadURL = JsonPath.<String>read(documentReference, "$.content[0].attachment.url")

@@ -35,6 +35,10 @@ public class Document {
         return metadata.getDescription();
     }
 
+    public String getCreated() {
+        return metadata.getCreated();
+    }
+
     @Override
     public String toString() {
         return "Document{" +

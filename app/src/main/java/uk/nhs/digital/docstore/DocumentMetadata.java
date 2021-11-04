@@ -1,7 +1,11 @@
 package uk.nhs.digital.docstore;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DocumentReference;
+import org.joda.time.DateTime;
+
+import java.time.OffsetDateTime;
 
 @DynamoDBTable(tableName = "DocumentReferenceMetadata")
 @SuppressWarnings("unused")
@@ -12,6 +16,7 @@ public class DocumentMetadata {
     private String contentType;
     private Boolean documentUploaded;
     private String description;
+    private String created;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -67,13 +72,23 @@ public class DocumentMetadata {
         this.description = description;
     }
 
-    public static DocumentMetadata from(DocumentReference reference, DocumentStore.DocumentDescriptor documentDescriptor) {
+    @DynamoDBAttribute(attributeName = "Created")
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    public static DocumentMetadata from(NHSDocumentReference reference, DocumentStore.DocumentDescriptor documentDescriptor) {
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setNhsNumber(reference.getSubject().getIdentifier().getValue());
         documentMetadata.setContentType(reference.getContent().get(0).getAttachment().getContentType());
         documentMetadata.setLocation(documentDescriptor.toLocation());
         documentMetadata.setDocumentUploaded(false);
         documentMetadata.setDescription(reference.getDescription());
+        documentMetadata.setCreated(reference.getCreated().asStringValue());
         return documentMetadata;
     }
 
