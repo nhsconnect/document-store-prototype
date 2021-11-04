@@ -65,6 +65,10 @@ pipelines:
             runTestHarness:
               environment_variables:
                 API_AUTH: IAM
+              artifacts:
+                - test:
+                    source: testHarness/build/test-results
+                    destination: test-reports
               tasks:
                 - fetch:
                     stage: deploy
