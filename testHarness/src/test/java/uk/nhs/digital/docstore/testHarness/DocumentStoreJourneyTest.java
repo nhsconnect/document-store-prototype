@@ -70,8 +70,7 @@ public class DocumentStoreJourneyTest {
         var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
 
-
-        waitAtMost(20, TimeUnit.SECONDS)
+        waitAtMost(30, TimeUnit.SECONDS)
                 .pollDelay(2, TimeUnit.SECONDS)
                 .pollInterval(3, TimeUnit.SECONDS)
                 .until(documentIsFinal(docStoreUrl, id));
