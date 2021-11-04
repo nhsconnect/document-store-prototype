@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
@@ -19,6 +21,8 @@ import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRE
 public class CreateDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger logger
             = LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
+    private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
+    private static final String SUBJECT_ID_CODING_SYSTEM = "https://fhir.nhs.uk/Id/nhs-number";
 
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
     private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
@@ -42,16 +46,25 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
         var savedDocumentMetadata = metadataStore.save(documentMetadata);
 
         logger.debug("Generating response body");
+        var type = new CodeableConcept()
+                .setCoding(savedDocumentMetadata.getType()
+                        .stream()
+                        .map(code -> new Coding()
+                                .setCode(code)
+                                .setSystem(DOCUMENT_TYPE_CODING_SYSTEM))
+                        .collect(toList()));
+
         var resource = new NHSDocumentReference()
                 .setCreated(new DateTimeType(savedDocumentMetadata.getCreated()))
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
-                                .setSystem("https://fhir.nhs.uk/Id/nhs-number")
+                                .setSystem(SUBJECT_ID_CODING_SYSTEM)
                                 .setValue(savedDocumentMetadata.getNhsNumber())))
                 .addContent(new NHSDocumentReference.DocumentReferenceContentComponent()
                         .setAttachment(new Attachment()
                                 .setUrl(documentDescriptorAndURL.getDocumentUrl())
                                 .setContentType(savedDocumentMetadata.getContentType())))
+                .setType(type)
                 .setDocStatus(savedDocumentMetadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
                 .setDescription(savedDocumentMetadata.getDescription())
                 .setId(savedDocumentMetadata.getId());

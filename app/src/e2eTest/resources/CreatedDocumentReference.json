@@ -7,6 +7,14 @@
       "value": "34567"
     }
   },
+  "type": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "185361000000102"
+      }
+    ]
+  },
   "content": [
     {
       "attachment": {

@@ -1,11 +1,16 @@
 package uk.nhs.digital.docstore;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.joda.time.DateTime;
 
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @DynamoDBTable(tableName = "DocumentReferenceMetadata")
 @SuppressWarnings("unused")
@@ -18,6 +23,7 @@ public class DocumentMetadata {
     private String description;
     private String created;
     private String indexed;
+    private List<String> type;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -91,6 +97,15 @@ public class DocumentMetadata {
         this.indexed = indexed;
     }
 
+    @DynamoDBAttribute(attributeName = "Type")
+    public List<String> getType() {
+        return type;
+    }
+
+    public void setType(List<String> type) {
+        this.type = type;
+    }
+
     public static DocumentMetadata from(NHSDocumentReference reference, DocumentStore.DocumentDescriptor documentDescriptor) {
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setNhsNumber(reference.getSubject().getIdentifier().getValue());
@@ -99,6 +114,10 @@ public class DocumentMetadata {
         documentMetadata.setDocumentUploaded(false);
         documentMetadata.setDescription(reference.getDescription());
         documentMetadata.setCreated(reference.getCreated().asStringValue());
+        documentMetadata.setType(reference.getType().getCoding()
+                .stream()
+                .map(Coding::getCode)
+                .collect(toList()));
         return documentMetadata;
     }
 
@@ -113,6 +132,7 @@ public class DocumentMetadata {
                 ", description='" + description + '\'' +
                 ", created='" + created + '\'' +
                 ", indexed='" + indexed + '\'' +
+                ", type=" + type +
                 '}';
     }
 }
