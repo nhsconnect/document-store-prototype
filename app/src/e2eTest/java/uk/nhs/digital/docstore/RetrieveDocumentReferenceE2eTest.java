@@ -17,11 +17,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
@@ -59,7 +61,6 @@ public class RetrieveDocumentReferenceE2eTest {
                 .build();
         var terraformOutput = getContentFromResource("terraform.json");
         String documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
-        s3Client.putObject(documentStoreBucketName, S3_KEY, S3_VALUE);
 
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("1234"),
@@ -75,6 +76,8 @@ public class RetrieveDocumentReferenceE2eTest {
                 "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
                 "ContentType", new AttributeValue("image/jpeg"),
                 "DocumentUploaded", new AttributeValue().withBOOL(false)));
+
+        s3Client.putObject(documentStoreBucketName, S3_KEY, S3_VALUE);
     }
 
     @Test
@@ -90,8 +93,11 @@ public class RetrieveDocumentReferenceE2eTest {
         assertThat(documentReferenceResponse.statusCode()).isEqualTo(200);
         assertThat(documentReferenceResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(documentReference)
-                .whenIgnoringPaths("$.content[*].attachment.url", "$.meta")
+                .whenIgnoringPaths("$.content[*].attachment.url", "$.meta", "$.indexed")
                 .isEqualTo(expectedDocumentReference);
+        assertThatJson(documentReference)
+                .inPath("$.indexed")
+                .isString();
 
         String preSignedUrl = JsonPath.<String>read(documentReference, "$.content[0].attachment.url")
                 .replace(INTERNAL_DOCKER_HOST, getHost());

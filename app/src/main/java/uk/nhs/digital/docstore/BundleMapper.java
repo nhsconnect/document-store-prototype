@@ -42,6 +42,7 @@ public class BundleMapper {
 
         return (DocumentReference) new NHSDocumentReference()
                 .setCreated(new DateTimeType(document.getCreated()))
+                .setIndexed(new InstantType(document.getIndexed()))
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
                                 .setSystem(NHS_NUMBER_SYSTEM_ID)

@@ -58,7 +58,6 @@ public class DocumentReferenceSearchE2eTest {
                 .build();
         var terraformOutput = getContentFromResource("terraform.json");
         String documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
-        s3Client.putObject(documentStoreBucketName, S3_KEY, S3_VALUE);
 
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("1234"),
@@ -74,6 +73,7 @@ public class DocumentReferenceSearchE2eTest {
                 "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, "somewhere")),
                 "Content-Type", new AttributeValue("application/pdf"),
                 "DocumentUploaded", new AttributeValue().withBOOL(false)));
+        s3Client.putObject(documentStoreBucketName, S3_KEY, S3_VALUE);
     }
 
     @Test
@@ -104,8 +104,11 @@ public class DocumentReferenceSearchE2eTest {
         assertThat(searchResponse.statusCode()).isEqualTo(200);
         assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(searchResponse.body())
-                .whenIgnoringPaths("$.meta", "$.entry[*].resource.content[*].attachment.url", "$.entry[*].resource.meta")
+                .whenIgnoringPaths("$.meta", "$.entry[*].resource.content[*].attachment.url", "$.entry[*].resource.meta", "$.entry[*].resource.indexed")
                 .isEqualTo(expectedSearchResponse);
+        assertThatJson(searchResponse.body())
+                .inPath("$.entry[0].resource.indexed")
+                .isString();
 
         String preSignedUrl = JsonPath.<String>read(searchResponse.body(), "$.entry[0].resource.content[0].attachment.url")
                 .replace(INTERNAL_DOCKER_HOST, getHost());

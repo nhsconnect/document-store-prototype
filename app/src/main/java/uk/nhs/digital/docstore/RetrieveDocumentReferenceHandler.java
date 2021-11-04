@@ -73,6 +73,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         logger.debug("About to transform response into JSON");
         var resource = new NHSDocumentReference()
                 .setCreated(new DateTimeType(metadata.getCreated()))
+                .setIndexed(new InstantType(metadata.getIndexed()))
                 .setSubject(new Reference()
                         .setIdentifier(new Identifier()
                                 .setSystem("https://fhir.nhs.uk/Id/nhs-number")

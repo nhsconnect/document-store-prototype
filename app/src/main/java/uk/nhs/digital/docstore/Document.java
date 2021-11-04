@@ -39,6 +39,10 @@ public class Document {
         return metadata.getCreated();
     }
 
+    public String getIndexed() {
+        return metadata.getIndexed();
+    }
+
     @Override
     public String toString() {
         return "Document{" +

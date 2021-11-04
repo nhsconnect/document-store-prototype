@@ -17,6 +17,7 @@ public class DocumentMetadata {
     private Boolean documentUploaded;
     private String description;
     private String created;
+    private String indexed;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -81,6 +82,15 @@ public class DocumentMetadata {
         this.created = created;
     }
 
+    @DynamoDBAttribute(attributeName = "Indexed")
+    public String getIndexed() {
+        return indexed;
+    }
+
+    public void setIndexed(String indexed) {
+        this.indexed = indexed;
+    }
+
     public static DocumentMetadata from(NHSDocumentReference reference, DocumentStore.DocumentDescriptor documentDescriptor) {
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setNhsNumber(reference.getSubject().getIdentifier().getValue());
@@ -101,6 +111,8 @@ public class DocumentMetadata {
                 ", contentType='" + contentType + '\'' +
                 ", documentUploaded=" + documentUploaded +
                 ", description='" + description + '\'' +
+                ", created='" + created + '\'' +
+                ", indexed='" + indexed + '\'' +
                 '}';
     }
 }

@@ -8,6 +8,7 @@ import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotificatio
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -29,6 +30,7 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
 
             DocumentMetadata metadata = metadataStore.getByLocation(location);
             metadata.setDocumentUploaded(true);
+            metadata.setIndexed(Instant.now().toString());
 
             LOGGER.debug("Updating DocumentReference {} to uploaded", metadata.getId());
             metadataStore.save(metadata);

@@ -14,11 +14,14 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.waitAtMost;
@@ -69,12 +72,19 @@ public class DocumentStoreJourneyTest {
 
 
         waitAtMost(20, TimeUnit.SECONDS)
-                        .pollDelay(2, TimeUnit.SECONDS)
-                        .pollInterval(3, TimeUnit.SECONDS)
-                        .until(documentIsFinal(docStoreUrl, id));
+                .pollDelay(2, TimeUnit.SECONDS)
+                .pollInterval(3, TimeUnit.SECONDS)
+                .until(documentIsFinal(docStoreUrl, id));
 
         var retrievedDocumentReferenceResponse = getDocumentResponse(docStoreUrl, id);
         assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
+        assertThatJson(retrievedDocumentReferenceResponse.body())
+                .inPath("$.indexed")
+                .asString()
+                .satisfies(indexed -> {
+                    var indexedAsInstant = Instant.parse(indexed);
+                    assertThat(indexedAsInstant).isAfter(Instant.now().minus(30, SECONDS));
+                });
 
         String preSignedUrl = JsonPath.<String>read(retrievedDocumentReferenceResponse.body(), "$.content[0].attachment.url")
                 .replace(INTERNAL_DOCKER_HOST, getHost());
@@ -90,7 +100,7 @@ public class DocumentStoreJourneyTest {
         return () -> {
             HttpResponse<String> retrievedDocumentReferenceResponse = getDocumentResponse(docStoreUrl, id);
             return JsonPath.read(retrievedDocumentReferenceResponse.body(), "$.docStatus").equals("final");
-            };
+        };
     }
 
     private HttpResponse<String> getDocumentResponse(String docStoreUrl, String id) throws URISyntaxException, IOException, InterruptedException {
