@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore;
 
 import java.net.URL;
+import java.util.List;
 
 public class Document {
     private final DocumentMetadata metadata;
@@ -41,6 +42,10 @@ public class Document {
 
     public String getIndexed() {
         return metadata.getIndexed();
+    }
+
+    public List<String> getType() {
+        return metadata.getType();
     }
 
     @Override

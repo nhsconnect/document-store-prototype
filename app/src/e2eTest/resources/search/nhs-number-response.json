@@ -14,6 +14,14 @@
             "value": "12345"
           }
         },
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "185361000000102"
+            }
+          ]
+        },
         "docStatus": "final",
         "content": [
           {
@@ -38,6 +46,14 @@
             "system": "https://fhir.nhs.uk/Id/nhs-number",
             "value": "12345"
           }
+        },
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "185361000000102"
+            }
+          ]
         },
         "docStatus": "preliminary"
       }

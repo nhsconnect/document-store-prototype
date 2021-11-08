@@ -13,6 +13,7 @@ import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRE
 
 public class BundleMapper {
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
+    private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
 
     public Bundle toBundle(List<Document> documents) {
         var entries = documents.stream()
@@ -40,6 +41,14 @@ public class BundleMapper {
                             .setUrl(document.getPreSignedUrl().toExternalForm()));
         }
 
+        var type = new CodeableConcept()
+                .setCoding(document.getType()
+                        .stream()
+                        .map(code -> new Coding()
+                                .setCode(code)
+                                .setSystem(DOCUMENT_TYPE_CODING_SYSTEM))
+                        .collect(toList()));
+
         return (DocumentReference) new NHSDocumentReference()
                 .setCreated(new DateTimeType(document.getCreated()))
                 .setIndexed(new InstantType(document.getIndexed()))
@@ -48,6 +57,7 @@ public class BundleMapper {
                                 .setSystem(NHS_NUMBER_SYSTEM_ID)
                                 .setValue(document.getNhsNumber())))
                 .addContent(contentComponent)
+                .setType(type)
                 .setDocStatus(document.isUploaded() ? FINAL : PRELIMINARY)
                 .setDescription(document.getDescription())
                 .setId(document.getReferenceId());

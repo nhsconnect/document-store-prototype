@@ -34,6 +34,7 @@ public class DocumentReferenceSearchE2eTest {
     private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
     private static final String S3_KEY = "abcd";
     private static final String S3_VALUE = "content";
+    private static final String CODE_VALUE = "185361000000102";
 
     private static String getHost() {
         String host = System.getenv("DS_TEST_HOST");
@@ -66,13 +67,15 @@ public class DocumentReferenceSearchE2eTest {
                 "ContentType", new AttributeValue("text/plain"),
                 "DocumentUploaded", new AttributeValue().withBOOL(true),
                 "Description", new AttributeValue("uploaded document"),
-                "Created", new AttributeValue("2021-11-04T15:57:30Z")));
+                "Created", new AttributeValue("2021-11-04T15:57:30Z"),
+                "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("2345"),
                 "NhsNumber", new AttributeValue("12345"),
                 "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, "somewhere")),
                 "Content-Type", new AttributeValue("application/pdf"),
-                "DocumentUploaded", new AttributeValue().withBOOL(false)));
+                "DocumentUploaded", new AttributeValue().withBOOL(false),
+                "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
         s3Client.putObject(documentStoreBucketName, S3_KEY, S3_VALUE);
     }
 
