@@ -15,6 +15,7 @@ import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
 import java.net.URL;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR;
@@ -22,6 +23,7 @@ import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.NOTFOUND;
 
 @SuppressWarnings("unused")
 public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
     private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
     private final FhirContext fhirContext;
@@ -71,6 +73,13 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         }
 
         logger.debug("About to transform response into JSON");
+        var type = new CodeableConcept()
+                .setCoding(metadata.getType()
+                        .stream()
+                        .map(code -> new Coding()
+                                .setCode(code)
+                                .setSystem(DOCUMENT_TYPE_CODING_SYSTEM))
+                        .collect(toList()));
         var resource = new NHSDocumentReference()
                 .setCreated(new DateTimeType(metadata.getCreated()))
                 .setIndexed(new InstantType(metadata.getIndexed()))
@@ -79,6 +88,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
                                 .setSystem("https://fhir.nhs.uk/Id/nhs-number")
                                 .setValue(metadata.getNhsNumber())))
                 .addContent(contentComponent)
+                .setType(type)
                 .setDocStatus(metadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
                 .setDescription(metadata.getDescription())
                 .setId(metadata.getId());
