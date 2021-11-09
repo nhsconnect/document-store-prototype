@@ -3,6 +3,11 @@ variable "region" {
   default = "eu-west-2"
 }
 
+variable "amplify_instances" {
+  type    = number
+  default = 1
+}
+
 variable "lambda_jar_filename" {
   type    = string
   default = "../app/build/libs/app.jar"
