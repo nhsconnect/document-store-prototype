@@ -31,6 +31,24 @@ ${export_aws_session_token}" > temp_aws_credentials.sh
 chmod +x temp_aws_credentials.sh
 }
 
+function deploy_ui() {
+  app_id="$(jq -r '.[0]' amplify_app_ids.json)"
+  aws amplify create-deployment --app-id "$app_id" --branch-name main > deployment.output
+  jobId="$(jq -r .jobId deployment.output)"
+  zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
+  echo $jobId
+  echo $zipUploadUrl
+
+  mkdir ui-build-artefacts
+  cd ui-build-artefacts
+  tar -xf ../tars/ui.tgz
+  zip -r ui.zip *
+
+  curl -XPUT --data-binary "@ui.zip" "$zipUploadUrl"
+  aws amplify start-deployment --app-id "$app_id" --branch-name main --job-id "${jobId}"
+  rm -f ../deployment.output
+}
+
 readonly command="$1"
 case "${command}" in
 install-ui-dependencies)
@@ -44,6 +62,8 @@ test-ui)
 build-ui)
   cd ui
   npm run build
+  cd build
+  tar -czf ../ui.tgz *
   ;;
 plan-deploy)
   cd terraform
@@ -56,6 +76,15 @@ deploy)
   assume_ci_role
   terraform init
   terraform apply tfplan
+  ;;
+deploy-ui)
+  cd terraform
+  assume_ci_role
+  terraform init
+  terraform output amplify_app_ids > ../amplify_app_ids.json
+
+  cd ..
+  deploy_ui
   ;;
 extract-api-url)
   cd terraform

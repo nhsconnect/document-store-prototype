@@ -382,3 +382,7 @@ output "api_gateway_rest_api_stage" {
 output "api_gateway_url" {
   value = aws_api_gateway_deployment.api_deploy.invoke_url
 }
+
+output "amplify_app_ids" {
+  value = aws_amplify_app.doc-store-ui[*].id
+}

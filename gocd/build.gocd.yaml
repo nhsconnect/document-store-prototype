@@ -29,6 +29,10 @@ pipelines:
                     arguments:
                       - "./gradlew app:build"
             build_ui:
+              artifacts:
+                - build:
+                    source: ui/ui.tgz
+                    destination: tars
               tasks:
                 - exec:
                     command: dojo
@@ -61,6 +65,10 @@ pipelines:
                     stage: build
                     job: build_backend
                     source: jars
+                - fetch:
+                    stage: build
+                    job: build_ui
+                    source: tars
                 - exec:
                     command: dojo
                     arguments:
@@ -73,6 +81,12 @@ pipelines:
                       - -c
                       - Dojofile-infra
                       - 'gocd/tasks.sh deploy'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - 'gocd/tasks.sh deploy-ui'
                 - exec:
                     command: dojo
                     arguments:
