@@ -33,6 +33,18 @@ chmod +x temp_aws_credentials.sh
 
 readonly command="$1"
 case "${command}" in
+install-ui-dependencies)
+  cd ui
+  npm install
+  ;;
+test-ui)
+  cd ui
+  CI=true npm test
+  ;;
+build-ui)
+  cd ui
+  npm run build
+  ;;
 plan-deploy)
   cd terraform
   assume_ci_role

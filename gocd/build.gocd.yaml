@@ -35,19 +35,19 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-node
-                      - 'npm install'
+                      - 'gocd/tasks.sh install-ui-dependencies'
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-node
-                      - 'CI=true npm test'
+                      - 'gocd/tasks.sh test-ui'
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-node
-                      - 'npm run build'
+                      - 'gocd/tasks.sh build-ui'
       - deploy:
           clean_workspace: true
           jobs:
