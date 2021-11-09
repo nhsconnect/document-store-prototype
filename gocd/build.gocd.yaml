@@ -15,7 +15,7 @@ pipelines:
       - build:
           clean_workspace: true
           jobs:
-            build:
+            build_backend:
               artifacts:
                 - build:
                     source: app/build/libs
@@ -28,6 +28,26 @@ pipelines:
                     command: dojo
                     arguments:
                       - "./gradlew app:build"
+            build_ui:
+              tasks:
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - 'npm install'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - 'CI=true npm test'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - 'npm run build'
       - deploy:
           clean_workspace: true
           jobs:
@@ -39,7 +59,7 @@ pipelines:
               tasks:
                 - fetch:
                     stage: build
-                    job: build
+                    job: build_backend
                     source: jars
                 - exec:
                     command: dojo
