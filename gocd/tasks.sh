@@ -81,7 +81,7 @@ deploy-ui)
   cd terraform
   assume_ci_role
   terraform init
-  terraform output amplify_app_ids > ../amplify_app_ids.json
+  terraform output -json amplify_app_ids > ../amplify_app_ids.json
 
   cd ..
   deploy_ui
