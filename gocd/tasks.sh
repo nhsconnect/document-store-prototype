@@ -32,21 +32,31 @@ chmod +x temp_aws_credentials.sh
 }
 
 function deploy_ui() {
-  app_id="$(jq -r '.[0]' amplify_app_ids.json)"
+  app_id="$(jq -r '.[0]' "$1")"
   aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main > deployment.output
   jobId="$(jq -r .jobId deployment.output)"
   zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
-  echo $jobId
-  echo $zipUploadUrl
+  rm -f deployment.output
 
+  curl -XPUT --data-binary "@$2" "$zipUploadUrl"
+  aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main --job-id "${jobId}"
+}
+
+function get_amplify_app_ids() {
+  cd terraform
+  assume_ci_role
+  terraform init
+  terraform output -json amplify_app_ids > "$1"
+  cd ..
+}
+
+function repackage_tgz_as_zip() {
   mkdir ui-build-artefacts
   cd ui-build-artefacts
-  tar -xf ../tars/ui.tgz
-  zip -r ui.zip *
-
-  curl -XPUT --data-binary "@ui.zip" "$zipUploadUrl"
-  aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main --job-id "${jobId}"
-  rm -f ../deployment.output
+  tar -xf "../$1"
+  zip -r "../$2" *
+  cd ..
+  rm -rf ui-build-artefacts
 }
 
 readonly command="$1"
@@ -78,13 +88,9 @@ deploy)
   terraform apply tfplan
   ;;
 deploy-ui)
-  cd terraform
-  assume_ci_role
-  terraform init
-  terraform output -json amplify_app_ids > ../amplify_app_ids.json
-
-  cd ..
-  deploy_ui
+  get_amplify_app_ids amplify_app_ids.json
+  repackage_tgz_as_zip tars/ui.tgz ui.zip
+  deploy_ui amplify_app_ids.json ui.zip
   ;;
 extract-api-url)
   cd terraform
