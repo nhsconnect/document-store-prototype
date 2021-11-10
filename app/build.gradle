@@ -44,6 +44,7 @@ dependencies {
 
     e2eTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
     e2eTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
+    e2eTestImplementation 'org.awaitility:awaitility:4.1.1'
 }
 
 java {

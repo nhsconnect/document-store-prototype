@@ -15,25 +15,31 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
-import java.time.Duration;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.Duration.ofMillis;
+import static java.time.Duration.ofSeconds;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.waitAtMost;
 import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
 
 public class CreateDocumentReferenceE2eTest {
+    @SuppressWarnings("HttpUrlsUsage")
     private static final String BASE_URI_TEMPLATE = "http://%s:%d";
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 4566;
+    private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
+
     private String documentStoreBucketName;
     private AmazonS3 s3Client;
-    private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
 
     private static String getHost() {
         String host = System.getenv("DS_TEST_HOST");
@@ -72,7 +78,7 @@ public class CreateDocumentReferenceE2eTest {
                 .header("Accept", "application/fhir+json")
                 .build();
 
-        var createdDocumentReferenceResponse = newHttpClient().send(createDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
+        var createdDocumentReferenceResponse = getResponseFor(createDocumentReferenceRequest);
 
         var documentReference = createdDocumentReferenceResponse.body();
         String id = JsonPath.read(documentReference, "$.id");
@@ -92,18 +98,16 @@ public class CreateDocumentReferenceE2eTest {
         var documentUploadRequest = HttpRequest.newBuilder(documentUploadUri)
                 .PUT(BodyPublishers.ofString("hello"))
                 .build();
-        var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
+        var documentUploadResponse = getResponseFor(documentUploadRequest);
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
 
-        var retrieveDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/"+id))
+        var retrieveDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/" + id))
                 .GET()
                 .build();
-
-        var retrievedDocumentReferenceResponse = newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
-        assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
-        assertThatJson(retrievedDocumentReferenceResponse.body())
-                .inPath("$.docStatus")
-                .isEqualTo("final");
+        HttpResponse<String> retrievedDocumentReferenceResponse = waitAtMost(ofSeconds(15))
+                .pollDelay(ofMillis(500))
+                .pollInterval(ofSeconds(1))
+                .until(() -> getResponseFor(retrieveDocumentReferenceRequest), documentIsFinal());
         assertThatJson(retrievedDocumentReferenceResponse.body())
                 .inPath("$.indexed")
                 .isString();
@@ -112,9 +116,9 @@ public class CreateDocumentReferenceE2eTest {
                 .replace(INTERNAL_DOCKER_HOST, getHost());
         var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
                 .GET()
-                .timeout(Duration.ofSeconds(2))
+                .timeout(ofSeconds(2))
                 .build();
-        var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
+        var documentResponse = getResponseFor(documentRequest);
         assertThat(documentResponse.body()).isEqualTo("hello");
     }
 
@@ -127,7 +131,7 @@ public class CreateDocumentReferenceE2eTest {
                 .header("Accept", "application/fhir+json")
                 .build();
 
-        var errorResponse = newHttpClient().send(createRequest, BodyHandlers.ofString(UTF_8));
+        var errorResponse = getResponseFor(createRequest);
 
         assertThat(errorResponse.statusCode())
                 .isEqualTo(400);
@@ -135,6 +139,15 @@ public class CreateDocumentReferenceE2eTest {
                 .contains("application/fhir+json");
         assertThatJson(errorResponse.body())
                 .isEqualTo(expectedErrorResponse);
+    }
+
+    private HttpResponse<String> getResponseFor(HttpRequest request) throws IOException, InterruptedException {
+        return newHttpClient().send(request, BodyHandlers.ofString(UTF_8));
+    }
+
+    private Predicate<HttpResponse<String>> documentIsFinal() {
+        return response -> response.statusCode() == 200
+                && "final".equals(JsonPath.read(response.body(), "$.docStatus"));
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
