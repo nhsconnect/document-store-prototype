@@ -46,7 +46,7 @@ function get_amplify_app_ids() {
   cd terraform
   assume_ci_role
   terraform init
-  terraform output -json amplify_app_ids > "$1"
+  terraform output -json amplify_app_ids > "../$1"
   cd ..
 }
 
