@@ -33,17 +33,6 @@ provider "aws" {
   }
 }
 
-resource "aws_lambda_function" "hello_world_lambda" {
-  handler       = "uk.nhs.digital.docstore.HelloWorldHandler::handleRequest"
-  function_name = "HelloWorldHandler"
-  runtime       = "java11"
-  role          = aws_iam_role.lambda_execution_role.arn
-
-  filename = var.lambda_jar_filename
-
-  source_code_hash = filebase64sha256(var.lambda_jar_filename)
-}
-
 resource "aws_lambda_function" "get_doc_ref_lambda" {
   handler       = "uk.nhs.digital.docstore.RetrieveDocumentReferenceHandler::handleRequest"
   function_name = "RetrieveDocumentReferenceHandler"
@@ -223,15 +212,6 @@ resource "aws_api_gateway_rest_api" "lambda_api" {
   name = "DocStoreAPI"
 }
 
-module "hello_endpoint" {
-  source             = "./modules/api_gateway_endpoint"
-  api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
-  parent_resource_id = aws_api_gateway_rest_api.lambda_api.root_resource_id
-  lambda_arn         = aws_lambda_function.hello_world_lambda.invoke_arn
-  path_part          = "hello"
-  http_method        = "GET"
-}
-
 module "doc_ref_endpoint" {
   source             = "./modules/api_gateway_endpoint"
   api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
@@ -289,7 +269,6 @@ resource "aws_api_gateway_deployment" "api_deploy" {
     redeployment = sha1(jsonencode([
       aws_api_gateway_rest_api.lambda_api.body,
       module.doc_ref_endpoint,
-      module.hello_endpoint,
       aws_api_gateway_method.create_doc_ref_method,
       aws_api_gateway_resource.doc_ref_resource,
       aws_api_gateway_integration.create_doc_ref_integration,
@@ -297,17 +276,6 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_integration.doc_ref_search_integration,
     ]))
   }
-}
-
-resource "aws_lambda_permission" "api_gateway_permission_for_hello" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.hello_world_lambda.arn
-  principal     = "apigateway.amazonaws.com"
-
-  # The "/*/*" portion grants access from any method on any resource
-  # within the API Gateway REST API.
-  source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "api_gateway_permission_for_get_doc_ref" {
