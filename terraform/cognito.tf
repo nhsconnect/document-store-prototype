@@ -34,7 +34,7 @@ output "cognito_user_pool_ids" {
 }
 
 output "cognito_user_pool_domain" {
-  value = aws_cognito_user_pool.pool[*].domain
+  value = "${aws_cognito_user_pool_domain.domain[*].domain}.auth.${var.region}.amazoncognito.com"
 }
 
 output "cognito_client_ids" {
