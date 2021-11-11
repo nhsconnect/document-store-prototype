@@ -12,10 +12,10 @@ pipelines:
           - documentation/**/*.*
           - gradle/**/*.*
     stages:
-      - build:
+      - build_backend:
           clean_workspace: true
           jobs:
-            build_backend:
+            build:
               artifacts:
                 - build:
                     source: app/build/libs
@@ -28,31 +28,7 @@ pipelines:
                     command: dojo
                     arguments:
                       - "./gradlew app:build"
-            build_ui:
-              artifacts:
-                - build:
-                    source: ui/ui.tgz
-                    destination: tars
-              tasks:
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-node
-                      - 'gocd/tasks.sh install-ui-dependencies'
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-node
-                      - 'gocd/tasks.sh test-ui'
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-node
-                      - 'gocd/tasks.sh build-ui'
-      - deploy:
+      - deploy_backend:
           clean_workspace: true
           jobs:
             terraform:
@@ -62,13 +38,9 @@ pipelines:
                     destination: properties
               tasks:
                 - fetch:
-                    stage: build
-                    job: build_backend
+                    stage: build_backend
+                    job: build
                     source: jars
-                - fetch:
-                    stage: build
-                    job: build_ui
-                    source: tars
                 - exec:
                     command: dojo
                     arguments:
@@ -81,12 +53,6 @@ pipelines:
                       - -c
                       - Dojofile-infra
                       - 'gocd/tasks.sh deploy'
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-infra
-                      - 'gocd/tasks.sh deploy-ui'
                 - exec:
                     command: dojo
                     arguments:
@@ -120,3 +86,46 @@ pipelines:
                     command: dojo
                     arguments:
                       - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) gocd/tasks.sh run-test-harness"
+      - build_ui:
+          clean_workspace: true
+          jobs:
+            build:
+              artifacts:
+                - build:
+                    source: ui/ui.tgz
+                    destination: tars
+              tasks:
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - 'gocd/tasks.sh install-ui-dependencies'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - 'gocd/tasks.sh test-ui'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - 'gocd/tasks.sh build-ui'
+      - deploy_ui:
+          clean_workspace: true
+          jobs:
+            deploy:
+              tasks:
+                - fetch:
+                    stage: build_ui
+                    job: build
+                    source: tars
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - 'gocd/tasks.sh deploy-ui'
+
