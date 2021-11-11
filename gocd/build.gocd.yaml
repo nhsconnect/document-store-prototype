@@ -71,7 +71,7 @@ pipelines:
                     destination: test-reports
               tasks:
                 - fetch:
-                    stage: deploy
+                    stage: deploy_backend
                     job: terraform
                     source: properties
                 - exec:
