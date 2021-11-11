@@ -11,10 +11,10 @@ function assume_ci_role() {
   echo "Assuming ci-role in document store..."
 
   sts=($(aws sts assume-role \
-        --role-arn "$role_arn" \
-        --role-session-name "$session_name" \
-        --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
-        --output text))
+    --role-arn "$role_arn" \
+    --role-session-name "$session_name" \
+    --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+    --output text))
 
   export AWS_ACCESS_KEY_ID="${sts[0]}"
   export AWS_SECRET_ACCESS_KEY="${sts[1]}"
@@ -27,13 +27,13 @@ function export_aws_credentials() {
   export_aws_session_token="export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN"
   echo "${export_aws_access_key}
 ${export_aws_secret_access_key}
-${export_aws_session_token}" > temp_aws_credentials.sh
-chmod +x temp_aws_credentials.sh
+${export_aws_session_token}" >temp_aws_credentials.sh
+  chmod +x temp_aws_credentials.sh
 }
 
 function deploy_ui() {
-  app_id="$(jq -r '.[0]' "$1")"
-  aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main > deployment.output
+  app_id="$(jq -r '.amplify_app_ids.value.[0]' "$1")"
+  aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main >deployment.output
   jobId="$(jq -r .jobId deployment.output)"
   zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
   rm -f deployment.output
@@ -42,11 +42,11 @@ function deploy_ui() {
   aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main --job-id "${jobId}"
 }
 
-function get_amplify_app_ids() {
+function get_terraform_output() {
   cd terraform
   assume_ci_role
   terraform init
-  terraform output -json amplify_app_ids > "../$1"
+  terraform output -json >"../$1"
   cd ..
 }
 
@@ -88,15 +88,15 @@ deploy)
   terraform apply tfplan
   ;;
 deploy-ui)
-  get_amplify_app_ids amplify_app_ids.json
+  get_terraform_output terraform_output.json
   repackage_tgz_as_zip tars/ui.tgz ui.zip
-  deploy_ui amplify_app_ids.json ui.zip
+  deploy_ui terraform_output.json ui.zip
   ;;
 extract-api-url)
   cd terraform
   assume_ci_role
   terraform init
-  terraform output api_gateway_url > ../api_gateway_url_artifact
+  terraform output api_gateway_url >../api_gateway_url_artifact
   ;;
 export-aws-creds)
   assume_ci_role
