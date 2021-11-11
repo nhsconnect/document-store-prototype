@@ -3,7 +3,7 @@ variable "region" {
   default = "eu-west-2"
 }
 
-variable "amplify_instances" {
+variable "cloud_only_service_instances" {
   type    = number
   default = 1
 }
