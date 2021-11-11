@@ -32,7 +32,7 @@ ${export_aws_session_token}" >temp_aws_credentials.sh
 }
 
 function deploy_ui() {
-  app_id="$(jq -r '.amplify_app_ids.value.[0]' "$1")"
+  app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
   aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main >deployment.output
   jobId="$(jq -r .jobId deployment.output)"
   zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
