@@ -42,6 +42,15 @@ function deploy_ui() {
   aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main --job-id "${jobId}"
 }
 
+function update_ui_config_file() {
+  user_pool="$(jq -r '.cognito_user_pool_ids.value[0]' "$1")"
+  user_pool_client_id="$(jq -r '.cognito_client_ids.value[0]' "$1")"
+  user_pool_domain="$(jq -r '.cognito_user_pool_domain.value[0]' "$1")"
+  sed -i "s/%pool-id%/${user_pool}/" ui/src/aws-export.js
+  sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/aws-export.js
+  sed -i "s/%domain-name%/${user_pool_domain}/" ui/src/aws-export.js
+}
+
 function get_terraform_output() {
   cd terraform
   assume_ci_role
@@ -64,6 +73,10 @@ case "${command}" in
 install-ui-dependencies)
   cd ui
   npm install
+  ;;
+configure-ui)
+  get_terraform_output terraform_output.json
+  update_ui_config_file terraform_output.json
   ;;
 test-ui)
   cd ui

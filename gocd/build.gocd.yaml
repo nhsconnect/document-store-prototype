@@ -106,6 +106,12 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-node
+                      - 'gocd/tasks.sh configure-ui'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
                       - 'gocd/tasks.sh test-ui'
                 - exec:
                     command: dojo

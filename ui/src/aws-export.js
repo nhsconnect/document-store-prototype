@@ -1,10 +1,10 @@
 const awsmobile = {
     "aws_project_region": "eu-west-2",
     "aws_cognito_region": "eu-west-2",
-    "aws_user_pools_id": "eu-west-2_x7sfxthL3",
-    "aws_user_pools_web_client_id": "664e0mj7v5igsoa8597l77h5vg",
+    "aws_user_pools_id": "%pool-id%",
+    "aws_user_pools_web_client_id": "%client-id%",
     "oauth": {
-        "domain": "doc-store-test.auth.eu-west-2.amazoncognito.com"
+        "domain": "%domain-name%"
     },
     "aws_cognito_username_attributes": [],
     "aws_cognito_social_providers": [],
