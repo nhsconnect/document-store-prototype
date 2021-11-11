@@ -6,11 +6,11 @@ resource "aws_cognito_user_pool" "pool" {
   }
 
   password_policy {
-    minimum_length = 8
+    minimum_length    = 8
     require_lowercase = true
     require_uppercase = true
-    require_numbers = true
-    require_symbols = true
+    require_numbers   = true
+    require_symbols   = true
   }
   count = var.cloud_only_service_instances
 }
@@ -21,6 +21,12 @@ resource "aws_cognito_user_pool_client" "client" {
   user_pool_id = aws_cognito_user_pool.pool[0].id
 
   count = var.cloud_only_service_instances
+}
+
+resource "aws_cognito_user_pool_domain" "domain" {
+  domain       = "doc-store-user-pool"
+  user_pool_id = aws_cognito_user_pool.pool[0].id
+  count        = var.cloud_only_service_instances
 }
 
 output "cognito_user_pool_ids" {
