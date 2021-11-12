@@ -242,7 +242,7 @@ resource "aws_api_gateway_method" "doc_ref_search_method" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   resource_id   = aws_api_gateway_resource.doc_ref_resource.id
   http_method   = "GET"
-  authorization = "AWS_IAM"
+  authorization = "COGNITO_USER_POOLS"
 }
 
 resource "aws_api_gateway_integration" "doc_ref_search_integration" {
@@ -276,6 +276,16 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_integration.doc_ref_search_integration,
     ]))
   }
+}
+
+resource "aws_api_gateway_authorizer" "doc_ref_authorizer" {
+  name                   = "doc-ref-authorizer"
+  type                   = "COGNITO_USER_POOLS"
+  rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
+  provider_arns          = [aws_cognito_user_pool.pool[0].arn]
+  authorizer_credentials = aws_iam_role.lambda_execution_role.arn
+
+  count = var.cloud_only_service_instances
 }
 
 resource "aws_lambda_permission" "api_gateway_permission_for_get_doc_ref" {
