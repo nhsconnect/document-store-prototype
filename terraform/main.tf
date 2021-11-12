@@ -243,6 +243,7 @@ resource "aws_api_gateway_method" "doc_ref_search_method" {
   resource_id   = aws_api_gateway_resource.doc_ref_resource.id
   http_method   = "GET"
   authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.doc_ref_authorizer.id
 }
 
 resource "aws_api_gateway_integration" "doc_ref_search_integration" {
@@ -274,6 +275,7 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_integration.create_doc_ref_integration,
       aws_api_gateway_method.doc_ref_search_method,
       aws_api_gateway_integration.doc_ref_search_integration,
+      aws_api_gateway_authorizer.doc_ref_authorizer,
     ]))
   }
 }
@@ -282,10 +284,8 @@ resource "aws_api_gateway_authorizer" "doc_ref_authorizer" {
   name                   = "doc-ref-authorizer"
   type                   = "COGNITO_USER_POOLS"
   rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
-  provider_arns          = [aws_cognito_user_pool.pool[0].arn]
+  provider_arns = var.cloud_only_service_instances > 0 ? [for pool_arn in aws_cognito_user_pool.pool[*].arn : pool_arn] : [""]
   authorizer_credentials = aws_iam_role.lambda_execution_role.arn
-
-  count = var.cloud_only_service_instances
 }
 
 resource "aws_lambda_permission" "api_gateway_permission_for_get_doc_ref" {
