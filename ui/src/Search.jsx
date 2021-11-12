@@ -1,11 +1,12 @@
 import React, {useState} from "react";
 
-function Search() {
+function Search({ apiClient }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
 
-    const handleSubmit = () => {
-        setSearchResults([{"description": "this is a file", "type": "123456", "url": ""}]);
+    const handleSubmit = async () => {
+        const results = await apiClient.findByNhsNumber(searchTerm);
+        setSearchResults(results);
     };
 
     return (

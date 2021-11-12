@@ -1,10 +1,13 @@
 import React from "react";
-import Amplify from "aws-amplify";
-import {AmplifyAuthenticator, AmplifySignOut} from "@aws-amplify/ui-react";
+import Amplify, { API } from "aws-amplify";
+import { AmplifyAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
 import awsConfig from "./config";
 import Search from "./Search";
+import ApiClient from "./apiClient";
 
 Amplify.configure(awsConfig);
+
+const client = new ApiClient(API);
 
 const App = () => (
     <AmplifyAuthenticator>
@@ -13,7 +16,7 @@ const App = () => (
         <AmplifySignOut />
       </div>
         <div>
-            <Search />
+            <Search apiClient={client} />
         </div>
     </AmplifyAuthenticator>
 );
