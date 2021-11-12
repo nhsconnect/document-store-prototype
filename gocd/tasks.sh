@@ -49,7 +49,7 @@ function update_ui_config_file() {
   sed -i "s/%pool-id%/${user_pool}/" ui/src/config.js
   sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
   sed -i "s/%region%/${aws_region}/" ui/src/config.js
-  sed -i "s/%api-endpoint%/${api_endpoint}/" ui/src/config.js
+  sed -i "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
 }
 
 function get_terraform_output() {
