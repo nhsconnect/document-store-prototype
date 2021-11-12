@@ -45,10 +45,11 @@ function deploy_ui() {
 function update_ui_config_file() {
   user_pool="$(jq -r '.cognito_user_pool_ids.value[0]' "$1")"
   user_pool_client_id="$(jq -r '.cognito_client_ids.value[0]' "$1")"
-  user_pool_domain="$(jq -r '.cognito_user_pool_domain.value[0]' "$1")"
-  sed -i "s/%pool-id%/${user_pool}/" ui/src/aws-export.js
-  sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/aws-export.js
-  sed -i "s/%domain-name%/${user_pool_domain}/" ui/src/aws-export.js
+  api_endpoint="$(jq -r '.api_gateway_url.value' "$1")"
+  sed -i "s/%pool-id%/${user_pool}/" ui/src/config.js
+  sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
+  sed -i "s/%region%/${aws_region}/" ui/src/config.js
+  sed -i "s/%api-endpoint%/${api_endpoint}/" ui/src/config.js
 }
 
 function get_terraform_output() {
