@@ -11,10 +11,6 @@ resource "aws_amplify_branch" "main" {
   framework = "React"
   stage     = "PRODUCTION"
 
-  environment_variables = {
-    REACT_APP_API_SERVER = aws_api_gateway_deployment.api_deploy.invoke_url
-  }
-
   count = var.cloud_only_service_instances
 }
 

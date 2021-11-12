@@ -47,7 +47,11 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
 
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
-                .withHeaders(Map.of("Content-Type", "application/fhir+json"))
+                .withHeaders(Map.of(
+                        "Content-Type", "application/fhir+json",
+                        "Access-Control-Allow-Origin", System.getenv("AMPLIFY_BASE_URL"),
+                        "Access-Control-Allow-Methods", "GET"
+                ))
                 .withBody(jsonParser.encodeResourceToString(bundle));
     }
 }
