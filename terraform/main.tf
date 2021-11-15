@@ -257,6 +257,50 @@ resource "aws_api_gateway_integration" "doc_ref_search_integration" {
   uri                     = aws_lambda_function.doc_ref_search_lambda.invoke_arn
 }
 
+resource "aws_api_gateway_method" "create_and_search_doc_preflight_method" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.doc_ref_resource.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method_response" "create_and_search_doc_preflight_method_response" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.doc_ref_resource.id
+  http_method   = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
+  status_code   = "200"
+  response_models = {
+    "application/json" = "Empty"
+  }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+  depends_on = ["aws_api_gateway_method.create_and_search_doc_preflight_method"]
+}
+
+resource "aws_api_gateway_integration" "create_and_search_doc_preflight_integration" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.doc_ref_resource.id
+  http_method   = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
+  type          = "MOCK"
+  depends_on = ["aws_api_gateway_method.create_and_search_doc_preflight_method"]
+}
+
+resource "aws_api_gateway_integration_response" "create_and_search_doc_preflight_integration_response" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.doc_ref_resource.id
+  http_method   = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
+  status_code   = aws_api_gateway_method_response.create_and_search_doc_preflight_method_response.status_code
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST'",
+    "method.response.header.Access-Control-Allow-Origin" = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
+  }
+  depends_on = ["aws_api_gateway_method_response.create_and_search_doc_preflight_method_response"]
+}
+
 resource "aws_api_gateway_resource" "doc_ref_resource" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
@@ -277,6 +321,8 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_method.doc_ref_search_method,
       aws_api_gateway_integration.doc_ref_search_integration,
       aws_api_gateway_authorizer.doc_ref_authorizer,
+      aws_api_gateway_integration.create_and_search_doc_preflight_integration,
+      aws_api_gateway_method.create_and_search_doc_preflight_method,
     ]))
   }
 }
