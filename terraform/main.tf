@@ -117,7 +117,7 @@ resource "aws_lambda_function" "doc_ref_search_lambda" {
       DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
       DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
       S3_ENDPOINT                = var.s3_endpoint
-      AMPLIFY_BASE_URL           = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/" : ""
+      AMPLIFY_BASE_URL           = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
     }
   }
 }
