@@ -12,6 +12,7 @@ const client = new ApiClient(API, Auth);
 
 const App = () => (
     <AmplifyAuthenticator>
+        <h3>Document Store</h3>
         <div>
             <Search apiClient={client} />
         </div>
