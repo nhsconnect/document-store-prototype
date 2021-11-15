@@ -14,10 +14,10 @@ class ApiClient {
         'subject.identifier': `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
       },
     });
-    return data.entry.map(entry => ({
-      description: entry.description,
-      type: entry.type.coding.map(coding => coding.code).join(', '),
-      url: entry.docStatus === 'final' ? entry.content[0].attachment.url : '',
+    return data.entry.map(({ resource }) => ({
+      description: resource.description,
+      type: resource.type.coding.map(coding => coding.code).join(', '),
+      url: resource.docStatus === 'final' ? resource.content[0].attachment.url : '',
     }));
   }
 }
