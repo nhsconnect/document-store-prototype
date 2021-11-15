@@ -1,5 +1,5 @@
 import React from "react";
-import Amplify, { API } from "aws-amplify";
+import Amplify, { Auth, API } from "aws-amplify";
 import { AmplifyAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
 import awsConfig from "./config";
 import Search from "./Search";
@@ -7,7 +7,7 @@ import ApiClient from "./apiClient";
 
 Amplify.configure(awsConfig);
 
-const client = new ApiClient(API);
+const client = new ApiClient(API, Auth);
 
 const App = () => (
     <AmplifyAuthenticator>

@@ -1,12 +1,14 @@
 class ApiClient {
-  constructor(api) {
+  constructor(api, auth) {
     this.api = api;
+    this.auth = auth;
   }
 
   async findByNhsNumber(nhsNumber) {
     const data = await this.api.get('doc-store-api', '/DocumentReference', {
       headers: {
-        'Accept': 'application/fhir+json'
+        'Accept': 'application/fhir+json',
+        'Authorization': `Bearer ${(await this.auth.currentSession()).getIdToken().getJwtToken()}`,
       },
       queryStringParameters: {
         'subject.identifier': `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,

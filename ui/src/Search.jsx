@@ -23,6 +23,7 @@ function Search({ apiClient }) {
             </div>
             {searchResults.length > 0 && (
                 <div>
+                    Results
                     <ul>
                         {searchResults.map((result, index) => <li key={index}>{result.description}</li>)}
                     </ul>
