@@ -1,3 +1,5 @@
+import {Auth} from "aws-amplify";
+
 class ApiClient {
   constructor(api) {
     this.api = api;
@@ -6,16 +8,18 @@ class ApiClient {
   async findByNhsNumber(nhsNumber) {
     const data = await this.api.get('doc-store-api', '/DocumentReference', {
       headers: {
-        'Accept': 'application/fhir+json'
+        'Accept': 'application/fhir+json',
+        'Authorization': `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,
       },
       queryStringParameters: {
         'subject.identifier': `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
       },
     });
     return data.entry.map(entry => ({
-      description: entry.description,
-      type: entry.type.coding.map(coding => coding.code).join(', '),
-      url: entry.docStatus === 'final' ? entry.content[0].attachment.url : '',
+      id: entry.resource.id,
+      description: entry.resource.description,
+      type: entry.resource.type.coding.map(coding => coding.code).join(', '),
+      url: entry.resource.docStatus === 'final' ? entry.resource.content[0].attachment.url : '',
     }));
   }
 }
