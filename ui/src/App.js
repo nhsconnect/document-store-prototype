@@ -4,6 +4,7 @@ import { AmplifyAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
 import awsConfig from "./config";
 import Search from "./Search";
 import ApiClient from "./apiClient";
+import "./App.scss"
 
 Amplify.configure(awsConfig);
 
@@ -11,12 +12,11 @@ const client = new ApiClient(API, Auth);
 
 const App = () => (
     <AmplifyAuthenticator>
-      <div>
-        Document Store
-        <AmplifySignOut />
-      </div>
         <div>
             <Search apiClient={client} />
+        </div>
+        <div>
+            <AmplifySignOut />
         </div>
     </AmplifyAuthenticator>
 );
