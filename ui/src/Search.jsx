@@ -24,12 +24,19 @@ function Search({ apiClient }) {
                     <Table.Head>
                         <Table.Row>
                             <Table.Cell>Description</Table.Cell>
-                            <Table.Cell></Table.Cell>
+                            <Table.Cell>Type</Table.Cell>
+                            <Table.Cell/>
                         </Table.Row>
                     </Table.Head>
 
                     <Table.Body>
-                        {searchResults.map((result, index) => <Table.Row> <Table.Cell>{result.description}</Table.Cell><Table.Cell><a href={result.url}>Link</a></Table.Cell></Table.Row>)}
+                        {searchResults.map((result, index) => (
+                            <Table.Row>
+                            <Table.Cell>{result.description}</Table.Cell>
+                                <Table.Cell>{result.type}</Table.Cell>
+                                <Table.Cell><a href={result.url}>Link</a></Table.Cell>
+                            </Table.Row>
+                        ))}
                     </Table.Body>
                 </Table>
             )}
