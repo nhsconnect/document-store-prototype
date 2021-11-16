@@ -65,7 +65,10 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     }
 
     private String getEmail(APIGatewayProxyRequestEvent requestEvent) {
-        String authorizationHeader = requestEvent.getHeaders().get("authorization");
+        Map<String, String> headers = requestEvent.getHeaders();
+        String authorizationHeader = headers.getOrDefault(
+                "Authorization",
+                headers.get("authorization"));
         String token = authorizationHeader.replaceFirst("^[Bb]earer\\s+", "");
         DecodedJWT jwt = JWT.decode(token);
         return jwt.getClaim("email").asString();
