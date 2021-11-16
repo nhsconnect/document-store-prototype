@@ -5,6 +5,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +37,13 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         var jsonParser = fhirContext.newJsonParser();
 
+        String userEmail = getEmail(requestEvent);
         Bundle bundle;
         try {
             Map<String, String> searchParameters = (requestEvent.getQueryStringParameters() == null ? Map.of() : requestEvent.getQueryStringParameters());
-            List<Document> documents = searchService.findByParameters(searchParameters);
+            List<Document> documents = searchService.findByParameters(
+                    searchParameters,
+                    message -> logger.info(String.format("%s searched for %s", userEmail, message)));
             bundle = bundleMapper.toBundle(documents);
         } catch (Exception e) {
             logger.error("Unable to perform search", e);
@@ -53,5 +58,12 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
                         "Access-Control-Allow-Methods", "GET"
                 ))
                 .withBody(jsonParser.encodeResourceToString(bundle));
+    }
+
+    private String getEmail(APIGatewayProxyRequestEvent requestEvent) {
+        String authorizationHeader = requestEvent.getHeaders().get("authorization");
+        String token = authorizationHeader.replaceFirst("^[Bb]earer\\s+", "");
+        DecodedJWT jwt = JWT.decode(token);
+        return jwt.getClaim("email").asString();
     }
 }

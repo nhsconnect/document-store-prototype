@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.auth0.jwt.JWT;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
+import static com.auth0.jwt.algorithms.Algorithm.none;
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -84,6 +86,7 @@ public class DocumentReferenceSearchE2eTest {
         String expectedEmptySearchResponse = getContentFromResource("search/empty-nhs-number-response.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7Cdoesnt-exist"))
                 .GET()
+                .header("Authorization", createBearerToken())
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
@@ -100,6 +103,7 @@ public class DocumentReferenceSearchE2eTest {
         String expectedSearchResponse = getContentFromResource("search/nhs-number-response.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C12345"))
                 .GET()
+                .header("Authorization", createBearerToken())
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
@@ -128,6 +132,7 @@ public class DocumentReferenceSearchE2eTest {
         String expectedErrorResponse = getContentFromResource("search/unrecognised-subject-identifier.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject.identifier=unknown-system%7Cvalue"))
                 .GET()
+                .header("Authorization", createBearerToken())
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
@@ -138,6 +143,13 @@ public class DocumentReferenceSearchE2eTest {
                 .contains("application/fhir+json");
         assertThatJson(searchResponse.body())
                 .isEqualTo(expectedErrorResponse);
+    }
+
+    private String createBearerToken() {
+        String jwt = JWT.create()
+                .withClaim("email", "")
+                .sign(none());
+        return "Bearer " + jwt;
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {

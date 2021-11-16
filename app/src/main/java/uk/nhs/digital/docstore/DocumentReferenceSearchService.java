@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,8 +24,9 @@ public class DocumentReferenceSearchService {
         this.documentStore = documentStore;
     }
 
-    public List<Document> findByParameters(Map<String, String> parameters) {
+    public List<Document> findByParameters(Map<String, String> parameters, Consumer<String> logger) {
         String nhsNumber = getNhsNumberFrom(parameters);
+        logger.accept("documents with NHS number ending " + obfuscate(nhsNumber));
         return metadataStore.findByNhsNumber(nhsNumber)
                 .stream()
                 .map(metadata -> new Document(metadata, getPreSignedUrl(metadata)))
@@ -37,6 +39,10 @@ public class DocumentReferenceSearchService {
                 .orElseThrow(() -> new MissingSearchParametersException("subject:identifier"));
 
         return validSubject(subject);
+    }
+
+    private String obfuscate(String string) {
+        return string.substring(string.length() - 4);
     }
 
     private URL getPreSignedUrl(DocumentMetadata metadata) {

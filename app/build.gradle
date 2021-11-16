@@ -36,6 +36,8 @@ dependencies {
     implementation 'ch.qos.logback.contrib:logback-jackson:0.1.5'
     implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
 
+    implementation 'com.auth0:java-jwt:3.3.0'
+
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
     testImplementation 'org.assertj:assertj-core:3.21.0'

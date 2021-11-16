@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +37,8 @@ class DocumentReferenceSearchServiceTest {
     private DocumentMetadataStore metadataStore;
     @Mock
     private DocumentStore documentStore;
+    @Mock
+    private Consumer<String> logger;
 
     private static String asQualifiedIdentifier(String nhsNumber) {
         return String.format("%s|%s", NHS_NUMBER_SYSTEM_ID, nhsNumber);
@@ -62,7 +65,8 @@ class DocumentReferenceSearchServiceTest {
                 .thenReturn(new URL("https://example.org/"));
 
         List<Document> documents = searchService.findByParameters(
-                Map.of(SUBJECT_ID_PARAM_NAME, identifier));
+                Map.of(SUBJECT_ID_PARAM_NAME, identifier),
+                logger);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -86,7 +90,8 @@ class DocumentReferenceSearchServiceTest {
                 .thenReturn(new URL("https://example.org/"));
 
         List<Document> documents = searchService.findByParameters(
-                Map.of(parameterName, asQualifiedIdentifier(nhsNumber)));
+                Map.of(parameterName, asQualifiedIdentifier(nhsNumber)),
+                logger);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -104,7 +109,8 @@ class DocumentReferenceSearchServiceTest {
                 .thenReturn(List.of(metadataTemplate.build()));
 
         List<Document> documents = searchService.findByParameters(
-                Map.of(SUBJECT_ID_PARAM_NAME, asQualifiedIdentifier(nhsNumber)));
+                Map.of(SUBJECT_ID_PARAM_NAME, asQualifiedIdentifier(nhsNumber)),
+                logger);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -124,7 +130,7 @@ class DocumentReferenceSearchServiceTest {
             parameters.put(parameterName, "value");
         }
 
-        assertThatThrownBy(() -> searchService.findByParameters(parameters))
+        assertThatThrownBy(() -> searchService.findByParameters(parameters, logger))
                 .isInstanceOf(MissingSearchParametersException.class);
     }
 
@@ -136,7 +142,8 @@ class DocumentReferenceSearchServiceTest {
     void raisesAnExceptionIfTheSubjectIdentifierSystemCannotBeUnderstood(String subjectIdentifier, String systemIdentifier) {
         assertThatThrownBy(
                 () -> searchService.findByParameters(
-                        Map.of(SUBJECT_ID_PARAM_NAME, subjectIdentifier)))
+                        Map.of(SUBJECT_ID_PARAM_NAME, subjectIdentifier),
+                        logger))
                 .isInstanceOf(UnrecognisedSubjectIdentifierSystemException.class)
                 .hasMessageContaining(systemIdentifier);
     }
@@ -147,8 +154,22 @@ class DocumentReferenceSearchServiceTest {
     void raisesAnExceptionIfTheSubjectIdentifierIsInvalid(String subjectIdentifier) {
         assertThatThrownBy(
                 () -> searchService.findByParameters(
-                        Map.of(SUBJECT_ID_PARAM_NAME, subjectIdentifier)))
+                        Map.of(SUBJECT_ID_PARAM_NAME, subjectIdentifier),
+                        logger))
                 .isInstanceOf(InvalidSubjectIdentifierException.class)
                 .hasMessageContaining(subjectIdentifier);
+    }
+
+    @Test
+    void logsTheSearchActionObfuscatingPii() {
+        String nhsNumber = "12345678";
+        when(metadataStore.findByNhsNumber(nhsNumber))
+                .thenReturn(List.of());
+
+        searchService.findByParameters(
+                Map.of(SUBJECT_ID_PARAM_NAME, nhsNumber),
+                logger);
+
+        verify(logger).accept("documents with NHS number ending 5678");
     }
 }
