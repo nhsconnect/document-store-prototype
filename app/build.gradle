@@ -35,6 +35,7 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.2.6'
     implementation 'ch.qos.logback.contrib:logback-jackson:0.1.5'
     implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.0'
 
     implementation 'com.auth0:java-jwt:3.3.0'
 

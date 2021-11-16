@@ -10,6 +10,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,8 @@ import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger logger = LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
+    private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
+
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final BundleMapper bundleMapper = new BundleMapper();
     private final DocumentReferenceSearchService searchService;
@@ -43,7 +47,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
             Map<String, String> searchParameters = (requestEvent.getQueryStringParameters() == null ? Map.of() : requestEvent.getQueryStringParameters());
             List<Document> documents = searchService.findByParameters(
                     searchParameters,
-                    message -> logger.info(String.format("%s searched for %s", userEmail, message)));
+                    message -> logger.info(AUDIT, "{} searched for {}", userEmail, message));
             bundle = bundleMapper.toBundle(documents);
         } catch (Exception e) {
             logger.error("Unable to perform search", e);

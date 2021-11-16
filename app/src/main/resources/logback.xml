@@ -9,13 +9,22 @@
 	</appender>
 
 	<appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-			<layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-				<jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
-					<prettyPrint>false</prettyPrint>
-				</jsonFormatter>
-				<appendLineSeparator>true</appendLineSeparator>
-			</layout>
+		<encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+			<providers>
+				<message/>
+				<timestamp/>
+				<logLevel/>
+				<loggerName/>
+				<stackTrace/>
+				<pattern>
+					<omitEmptyFields>true</omitEmptyFields>
+					<pattern>
+						{
+						"type": "%marker"
+						}
+					</pattern>
+				</pattern>
+			</providers>
 		</encoder>
 	</appender>
 
