@@ -277,7 +277,7 @@ resource "aws_api_gateway_method_response" "create_and_search_doc_preflight_meth
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
-  depends_on          = ["aws_api_gateway_method.create_and_search_doc_preflight_method"]
+  depends_on          = [aws_api_gateway_method.create_and_search_doc_preflight_method]
 }
 
 resource "aws_api_gateway_integration" "create_and_search_doc_preflight_integration" {
@@ -285,7 +285,7 @@ resource "aws_api_gateway_integration" "create_and_search_doc_preflight_integrat
   resource_id       = aws_api_gateway_resource.doc_ref_resource.id
   http_method       = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
   type              = "MOCK"
-  depends_on        = ["aws_api_gateway_method.create_and_search_doc_preflight_method"]
+  depends_on        = [aws_api_gateway_method.create_and_search_doc_preflight_method]
   request_templates = {
     "application/json" = <<EOF
 {
@@ -305,7 +305,7 @@ resource "aws_api_gateway_integration_response" "create_and_search_doc_preflight
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST'",
     "method.response.header.Access-Control-Allow-Origin"  = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
   }
-  depends_on          = ["aws_api_gateway_method_response.create_and_search_doc_preflight_method_response"]
+  depends_on          = [aws_api_gateway_method_response.create_and_search_doc_preflight_method_response]
 }
 
 resource "aws_api_gateway_resource" "doc_ref_resource" {
