@@ -62,6 +62,27 @@ eval $(assume-role doc-store)
 
 When running against localstack the `DOCUMENT_STORE_BASE_URI` is `http://localhost:4566/restapis/<replace with rest api id>/<replace with stage name>/_user_request_/` where both the `rest api id` and `stage name` can be found in terraform output
 
+### Reading logs
+
+Useful logging output may not be revealed in the output from end-to-end tests. In that instance, it may be useful to
+read the logs from LocalStack. This is done using the AWS CLI tool, pointing it at the LocalStack container. The command
+looks like the following:
+
+```bash
+aws --endpoint-url=http://HOST:4566 logs tail /aws/lambda/HANDLER
+```
+
+where `HOST` should be substituted for the hostname of the LocalStack Docker container (see the
+[Environment variables](#environment-variables) section for more information), and `HANDLER` should be substituted for
+the name of the relevant controller. For instance, to read search logs with a native Docker service, one could run:
+
+```bash
+aws --endpoint-url=http://localhost:4566 logs tail /aws/lambda/DocumentReferenceSearchHandler
+```
+
+One may also follow log output as it happens by applying the `follow` flag to the `tail` subcommand:
+`tail --follow HANDLER`.
+
 ### Environment variables
 
 LocalStack and the E2E tests support a native Docker service running on `localhost`. Other setups, such as Docker
