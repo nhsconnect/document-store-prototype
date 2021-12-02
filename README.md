@@ -93,10 +93,10 @@ One may also follow log output as it happens by applying the `follow` flag to th
 LocalStack and the E2E tests support a native Docker service running on `localhost`. Other setups, such as Docker
 Machine, may need to target other IP addresses.
 
-Variable name  | Description
--------------- | -----------
-DS_TEST_HOST   | Overrides the host that Terraform and tests connect to instead of AWS (default: `localhost`).
-EDGE_HOST_NAME | Overrides the host that LocalStack binds its edge service to (default: `127.0.0.1`).
+| Variable name  | Description                                                                                   |
+|----------------|-----------------------------------------------------------------------------------------------|
+| DS_TEST_HOST   | Overrides the host that Terraform and tests connect to instead of AWS (default: `localhost`). |
+| EDGE_HOST_NAME | Overrides the host that LocalStack binds its edge service to (default: `127.0.0.1`).          |
 
 To use this with Docker Machine, one might add the following to the Bash profile (or a utility
 like [direnv](https://direnv.net/)):
@@ -164,12 +164,12 @@ During deployment, the `ui/src/config.js` is modified to include values necessar
 file needs to be modified to connect to a Cognito pool and the API Gateway. There are four placeholders to replace, with
 names like `%region%`.
 
-Placeholder      | Terraform output
------------------|-----------------
-`%region%`       | None. The value should be: `eu-west-2`
-`%pool-id%`      | `cognito_user_pool_ids`
-`%client-id%`    | `cognito_client_ids`
-`%api-endpoint%` | `api_gateway_url`
+| Placeholder      | Terraform output                       |
+|------------------|----------------------------------------|
+| `%region%`       | None. The value should be: `eu-west-2` |
+| `%pool-id%`      | `cognito_user_pool_ids`                |
+| `%client-id%`    | `cognito_client_ids`                   |
+| `%api-endpoint%` | `api_gateway_url`                      |
 
 Be careful not to commit these values along with other changes.
 
