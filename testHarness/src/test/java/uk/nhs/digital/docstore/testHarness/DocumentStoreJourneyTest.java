@@ -4,24 +4,23 @@ import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.testHarness.helpers.AuthorizedRequestBuilderFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.file.Files;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Objects.requireNonNull;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.waitAtMost;
@@ -36,7 +35,7 @@ public class DocumentStoreJourneyTest {
     }
 
     @Test
-    void returnsCreatedDocumentReference() throws IOException, InterruptedException, URISyntaxException {
+    void returnsCreatedDocument() throws IOException, InterruptedException, URISyntaxException {
         String docStoreUrl = System.getenv("DOCUMENT_STORE_BASE_URI");
 
         String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
@@ -108,9 +107,12 @@ public class DocumentStoreJourneyTest {
         return newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
     }
 
-    private String getContentFromResource(String resourcePath) throws IOException {
+    private String getContentFromResource(String resourcePath) {
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(resourcePath).getFile());
-        return new String(Files.readAllBytes(file.toPath()));
+        try (InputStream stream = requireNonNull(classLoader.getResourceAsStream(resourcePath))) {
+            return new String(stream.readAllBytes(), UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("unable to load resource '%s'", resourcePath), e);
+        }
     }
 }
