@@ -1,5 +1,9 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.search;
 
+import uk.nhs.digital.docstore.Document;
+import uk.nhs.digital.docstore.DocumentMetadata;
+import uk.nhs.digital.docstore.DocumentMetadataStore;
+import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
 
 import java.net.URL;
@@ -12,7 +16,7 @@ import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
 
-public class DocumentReferenceSearchService {
+class DocumentReferenceSearchService {
     private static final Pattern SUBJECT_IDENTIFIER_PATTERN = Pattern.compile("^(?<systempart>(?<system>.*?)(?<!\\\\)\\|)?(?<identifier>.*)$");
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
 

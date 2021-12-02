@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.search;
 
 public class InvalidSubjectIdentifierException extends RuntimeException {
     public InvalidSubjectIdentifierException(String systemIdentifier) {

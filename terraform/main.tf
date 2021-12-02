@@ -100,7 +100,7 @@ resource "aws_lambda_function" "document_uploaded_lambda" {
 }
 
 resource "aws_lambda_function" "doc_ref_search_lambda" {
-  handler       = "uk.nhs.digital.docstore.DocumentReferenceSearchHandler::handleRequest"
+  handler       = "uk.nhs.digital.docstore.search.DocumentReferenceSearchHandler::handleRequest"
   function_name = "DocumentReferenceSearchHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn

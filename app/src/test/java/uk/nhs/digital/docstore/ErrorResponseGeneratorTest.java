@@ -4,6 +4,9 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.search.InvalidSubjectIdentifierException;
+import uk.nhs.digital.docstore.search.MissingSearchParametersException;
+import uk.nhs.digital.docstore.search.UnrecognisedSubjectIdentifierSystemException;
 
 import java.io.File;
 import java.io.IOException;

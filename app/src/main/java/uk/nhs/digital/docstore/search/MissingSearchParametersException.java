@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.search;
 
 public class MissingSearchParametersException extends RuntimeException {
     public MissingSearchParametersException(String expectedParameter) {

@@ -1,8 +1,10 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.search;
 
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
+import uk.nhs.digital.docstore.Document;
+import uk.nhs.digital.docstore.NHSDocumentReference;
 
 import java.util.List;
 
@@ -11,7 +13,7 @@ import static org.hl7.fhir.r4.model.Bundle.BundleType.SEARCHSET;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
-public class BundleMapper {
+class BundleMapper {
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
 

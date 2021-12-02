@@ -5,6 +5,9 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import uk.nhs.digital.docstore.search.InvalidSubjectIdentifierException;
+import uk.nhs.digital.docstore.search.MissingSearchParametersException;
+import uk.nhs.digital.docstore.search.UnrecognisedSubjectIdentifierSystemException;
 
 import java.util.Map;
 

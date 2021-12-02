@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.search;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,9 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.Document;
+import uk.nhs.digital.docstore.DocumentMetadataStore;
+import uk.nhs.digital.docstore.DocumentStore;
 
 import java.net.MalformedURLException;
 import java.net.URL;

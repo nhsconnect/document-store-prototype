@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.search;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -12,6 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+import uk.nhs.digital.docstore.Document;
+import uk.nhs.digital.docstore.DocumentMetadataStore;
+import uk.nhs.digital.docstore.DocumentStore;
+import uk.nhs.digital.docstore.ErrorResponseGenerator;
 
 import java.util.List;
 import java.util.Map;
@@ -44,7 +48,9 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         String userEmail = getEmail(requestEvent);
         Bundle bundle;
         try {
-            Map<String, String> searchParameters = (requestEvent.getQueryStringParameters() == null ? Map.of() : requestEvent.getQueryStringParameters());
+            Map<String, String> searchParameters = (requestEvent.getQueryStringParameters() == null
+                                                    ? Map.of()
+                                                    : requestEvent.getQueryStringParameters());
             List<Document> documents = searchService.findByParameters(
                     searchParameters,
                     message -> logger.info(AUDIT, "{} searched for {}", userEmail, message));
