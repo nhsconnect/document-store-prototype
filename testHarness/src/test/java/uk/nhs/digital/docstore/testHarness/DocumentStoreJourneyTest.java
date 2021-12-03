@@ -14,8 +14,8 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -67,12 +67,11 @@ public class DocumentStoreJourneyTest {
         var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
 
-        waitAtMost(30, TimeUnit.SECONDS)
+        HttpResponse<String> retrievedDocumentReferenceResponse = waitAtMost(30, TimeUnit.SECONDS)
                 .pollDelay(2, TimeUnit.SECONDS)
                 .pollInterval(3, TimeUnit.SECONDS)
-                .until(documentIsFinal(id));
+                .until(() -> getDocumentResponse(id), documentIsFinal());
 
-        var retrievedDocumentReferenceResponse = getDocumentResponse(id);
         assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
         assertThatJson(retrievedDocumentReferenceResponse.body())
                 .inPath("$.indexed")
@@ -92,17 +91,15 @@ public class DocumentStoreJourneyTest {
         assertThat(documentResponse.body()).isEqualTo("hello");
     }
 
-    private Callable<Boolean> documentIsFinal(String id) {
-        return () -> {
-            HttpResponse<String> retrievedDocumentReferenceResponse = getDocumentResponse(id);
-            return JsonPath.read(retrievedDocumentReferenceResponse.body(), "$.docStatus").equals("final");
-        };
-    }
-
     private HttpResponse<String> getDocumentResponse(String id) throws URISyntaxException, IOException, InterruptedException {
         var retrieveDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newGetBuilder("DocumentReference/" + id).build();
 
         return newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
+    }
+
+    private Predicate<HttpResponse<String>> documentIsFinal() {
+        return response -> response.statusCode() == 200
+                && "final".equals(JsonPath.read(response.body(), "$.docStatus"));
     }
 
     private String getContentFromResource(String resourcePath) {
