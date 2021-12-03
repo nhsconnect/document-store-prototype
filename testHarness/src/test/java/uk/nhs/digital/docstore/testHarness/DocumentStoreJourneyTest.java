@@ -36,16 +36,13 @@ public class DocumentStoreJourneyTest {
 
     @Test
     void returnsCreatedDocument() throws IOException, InterruptedException, URISyntaxException {
+        String documentContent = "hello";
         String documentReference = createDocumentReference();
 
-        String id = JsonPath.read(documentReference, "$.id");
         URI documentUploadUri = extractDocumentUri(documentReference);
-        var documentUploadRequest = HttpRequest.newBuilder(documentUploadUri)
-                .PUT(BodyPublishers.ofString("hello"))
-                .build();
-        var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
-        assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
+        uploadDocument(documentContent, documentUploadUri);
 
+        String id = JsonPath.read(documentReference, "$.id");
         HttpResponse<String> retrievedDocumentReferenceResponse = waitAtMost(30, TimeUnit.SECONDS)
                 .pollDelay(2, TimeUnit.SECONDS)
                 .pollInterval(3, TimeUnit.SECONDS)
@@ -67,7 +64,7 @@ public class DocumentStoreJourneyTest {
                 .timeout(Duration.ofSeconds(2))
                 .build();
         var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
-        assertThat(documentResponse.body()).isEqualTo("hello");
+        assertThat(documentResponse.body()).isEqualTo(documentContent);
     }
 
     private String createDocumentReference() throws URISyntaxException, IOException, InterruptedException {
@@ -93,6 +90,14 @@ public class DocumentStoreJourneyTest {
                 .whenIgnoringPaths("$.id", "$.content[*].attachment.url", "$.meta")
                 .isEqualTo(expectedDocumentReference);
         return documentReference;
+    }
+
+    private void uploadDocument(String content, URI documentUploadUri) throws IOException, InterruptedException {
+        var documentUploadRequest = HttpRequest.newBuilder(documentUploadUri)
+                .PUT(BodyPublishers.ofString(content))
+                .build();
+        var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
+        assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
     }
 
     private HttpResponse<String> getDocumentResponse(String id) throws URISyntaxException, IOException, InterruptedException {
