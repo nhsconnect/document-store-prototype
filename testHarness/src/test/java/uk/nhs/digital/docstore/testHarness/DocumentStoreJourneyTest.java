@@ -36,28 +36,9 @@ public class DocumentStoreJourneyTest {
 
     @Test
     void returnsCreatedDocument() throws IOException, InterruptedException, URISyntaxException {
-        String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
-        String content = getContentFromResource("CreateDocumentReferenceRequest.json");
+        String documentReference = createDocumentReference();
 
-        var createDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newPostBuilder("DocumentReference", content)
-                .header("Content-Type", "application/fhir+json")
-                .header("Accept", "application/fhir+json")
-                .build();
-
-        var createdDocumentReferenceResponse = newHttpClient().send(createDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
-
-        var documentReference = createdDocumentReferenceResponse.body();
         String id = JsonPath.read(documentReference, "$.id");
-        assertThat(createdDocumentReferenceResponse.statusCode())
-                .isEqualTo(201);
-        assertThat(createdDocumentReferenceResponse.headers().firstValue("Content-Type"))
-                .contains("application/fhir+json");
-        assertThat(createdDocumentReferenceResponse.headers().firstValue("Location"))
-                .hasValue("DocumentReference/" + id);
-        assertThatJson(documentReference)
-                .whenIgnoringPaths("$.id", "$.content[*].attachment.url", "$.meta")
-                .isEqualTo(expectedDocumentReference);
-
         URI documentUploadUri = extractDocumentUri(documentReference);
         var documentUploadRequest = HttpRequest.newBuilder(documentUploadUri)
                 .PUT(BodyPublishers.ofString("hello"))
@@ -87,6 +68,31 @@ public class DocumentStoreJourneyTest {
                 .build();
         var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
         assertThat(documentResponse.body()).isEqualTo("hello");
+    }
+
+    private String createDocumentReference() throws URISyntaxException, IOException, InterruptedException {
+        String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
+        String content = getContentFromResource("CreateDocumentReferenceRequest.json");
+
+        var createDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newPostBuilder("DocumentReference", content)
+                .header("Content-Type", "application/fhir+json")
+                .header("Accept", "application/fhir+json")
+                .build();
+
+        var createdDocumentReferenceResponse = newHttpClient().send(createDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
+
+        var documentReference = createdDocumentReferenceResponse.body();
+        String id = JsonPath.read(documentReference, "$.id");
+        assertThat(createdDocumentReferenceResponse.statusCode())
+                .isEqualTo(201);
+        assertThat(createdDocumentReferenceResponse.headers().firstValue("Content-Type"))
+                .contains("application/fhir+json");
+        assertThat(createdDocumentReferenceResponse.headers().firstValue("Location"))
+                .hasValue("DocumentReference/" + id);
+        assertThatJson(documentReference)
+                .whenIgnoringPaths("$.id", "$.content[*].attachment.url", "$.meta")
+                .isEqualTo(expectedDocumentReference);
+        return documentReference;
     }
 
     private HttpResponse<String> getDocumentResponse(String id) throws URISyntaxException, IOException, InterruptedException {
