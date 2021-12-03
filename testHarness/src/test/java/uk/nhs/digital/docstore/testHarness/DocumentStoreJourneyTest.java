@@ -46,12 +46,8 @@ public class DocumentStoreJourneyTest {
         String updatedDocumentReference = fetchUpdatedDocumentReference(id);
 
         URI documentDownloadUri = extractDocumentUri(updatedDocumentReference);
-        var documentRequest = HttpRequest.newBuilder(documentDownloadUri)
-                .GET()
-                .timeout(Duration.ofSeconds(2))
-                .build();
-        var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
-        assertThat(documentResponse.body()).isEqualTo(documentContent);
+        String downloadedDocument = downloadDocument(documentDownloadUri);
+        assertThat(downloadedDocument).isEqualTo(documentContent);
     }
 
     private String createDocumentReference() throws URISyntaxException, IOException, InterruptedException {
@@ -103,6 +99,16 @@ public class DocumentStoreJourneyTest {
                     assertThat(indexedAsInstant).isAfter(Instant.now().minus(30, SECONDS));
                 });
         return documentReference;
+    }
+
+    private String downloadDocument(URI documentDownloadUri) throws IOException, InterruptedException {
+        var documentRequest = HttpRequest.newBuilder(documentDownloadUri)
+                .GET()
+                .timeout(Duration.ofSeconds(2))
+                .build();
+        return newHttpClient()
+                .send(documentRequest, BodyHandlers.ofString(UTF_8))
+                .body();
     }
 
     private HttpResponse<String> getDocumentResponse(String id) throws URISyntaxException, IOException, InterruptedException {
