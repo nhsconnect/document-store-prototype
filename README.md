@@ -178,3 +178,581 @@ Once the `config.js` has been edited, the UI can be started from the `ui` subdir
 ```bash
 npm run start
 ```
+
+## APIs
+
+### Create `DocumentReference`
+Stores metadata to describe a new document. Includes a URL in the response for uploading the document.
+
+#### Request
+
+`POST /DocumentReference`
+
+Headers:
+
+| Name          | Value                                                                                   |
+|---------------|-----------------------------------------------------------------------------------------|
+| Accept        | application/fhir+json                                                                   |
+| Authorization | [AWS signature](https://docs.aws.amazon.com/apigateway/api-reference/signing-requests/) |
+| Content-Type  | application/fhir+json                                                                   |
+
+Body:
+```json
+{
+  "resourceType": "DocumentReference",
+  "subject": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "<number>"
+    }
+  },
+  "type": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "<number>"
+      }
+    ]
+  },
+  "content": [
+    {
+      "attachment": {
+        "contentType": "<mime-type>"
+      }
+    }
+  ],
+  "description": "<string>",
+  "created": "<iso-8601-date-time>"
+}
+```
+
+#### Response
+
+Status: `201 Created`
+
+Headers:
+
+| Name         | Value                                                |
+|--------------|------------------------------------------------------|
+| Content-Type | application/fhir+json                                |
+| Location     | Relative URL pointing to the new `DocumentReference` |
+
+Body:
+```json
+{
+  "resourceType": "DocumentReference",
+  "id": "<string>",
+  "subject": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "<number>"
+    }
+  },
+  "type": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "<number>"
+      }
+    ]
+  },
+  "content": [
+    {
+      "attachment": {
+        "url": "<url>",
+        "contentType": "<mime-type>"
+      }
+    }
+  ],
+  "docStatus": "preliminary",
+  "description": "<string>",
+  "created": "<iso-8601-date-time>"
+}
+```
+
+#### Errors
+
+##### Invalid coding system
+Status: 400
+
+Body:
+```json
+{
+ "resourceType": "OperationOutcome",
+ "issue": [
+   {
+     "severity": "error",
+     "code": "code-invalid",
+     "details": {
+       "coding": [
+         {
+           "system": "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1",
+           "code": "INVALID_CODE_SYSTEM",
+           "display": "Invalid code system"
+         }
+       ]
+     }
+   }
+ ]
+}
+```
+
+##### Internal server error
+Status: 500
+
+Body:
+```json
+{
+ "resourceType": "OperationOutcome",
+ "issue": [
+   {
+     "severity": "error",
+     "code": "exception",
+     "details": {
+       "coding": [
+         {
+           "system": "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1",
+           "code": "INTERNAL_SERVER_ERROR",
+           "display": "Internal server error"
+         }
+       ]
+     }
+   }
+ ]
+}
+```
+
+#### Examples
+
+Request payload:
+```json
+{
+ "resourceType": "DocumentReference",
+ "subject": {
+   "identifier": {
+     "system": "https://fhir.nhs.uk/Id/nhs-number",
+     "value": "9912312345"
+   }
+ },
+ "type": {
+   "coding": [
+     {
+       "system": "http://snomed.info/sct",
+       "code": "185361000000102"
+     }
+   ]
+ },
+ "content": [
+   {
+     "attachment": {
+       "contentType": "text/plain"
+     }
+   }
+ ],
+ "description": "uploaded document",
+ "created": "2021-11-03T15:57:30Z"
+}
+```
+
+Successful response payload:
+```json
+{
+ "resourceType": "DocumentReference",
+ "id": "a03566d7-b56f-499f-bd91-e53a1bf78f0d",
+ "subject": {
+   "identifier": {
+     "system": "https://fhir.nhs.uk/Id/nhs-number",
+     "value": "9713456776"
+   }
+ },
+ "type": {
+   "coding": [
+     {
+       "system": "http://snomed.info/sct",
+       "code": "185361000000102"
+     }
+   ]
+ },
+ "content": [
+   {
+     "attachment": {
+       "url": "<generated>",
+       "contentType": "text/plain"
+     }
+   }
+ ],
+ "docStatus": "preliminary",
+ "description": "uploaded document",
+ "created": "2021-11-03T15:57:30Z"
+}
+```
+
+### Retrieve `DocumentReference`
+Returns the metadata for an existing document. Includes a URL in the response for downloading the document.
+
+#### Request
+
+`GET /DocumentReference/{id}`
+
+Parameters:
+
+| Name | Value                                     |
+|------|-------------------------------------------|
+| id   | The unique ID of the document to retrieve |
+
+Headers:
+
+| Name          | Value                                                                                   |
+|---------------|-----------------------------------------------------------------------------------------|
+| Accept        | application/fhir+json                                                                   |
+| Authorization | [AWS signature](https://docs.aws.amazon.com/apigateway/api-reference/signing-requests/) |
+
+#### Response
+
+Status: `200 OK`
+
+Headers:
+
+| Name         | Value                                                |
+|--------------|------------------------------------------------------|
+| Content-Type | application/fhir+json                                |
+
+Body:
+```json
+{
+  "resourceType": "DocumentReference",
+  "id": "<string>",
+  "subject": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "<number>"
+    }
+  },
+  "type": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "<number>"
+      }
+    ]
+  },
+  "content": [
+    {
+      "attachment": {
+        "url": "<url>",
+        "contentType": "<mime-type>"
+      }
+    }
+  ],
+  "docStatus": "<preliminary | final>",
+  "description": "<string>",
+  "created": "<iso-8601-date-time>",
+  "indexed": "<optional-iso-8601-date-time>"
+}
+```
+
+The `docStatus` value in the response may be either `preliminary` or `final` depending on whether the document has been
+uploaded. If the value is `preliminary`, the `indexed` field will be omitted. 
+
+#### Errors
+
+##### Document not found
+Status: 404
+
+Body:
+```json
+{
+ "resourceType": "OperationOutcome",
+ "issue": [
+   {
+     "severity": "error",
+     "code": "not-found",
+     "details": {
+       "coding": [
+         {
+           "system": "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1",
+           "code": "NO_RECORD_FOUND",
+           "display": "No record found"
+         }
+       ]
+     }
+   }
+ ]
+}
+```
+
+##### Internal server error
+Status: 500
+
+Body:
+```json
+{
+ "resourceType": "OperationOutcome",
+ "issue": [
+   {
+     "severity": "error",
+     "code": "exception",
+     "details": {
+       "coding": [
+         {
+           "system": "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1",
+           "code": "INTERNAL_SERVER_ERROR",
+           "display": "Internal server error"
+         }
+       ]
+     }
+   }
+ ]
+}
+```
+
+#### Examples
+
+Successful response payload:
+```json
+{
+ "resourceType": "DocumentReference",
+ "id": "a03566d7-b56f-499f-bd91-e53a1bf78f0d",
+ "subject": {
+   "identifier": {
+     "system": "https://fhir.nhs.uk/Id/nhs-number",
+     "value": "9713456776"
+   }
+ },
+ "type": {
+   "coding": [
+     {
+       "system": "http://snomed.info/sct",
+       "code": "185361000000102"
+     }
+   ]
+ },
+ "content": [
+   {
+     "attachment": {
+       "url": "<generated>",
+       "contentType": "text/plain"
+     }
+   }
+ ],
+ "docStatus": "final",
+ "description": "uploaded document",
+ "created": "2021-11-03T15:57:30Z",
+ "indexed": "2021-11-03T15:58:14Z"
+}
+```
+
+### Search by NHS number
+Returns a `Bundle` of `DocumentReference`s with matching NHS numbers. The bundle will be empty if no matches are found.
+
+`GET /DocumentReference?system.identifier=https://fhir.nhs.uk/Id/nhs-number|{nhs-number}`
+
+Parameters:
+
+| Name       | Value                    |
+|------------|--------------------------|
+| nhs-number | The patient’s NHS number |
+
+Headers:
+
+| Name          | Value                 |
+|---------------|-----------------------|
+| Accept        | application/fhir+json |
+| Authorization | Bearer `token`        |
+
+where `token` is an ID token issued by AWS Cognito.
+
+#### Response
+
+Status: `200 OK`
+
+Headers:
+
+| Name         | Value                                                |
+|--------------|------------------------------------------------------|
+| Content-Type | application/fhir+json                                |
+
+Body:
+```json
+{
+ "resourceType": "Bundle",
+ "type": "searchset",
+ "total": number,
+ "entry": [
+   {
+     "fullUrl": "<url-path>",
+     "resource": {
+       "resourceType": "DocumentReference",
+       "id": "<string>",
+       "subject": {
+         "identifier": {
+           "system": "https://fhir.nhs.uk/Id/nhs-number",
+           "value": "<number>"
+         }
+       },
+       "type": {
+         "coding": [
+           {
+             "system": "http://snomed.info/sct",
+             "code": "<number>"
+           }
+         ]
+       },
+       "docStatus": "<preliminary | final>",
+       "content": [
+         {
+           "attachment": {
+             "contentType": "<mime-type>",
+             "url": "<generated>"
+           }
+         }
+       ],
+       "description": "<string>",
+       "created": "<iso-8601-date-time>",
+       "indexed": "<optional-iso-8601-date-time>"
+     }
+   }
+ ]
+}
+```
+
+where `entry` may consist of zero or more objects containing results.
+
+#### Errors
+
+##### Bad parameter
+If no search parameter is provided, or it uses an invalid system identifier or value, a response will be returned with
+the following structure. See the table below for the different values used in each error.
+
+Status: 400
+
+Body:
+```json
+{
+ "resourceType": "OperationOutcome",
+ "issue": [
+   {
+     "severity": "error",
+     "code": "code-invalid",
+     "details": {
+       "coding": [
+         {
+           "system": "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1",
+           "code": "<error-code>",
+           "display": "<error-message>"
+         }
+       ]
+     }
+   }
+ ]
+}
+```
+
+| Error type                     | Error code                | Error message             |
+|--------------------------------|---------------------------|---------------------------|
+| Unrecognised system identifier | INVALID_IDENTIFIER_SYSTEM | Invalid identifier system |
+| Invalid subject identifier     | INVALID_IDENTIFIER_VALUE  | Invalid identifier value  |
+| Missing search parameter       | INVALID_PARAMETER         | Invalid parameter         |        |
+
+
+##### Internal server error
+Status: 500
+
+Body:
+```json
+{
+ "resourceType": "OperationOutcome",
+ "issue": [
+   {
+     "severity": "error",
+     "code": "exception",
+     "details": {
+       "coding": [
+         {
+           "system": "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1",
+           "code": "INTERNAL_SERVER_ERROR",
+           "display": "Internal server error"
+         }
+       ]
+     }
+   }
+ ]
+}
+```
+
+#### Examples
+
+No matches found:
+```json
+{
+ "resourceType": "Bundle",
+ "type": "searchset",
+ "total": 0
+}
+```
+
+Two matching documents:
+```json
+{
+ "resourceType": "Bundle",
+ "type": "searchset",
+ "total": 2,
+ "entry": [
+   {
+     "fullUrl": "/DocumentReference/a03566d7-b56f-499f-bd91-e53a1bf78f0d",
+     "resource": {
+       "resourceType": "DocumentReference",
+       "id": "a03566d7-b56f-499f-bd91-e53a1bf78f0d",
+       "subject": {
+         "identifier": {
+           "system": "https://fhir.nhs.uk/Id/nhs-number",
+           "value": "9971234512"
+         }
+       },
+       "type": {
+         "coding": [
+           {
+             "system": "http://snomed.info/sct",
+             "code": "185361000000102"
+           }
+         ]
+       },
+       "docStatus": "final",
+       "content": [
+         {
+           "attachment": {
+             "contentType": "text/plain",
+             "url": "<generated>"
+           }
+         }
+       ],
+       "description": "uploaded document",
+       "created": "2021-11-04T15:57:30Z",
+       "indexed": "2021-11-04T15:58:14Z"
+     }
+   },
+   {
+     "fullUrl": "/DocumentReference/e53a16d7-b56f-499f-bd91-e53a1bf78f0d",
+     "resource": {
+       "resourceType": "DocumentReference",
+       "id": "e53a16d7-b56f-499f-bd91-e53a1bf78f0d",
+       "subject": {
+         "identifier": {
+           "system": "https://fhir.nhs.uk/Id/nhs-number",
+           "value": "9174512345"
+         }
+       },
+       "type": {
+         "coding": [
+           {
+             "system": "http://snomed.info/sct",
+             "code": "185361000000102"
+           }
+         ]
+       },
+       "docStatus": "preliminary"
+     }
+   }
+ ]
+}
+```
