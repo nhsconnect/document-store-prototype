@@ -43,22 +43,9 @@ public class DocumentStoreJourneyTest {
         uploadDocument(documentContent, documentUploadUri);
 
         String id = JsonPath.read(documentReference, "$.id");
-        HttpResponse<String> retrievedDocumentReferenceResponse = waitAtMost(30, TimeUnit.SECONDS)
-                .pollDelay(2, TimeUnit.SECONDS)
-                .pollInterval(3, TimeUnit.SECONDS)
-                .until(() -> getDocumentResponse(id), documentIsFinal());
+        String updatedDocumentReference = fetchUpdatedDocumentReference(id);
 
-        assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
-        String retrievedDocumentReferenceResponseBody = retrievedDocumentReferenceResponse.body();
-        assertThatJson(retrievedDocumentReferenceResponseBody)
-                .inPath("$.indexed")
-                .asString()
-                .satisfies(indexed -> {
-                    var indexedAsInstant = Instant.parse(indexed);
-                    assertThat(indexedAsInstant).isAfter(Instant.now().minus(30, SECONDS));
-                });
-
-        URI documentDownloadUri = extractDocumentUri(retrievedDocumentReferenceResponseBody);
+        URI documentDownloadUri = extractDocumentUri(updatedDocumentReference);
         var documentRequest = HttpRequest.newBuilder(documentDownloadUri)
                 .GET()
                 .timeout(Duration.ofSeconds(2))
@@ -98,6 +85,24 @@ public class DocumentStoreJourneyTest {
                 .build();
         var documentUploadResponse = newHttpClient().send(documentUploadRequest, BodyHandlers.ofString(UTF_8));
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
+    }
+
+    private String fetchUpdatedDocumentReference(String id) {
+        HttpResponse<String> documentReferenceResponse = waitAtMost(30, TimeUnit.SECONDS)
+                .pollDelay(2, TimeUnit.SECONDS)
+                .pollInterval(3, TimeUnit.SECONDS)
+                .until(() -> getDocumentResponse(id), documentIsFinal());
+
+        assertThat(documentReferenceResponse.statusCode()).isEqualTo(200);
+        String documentReference = documentReferenceResponse.body();
+        assertThatJson(documentReference)
+                .inPath("$.indexed")
+                .asString()
+                .satisfies(indexed -> {
+                    var indexedAsInstant = Instant.parse(indexed);
+                    assertThat(indexedAsInstant).isAfter(Instant.now().minus(30, SECONDS));
+                });
+        return documentReference;
     }
 
     private HttpResponse<String> getDocumentResponse(String id) throws URISyntaxException, IOException, InterruptedException {
