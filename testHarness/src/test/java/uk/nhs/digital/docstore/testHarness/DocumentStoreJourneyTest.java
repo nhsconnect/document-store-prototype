@@ -36,12 +36,10 @@ public class DocumentStoreJourneyTest {
 
     @Test
     void returnsCreatedDocument() throws IOException, InterruptedException, URISyntaxException {
-        String docStoreUrl = System.getenv("DOCUMENT_STORE_BASE_URI");
-
         String expectedDocumentReference = getContentFromResource("CreatedDocumentReference.json");
         String content = getContentFromResource("CreateDocumentReferenceRequest.json");
 
-        var createDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newPostBuilder(docStoreUrl, "DocumentReference", content)
+        var createDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newPostBuilder("DocumentReference", content)
                 .header("Content-Type", "application/fhir+json")
                 .header("Accept", "application/fhir+json")
                 .build();
@@ -72,9 +70,9 @@ public class DocumentStoreJourneyTest {
         waitAtMost(30, TimeUnit.SECONDS)
                 .pollDelay(2, TimeUnit.SECONDS)
                 .pollInterval(3, TimeUnit.SECONDS)
-                .until(documentIsFinal(docStoreUrl, id));
+                .until(documentIsFinal(id));
 
-        var retrievedDocumentReferenceResponse = getDocumentResponse(docStoreUrl, id);
+        var retrievedDocumentReferenceResponse = getDocumentResponse(id);
         assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
         assertThatJson(retrievedDocumentReferenceResponse.body())
                 .inPath("$.indexed")
@@ -94,15 +92,15 @@ public class DocumentStoreJourneyTest {
         assertThat(documentResponse.body()).isEqualTo("hello");
     }
 
-    private Callable<Boolean> documentIsFinal(String docStoreUrl, String id) {
+    private Callable<Boolean> documentIsFinal(String id) {
         return () -> {
-            HttpResponse<String> retrievedDocumentReferenceResponse = getDocumentResponse(docStoreUrl, id);
+            HttpResponse<String> retrievedDocumentReferenceResponse = getDocumentResponse(id);
             return JsonPath.read(retrievedDocumentReferenceResponse.body(), "$.docStatus").equals("final");
         };
     }
 
-    private HttpResponse<String> getDocumentResponse(String docStoreUrl, String id) throws URISyntaxException, IOException, InterruptedException {
-        var retrieveDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newGetBuilder(docStoreUrl, "DocumentReference/" + id).build();
+    private HttpResponse<String> getDocumentResponse(String id) throws URISyntaxException, IOException, InterruptedException {
+        var retrieveDocumentReferenceRequest = AuthorizedRequestBuilderFactory.newGetBuilder("DocumentReference/" + id).build();
 
         return newHttpClient().send(retrieveDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
     }
