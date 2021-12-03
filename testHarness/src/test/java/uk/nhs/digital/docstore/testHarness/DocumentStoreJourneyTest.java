@@ -58,9 +58,7 @@ public class DocumentStoreJourneyTest {
                 .whenIgnoringPaths("$.id", "$.content[*].attachment.url", "$.meta")
                 .isEqualTo(expectedDocumentReference);
 
-        String documentUploadURL = JsonPath.<String>read(documentReference, "$.content[0].attachment.url")
-                .replace(INTERNAL_DOCKER_HOST, getHost());
-        URI documentUploadUri = URI.create(documentUploadURL);
+        URI documentUploadUri = extractDocumentUri(documentReference);
         var documentUploadRequest = HttpRequest.newBuilder(documentUploadUri)
                 .PUT(BodyPublishers.ofString("hello"))
                 .build();
@@ -73,7 +71,8 @@ public class DocumentStoreJourneyTest {
                 .until(() -> getDocumentResponse(id), documentIsFinal());
 
         assertThat(retrievedDocumentReferenceResponse.statusCode()).isEqualTo(200);
-        assertThatJson(retrievedDocumentReferenceResponse.body())
+        String retrievedDocumentReferenceResponseBody = retrievedDocumentReferenceResponse.body();
+        assertThatJson(retrievedDocumentReferenceResponseBody)
                 .inPath("$.indexed")
                 .asString()
                 .satisfies(indexed -> {
@@ -81,9 +80,8 @@ public class DocumentStoreJourneyTest {
                     assertThat(indexedAsInstant).isAfter(Instant.now().minus(30, SECONDS));
                 });
 
-        String preSignedUrl = JsonPath.<String>read(retrievedDocumentReferenceResponse.body(), "$.content[0].attachment.url")
-                .replace(INTERNAL_DOCKER_HOST, getHost());
-        var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
+        URI documentDownloadUri = extractDocumentUri(retrievedDocumentReferenceResponseBody);
+        var documentRequest = HttpRequest.newBuilder(documentDownloadUri)
                 .GET()
                 .timeout(Duration.ofSeconds(2))
                 .build();
@@ -100,6 +98,11 @@ public class DocumentStoreJourneyTest {
     private Predicate<HttpResponse<String>> documentIsFinal() {
         return response -> response.statusCode() == 200
                 && "final".equals(JsonPath.read(response.body(), "$.docStatus"));
+    }
+
+    private URI extractDocumentUri(String documentReference) throws URISyntaxException {
+        return new URI(JsonPath.<String>read(documentReference, "$.content[0].attachment.url")
+                .replace(INTERNAL_DOCKER_HOST, getHost()));
     }
 
     private String getContentFromResource(String resourcePath) {
