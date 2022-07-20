@@ -35,7 +35,7 @@ tasks.register('deployToLocalStack', Exec) {
 
     group 'localstack'
     description 'Apply Terraform definitions to LocalStack.'
-    mustRunAfter jar, initializeTerraform
+    dependsOn jar, initializeTerraform
 
     executable = 'terraform'
     args = ['apply', '-var-file=local.tfvars', "-var=aws_endpoint=http://${dockerHostname}:4566",
