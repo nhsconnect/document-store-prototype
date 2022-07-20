@@ -8,7 +8,10 @@ tasks.register('bootstrapLocalStack', Exec) {
     description 'Configure the LocalStack environment to support Terraform.'
 
     executable = 'aws'
-    args = ['s3api', 'create-bucket', '--bucket=document-store-terraform-state', "--endpoint-url=http://${dockerHostname}:4566"]
+    args = ['s3api', 'create-bucket',
+            '--bucket=document-store-terraform-state',
+            "--create-bucket-configuration={\"LocationConstraint\": \"eu-west-2\"}",
+            "--endpoint-url=http://${dockerHostname}:4566"]
 }
 
 //noinspection GroovyAssignabilityCheck
