@@ -60,6 +60,7 @@ tasks.register('storeTerraformOutput', Exec) {
     executable = 'terraform'
     args = ['output', '-json']
     environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
+    environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
     workingDir = '../terraform'
 
     standardOutput = new FileOutputStream("terraform.json")
