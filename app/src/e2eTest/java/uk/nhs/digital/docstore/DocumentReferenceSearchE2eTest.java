@@ -86,7 +86,7 @@ public class DocumentReferenceSearchE2eTest {
         String expectedEmptySearchResponse = getContentFromResource("search/empty-nhs-number-response.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7Cdoesnt-exist"))
                 .GET()
-                .header("Authorization", createBearerToken())
+                .header("x-localstack-authorization", createBearerToken())
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
@@ -103,7 +103,7 @@ public class DocumentReferenceSearchE2eTest {
         String expectedSearchResponse = getContentFromResource("search/nhs-number-response.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C12345"))
                 .GET()
-                .header("Authorization", createBearerToken())
+                .header("x-localstack-authorization", createBearerToken())
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
@@ -132,7 +132,7 @@ public class DocumentReferenceSearchE2eTest {
         String expectedErrorResponse = getContentFromResource("search/unrecognised-subject-identifier.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject.identifier=unknown-system%7Cvalue"))
                 .GET()
-                .header("Authorization", createBearerToken())
+                .header("x-localstack-authorization", createBearerToken())
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
