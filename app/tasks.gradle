@@ -17,6 +17,16 @@ tasks.register('bootstrapLocalStack', Exec) {
 }
 
 //noinspection GroovyAssignabilityCheck
+tasks.register('bootstrapCIRole', Exec) {
+    description 'Create the role for GoCD to assume'
+
+    executable = 'aws'
+    args = ['iam', 'create-role', '--role-name="ci-agent"', '--assume-role-policy-document=']
+    environment('AWS_SECRET_ACCESS_KEY', "test")
+    environment('AWS_ACCESS_KEY_ID', "test")
+}
+
+//noinspection GroovyAssignabilityCheck
 tasks.register('initializeTerraform', Exec) {
     def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
 
