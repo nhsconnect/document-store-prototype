@@ -12,6 +12,8 @@ tasks.register('bootstrapLocalStack', Exec) {
             '--bucket=document-store-terraform-state',
             "--create-bucket-configuration={\"LocationConstraint\": \"eu-west-2\"}",
             "--endpoint-url=http://${dockerHostname}:4566"]
+    environment('AWS_SECRET_ACCESS_KEY', "test")
+    environment('AWS_ACCESS_KEY_ID', "test")
 }
 
 //noinspection GroovyAssignabilityCheck
@@ -26,6 +28,8 @@ tasks.register('initializeTerraform', Exec) {
     args = ['init', '-backend-config=force_path_style=true']
     environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
     environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
+    environment('AWS_SECRET_ACCESS_KEY', "test")
+    environment('AWS_ACCESS_KEY_ID', "test")
     workingDir = '../terraform'
 
     onlyIf {
@@ -46,6 +50,8 @@ tasks.register('deployToLocalStack', Exec) {
             '-var=dynamodb_endpoint=http://172.17.0.2:4566', '-var=s3_endpoint=http://172.17.0.2:4566', '-auto-approve']
     environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
     environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
+    environment('AWS_SECRET_ACCESS_KEY', "test")
+    environment('AWS_ACCESS_KEY_ID', "test")
     workingDir = '../terraform'
 }
 
@@ -61,13 +67,15 @@ tasks.register('storeTerraformOutput', Exec) {
     args = ['output', '-json']
     environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
     environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
+    environment('AWS_SECRET_ACCESS_KEY', "test")
+    environment('AWS_ACCESS_KEY_ID', "test")
     workingDir = '../terraform'
 
     standardOutput = new FileOutputStream("terraform.json")
 }
 
 //noinspection GroovyAssignabilityCheck
-tasks.register("copyTerraformOutput" ,Copy) {
+tasks.register("copyTerraformOutput", Copy) {
     mustRunAfter storeTerraformOutput
     from '../terraform.json'
     into sourceSets.e2eTest.output.resourcesDir.toPath()
@@ -75,6 +83,7 @@ tasks.register("copyTerraformOutput" ,Copy) {
         delete '../terraform.json'
     }
 }
+
 //noinspection GroovyAssignabilityCheck
 tasks.register('e2eTest', Test) {
     group 'verification'
@@ -85,6 +94,9 @@ tasks.register('e2eTest', Test) {
 
     testClassesDirs = sourceSets.e2eTest.output.classesDirs
     classpath = sourceSets.e2eTest.runtimeClasspath
+
+    environment('AWS_SECRET_ACCESS_KEY', "test")
+    environment('AWS_ACCESS_KEY_ID', "test")
 }
 
 //noinspection GroovyAssignabilityCheck
@@ -96,6 +108,9 @@ tasks.register('testHarness', Test) {
 
     testClassesDirs = sourceSets.e2eTest.output.classesDirs
     classpath = sourceSets.e2eTest.runtimeClasspath
+
+    environment('AWS_SECRET_ACCESS_KEY', "test")
+    environment('AWS_ACCESS_KEY_ID', "test")
 
     filter {
         includeTestsMatching "uk.nhs.digital.docstore.CreateDocumentReferenceE2eTest"
