@@ -1,0 +1,169 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowAmplify",
+      "Effect": "Allow",
+      "Action": "amplify:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowAmplifyBranchesAndApps",
+      "Effect": "Allow",
+      "Action": [
+        "amplify:CreateBranch",
+        "amplify:CreateApp",
+        "amplify:UpdateApp"
+      ],
+      "Resource": "arn:aws:amplify:*:327778747031:apps/*"
+    },
+    {
+      "Sid": "AllowCognito",
+      "Effect": "Allow",
+      "Action": [
+        "cognito-identity:GetId",
+        "cognito-identity:SetPrincipalTagAttributeMap",
+        "cognito-identity:SetIdentityPoolRoles",
+        "cognito-identity:ListIdentityPools",
+        "cognito-identity:CreateIdentityPool",
+        "cognito-identity:UnlinkIdentity",
+        "cognito-identity:DeleteIdentities",
+        "cognito-identity:GetOpenIdToken",
+        "cognito-identity:DescribeIdentity",
+        "cognito-identity:GetCredentialsForIdentity"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowCognitoIdentity",
+      "Effect": "Allow",
+      "Action": [
+        "cognito-identity:*"
+      ],
+      "Resource": [
+        "arn:aws:cognito-identity:*:327778747031:identitypool/*"
+      ]
+    },
+    {
+      "Sid": "AllowCognitoIdp",
+      "Effect": "Allow",
+      "Action": [
+        "cognito-idp:ForgotPassword",
+        "cognito-idp:GlobalSignOut",
+        "cognito-idp:ConfirmSignUp",
+        "cognito-idp:CreateUserPool",
+        "cognito-idp:ForgetDevice",
+        "cognito-idp:RevokeToken",
+        "cognito-idp:GetUserAttributeVerificationCode",
+        "cognito-idp:InitiateAuth",
+        "cognito-idp:DeleteUser",
+        "cognito-idp:SetUserMFAPreference",
+        "cognito-idp:GetUser",
+        "cognito-idp:ConfirmForgotPassword",
+        "cognito-idp:SetUserSettings",
+        "cognito-idp:SignUp",
+        "cognito-idp:VerifyUserAttribute",
+        "cognito-idp:ListDevices",
+        "cognito-idp:ListUserPools",
+        "cognito-idp:AssociateSoftwareToken",
+        "cognito-idp:VerifySoftwareToken",
+        "cognito-idp:GetDevice",
+        "cognito-idp:RespondToAuthChallenge",
+        "cognito-idp:DeleteUserAttributes",
+        "cognito-idp:UpdateUserAttributes",
+        "cognito-idp:DescribeUserPoolDomain",
+        "cognito-idp:UpdateDeviceStatus",
+        "cognito-idp:ChangePassword",
+        "cognito-idp:ConfirmDevice",
+        "cognito-idp:ResendConfirmationCode"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowDynamo",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:ListContributorInsights",
+        "dynamodb:DescribeReservedCapacityOfferings",
+        "dynamodb:ListGlobalTables",
+        "dynamodb:ListTables",
+        "dynamodb:DescribeReservedCapacity",
+        "dynamodb:ListBackups",
+        "dynamodb:PurchaseReservedCapacityOfferings",
+        "dynamodb:DescribeLimits",
+        "dynamodb:ListExports",
+        "dynamodb:ListStreams"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowDynamo2",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:*"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb::327778747031:global-table/*",
+        "arn:aws:dynamodb:*:327778747031:table/*/backup/*",
+        "arn:aws:dynamodb:*:327778747031:table/*/index/*",
+        "arn:aws:dynamodb:*:327778747031:table/*/export/*",
+        "arn:aws:dynamodb:*:327778747031:table/*/stream/*"
+      ]
+    },
+    {
+      "Sid": "AllowDynamo3",
+      "Effect": "Allow",
+      "Action": "dynamodb:*",
+      "Resource": "arn:aws:dynamodb:*:327778747031:table/*"
+    },
+    {
+      "Sid": "AllowLambda",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:ListFunctions",
+        "lambda:ListEventSourceMappings",
+        "lambda:ListLayerVersions",
+        "lambda:ListLayers",
+        "lambda:GetAccountSettings",
+        "lambda:CreateEventSourceMapping",
+        "lambda:ListCodeSigningConfigs",
+        "lambda:CreateCodeSigningConfig"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowLambda2",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:*"
+      ],
+      "Resource": [
+        "arn:aws:lambda:*:327778747031:layer:*:*",
+        "arn:aws:lambda:*:327778747031:function:*:*",
+        "arn:aws:lambda:*:327778747031:code-signing-config:*",
+        "arn:aws:lambda:*:327778747031:event-source-mapping:*"
+      ]
+    },
+    {
+      "Sid": "AllowLambda3",
+      "Effect": "Allow",
+      "Action": "lambda:*",
+      "Resource": [
+        "arn:aws:lambda:*:327778747031:layer:*",
+        "arn:aws:lambda:*:327778747031:function:*"
+      ]
+    },
+    {
+      "Sid": "AllowApiGateway",
+      "Effect": "Allow",
+      "Action": "apigateway:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowIam",
+      "Effect": "Allow",
+      "Action": "iam:CreateRole",
+      "Resource": "*"
+    }
+  ]
+}

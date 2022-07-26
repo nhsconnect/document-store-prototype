@@ -178,6 +178,20 @@ Once the `config.js` has been edited, the UI can be started from the `ui` subdir
 ```bash
 npm run start
 ```
+## Running services on AWS
+
+### Initialising GoCD Agents
+In order to deploy to AWS from the pipeline, a GoCD agent must have a role and policy attached to it. These need to be created before running the pipeline for the first time. This can be done by running the following gradle tasks:
+
+1. Create a CI Role:
+```bash
+./gradlew bootstrapCIRole
+```
+
+1. Attach a policy to a CI Role:
+```bash
+./gradlew attachPolicyTOCIRole
+```
 
 ## APIs
 
@@ -577,7 +591,7 @@ Body:
 {
  "resourceType": "Bundle",
  "type": "searchset",
- "total": number,
+ "total": "<number>",
  "entry": [
    {
      "fullUrl": "<url-path>",

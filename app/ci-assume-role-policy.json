@@ -1,0 +1,13 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "AWS": "arn:aws:iam::327778747031:role/gocd_agent-prod"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}

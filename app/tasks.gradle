@@ -17,6 +17,21 @@ tasks.register('bootstrapLocalStack', Exec) {
 }
 
 //noinspection GroovyAssignabilityCheck
+tasks.register('bootstrapCIRole', Exec) {
+    description 'Create the role for GoCD to assume'
+
+    executable = 'aws'
+    args = ['iam', 'create-role', '--role-name=ci-agent', '--assume-role-policy-document=file://ci-assume-role-policy.json']
+}
+
+tasks.register('attachPolicyTOCIRole', Exec) {
+    description 'Attach an inline policy to the ci-agent role'
+
+    executable = 'aws'
+    args = ['iam', 'put-role-policy', '--role-name=ci-agent', '--policy-name=ci-role-policy', '--policy-document=file://ci-role-policy.json']
+}
+
+//noinspection GroovyAssignabilityCheck
 tasks.register('initializeTerraform', Exec) {
     def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
 
