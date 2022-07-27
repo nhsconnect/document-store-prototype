@@ -111,10 +111,16 @@ export EDGE_HOST_NAME=0.0.0.0
 It is possible to run the prototype largely locally. This includes the backend Lambda functions and their associated
 services (DynamoDB, S3, etc.), and the frontend UI.
 
+To make the Localstack running on Local environment compatible with Apple Silicon use the env_variables
+
+```bash
+export LAMBDA_CONTAINER_REGISTRY=mlupin/docker-lambda
+```
+
 ### Starting the Document Store
 
-The steps required to run the Document Store on a developer’s machine is largely covered in the previous
-section on [testing](#testing), including information about setting up [environment variables](#environment-variables).
+The steps required to run the Document Store on a developer’s machine is largely covered in the previous section on [testing](#testing), including information about setting up [environment variables](#environment-variables).
+
 The relevant ones are repeated here for simplicity.
 
 1. Start LocalStack:
@@ -179,6 +185,23 @@ Once the `config.js` has been edited, the UI can be started from the `ui` subdir
 npm run start
 ```
 ## Running services on AWS
+
+### Create terraform state bucket
+
+#### Create bucket
+```bash
+aws s3api create-bucket --bucket doc-store-terraform-state-dev --acl private --create-bucket-configuration '{ "LocationConstraint": "eu-west-2" }'
+```
+
+#### Configure public access
+```bash
+aws s3api put-public-access-block --bucket doc-store-terraform-state-dev --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+```
+
+#### Toggle on versioning
+```bash
+aws s3api put-bucket-versioning --bucket doc-store-terraform-state-dev --versioning-configuration Status=Enabled
+```
 
 ### Initialising GoCD Agents
 In order to deploy to AWS from the pipeline, a GoCD agent must have a role and policy attached to it. These need to be created before running the pipeline for the first time. This can be done by running the following gradle tasks:
