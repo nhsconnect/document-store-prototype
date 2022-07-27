@@ -62,9 +62,9 @@ public class DocumentStoreJourneyTest {
         var createdDocumentReferenceResponse = newHttpClient().send(createDocumentReferenceRequest, BodyHandlers.ofString(UTF_8));
 
         var documentReference = createdDocumentReferenceResponse.body();
-        String id = JsonPath.read(documentReference, "$.id");
         assertThat(createdDocumentReferenceResponse.statusCode())
                 .isEqualTo(201);
+        String id = JsonPath.read(documentReference, "$.id");
         assertThat(createdDocumentReferenceResponse.headers().firstValue("Content-Type"))
                 .contains("application/fhir+json");
         assertThat(createdDocumentReferenceResponse.headers().firstValue("Location"))
