@@ -31,13 +31,6 @@ tasks.register('attachPolicyToCIRole', Exec) {
     args = ['iam', 'put-role-policy', '--role-name=ci-agent', '--policy-name=ci-role-policy', '--policy-document=file://ci-role-policy.json']
 }
 
-tasks.register('attachS3PolicyToCIRole', Exec) {
-    description 'Attach a managed S3 policy to the ci-agent role'
-
-    executable = 'aws'
-    args = ['iam', 'attach-role-policy', '--role-name=ci-agent', '--policy-arn=arn:aws:iam::aws:policy/AmazonS3FullAccess']
-}
-
 //noinspection GroovyAssignabilityCheck
 tasks.register('initializeTerraform', Exec) {
     def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
