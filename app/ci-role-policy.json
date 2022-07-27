@@ -164,6 +164,14 @@
       "Resource": "*"
     },
     {
+      "Sid": "AllowExecuteApi",
+      "Effect": "Allow",
+      "Action": [
+        "execute-api:Invoke"
+      ],
+      "Resource": "arn:aws:execute-api:*:*:*"
+    },
+    {
       "Sid": "AllowIam",
       "Effect": "Allow",
       "Action": [
