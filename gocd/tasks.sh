@@ -118,7 +118,6 @@ export-aws-creds)
   ;;
 run-test-harness)
   source ./temp_aws_credentials.sh
-  echo "auth: $API_AUTH"
   rm temp_aws_credentials.sh
   ./gradlew testHarness:test
   ;;
