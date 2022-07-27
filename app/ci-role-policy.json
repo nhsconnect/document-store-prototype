@@ -71,6 +71,7 @@
         "cognito-idp:RespondToAuthChallenge",
         "cognito-idp:DeleteUserAttributes",
         "cognito-idp:UpdateUserAttributes",
+        "cognito-idp:CreateUserPoolDomain",
         "cognito-idp:DescribeUserPoolDomain",
         "cognito-idp:UpdateDeviceStatus",
         "cognito-idp:ChangePassword",
@@ -78,6 +79,7 @@
         "cognito-idp:ResendConfirmationCode",
         "cognito-idp:DescribeUserPool",
         "cognito-idp:GetUserPoolMfaConfig",
+        "cognito-idp:CreateUserPoolClient",
         "cognito-idp:DescribeUserPoolClient",
         "cognito-idp:UpdateUserPool"
       ],
@@ -124,6 +126,7 @@
       "Sid": "AllowLambda",
       "Effect": "Allow",
       "Action": [
+        "lambda:CreateFunction",
         "lambda:ListFunctions",
         "lambda:ListEventSourceMappings",
         "lambda:ListLayerVersions",
@@ -160,7 +163,10 @@
     {
       "Sid": "AllowApiGateway",
       "Effect": "Allow",
-      "Action": "apigateway:*",
+      "Action": [
+        "apigateway:*",
+        "apigateway:PATCH"
+      ],
       "Resource": "*"
     },
     {
@@ -178,8 +184,11 @@
         "iam:CreateRole",
         "iam:GetRole",
         "iam:GetRolePolicy",
+        "iam:AttachRolePolicy",
         "iam:ListRolePolicies",
-        "iam:ListAttachedRolePolicies"
+        "iam:PutRolePolicy",
+        "iam:ListAttachedRolePolicies",
+        "iam:PassRole"
       ],
       "Resource": "*"
     },
