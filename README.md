@@ -186,21 +186,25 @@ npm run start
 ```
 ## Running services on AWS
 
+### AWS authentication
+
+Before running any operations against AWS, ensure that you have [configured the command line interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
+
 ### Create terraform state bucket
 
 #### Create bucket
 ```bash
-aws s3api create-bucket --bucket doc-store-terraform-state-dev --acl private --create-bucket-configuration '{ "LocationConstraint": "eu-west-2" }'
+aws s3api create-bucket --bucket document-store-terraform-state --acl private --create-bucket-configuration '{ "LocationConstraint": "eu-west-2" }'
 ```
 
 #### Configure public access
 ```bash
-aws s3api put-public-access-block --bucket doc-store-terraform-state-dev --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+aws s3api put-public-access-block --bucket document-store-terraform-state --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
 ```
 
 #### Toggle on versioning
 ```bash
-aws s3api put-bucket-versioning --bucket doc-store-terraform-state-dev --versioning-configuration Status=Enabled
+aws s3api put-bucket-versioning --bucket document-store-terraform-state --versioning-configuration Status=Enabled
 ```
 
 ### Initialising GoCD Agents
