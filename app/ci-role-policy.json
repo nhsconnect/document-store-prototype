@@ -100,14 +100,14 @@
       "Sid": "AllowDynamo2",
       "Effect": "Allow",
       "Action": [
-        "dynamodb:*",
+        "dynamodb:*"
       ],
       "Resource": [
         "arn:aws:dynamodb::327778747031:global-table/*",
         "arn:aws:dynamodb:*:327778747031:table/*/backup/*",
         "arn:aws:dynamodb:*:327778747031:table/*/index/*",
         "arn:aws:dynamodb:*:327778747031:table/*/export/*",
-        "arn:aws:dynamodb:*:327778747031:table/*/stream/*",
+        "arn:aws:dynamodb:*:327778747031:table/*/stream/*"
       ]
     },
     {
@@ -135,13 +135,13 @@
       "Sid": "AllowLambda2",
       "Effect": "Allow",
       "Action": [
-        "lambda:*",
+        "lambda:*"
       ],
       "Resource": [
         "arn:aws:lambda:*:327778747031:layer:*:*",
         "arn:aws:lambda:*:327778747031:function:*:*",
         "arn:aws:lambda:*:327778747031:code-signing-config:*",
-        "arn:aws:lambda:*:327778747031:event-source-mapping:*",
+        "arn:aws:lambda:*:327778747031:event-source-mapping:*"
       ]
     },
     {

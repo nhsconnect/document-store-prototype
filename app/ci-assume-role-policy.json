@@ -4,7 +4,7 @@
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "AWS": "arn:aws:iam::[AWS-account-ID]:[role/role-name]"
+        "AWS": "arn:aws:iam::327778747031:role/gocd_agent-prod"
       },
       "Effect": "Allow",
       "Sid": ""
