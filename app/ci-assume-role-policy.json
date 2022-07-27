@@ -2,11 +2,12 @@
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "AWS": "arn:aws:iam::[AWS-account-ID]:[role/role-name]"
+      },
       "Effect": "Allow",
-      "Action": [
-        "sts:AssumeRole"
-      ],
-      "Resource": "*"
+      "Sid": ""
     }
   ]
 }
