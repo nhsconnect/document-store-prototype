@@ -207,14 +207,13 @@ aws s3api put-bucket-versioning --bucket doc-store-terraform-state-dev --version
 In order to deploy to AWS from the pipeline, a GoCD agent must have a role and policy attached to it. These need to be created before running the pipeline for the first time. This can be done by running the following gradle tasks:
 
 1. Create a CI Role:
-```bash
-./gradlew bootstrapCIRole
-```
-
-1. Attach a policy to a CI Role:
-```bash
-./gradlew attachPolicyToCIRole
-```
+    ```bash
+    ./gradlew bootstrapCIRole
+    ```
+2. Attach a policy to a CI Role:
+    ```bash
+    ./gradlew attachPolicyToCIRole
+    ```
 
 ## APIs
 
