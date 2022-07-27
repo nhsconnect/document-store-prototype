@@ -15,7 +15,7 @@
         "amplify:CreateApp",
         "amplify:UpdateApp"
       ],
-      "Resource": "arn:aws:amplify:*:327778747031:apps/*"
+      "Resource": "arn:aws:amplify:*:533825906475:apps/*"
     },
     {
       "Sid": "AllowCognito",
@@ -41,7 +41,7 @@
         "cognito-identity:*"
       ],
       "Resource": [
-        "arn:aws:cognito-identity:*:327778747031:identitypool/*"
+        "arn:aws:cognito-identity:*:533825906475:identitypool/*"
       ]
     },
     {
@@ -75,7 +75,11 @@
         "cognito-idp:UpdateDeviceStatus",
         "cognito-idp:ChangePassword",
         "cognito-idp:ConfirmDevice",
-        "cognito-idp:ResendConfirmationCode"
+        "cognito-idp:ResendConfirmationCode",
+        "cognito-idp:DescribeUserPool",
+        "cognito-idp:GetUserPoolMfaConfig",
+        "cognito-idp:DescribeUserPoolClient",
+        "cognito-idp:UpdateUserPool"
       ],
       "Resource": "*"
     },
@@ -103,18 +107,18 @@
         "dynamodb:*"
       ],
       "Resource": [
-        "arn:aws:dynamodb::327778747031:global-table/*",
-        "arn:aws:dynamodb:*:327778747031:table/*/backup/*",
-        "arn:aws:dynamodb:*:327778747031:table/*/index/*",
-        "arn:aws:dynamodb:*:327778747031:table/*/export/*",
-        "arn:aws:dynamodb:*:327778747031:table/*/stream/*"
+        "arn:aws:dynamodb::533825906475:global-table/*",
+        "arn:aws:dynamodb:*:533825906475:table/*/backup/*",
+        "arn:aws:dynamodb:*:533825906475:table/*/index/*",
+        "arn:aws:dynamodb:*:533825906475:table/*/export/*",
+        "arn:aws:dynamodb:*:533825906475:table/*/stream/*"
       ]
     },
     {
       "Sid": "AllowDynamo3",
       "Effect": "Allow",
       "Action": "dynamodb:*",
-      "Resource": "arn:aws:dynamodb:*:327778747031:table/*"
+      "Resource": "arn:aws:dynamodb:*:533825906475:table/*"
     },
     {
       "Sid": "AllowLambda",
@@ -138,10 +142,10 @@
         "lambda:*"
       ],
       "Resource": [
-        "arn:aws:lambda:*:327778747031:layer:*:*",
-        "arn:aws:lambda:*:327778747031:function:*:*",
-        "arn:aws:lambda:*:327778747031:code-signing-config:*",
-        "arn:aws:lambda:*:327778747031:event-source-mapping:*"
+        "arn:aws:lambda:*:533825906475:layer:*:*",
+        "arn:aws:lambda:*:533825906475:function:*:*",
+        "arn:aws:lambda:*:533825906475:code-signing-config:*",
+        "arn:aws:lambda:*:533825906475:event-source-mapping:*"
       ]
     },
     {
@@ -149,8 +153,8 @@
       "Effect": "Allow",
       "Action": "lambda:*",
       "Resource": [
-        "arn:aws:lambda:*:327778747031:layer:*",
-        "arn:aws:lambda:*:327778747031:function:*"
+        "arn:aws:lambda:*:533825906475:layer:*",
+        "arn:aws:lambda:*:533825906475:function:*"
       ]
     },
     {
@@ -162,7 +166,13 @@
     {
       "Sid": "AllowIam",
       "Effect": "Allow",
-      "Action": "iam:CreateRole",
+      "Action": [
+        "iam:CreateRole",
+        "iam:GetRole",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies"
+      ],
       "Resource": "*"
     }
   ]

@@ -213,7 +213,7 @@ In order to deploy to AWS from the pipeline, a GoCD agent must have a role and p
 
 1. Attach a policy to a CI Role:
 ```bash
-./gradlew attachPolicyTOCIRole
+./gradlew attachPolicyToCIRole
 ```
 
 ## APIs
