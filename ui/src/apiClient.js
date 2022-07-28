@@ -15,11 +15,15 @@ class ApiClient {
       },
     });
 
-    return data.total > 0 ? data.entry.map(({ resource }) => ({
+    return data.total > 0 ? data.entry.map(({resource}) => ({
       description: resource.description,
       type: resource.type.coding.map(coding => coding.code).join(', '),
       url: resource.docStatus === 'final' ? resource.content[0].attachment.url : '',
     })) : [];
+  }
+
+  async uploadDocument(){
+    console.log("Upload function called")
   }
 }
 

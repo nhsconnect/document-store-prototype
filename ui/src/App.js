@@ -5,6 +5,7 @@ import awsConfig from "./config";
 import Search from "./Search";
 import ApiClient from "./apiClient";
 import "./App.scss"
+import UploadDocument from "./UploadDocument";
 
 Amplify.configure(awsConfig);
 
@@ -15,6 +16,9 @@ const App = () => (
         <h3>Document Store</h3>
         <div>
             <Search apiClient={client} />
+        </div>
+        <div>
+            <UploadDocument apiClient={client} />
         </div>
         <div>
             <AmplifySignOut />
