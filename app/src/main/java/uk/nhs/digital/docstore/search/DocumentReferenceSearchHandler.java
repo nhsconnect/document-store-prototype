@@ -75,6 +75,10 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         String authorizationHeader = headers.getOrDefault(
                 "Authorization",
                 headers.get("authorization"));
+        if (authorizationHeader.isEmpty()) {
+            logger.warn("Empty authorization header");
+            return "[unknown]";
+        }
         String token = authorizationHeader.replaceFirst("^[Bb]earer\\s+", "");
         DecodedJWT jwt = JWT.decode(token);
         return jwt.getClaim("email").asString();

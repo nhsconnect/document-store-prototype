@@ -20,7 +20,7 @@ class ApiClient {
     return data.total > 0 ? data.entry.map(({resource}) => ({
       description: resource.description,
       type: resource.type.coding.map(coding => coding.code).join(', '),
-      url: resource.docStatus === 'final' ? resource.content[0].attachment.url : '',
+      url: resource.docStatus === 'final' ? this.updateUrl(resource.content[0].attachment.url) : '',
     })) : [];
   }
 
@@ -58,8 +58,20 @@ class ApiClient {
     }
     const response = await this.api.post('doc-store-api', '/DocumentReference', {body: requestBody, headers: requestHeaders})
     const url = response.content[0].attachment.url
-    await storageClient(url, document, token)
+    let s3Url = this.updateUrl(url);
+    await storageClient(s3Url, document, token)
     console.log("document uploaded")
+  }
+
+  updateUrl(url) {
+    const development = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+    if (development) {
+      const url_obj = new URL(url)
+      url_obj.host = "localhost"
+      return url_obj.toString()
+    } else {
+      return url
+    }
   }
 }
 
