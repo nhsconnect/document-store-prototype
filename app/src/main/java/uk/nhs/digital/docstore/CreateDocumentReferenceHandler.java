@@ -83,6 +83,8 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                 .withStatusCode(201)
                 .withHeaders(Map.of(
                         "Content-Type", "application/fhir+json",
+                        "Access-Control-Allow-Origin", System.getenv("AMPLIFY_BASE_URL"),
+                        "Access-Control-Allow-Methods", "POST",
                         "Location", "DocumentReference/" + savedDocumentMetadata.getId()))
                 .withBody(resourceAsJson);
     }
