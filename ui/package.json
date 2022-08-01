@@ -2,6 +2,7 @@
   "name": "ui",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:4566",
   "dependencies": {
     "@aws-amplify/ui-react": "^1.2.23",
     "@testing-library/jest-dom": "^5.15.0",
