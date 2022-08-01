@@ -227,8 +227,7 @@ resource "aws_api_gateway_method" "create_doc_ref_method" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   resource_id   = aws_api_gateway_resource.doc_ref_resource.id
   http_method   = "POST"
-  authorization = "COGNITO_USER_POOLS"
-  authorizer_id = aws_api_gateway_authorizer.doc_ref_authorizer.id
+  authorization = "AWS_IAM"
 }
 
 resource "aws_api_gateway_integration" "create_doc_ref_integration" {

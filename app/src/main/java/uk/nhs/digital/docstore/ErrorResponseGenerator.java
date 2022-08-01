@@ -46,7 +46,9 @@ public class ErrorResponseGenerator {
 
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(statusCode)
-                .withHeaders(Map.of("Content-Type", "application/fhir+json"))
+                .withHeaders(Map.of("Content-Type", "application/fhir+json",
+                        "Access-Control-Allow-Origin", System.getenv("AMPLIFY_BASE_URL"),
+                        "Access-Control-Allow-Methods", "GET, OPTIONS, POST"))
                 .withBody(jsonParser.encodeResourceToString(new OperationOutcome()
                         .addIssue(new OperationOutcome.OperationOutcomeIssueComponent()
                                 .setSeverity(ERROR)
