@@ -112,6 +112,12 @@ extract-api-url)
   terraform init
   terraform output api_gateway_url >../api_gateway_url_artifact
   ;;
+extract-cognito-user-pool-ids)
+  cd terraform
+  assume_ci_role
+  terraform init
+  terraform output cognito_user_pool_ids >../cognito_user_pool_ids_artifact
+  ;;
 export-aws-creds)
   assume_ci_role
   export_aws_credentials

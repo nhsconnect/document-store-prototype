@@ -36,6 +36,9 @@ pipelines:
                 - build:
                     source: api_gateway_url_artifact
                     destination: properties
+                - build:
+                    source: cognito_user_pool_ids_artifact
+                    destination: properties
               tasks:
                 - fetch:
                     stage: build_backend
@@ -59,6 +62,12 @@ pipelines:
                       - -c
                       - Dojofile-infra
                       - 'gocd/tasks.sh extract-api-url'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - 'gocd/tasks.sh extract-cognito-user-pool-ids'
       - testHarness:
           clean_workspace: true
           jobs:
@@ -85,7 +94,7 @@ pipelines:
                 - exec:
                     command: dojo
                     arguments:
-                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) gocd/tasks.sh run-test-harness"
+                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOLS_IDS=$(cat properties/cognito_user_pool_ids_artifact) gocd/tasks.sh run-test-harness"
       - build_ui:
           clean_workspace: true
           jobs:

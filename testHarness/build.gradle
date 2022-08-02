@@ -12,6 +12,7 @@ dependencies {
     testImplementation 'org.assertj:assertj-core:3.21.0'
     testImplementation 'com.jayway.jsonpath:json-path:2.6.0'
     testImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
+    testImplementation 'com.amazonaws:aws-java-sdk-cognitoidp:1.12.92'
     testImplementation 'org.awaitility:awaitility:4.1.1'
 }
 
