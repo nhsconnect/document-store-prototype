@@ -21,6 +21,8 @@ resource "aws_cognito_user_pool_client" "client" {
   user_pool_id = aws_cognito_user_pool.pool[0].id
 
   count = var.cloud_only_service_instances
+
+  explicit_auth_flows = ["ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
