@@ -94,7 +94,7 @@ pipelines:
                 - exec:
                     command: dojo
                     arguments:
-                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOLS_IDS=$(cat properties/cognito_user_pool_ids_artifact) gocd/tasks.sh run-test-harness"
+                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOLS_IDS=\"$(cat properties/cognito_user_pool_ids_artifact)\" gocd/tasks.sh run-test-harness"
       - build_ui:
           clean_workspace: true
           jobs:
