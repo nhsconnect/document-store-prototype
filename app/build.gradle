@@ -67,6 +67,7 @@ jar {
 
 tasks.named('test') {
     useJUnitPlatform()
+    environment "AMPLIFY_BASE_URL", "http://localhost:4566"
 }
 
 tasks.named('e2eTestClasses') {

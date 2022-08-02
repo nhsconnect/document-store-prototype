@@ -20,7 +20,6 @@ public class AuthorizedRequestBuilderFactory {
     }
 
     public static HttpRequest.Builder addAuth(HttpRequest.Builder original, String path, String content) throws URISyntaxException {
-
         boolean isLocalStack = System.getenv("API_AUTH") == null;
         if (isLocalStack) {
             return original;

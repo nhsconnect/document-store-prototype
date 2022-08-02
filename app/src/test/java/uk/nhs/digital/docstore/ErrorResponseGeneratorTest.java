@@ -29,26 +29,24 @@ public class ErrorResponseGeneratorTest {
     @Test
     void returnsBadRequestIfSearchParametersAreInvalid() throws IOException {
         String expectedErrorResponse = getContentFromResource("search/unrecognised-subject-identifier.json");
-        var searchResponse = errorResponseGenerator.errorResponse(new UnrecognisedSubjectIdentifierSystemException("system"), jsonParser);
+        var response = errorResponseGenerator.errorResponse(new UnrecognisedSubjectIdentifierSystemException("system"), jsonParser);
 
-        assertThat(searchResponse.getStatusCode())
+        assertThat(response.getStatusCode())
                 .isEqualTo(400);
-        assertThat(searchResponse.getHeaders().get("Content-Type"))
-                .isEqualTo("application/fhir+json");
-        assertThatJson(searchResponse.getBody())
+        assertResponseHasExpectedHeaders(response);
+        assertThatJson(response.getBody())
                 .isEqualTo(expectedErrorResponse);
     }
 
     @Test
     void returnsBadRequestIfSystemIdentifierValueIsMissing() throws IOException {
         String expectedErrorResponse = getContentFromResource("search/invalid-search-response.json");
-        var searchResponse = errorResponseGenerator.errorResponse(new InvalidSubjectIdentifierException("identifier"), jsonParser);
+        var response = errorResponseGenerator.errorResponse(new InvalidSubjectIdentifierException("identifier"), jsonParser);
 
-        assertThat(searchResponse.getStatusCode())
+        assertThat(response.getStatusCode())
                 .isEqualTo(400);
-        assertThat(searchResponse.getHeaders().get("Content-Type"))
-                .isEqualTo("application/fhir+json");
-        assertThatJson(searchResponse.getBody())
+        assertResponseHasExpectedHeaders(response);
+        assertThatJson(response.getBody())
                 .isEqualTo(expectedErrorResponse);
     }
 
@@ -56,13 +54,12 @@ public class ErrorResponseGeneratorTest {
     void returnsBadRequestIfSearchParametersAreMissing() throws IOException {
         String expectedErrorResponse = getContentFromResource("search/missing-search-parameters-response.json");
 
-        var searchResponse = errorResponseGenerator.errorResponse(new MissingSearchParametersException("subject:identifier"), jsonParser);
+        var response = errorResponseGenerator.errorResponse(new MissingSearchParametersException("subject:identifier"), jsonParser);
 
-        assertThat(searchResponse.getStatusCode())
+        assertThat(response.getStatusCode())
                 .isEqualTo(400);
-        assertThat(searchResponse.getHeaders().get("Content-Type"))
-                .isEqualTo("application/fhir+json");
-        assertThatJson(searchResponse.getBody())
+        assertResponseHasExpectedHeaders(response);
+        assertThatJson(response.getBody())
                 .isEqualTo(expectedErrorResponse);
     }
 
@@ -70,13 +67,12 @@ public class ErrorResponseGeneratorTest {
     void returnsBadRequestIfDocumentTypeCodingSystemIsInvalid() throws IOException {
         String expectedErrorResponse = getContentFromResource("create/unsupported-coding-system-response.json");
 
-        var createResponse = errorResponseGenerator.errorResponse(new UnrecognisedCodingSystemException("coding-system"), jsonParser);
+        var response = errorResponseGenerator.errorResponse(new UnrecognisedCodingSystemException("coding-system"), jsonParser);
 
-        assertThat(createResponse.getStatusCode())
+        assertThat(response.getStatusCode())
                 .isEqualTo(400);
-        assertThat(createResponse.getHeaders().get("Content-Type"))
-                .isEqualTo("application/fhir+json");
-        assertThatJson(createResponse.getBody())
+        assertResponseHasExpectedHeaders(response);
+        assertThatJson(response.getBody())
                 .isEqualTo(expectedErrorResponse);
     }
 
@@ -84,13 +80,12 @@ public class ErrorResponseGeneratorTest {
     void returnInternalServerErrorForOtherErrors() throws IOException {
         String expectedErrorResponse = getContentFromResource("search/internal-server-error-response.json");
 
-        var searchResponse = errorResponseGenerator.errorResponse(new Exception(), jsonParser);
+        var response = errorResponseGenerator.errorResponse(new Exception(), jsonParser);
 
-        assertThat(searchResponse.getStatusCode())
+        assertThat(response.getStatusCode())
                 .isEqualTo(500);
-        assertThat(searchResponse.getHeaders().get("Content-Type"))
-                .isEqualTo("application/fhir+json");
-        assertThatJson(searchResponse.getBody())
+        assertResponseHasExpectedHeaders(response);
+        assertThatJson(response.getBody())
                 .isEqualTo(expectedErrorResponse);
     }
 
@@ -98,5 +93,14 @@ public class ErrorResponseGeneratorTest {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(resourcePath).getFile());
         return new String(Files.readAllBytes(file.toPath()));
+    }
+
+    private void assertResponseHasExpectedHeaders(APIGatewayProxyResponseEvent searchResponse) {
+        assertThat(searchResponse.getHeaders().get("Content-Type"))
+                .isEqualTo("application/fhir+json");
+        assertThat(searchResponse.getHeaders().get("Access-Control-Allow-Origin"))
+                .isEqualTo("http://localhost:4566");
+        assertThat(searchResponse.getHeaders().get("Access-Control-Allow-Methods"))
+                .isEqualTo("GET, OPTIONS, POST");
     }
 }
