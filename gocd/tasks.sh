@@ -106,23 +106,19 @@ deploy-ui)
   repackage_tgz_as_zip tars/ui.tgz ui.zip
   deploy_ui terraform_output.json ui.zip
   ;;
-extract-api-url)
+extract-raw-terraform-output)
+  terraform_output_name=$2
   cd terraform
   assume_ci_role
   terraform init
-  terraform output -raw api_gateway_url >../api_gateway_url_artifact
+  terraform output -raw "${terraform_output_name}" > "../${terraform_output_name}_artifact"
   ;;
-extract-cognito-user-pool-ids)
+extract-json-terraform-output)
+  terraform_output_name=$2
   cd terraform
   assume_ci_role
   terraform init
-  terraform output -json cognito_user_pool_ids >../cognito_user_pool_ids_artifact
-  ;;
-extract-cognito-client-ids)
-  cd terraform
-  assume_ci_role
-  terraform init
-  terraform output -json cognito_client_ids >../cognito_client_ids_artifact
+  terraform output -json "${terraform_output_name}" > "../${terraform_output_name}_artifact"
   ;;
 export-aws-creds)
   assume_ci_role

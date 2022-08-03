@@ -64,19 +64,19 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh extract-api-url'
+                      - 'gocd/tasks.sh  extract-raw-terraform-output api_gateway_url'
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh extract-cognito-user-pool-ids'
+                      - 'gocd/tasks.sh extract-json-terraform-output cognito_user_pool_ids'
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh extract-cognito-client-ids'
+                      - 'gocd/tasks.sh extract-json-terraform-output cognito_client_ids'
       - testHarness:
           clean_workspace: true
           jobs:
