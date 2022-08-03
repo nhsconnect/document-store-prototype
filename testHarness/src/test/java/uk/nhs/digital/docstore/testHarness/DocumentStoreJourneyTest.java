@@ -201,16 +201,21 @@ public class DocumentStoreJourneyTest {
     }
 
     private String generatePassword() {
-        int length = 20;
+        int length = 8;
         String digits = "0123456789";
         String specials = "~=+%^*/()[]{}/!@#$?|";
-        String all = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "abcdefghijklmnopqrstuvwxyz"
-                + digits + specials;
+        String upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+        String all = upperCaseLetters
+                + lowerCaseLetters
+                + digits
+                + specials;
         Random rnd = new Random();
         List<String> result = new ArrayList<>();
         Consumer<String> appendChar = s ->
                 result.add("" + s.charAt(rnd.nextInt(s.length())));
+        appendChar.accept(upperCaseLetters);
+        appendChar.accept(lowerCaseLetters);
         appendChar.accept(digits);
         appendChar.accept(specials);
         while (result.size() < length)
