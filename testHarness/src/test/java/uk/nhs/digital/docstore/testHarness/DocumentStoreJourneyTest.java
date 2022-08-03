@@ -74,7 +74,7 @@ public class DocumentStoreJourneyTest {
     }
 
     @Test
-    void returnsCreatedDocument() throws IOException, InterruptedException, URISyntaxException {
+    void documentsCanBeDownloadedWhenTheyHaveBeenSuccessfullyUploaded() throws IOException, InterruptedException, URISyntaxException {
         String idToken = createAuthenticatedSession();
 
         String documentContent = "hello";
