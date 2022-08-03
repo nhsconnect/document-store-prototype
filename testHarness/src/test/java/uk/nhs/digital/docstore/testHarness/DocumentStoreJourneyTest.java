@@ -3,7 +3,10 @@ package uk.nhs.digital.docstore.testHarness;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
-import com.amazonaws.services.cognitoidp.model.*;
+import com.amazonaws.services.cognitoidp.model.AdminDeleteUserRequest;
+import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
+import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
+import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static com.amazonaws.services.cognitoidp.model.AuthFlowType.ADMIN_NO_SRP_AUTH;
 import static com.amazonaws.services.cognitoidp.model.AuthFlowType.ADMIN_USER_PASSWORD_AUTH;
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -46,7 +48,10 @@ public class DocumentStoreJourneyTest {
     private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
 
     private static final String endpoint = System.getenv("DOCUMENT_STORE_BASE_URI");
-    private static final String userPoolId = JsonPath.read(System.getenv("COGNITO_USER_POOL_IDS"), "$[0]");
+    private static final String userPoolId =
+            JsonPath.read(System.getenv("COGNITO_USER_POOL_IDS"), "$[0]");
+    private static final String clientId =
+            JsonPath.read(System.getenv("COGNITO_CLIENT_IDS"), "$[0]");
 
     private static String getHost() {
         String host = System.getenv("DS_TEST_HOST");
@@ -94,7 +99,6 @@ public class DocumentStoreJourneyTest {
     private String createAuthenticatedSession() {
         UserFactory userFactory = new UserFactory(cognitoClient, userPoolId);
         String password = generatePassword();
-        String clientId = JsonPath.read(System.getenv("COGNITO_CLIENT_IDS"), "$[0]");
         userFactory.createUser(username + "@example.com", username, password);
         AdminInitiateAuthRequest authRequest = new AdminInitiateAuthRequest()
                 .withAuthFlow(ADMIN_USER_PASSWORD_AUTH)
