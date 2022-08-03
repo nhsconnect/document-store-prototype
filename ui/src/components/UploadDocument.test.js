@@ -1,6 +1,6 @@
 import UploadDocument from "./UploadDocument";
 import {render, screen} from '@testing-library/react';
-import ApiClient from "./apiClient";
+import ApiClient from "../apiClients/apiClient";
 import userEvent from "@testing-library/user-event";
 
 jest.mock('./apiClient')

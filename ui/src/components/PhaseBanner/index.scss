@@ -1,0 +1,10 @@
+@import "node_modules/nhsuk-frontend/packages/core/settings/colours";
+
+.gp2gp-phase-banner {
+  color: $color_nhsuk-white;
+
+  &__tag {
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+}

@@ -1,5 +1,5 @@
 import storageClient from "./storageClient";
-import {setUrlHostToLocalHost} from "./utils"
+import {setUrlHostToLocalHost} from "../utils/utils"
 
 class ApiClient {
   constructor(api, auth) {
