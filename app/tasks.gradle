@@ -71,31 +71,25 @@ tasks.register('deployToLocalStack', Exec) {
 }
 
 //noinspection GroovyAssignabilityCheck
-tasks.register('storeTerraformOutput', Exec) {
+tasks.register('getDocumentStoreBucketName') {
     def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
 
     group 'localstack'
-    description 'Write Terraform output to test resources.'
-    mustRunAfter deployToLocalStack
+    description 'Get the name of the document store file bucket'
 
-    executable = 'terraform'
-    args = ['output', '-json']
-    environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
-    environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
-    environment('AWS_SECRET_ACCESS_KEY', "test")
-    environment('AWS_ACCESS_KEY_ID', "test")
-    workingDir = '../terraform'
+    new ByteArrayOutputStream().withStream { os ->
+        def result = exec {
+            executable = 'terraform'
+            args = ['output', '-raw', 'document-store-bucket']
+            environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
+            environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
+            environment('AWS_SECRET_ACCESS_KEY', "test")
+            environment('AWS_ACCESS_KEY_ID', "test")
+            workingDir = '../terraform'
 
-    standardOutput = new FileOutputStream("terraform.json")
-}
-
-//noinspection GroovyAssignabilityCheck
-tasks.register("copyTerraformOutput", Copy) {
-    mustRunAfter storeTerraformOutput
-    from '../terraform.json'
-    into sourceSets.e2eTest.output.resourcesDir.toPath()
-    doLast {
-        delete '../terraform.json'
+            standardOutput = os
+        }
+        ext.documentStoreBucketName = os.toString()
     }
 }
 
@@ -103,15 +97,16 @@ tasks.register("copyTerraformOutput", Copy) {
 tasks.register('e2eTest', Test) {
     group 'verification'
     description 'Run all end-to-end tests against LocalStack.'
-    dependsOn jar, deployToLocalStack, storeTerraformOutput, copyTerraformOutput
+    dependsOn jar, deployToLocalStack, getDocumentStoreBucketName
 
     useJUnitPlatform()
 
     testClassesDirs = sourceSets.e2eTest.output.classesDirs
     classpath = sourceSets.e2eTest.runtimeClasspath
 
-    environment('AWS_SECRET_ACCESS_KEY', "test")
-    environment('AWS_ACCESS_KEY_ID', "test")
+    environment('AWS_SECRET_ACCESS_KEY', 'test')
+    environment('AWS_ACCESS_KEY_ID', 'test')
+    environment('DOCUMENT_STORE_BUCKET_NAME', getDocumentStoreBucketName.documentStoreBucketName)
 }
 
 //noinspection GroovyAssignabilityCheck

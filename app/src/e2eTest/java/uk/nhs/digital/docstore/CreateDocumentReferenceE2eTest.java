@@ -62,8 +62,7 @@ public class CreateDocumentReferenceE2eTest {
                 .withEndpointConfiguration(awsEndpointConfiguration)
                 .enablePathStyleAccess()
                 .build();
-        var terraformOutput = getContentFromResource("terraform.json");
-        documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
+        documentStoreBucketName = System.getenv("DOCUMENT_STORE_BUCKET_NAME");
         s3Client.listObjects(documentStoreBucketName)
                 .getObjectSummaries()
                 .forEach(s3Object -> s3Client.deleteObject(documentStoreBucketName, s3Object.getKey()));

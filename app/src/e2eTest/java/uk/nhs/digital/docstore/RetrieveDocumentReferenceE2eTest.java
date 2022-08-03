@@ -58,8 +58,7 @@ public class RetrieveDocumentReferenceE2eTest {
                 .withEndpointConfiguration(awsEndpointConfiguration)
                 .enablePathStyleAccess()
                 .build();
-        var terraformOutput = getContentFromResource("terraform.json");
-        String documentStoreBucketName = JsonPath.read(terraformOutput, "$.document-store-bucket.value");
+        String documentStoreBucketName = System.getenv("DOCUMENT_STORE_BUCKET_NAME");
 
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("1234"),
