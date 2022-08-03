@@ -127,12 +127,12 @@ resource "aws_iam_role" "lambda_execution_role" {
   name = "LambdaExecution"
 
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Sid       = ""
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
         Principal = {
           Service = "lambda.amazonaws.com"
         }
@@ -267,11 +267,11 @@ resource "aws_api_gateway_method" "create_and_search_doc_preflight_method" {
 }
 
 resource "aws_api_gateway_method_response" "create_and_search_doc_preflight_method_response" {
-  rest_api_id         = aws_api_gateway_rest_api.lambda_api.id
-  resource_id         = aws_api_gateway_resource.doc_ref_resource.id
-  http_method         = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
-  status_code         = "200"
-  response_models     = {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_resource.doc_ref_resource.id
+  http_method = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
+  status_code = "200"
+  response_models = {
     "application/json" = "Empty"
   }
   response_parameters = {
@@ -279,15 +279,15 @@ resource "aws_api_gateway_method_response" "create_and_search_doc_preflight_meth
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
-  depends_on          = [aws_api_gateway_method.create_and_search_doc_preflight_method]
+  depends_on = [aws_api_gateway_method.create_and_search_doc_preflight_method]
 }
 
 resource "aws_api_gateway_integration" "create_and_search_doc_preflight_integration" {
-  rest_api_id       = aws_api_gateway_rest_api.lambda_api.id
-  resource_id       = aws_api_gateway_resource.doc_ref_resource.id
-  http_method       = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
-  type              = "MOCK"
-  depends_on        = [aws_api_gateway_method.create_and_search_doc_preflight_method]
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_resource.doc_ref_resource.id
+  http_method = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
+  type        = "MOCK"
+  depends_on  = [aws_api_gateway_method.create_and_search_doc_preflight_method]
   request_templates = {
     "application/json" = <<EOF
 {
@@ -298,16 +298,16 @@ EOF
 }
 
 resource "aws_api_gateway_integration_response" "create_and_search_doc_preflight_integration_response" {
-  rest_api_id         = aws_api_gateway_rest_api.lambda_api.id
-  resource_id         = aws_api_gateway_resource.doc_ref_resource.id
-  http_method         = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
-  status_code         = aws_api_gateway_method_response.create_and_search_doc_preflight_method_response.status_code
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_resource.doc_ref_resource.id
+  http_method = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
+  status_code = aws_api_gateway_method_response.create_and_search_doc_preflight_method_response.status_code
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST'",
     "method.response.header.Access-Control-Allow-Origin"  = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
   }
-  depends_on          = [aws_api_gateway_method_response.create_and_search_doc_preflight_method_response]
+  depends_on = [aws_api_gateway_method_response.create_and_search_doc_preflight_method_response]
 }
 
 resource "aws_api_gateway_resource" "doc_ref_resource" {
@@ -337,10 +337,10 @@ resource "aws_api_gateway_deployment" "api_deploy" {
 }
 
 resource "aws_api_gateway_authorizer" "doc_ref_authorizer" {
-  name                   = "doc-ref-authorizer"
-  type                   = "COGNITO_USER_POOLS"
-  rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
-  provider_arns          = var.cloud_only_service_instances > 0 ? [for pool_arn in aws_cognito_user_pool.pool[*].arn : pool_arn] : [
+  name        = "doc-ref-authorizer"
+  type        = "COGNITO_USER_POOLS"
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  provider_arns = var.cloud_only_service_instances > 0 ? [for pool_arn in aws_cognito_user_pool.pool[*].arn : pool_arn] : [
     ""
   ]
   authorizer_credentials = aws_iam_role.lambda_execution_role.arn
