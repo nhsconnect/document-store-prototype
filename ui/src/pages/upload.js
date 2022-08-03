@@ -1,11 +1,14 @@
 import * as React from "react"
-import Layout from "../components/layout";
+import UploadDocument from "../components/UploadDocument";
 
-const UploadPage = () => {
+const UploadPage = ({client}) => {
     return (
-        <Layout>
+        <>
             <h2>Upload Patient Records</h2>
-        </Layout>
+            <div>
+                <UploadDocument apiClient={client} />
+            </div>
+        </>
     )
 }
 
