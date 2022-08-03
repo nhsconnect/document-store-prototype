@@ -80,9 +80,9 @@ public class CreateDocumentReferenceE2eTest {
         var createdDocumentReferenceResponse = getResponseFor(createDocumentReferenceRequest);
 
         var documentReference = createdDocumentReferenceResponse.body();
-        String id = JsonPath.read(documentReference, "$.id");
         assertThat(createdDocumentReferenceResponse.statusCode())
                 .isEqualTo(201);
+        String id = JsonPath.read(documentReference, "$.id");
         assertThat(createdDocumentReferenceResponse.headers().firstValue("Content-Type"))
                 .contains("application/fhir+json");
         assertThat(createdDocumentReferenceResponse.headers().firstValue("Location"))
