@@ -78,7 +78,7 @@ tasks.register('getDocumentStoreBucketName') {
     description 'Get the name of the document store file bucket'
 
     new ByteArrayOutputStream().withStream { os ->
-        def result = exec {
+        exec {
             executable = 'terraform'
             args = ['output', '-raw', 'document-store-bucket']
             environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
