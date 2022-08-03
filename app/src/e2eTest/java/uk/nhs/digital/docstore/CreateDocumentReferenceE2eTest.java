@@ -37,8 +37,9 @@ public class CreateDocumentReferenceE2eTest {
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 4566;
     private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
+    private static final String DOC_STORE_BUCKET_NAME =
+            System.getenv("DOCUMENT_STORE_BUCKET_NAME");
 
-    private String documentStoreBucketName;
     private AmazonS3 s3Client;
 
     private static String getHost() {
@@ -62,10 +63,9 @@ public class CreateDocumentReferenceE2eTest {
                 .withEndpointConfiguration(awsEndpointConfiguration)
                 .enablePathStyleAccess()
                 .build();
-        documentStoreBucketName = System.getenv("DOCUMENT_STORE_BUCKET_NAME");
-        s3Client.listObjects(documentStoreBucketName)
+        s3Client.listObjects(DOC_STORE_BUCKET_NAME)
                 .getObjectSummaries()
-                .forEach(s3Object -> s3Client.deleteObject(documentStoreBucketName, s3Object.getKey()));
+                .forEach(s3Object -> s3Client.deleteObject(DOC_STORE_BUCKET_NAME, s3Object.getKey()));
     }
 
     @Test

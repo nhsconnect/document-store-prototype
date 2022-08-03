@@ -37,6 +37,8 @@ public class DocumentReferenceSearchE2eTest {
     private static final String S3_KEY = "abcd";
     private static final String S3_VALUE = "content";
     private static final String CODE_VALUE = "185361000000102";
+    private static final String DOC_STORE_BUCKET_NAME =
+            System.getenv("DOCUMENT_STORE_BUCKET_NAME");
 
     private static String getHost() {
         String host = System.getenv("DS_TEST_HOST");
@@ -59,12 +61,11 @@ public class DocumentReferenceSearchE2eTest {
                 .withEndpointConfiguration(awsEndpointConfiguration)
                 .enablePathStyleAccess()
                 .build();
-        String documentStoreBucketName = System.getenv("DOCUMENT_STORE_BUCKET_NAME");
 
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("1234"),
                 "NhsNumber", new AttributeValue("12345"),
-                "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, S3_KEY)),
+                "Location", new AttributeValue(String.format("s3://%s/%s", DOC_STORE_BUCKET_NAME, S3_KEY)),
                 "ContentType", new AttributeValue("text/plain"),
                 "DocumentUploaded", new AttributeValue().withBOOL(true),
                 "Description", new AttributeValue("uploaded document"),
@@ -73,11 +74,11 @@ public class DocumentReferenceSearchE2eTest {
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("2345"),
                 "NhsNumber", new AttributeValue("12345"),
-                "Location", new AttributeValue(String.format("s3://%s/%s", documentStoreBucketName, "somewhere")),
+                "Location", new AttributeValue(String.format("s3://%s/%s", DOC_STORE_BUCKET_NAME, "somewhere")),
                 "Content-Type", new AttributeValue("application/pdf"),
                 "DocumentUploaded", new AttributeValue().withBOOL(false),
                 "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
-        s3Client.putObject(documentStoreBucketName, S3_KEY, S3_VALUE);
+        s3Client.putObject(DOC_STORE_BUCKET_NAME, S3_KEY, S3_VALUE);
     }
 
     @Test
