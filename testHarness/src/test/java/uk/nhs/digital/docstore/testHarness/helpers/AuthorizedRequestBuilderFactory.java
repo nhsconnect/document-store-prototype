@@ -7,12 +7,6 @@ import java.net.http.HttpRequest;
 public class AuthorizedRequestBuilderFactory {
     private static final String endpoint = System.getenv("DOCUMENT_STORE_BASE_URI");
 
-    public static HttpRequest.Builder newPostBuilder(String path, String content) throws URISyntaxException {
-        HttpRequest.Builder original = HttpRequest.newBuilder(new URI(endpoint + "/" + path));
-        original.POST(HttpRequest.BodyPublishers.ofString(content));
-        return addAuth(original, path, content);
-    }
-
     public static HttpRequest.Builder newGetBuilder(String path) throws URISyntaxException {
         HttpRequest.Builder original = HttpRequest.newBuilder(new URI(endpoint + "/" + path));
         original.GET();
