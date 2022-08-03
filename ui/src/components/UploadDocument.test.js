@@ -3,7 +3,7 @@ import {render, screen} from '@testing-library/react';
 import ApiClient from "../apiClients/apiClient";
 import userEvent from "@testing-library/user-event";
 
-jest.mock('./apiClient')
+jest.mock('../apiClients/apiClient')
 
 test('renders page', () => {
     render(<UploadDocument />)
