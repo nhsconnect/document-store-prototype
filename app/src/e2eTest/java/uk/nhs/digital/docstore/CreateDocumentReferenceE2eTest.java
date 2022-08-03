@@ -104,7 +104,7 @@ public class CreateDocumentReferenceE2eTest {
         var retrieveDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/" + id))
                 .GET()
                 .build();
-        HttpResponse<String> retrievedDocumentReferenceResponse = waitAtMost(ofSeconds(15))
+        HttpResponse<String> retrievedDocumentReferenceResponse = waitAtMost(ofSeconds(50))
                 .pollDelay(ofMillis(500))
                 .pollInterval(ofSeconds(1))
                 .until(() -> getResponseFor(retrieveDocumentReferenceRequest), documentIsFinal());
