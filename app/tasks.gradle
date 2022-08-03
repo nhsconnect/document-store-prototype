@@ -1,6 +1,5 @@
 //file:noinspection HttpUrlsUsage
 
-//noinspection GroovyAssignabilityCheck
 tasks.register('bootstrapLocalStack', Exec) {
     def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
 
@@ -16,7 +15,6 @@ tasks.register('bootstrapLocalStack', Exec) {
     environment('AWS_ACCESS_KEY_ID', "test")
 }
 
-//noinspection GroovyAssignabilityCheck
 tasks.register('bootstrapCIRole', Exec) {
     description 'Create the role for GoCD to assume'
 
@@ -31,7 +29,6 @@ tasks.register('attachPolicyToCIRole', Exec) {
     args = ['iam', 'put-role-policy', '--role-name=ci-agent', '--policy-name=ci-role-policy', '--policy-document=file://ci-role-policy.json']
 }
 
-//noinspection GroovyAssignabilityCheck
 tasks.register('initializeTerraform', Exec) {
     def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
 
@@ -52,7 +49,6 @@ tasks.register('initializeTerraform', Exec) {
     }
 }
 
-//noinspection GroovyAssignabilityCheck
 tasks.register('deployToLocalStack', Exec) {
     def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
 
@@ -70,7 +66,6 @@ tasks.register('deployToLocalStack', Exec) {
     workingDir = '../terraform'
 }
 
-//noinspection GroovyAssignabilityCheck
 tasks.register('getDocumentStoreBucketName') {
     def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
 
@@ -93,7 +88,6 @@ tasks.register('getDocumentStoreBucketName') {
     }
 }
 
-//noinspection GroovyAssignabilityCheck
 tasks.register('e2eTest', Test) {
     group 'verification'
     description 'Run all end-to-end tests against LocalStack.'
@@ -109,7 +103,6 @@ tasks.register('e2eTest', Test) {
     environment('DOCUMENT_STORE_BUCKET_NAME', getDocumentStoreBucketName.documentStoreBucketName)
 }
 
-//noinspection GroovyAssignabilityCheck
 tasks.register('testHarness', Test) {
     group 'verification'
     description 'Run all test harness'
