@@ -81,7 +81,12 @@
         "cognito-idp:GetUserPoolMfaConfig",
         "cognito-idp:CreateUserPoolClient",
         "cognito-idp:DescribeUserPoolClient",
-        "cognito-idp:UpdateUserPool"
+        "cognito-idp:UpdateUserPoolClient",
+        "cognito-idp:UpdateUserPool",
+        "cognito-idp:AdminCreateUser",
+        "cognito-idp:AdminDeleteUser",
+        "cognito-idp:AdminInitiateAuth",
+        "cognito-idp:AdminSetUserPassword"
       ],
       "Resource": "*"
     },
