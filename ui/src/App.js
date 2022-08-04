@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Amplify, { Auth, API } from "aws-amplify";
+import { Amplify, Auth, API } from "aws-amplify";
 import { AmplifyAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
 import awsConfig from "./config";
 import ApiClient from "./apiClients/apiClient";
