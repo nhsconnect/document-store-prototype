@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ApiClient from "../apiClients/apiClient";
-import UploadPage from "./upload";
+import UploadPage from "./UploadPage";
 
 jest.mock("../apiClients/apiClient");
 
