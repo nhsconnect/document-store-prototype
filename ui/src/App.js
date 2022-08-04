@@ -6,7 +6,7 @@ import awsConfig from "./config";
 import ApiClient from "./apiClients/apiClient";
 import "./App.scss";
 import Layout from "./components/layout";
-import HomePage from "./pages/homepage";
+import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage";
 
