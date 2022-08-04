@@ -3,6 +3,6 @@ import App from './App';
 
 test('renders application title', () => {
   render(<App />);
-  const linkElement = within(screen.getByTestId("header-service-name")).getByText("Document Store Prototype");
+  const linkElement = within(screen.getByTestId("header-service-name")).getByText("Document Store");
   expect(linkElement).toBeTruthy();
 });

@@ -14,7 +14,7 @@ const Layout = ({ children }) => {
         {"This is a new site. Content and structure are subject to change."}
       </PhaseBanner>
       <Hero>
-        <Hero.Heading data-testid="hero-heading">{"Document Store Prototype"}</Hero.Heading>
+        <Hero.Heading data-testid="hero-heading">{"Document Store"}</Hero.Heading>
         <Hero.Text>{"Platform for uploading and retrieving documents"}</Hero.Text>
       </Hero>
       <div

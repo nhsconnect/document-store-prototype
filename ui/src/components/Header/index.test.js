@@ -6,6 +6,6 @@ describe("Header component", () => {
   it("displays site service name", () => {
     render(<Header />);
 
-    expect(screen.queryByText("Document Store Prototype")).toBeTruthy();
+    expect(screen.queryByText("Document Store")).toBeTruthy();
   });
 });

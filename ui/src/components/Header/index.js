@@ -7,7 +7,7 @@ export const HeaderContainer = () => (
   <Header transactional>
     <Header.Container>
       <Header.Logo href="/" />
-      <Header.ServiceName data-testid="header-service-name" href="/">Document Store Prototype</Header.ServiceName>
+      <Header.ServiceName data-testid="header-service-name" href="/">Document Store</Header.ServiceName>
     </Header.Container>
   </Header>
 );
