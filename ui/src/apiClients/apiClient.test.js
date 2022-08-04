@@ -81,6 +81,6 @@ describe('test the uploadDocument method', () => {
 
         await apiClient.uploadDocument(document)
         expect(postMock).toHaveBeenCalledWith("doc-store-api", '/DocumentReference', expect.objectContaining({body: requestBody}))
-        expect(uploadDocumentWithStorageClient).toHaveBeenCalledWith(responseBody.content[0].attachment.url, document, token)
+        expect(uploadDocumentWithStorageClient).toHaveBeenCalledWith(responseBody.content[0].attachment.url, document)
     })
 })

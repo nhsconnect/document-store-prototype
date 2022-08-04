@@ -60,7 +60,7 @@ class ApiClient {
     const response = await this.api.post('doc-store-api', '/DocumentReference', {body: requestBody, headers: requestHeaders})
     const url = response.content[0].attachment.url
     let s3Url = setUrlHostToLocalHost(url);
-    await storageClient(s3Url, document, token)
+    await storageClient(s3Url, document)
     console.log("document uploaded")
   }
 }
