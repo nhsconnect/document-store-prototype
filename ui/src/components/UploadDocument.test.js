@@ -7,6 +7,7 @@ jest.mock('../apiClients/apiClient')
 
 test('renders page', () => {
     render(<UploadDocument />)
+    screen.getByLabelText('Enter NHS number')
     screen.getByLabelText('Choose document')
     screen.getByText('Upload')
 })

@@ -10,6 +10,9 @@ function UploadDocument({ apiClient }) {
 
     return (
         <div>
+            <Input id={"nhs-number-input"} label="Enter NHS number"
+                   type="text" placeholder="012 345 6789"
+            />
             <Input id={"document-input"} label="Choose document"
                    type="file" inputRef={inputElement}
                    multiple={false}

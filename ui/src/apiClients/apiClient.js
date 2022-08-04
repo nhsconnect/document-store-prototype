@@ -31,7 +31,7 @@ class ApiClient {
       "subject": {
         "identifier": {
           "system": "https://fhir.nhs.uk/Id/nhs-number",
-          "value": "34567"
+          "value": "012 345 6789"
         }
       },
       "type": {
