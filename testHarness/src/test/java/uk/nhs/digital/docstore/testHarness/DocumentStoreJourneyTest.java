@@ -47,10 +47,10 @@ public class DocumentStoreJourneyTest {
     private static final String DEFAULT_HOST = "localhost";
     private static final String INTERNAL_DOCKER_HOST = "172.17.0.2";
 
-    private static final String endpoint = System.getenv("DOCUMENT_STORE_BASE_URI");
-    private static final String userPoolId =
+    private static final String ENDPOINT = System.getenv("DOCUMENT_STORE_BASE_URI");
+    private static final String USER_POOL_ID =
             JsonPath.read(System.getenv("COGNITO_USER_POOL_IDS"), "$[0]");
-    private static final String clientId =
+    private static final String CLIENT_ID =
             JsonPath.read(System.getenv("COGNITO_CLIENT_IDS"), "$[0]");
 
     private static String getHost() {
@@ -74,7 +74,7 @@ public class DocumentStoreJourneyTest {
     private void tearDown() {
         AdminDeleteUserRequest deleteUserRequest = new AdminDeleteUserRequest()
                 .withUsername(username)
-                .withUserPoolId(userPoolId);
+                .withUserPoolId(USER_POOL_ID);
         cognitoClient.adminDeleteUser(deleteUserRequest);
     }
 
@@ -97,14 +97,14 @@ public class DocumentStoreJourneyTest {
     }
 
     private String createAuthenticatedSession() {
-        UserFactory userFactory = new UserFactory(cognitoClient, userPoolId);
+        UserFactory userFactory = new UserFactory(cognitoClient, USER_POOL_ID);
         String password = generatePassword();
         userFactory.createUser(username + "@example.com", username, password);
         AdminInitiateAuthRequest authRequest = new AdminInitiateAuthRequest()
                 .withAuthFlow(ADMIN_USER_PASSWORD_AUTH)
                 .withAuthParameters(Map.of("USERNAME", username, "PASSWORD", password))
-                .withClientId(clientId)
-                .withUserPoolId(userPoolId);
+                .withClientId(CLIENT_ID)
+                .withUserPoolId(USER_POOL_ID);
         AdminInitiateAuthResult adminInitiateAuthResult = cognitoClient.adminInitiateAuth(authRequest);
         AuthenticationResultType authenticationResult =
                 adminInitiateAuthResult.getAuthenticationResult();
@@ -138,7 +138,7 @@ public class DocumentStoreJourneyTest {
     }
 
     public static HttpRequest.Builder newPostBuilder(String path, String content) throws URISyntaxException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(new URI(endpoint + "/" + path));
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(new URI(ENDPOINT + "/" + path));
         requestBuilder.POST(HttpRequest.BodyPublishers.ofString(content));
         return requestBuilder;
     }
