@@ -19,7 +19,7 @@ describe("Upload page", () => {
         expect(screen.getByText("Upload")).toBeInTheDocument();
     });
 
-    it("uploads a document when the upload button is clicked", async () => {
+    it("displays success message when a document is successfully uploaded", async () => {
         const apiClientMock = new ApiClient();
         const document = new File(["hello"], "hello.txt", {
             type: "text/plain",
@@ -31,5 +31,8 @@ describe("Upload page", () => {
         await waitFor(() => {
             expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document);
         });
+        expect(
+            screen.getByText("Document uploaded successfully")
+        ).toBeInTheDocument();
     });
 });

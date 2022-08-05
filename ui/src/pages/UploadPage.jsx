@@ -3,7 +3,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 
 const UploadPage = ({ client }) => {
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, formState } = useForm();
     const { ref: documentInputRef, ...documentInputProps } =
         register("document");
 
@@ -32,6 +32,9 @@ const UploadPage = ({ client }) => {
                         inputRef={documentInputRef}
                     />
                     <Button type="submit">Upload</Button>
+                    {formState.isSubmitSuccessful && (
+                        <p>Document uploaded successfully</p>
+                    )}
                 </form>
             </div>
         </>
