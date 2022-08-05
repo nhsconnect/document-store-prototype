@@ -12,6 +12,8 @@ const config = {
             },
         ]
     }
+    features: {
+    },
 };
 
 export default config;
