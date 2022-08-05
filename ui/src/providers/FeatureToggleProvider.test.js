@@ -25,7 +25,7 @@ describe("The feature toggle provider", () => {
 
     it("allows the consuming component to detect when a feature is active", () => {
         process.env.NODE_ENV = "development";
-        config.features.development.TEST = true;
+        config.features = { development: { TEST: true } };
         render(
             <FeatureToggleProvider>
                 <TestComponent />
@@ -37,7 +37,7 @@ describe("The feature toggle provider", () => {
 
     it("allows the consuming component to detect when a feature is inactive", () => {
         process.env.NODE_ENV = "development";
-        config.features.development.TEST = false;
+        config.features = { development: { TEST: false } };
         render(
             <FeatureToggleProvider>
                 <TestComponent />
@@ -48,7 +48,7 @@ describe("The feature toggle provider", () => {
 
     it("provides a default value of false to the consuming component when a toggle is not defined", () => {
         process.env.NODE_ENV = "development";
-        config.features.development.TEST = undefined;
+        config.features = { development: { TEST: undefined } };
         render(
             <FeatureToggleProvider>
                 <TestComponent />
