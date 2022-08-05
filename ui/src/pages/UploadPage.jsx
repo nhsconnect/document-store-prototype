@@ -1,19 +1,21 @@
 import { Button, Input } from "nhsuk-react-components";
-import React, { useRef } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
 
 const UploadPage = ({ client }) => {
-    const inputElement = useRef(null);
+    const { register, handleSubmit } = useForm();
+    const { ref: documentInputRef, ...documentInputProps } =
+        register("document");
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        await client.uploadDocument(inputElement.current.files[0]);
+    const doSubmit = async (data) => {
+        await client.uploadDocument(data.document[0]);
     };
 
     return (
         <>
             <h2>Upload Patient Records</h2>
             <div>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(doSubmit)}>
                     <Input
                         id={"nhs-number-input"}
                         label="Enter NHS number"
@@ -24,8 +26,10 @@ const UploadPage = ({ client }) => {
                         id={"document-input"}
                         label="Choose document"
                         type="file"
-                        inputRef={inputElement}
                         multiple={false}
+                        name="document"
+                        {...documentInputProps}
+                        inputRef={documentInputRef}
                     />
                     <Button type="submit">Upload</Button>
                 </form>

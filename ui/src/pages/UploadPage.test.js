@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ApiClient from "../apiClients/apiClient";
@@ -19,7 +19,7 @@ describe("Upload page", () => {
         expect(screen.getByText("Upload")).toBeInTheDocument();
     });
 
-    it("uploads a document when the upload button is clicked", () => {
+    it("uploads a document when the upload button is clicked", async () => {
         const apiClientMock = new ApiClient();
         const document = new File(["hello"], "hello.txt", {
             type: "text/plain",
@@ -28,6 +28,8 @@ describe("Upload page", () => {
         userEvent.upload(screen.getByLabelText("Choose document"), document);
         userEvent.click(screen.getByText("Upload"));
 
-        expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document);
+        await waitFor(() => {
+            expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document);
+        });
     });
 });
