@@ -10,8 +10,8 @@ const config = {
                 name: 'doc-store-api',
                 endpoint: '%api-endpoint%'
             },
-        ]
-    }
+        ],
+    },
     features: {
     },
 };
