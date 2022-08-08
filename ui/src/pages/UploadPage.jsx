@@ -1,7 +1,6 @@
 import { Button, Input } from "nhsuk-react-components";
 import React, {useState} from "react";
 import { useForm } from "react-hook-form";
-import { AmplifyLoadingSpinner } from "@aws-amplify/ui-react"
 
 const states = {
     IDLE: "idle",
@@ -11,7 +10,7 @@ const states = {
 }
 
 const UploadPage = ({ client }) => {
-    const { register, handleSubmit, formState, setError } = useForm();
+    const { register, handleSubmit } = useForm();
     const { ref: documentInputRef, ...documentInputProps } =
         register("document");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
@@ -49,9 +48,10 @@ const UploadPage = ({ client }) => {
                     />
                     <Button type="submit">Upload</Button>
                     {submissionState === states.UPLOADING && (
-                        <div role={"progressbar"}>
-                            <AmplifyLoadingSpinner ariaLabel="Loading..."  />
-                        </div>
+                        <p>
+                            <progress aria-label={"Loading..."}>
+                            </progress>
+                        </p>
                     )}
                     {submissionState === states.SUCCEEDED && (
                         <p>Document uploaded successfully</p>

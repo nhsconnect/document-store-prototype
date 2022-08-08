@@ -36,7 +36,7 @@ describe("Upload page", () => {
         ).toBeInTheDocument();
     });
 
-    it("displays an error message when the document fails to uploaded", async() => {
+    it("displays an error message when the document fails to upload", async() => {
         const apiClientMock = new ApiClient();
         apiClientMock.uploadDocument = jest.fn((document) => {
             throw new Error;
