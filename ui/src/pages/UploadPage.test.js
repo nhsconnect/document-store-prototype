@@ -35,4 +35,36 @@ describe("Upload page", () => {
             screen.getByText("Document uploaded successfully")
         ).toBeInTheDocument();
     });
+
+    it("displays an error message when the document fails to uploaded", async() => {
+        const apiClientMock = new ApiClient();
+        apiClientMock.uploadDocument = jest.fn((document) => {
+            throw new Error;
+        })
+        const document = new File(["hello"], "hello.txt",{
+            type: "text/plain",
+        });
+        render(<UploadPage client={apiClientMock} />);
+        userEvent.upload(screen.getByLabelText("Choose document"), document);
+        userEvent.click(screen.getByText("Upload"));
+        await waitFor(() => {
+            expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document);
+        });
+        expect(screen.getByText("File upload failed - please retry")).toBeInTheDocument();
+    })
+
+    it("displays a loading spinner when the document is being uploaded", async () => {
+        const apiClientMock = new ApiClient();
+        const document = new File(["hello"], "hello.txt", {
+            type: "text/plain",
+        });
+        render(<UploadPage client={apiClientMock} />);
+        userEvent.upload(screen.getByLabelText("Choose document"), document);
+        userEvent.click(screen.getByText("Upload"));
+        await waitFor(() => {
+            expect(
+                screen.getByRole("progressbar")
+            ).toBeInTheDocument()
+        })
+        });
 });

@@ -1,15 +1,31 @@
 import { Button, Input } from "nhsuk-react-components";
-import React from "react";
+import React, {useState} from "react";
 import { useForm } from "react-hook-form";
+import { AmplifyLoadingSpinner } from "@aws-amplify/ui-react"
+
+const states = {
+    IDLE: "idle",
+    UPLOADING: "uploading",
+    SUCCEEDED: "succeeded",
+    FAILED: "failed"
+}
 
 const UploadPage = ({ client }) => {
-    const { register, handleSubmit, formState } = useForm();
+    const { register, handleSubmit, formState, setError } = useForm();
     const { ref: documentInputRef, ...documentInputProps } =
         register("document");
+    const [submissionState, setSubmissionState] = useState(states.IDLE);
 
     const doSubmit = async (data) => {
-        await client.uploadDocument(data.document[0]);
-    };
+        try{
+            setSubmissionState(states.UPLOADING)
+            await client.uploadDocument(data.document[0]);
+            setSubmissionState(states.SUCCEEDED);
+        }
+        catch (e) {
+            setSubmissionState(states.FAILED);
+        }
+    }
 
     return (
         <>
@@ -32,8 +48,16 @@ const UploadPage = ({ client }) => {
                         inputRef={documentInputRef}
                     />
                     <Button type="submit">Upload</Button>
-                    {formState.isSubmitSuccessful && (
+                    {submissionState === states.UPLOADING && (
+                        <div role={"progressbar"}>
+                            <AmplifyLoadingSpinner ariaLabel="Loading..."  />
+                        </div>
+                    )}
+                    {submissionState === states.SUCCEEDED && (
                         <p>Document uploaded successfully</p>
+                    )}
+                    {submissionState === states.FAILED && (
+                        <p>File upload failed - please retry</p>
                     )}
                 </form>
             </div>
