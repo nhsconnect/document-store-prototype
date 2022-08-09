@@ -1,7 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import App from './App';
 import config from "./config";
-import FeatureToggleProvider from "./providers/FeatureToggleProvider";
 
 test('renders application title', () => {
   render(<App />);
