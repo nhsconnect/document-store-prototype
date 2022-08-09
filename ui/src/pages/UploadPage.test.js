@@ -67,4 +67,19 @@ describe("Upload page", () => {
             expect(screen.getByRole("progressbar")).toBeInTheDocument();
         });
     });
+
+    it("does not upload documents of size greater than 5GB and displays an error", async () => {
+        const apiClientMock = new ApiClient();
+        const document = new File(["hello"], "hello.txt", {
+            type: "text/plain"
+        });
+        Object.defineProperty(document, 'size', {value: 5*107374184 + 1})
+        render(<UploadPage client={apiClientMock} />);
+        userEvent.upload(screen.getByLabelText("Choose document"), document);
+        userEvent.click(screen.getByText("Upload"));
+        await waitFor(() => {
+            expect(screen.getByText("File size greater than 5GB - upload a smaller file")).toBeInTheDocument();
+        });
+        expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
+    })
 });

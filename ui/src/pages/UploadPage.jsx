@@ -6,7 +6,8 @@ const states = {
     IDLE: "idle",
     UPLOADING: "uploading",
     SUCCEEDED: "succeeded",
-    FAILED: "failed"
+    FAILED: "failed",
+    FILE_SIZE_ERROR: "file-size-error"
 }
 
 const UploadPage = ({ client }) => {
@@ -17,9 +18,15 @@ const UploadPage = ({ client }) => {
 
     const doSubmit = async (data) => {
         try{
-            setSubmissionState(states.UPLOADING);
-            await client.uploadDocument(data.document[0]);
-            setSubmissionState(states.SUCCEEDED);
+            const fileSize = data.document[0].size
+            if (fileSize < 5*107374184){
+                setSubmissionState(states.UPLOADING);
+                await client.uploadDocument(data.document[0]);
+                setSubmissionState(states.SUCCEEDED);
+            }
+            else {
+                setSubmissionState(states.FILE_SIZE_ERROR);
+            }
         }
         catch (e) {
             setSubmissionState(states.FAILED);
@@ -58,6 +65,9 @@ const UploadPage = ({ client }) => {
                     )}
                     {submissionState === states.FAILED && (
                         <p>File upload failed - please retry</p>
+                    )}
+                    {submissionState === states.FILE_SIZE_ERROR && (
+                        <p>File size greater than 5GB - upload a smaller file</p>
                     )}
                 </form>
             </div>
