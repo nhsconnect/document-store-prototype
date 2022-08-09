@@ -5,6 +5,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.search.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.search.MissingSearchParametersException;
 import uk.nhs.digital.docstore.search.UnrecognisedSubjectIdentifierSystemException;
@@ -16,6 +18,9 @@ import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.CODEINVALID;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.EXCEPTION;
 
 public class ErrorResponseGenerator {
+    private static final Logger logger
+            = LoggerFactory.getLogger(ErrorResponseGenerator.class);
+
     public APIGatewayProxyResponseEvent errorResponse(Exception e, IParser jsonParser) {
         int statusCode = 500;
         OperationOutcome.IssueType issueType = EXCEPTION;
@@ -44,6 +49,7 @@ public class ErrorResponseGenerator {
             errorDisplay = "Invalid code system";
         }
 
+        logger.error(e.getMessage(), e);
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(statusCode)
                 .withHeaders(Map.of("Content-Type", "application/fhir+json",
