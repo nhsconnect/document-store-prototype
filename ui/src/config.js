@@ -13,6 +13,12 @@ const config = {
         ],
     },
     features: {
+        local: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true
+        },
+        development: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false
+        }
     },
 };
 
