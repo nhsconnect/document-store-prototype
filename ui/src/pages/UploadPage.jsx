@@ -17,7 +17,7 @@ const UploadPage = ({ client }) => {
 
     const doSubmit = async (data) => {
         try{
-            setSubmissionState(states.UPLOADING)
+            setSubmissionState(states.UPLOADING);
             await client.uploadDocument(data.document[0]);
             setSubmissionState(states.SUCCEEDED);
         }
