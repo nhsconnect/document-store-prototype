@@ -13,10 +13,12 @@ describe("Upload page", () => {
         expect(
             screen.getByRole("heading", { name: "Upload Patient Records" })
         ).toBeInTheDocument();
-        screen.getByLabelText("Enter NHS number");
-        // expect(screen.getByLabelText("Document Title")).toBeInTheDocument();
+        expect(screen.getByLabelText("Enter NHS number")).toBeInTheDocument();
+        expect(screen.getByLabelText("Enter Document Title")).toBeInTheDocument();
+        expect(screen.getByLabelText("Enter Clinical Code")).toBeInTheDocument();
         expect(screen.getByLabelText("Choose document")).toBeInTheDocument();
         expect(screen.getByText("Upload")).toBeInTheDocument();
+
     });
 
     it("displays success message when a document is successfully uploaded", async () => {

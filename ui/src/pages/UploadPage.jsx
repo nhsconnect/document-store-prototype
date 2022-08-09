@@ -45,6 +45,18 @@ const UploadPage = ({ client }) => {
                         placeholder="012 345 6789"
                     />
                     <Input
+                        id={"document-title-input"}
+                        label="Enter Document Title"
+                        type="text"
+                        placeholder="Document Title"
+                    />
+                    <Input
+                        id={"clinical-code-input"}
+                        label="Enter Clinical Code"
+                        type="text"
+                        placeholder="Clinical Code"
+                    />
+                    <Input
                         id={"document-input"}
                         label="Choose document"
                         type="file"
