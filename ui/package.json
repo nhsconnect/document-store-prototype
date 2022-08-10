@@ -18,7 +18,8 @@
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "4.0.3",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "@rehooks/local-storage": "^2.4.4"
   },
   "scripts": {
     "start": "react-scripts start",
