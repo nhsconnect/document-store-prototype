@@ -20,6 +20,7 @@ const SearchPage = ({ client }) => {
         setSearchResults([]);
         try {
             const results = await client.findByNhsNumber(data.nhsNumber);
+            results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
             setSearchResults(results);
             setSubmissionState(states.SUCCEEDED);
         } catch (error) {
