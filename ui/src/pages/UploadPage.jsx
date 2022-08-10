@@ -1,6 +1,7 @@
 import { Button, Input } from "nhsuk-react-components";
 import React, {useState} from "react";
 import { useForm } from "react-hook-form";
+import { useFeatureToggle } from "../providers/FeatureToggleProvider";
 
 const states = {
     IDLE: "idle",
@@ -11,6 +12,7 @@ const states = {
 }
 
 const UploadPage = ({ client }) => {
+    const showMetadataFields = useFeatureToggle("SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE");
     const { register, handleSubmit } = useForm();
     const { ref: documentInputRef, ...documentInputProps } =
         register("document");
@@ -44,18 +46,22 @@ const UploadPage = ({ client }) => {
                         type="text"
                         placeholder="012 345 6789"
                     />
-                    <Input
-                        id={"document-title-input"}
-                        label="Enter Document Title"
-                        type="text"
-                        placeholder="Document Title"
-                    />
-                    <Input
-                        id={"clinical-code-input"}
-                        label="Enter Clinical Code"
-                        type="text"
-                        placeholder="Clinical Code"
-                    />
+                    {showMetadataFields && (
+                        <>
+                            <Input
+                                id={"document-title-input"}
+                                label="Enter Document Title"
+                                type="text"
+                                placeholder="Document Title"
+                            />
+                            <Input
+                                id={"clinical-code-input"}
+                                label="Enter Clinical Code"
+                                type="text"
+                                placeholder="Clinical Code"
+                            />
+                        </>
+                    )}
                     <Input
                         id={"document-input"}
                         label="Choose document"
