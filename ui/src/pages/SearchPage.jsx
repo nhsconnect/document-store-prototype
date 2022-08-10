@@ -66,8 +66,8 @@ const SearchPage = ({ client }) => {
                             </Table.Head>
 
                             <Table.Body>
-                                {searchResults.map((result, index) => (
-                                    <Table.Row>
+                                {searchResults.map((result) => (
+                                    <Table.Row key={result.url}>
                                         <Table.Cell>
                                             <a href={result.url}>
                                                 {result.description}

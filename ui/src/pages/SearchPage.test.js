@@ -7,10 +7,10 @@ import SearchPage from "./SearchPage";
 
 jest.mock("../apiClients/apiClient");
 
-const searchResultFactory = Factory.define(() => ({
+const searchResultFactory = Factory.define(({ sequence }) => ({
     description: "Some description",
     type: "some type",
-    url: "https://some.url",
+    url: `https://some.${sequence}.url`,
     indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
 }));
 
