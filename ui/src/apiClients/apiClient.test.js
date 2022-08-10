@@ -90,6 +90,7 @@ describe("test the uploadDocument method", () => {
         const apiClient = new ApiClient(api, auth)
         const document = new File(['hello'], 'hello.txt', {type: 'text/plain'})
         const nhsNumber = "0987654321"
+        const documentTitle = "Jane Doe - Patient Record"
         const requestBody = {
             "resourceType": "DocumentReference",
             "subject": {
@@ -113,11 +114,11 @@ describe("test the uploadDocument method", () => {
                     },
                 },
             ],
-            description: "new document",
+            description: documentTitle,
             created: "2021-07-11T16:57:30+01:00",
         };
 
-        await apiClient.uploadDocument(document, nhsNumber);
+        await apiClient.uploadDocument(document, nhsNumber, documentTitle);
         expect(postMock).toHaveBeenCalledWith(
             "doc-store-api",
             "/DocumentReference",

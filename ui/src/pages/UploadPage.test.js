@@ -33,16 +33,18 @@ describe("Upload page", () => {
         it("displays success message when a document is successfully uploaded", async () => {
             const apiClientMock = new ApiClient();
             const nhsNumber = "0987654321";
+            const documentTitle = "Jane Doe - Patient Record";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
             userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
+            userEvent.type(screen.getByLabelText("Enter Document Title"), documentTitle);
             userEvent.upload(screen.getByLabelText("Choose document"), document);
             userEvent.click(screen.getByText("Upload"));
 
             await waitFor(() => {
-                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document, nhsNumber);
+                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document, nhsNumber, documentTitle);
             });
             expect(
                 screen.getByText("Document uploaded successfully")
@@ -52,6 +54,7 @@ describe("Upload page", () => {
         it("displays an error message when the document fails to upload", async () => {
             const apiClientMock = new ApiClient();
             const nhsNumber = "0987654321";
+            const documentTitle = "Jane Doe - Patient Record";
             apiClientMock.uploadDocument = jest.fn((document) => {
                 throw new Error();
             });
@@ -60,10 +63,11 @@ describe("Upload page", () => {
             });
             render(<UploadPage client={apiClientMock} />);
             userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
+            userEvent.type(screen.getByLabelText("Enter Document Title"), documentTitle);
             userEvent.upload(screen.getByLabelText("Choose document"), document);
             userEvent.click(screen.getByText("Upload"));
             await waitFor(() => {
-                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document, nhsNumber);
+                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document, nhsNumber, documentTitle);
             });
             expect(
                 screen.getByText("File upload failed - please retry")
@@ -73,11 +77,13 @@ describe("Upload page", () => {
         it("displays a loading spinner when the document is being uploaded", async () => {
             const apiClientMock = new ApiClient();
             const nhsNumber = "0987654321";
+            const documentTitle = "Jane Doe - Patient Record";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
             userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
+            userEvent.type(screen.getByLabelText("Enter Document Title"), documentTitle);
             userEvent.upload(screen.getByLabelText("Choose document"), document);
             userEvent.click(screen.getByText("Upload"));
             await waitFor(() => {
@@ -88,12 +94,14 @@ describe("Upload page", () => {
         it("does not upload documents of size greater than 5GB and displays an error", async () => {
             const apiClientMock = new ApiClient();
             const nhsNumber = "0987654321";
+            const documentTitle = "Jane Doe - Patient Record";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain"
             });
             Object.defineProperty(document, 'size', {value: 5*107374184 + 1})
             render(<UploadPage client={apiClientMock} />);
             userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
+            userEvent.type(screen.getByLabelText("Enter Document Title"), documentTitle);
             userEvent.upload(screen.getByLabelText("Choose document"), document);
             userEvent.click(screen.getByText("Upload"));
             await waitFor(() => {
@@ -117,7 +125,7 @@ describe("Upload page", () => {
                 screen.getByRole("heading", { name: "Upload Patient Records" })
             ).toBeInTheDocument();
             expect(screen.getByLabelText("Enter NHS number")).toBeInTheDocument();
-            expect(screen.queryByLabelText("Enter Document Title")).toBeNull();
+            expect(screen.getByLabelText("Enter Document Title")).toBeInTheDocument();
             expect(screen.queryByLabelText("Enter Clinical Code")).toBeNull();
             expect(screen.getByLabelText("Choose document")).toBeInTheDocument();
             expect(screen.getByText("Upload")).toBeInTheDocument();

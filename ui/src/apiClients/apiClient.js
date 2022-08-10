@@ -37,7 +37,7 @@ class ApiClient {
             : [];
     }
 
-  async uploadDocument(document, nhsNumber){
+  async uploadDocument(document, nhsNumber, documentTitle){
     const requestBody = {
       "resourceType": "DocumentReference",
       "subject": {
@@ -61,7 +61,7 @@ class ApiClient {
           }
         }
       ],
-      "description": "new document",
+      "description": documentTitle,
       "created": "2021-07-11T16:57:30+01:00"
     }
    const token = (await this.auth.currentSession()).getIdToken().getJwtToken()

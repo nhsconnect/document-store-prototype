@@ -17,6 +17,7 @@ const UploadPage = ({ client }) => {
     const { ref: documentInputRef, ...documentInputProps } =
         register("document");
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
+    const { ref: documentTitleRef, ...documentTitleProps } = register("documentTitle");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
 
     const doSubmit = async (data) => {
@@ -24,7 +25,7 @@ const UploadPage = ({ client }) => {
             const fileSize = data.document[0].size
             if (fileSize < 5*107374184){
                 setSubmissionState(states.UPLOADING);
-                await client.uploadDocument(data.document[0], data.nhsNumber);
+                await client.uploadDocument(data.document[0], data.nhsNumber, data.documentTitle);
                 setSubmissionState(states.SUCCEEDED);
             }
             else {
@@ -49,14 +50,17 @@ const UploadPage = ({ client }) => {
                         {...nhsNumberProps}
                         inputRef={nhsNumberRef}
                     />
+                    <Input
+                        id={"document-title-input"}
+                        label="Enter Document Title"
+                        type="text"
+                        name = "documentTitle"
+                        placeholder="Document Title"
+                        {...documentTitleProps}
+                        inputRef = {documentTitleRef}
+                    />
                     {showMetadataFields && (
                         <>
-                            <Input
-                                id={"document-title-input"}
-                                label="Enter Document Title"
-                                type="text"
-                                placeholder="Document Title"
-                            />
                             <Input
                                 id={"clinical-code-input"}
                                 label="Enter Clinical Code"
