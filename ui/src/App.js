@@ -44,7 +44,7 @@ const App = () => {
                             />
                         </Routes>
                         <div>
-                            <AmplifySignOut/>
+                            {/*<AmplifySignOut/>*/}
                         </div>
                     </Router>
                 </Layout>
