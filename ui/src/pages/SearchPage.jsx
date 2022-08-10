@@ -60,7 +60,6 @@ const SearchPage = ({ client }) => {
                                 <Table.Row>
                                     <Table.Cell>Description</Table.Cell>
                                     <Table.Cell>Type</Table.Cell>
-                                    <Table.Cell />
                                 </Table.Row>
                             </Table.Head>
 
@@ -68,12 +67,11 @@ const SearchPage = ({ client }) => {
                                 {searchResults.map((result, index) => (
                                     <Table.Row>
                                         <Table.Cell>
-                                            {result.description}
+                                            <a href={result.url}>
+                                                {result.description}
+                                            </a>
                                         </Table.Cell>
                                         <Table.Cell>{result.type}</Table.Cell>
-                                        <Table.Cell>
-                                            <a href={result.url}>Link</a>
-                                        </Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>

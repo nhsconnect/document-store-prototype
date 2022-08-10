@@ -51,11 +51,11 @@ describe("Search page", () => {
             );
         });
         expect(screen.getByText("Documents")).toBeInTheDocument();
-        expect(screen.getByText(documentDescription)).toBeInTheDocument();
+        const documentDescriptionElement =
+            screen.getByText(documentDescription);
+        expect(documentDescriptionElement).toBeInTheDocument();
+        expect(documentDescriptionElement).toHaveAttribute("href", documentUrl);
         expect(screen.getByText(documentType)).toBeInTheDocument();
-        const documentLink = screen.getByText("Link");
-        expect(documentLink).toBeInTheDocument();
-        expect(documentLink).toHaveAttribute("href", documentUrl);
         expect(screen.queryByRole("progressbar")).toBeNull();
     });
 
