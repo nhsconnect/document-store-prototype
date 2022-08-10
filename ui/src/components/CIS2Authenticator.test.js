@@ -1,4 +1,4 @@
-import {render, screen} from "@testing-library/react";
+import {render, screen, waitFor} from "@testing-library/react";
 import CIS2Authenticator from "./CIS2Authenticator";
 import {Auth, Hub} from "aws-amplify";
 import {act} from "react-dom/test-utils";
@@ -18,8 +18,14 @@ describe("CIS2Authenticator", () => {
             responseType: "code"
         }
 
-        jest.spyOn(Auth, 'currentSession').mockImplementation(() => new Promise((resolve) => resolve(true)));
-        jest.spyOn(Auth, 'federatedSignIn').mockImplementation(() => new Promise((resolve) => resolve(true)));
+        jest.spyOn(Auth, 'currentSession')
+            .mockImplementation(() => new Promise((resolve) => resolve({
+                idToken: {
+                    jwtToken: "a-token"
+                }
+            })));
+        jest.spyOn(Auth, 'federatedSignIn')
+            .mockImplementation(() => new Promise((resolve) => resolve(true)));
     });
 
     afterAll(() => {
@@ -27,20 +33,31 @@ describe("CIS2Authenticator", () => {
         jest.clearAllMocks();
     });
 
+    beforeEach(() => {
+        jest.spyOn(Auth, 'currentSession')
+            .mockImplementation(async () => ({
+                idToken: {
+                    jwtToken: "a-token"
+                }
+            }));
+        jest.spyOn(Auth, 'federatedSignIn')
+            .mockImplementation(async () => true);
+    })
+
     it("Given user IS NOT authenticated then no children should be rendered", () => {
         render(<CIS2Authenticator><div>this-should-NOT-be-rendered</div></CIS2Authenticator>);
         expect(screen.queryByText("this-should-NOT-be-rendered")).not.toBeInTheDocument();
     });
 
-    it("Given user IS authenticated then children should be rendered", () => {
+    it("Given user IS authenticated then children should be rendered", async () => {
         render(<CIS2Authenticator><div>this-should-be-rendered</div></CIS2Authenticator>);
-        act( () => {
-            Hub.dispatch('auth', {
-                event: 'signIn',
-                data: {}
-            });
+        Hub.dispatch('auth', {
+            event: 'signIn',
+            data: {}
         });
-        expect(screen.queryByText("this-should-be-rendered")).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.queryByText("this-should-be-rendered")).toBeInTheDocument();
+        });
     });
 
 });

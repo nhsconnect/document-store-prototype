@@ -1,34 +1,30 @@
-import config from "../config";
-import {useEffect, useMemo, useState} from "react";
 import awsConfig from "../config";
+import {useEffect, useState} from "react";
 import {Auth, Hub} from "aws-amplify";
 
-const getToken = () => {
-    return Auth.currentSession()
-        .then(session => session)
-        .catch(err => console.log(err));
+const getToken = async () => {
+    const session = await Auth.currentSession();
+    return session.idToken.jwtToken;
 }
 
 const CIS2Authenticator = ({ children, autologin = true }) => {
     const [token, setToken] = useState();
     const [isAutologin] = useState(() => !token && autologin);
 
-    const authHandler = ({payload: {event, data}}) => {
+    const authHandler = async ({payload: {event, data}}) => {
         switch (event) {
             case "signIn":
             case "cognitoHostedUI":
-                setToken("granting...");
-                getToken().then(userToken => setToken(userToken.idToken.jwtToken));
+                const userToken = await getToken();
+                setToken(userToken);
                 break;
             case "signOut":
                 setToken(null);
                 break;
             case "signIn_failure":
             case "cognitoHostedUI_failure":
-                console.log("Sign in failure", data);
-                break;
             default:
-                break;
+                throw "cognito login failed";
         }
     };
 
@@ -36,13 +32,9 @@ const CIS2Authenticator = ({ children, autologin = true }) => {
 
         if(isAutologin){
             (async () => {
-                try {
-                    await Auth.federatedSignIn({
-                        provider: awsConfig.Auth.providerId,
-                    });
-                } catch (e) {
-                    console.log(e);
-                }
+                await Auth.federatedSignIn({
+                    provider: awsConfig.Auth.providerId,
+                });
             })();
         }
 
@@ -54,7 +46,9 @@ const CIS2Authenticator = ({ children, autologin = true }) => {
 
     }, []);
 
-    return <div data-testid={'CIS2Authenticator'}>{ token && children }</div>;
+    return <div data-testid={'CIS2Authenticator'}>
+        { token && children }
+    </div>;
 };
 
 export default CIS2Authenticator;
