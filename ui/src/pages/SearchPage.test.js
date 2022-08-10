@@ -71,12 +71,15 @@ describe("Search page", () => {
         apiClientMock.findByNhsNumber = jest.fn(() => {
             return [
                 searchResultFactory.build({
+                    description: "oldest",
                     indexed: new Date(Date.UTC(2022, 7, 9, 10)),
                 }),
                 searchResultFactory.build({
+                    description: "latest",
                     indexed: new Date(Date.UTC(2022, 7, 11, 10)),
                 }),
                 searchResultFactory.build({
+                    description: "middle",
                     indexed: new Date(Date.UTC(2022, 7, 10, 10)),
                 }),
             ];
@@ -96,9 +99,9 @@ describe("Search page", () => {
         const tableBody = document.querySelector("tbody");
         const resultRows = within(tableBody).getAllByRole("row");
         expect(resultRows).toHaveLength(3);
-        expect(resultRows[0].innerHTML).toContain("11/08/2022");
-        expect(resultRows[1].innerHTML).toContain("10/08/2022");
-        expect(resultRows[2].innerHTML).toContain("09/08/2022");
+        expect(resultRows[0].innerHTML).toContain("latest");
+        expect(resultRows[1].innerHTML).toContain("middle");
+        expect(resultRows[2].innerHTML).toContain("oldest");
     });
 
     it("clears previous search results when a new search is triggered", async () => {
