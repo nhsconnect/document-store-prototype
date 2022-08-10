@@ -1,10 +1,18 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Factory } from "fishery";
 
 import ApiClient from "../apiClients/apiClient";
 import SearchPage from "./SearchPage";
 
 jest.mock("../apiClients/apiClient");
+
+const searchResultFactory = Factory.define(() => ({
+    description: "Some description",
+    type: "some type",
+    url: "https://some.url",
+    indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
+}));
 
 describe("Search page", () => {
     it("displays a loading spinner when a document search is in progress", async () => {
@@ -26,20 +34,10 @@ describe("Search page", () => {
     });
 
     it("displays search results when there are results", async () => {
-        const documentDescription = "Some description";
-        const documentType = "some type";
-        const documentUrl = "https://some.url";
         const apiClientMock = new ApiClient();
-        const indexedDate = new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515));
+        const searchResult = searchResultFactory.build();
         apiClientMock.findByNhsNumber = jest.fn(() => {
-            return [
-                {
-                    description: documentDescription,
-                    type: documentType,
-                    url: documentUrl,
-                    indexed: indexedDate,
-                },
-            ];
+            return [searchResult];
         });
         const nhsNumber = "123456789";
         render(<SearchPage client={apiClientMock} />);
@@ -53,13 +51,17 @@ describe("Search page", () => {
             );
         });
         expect(screen.getByText("Documents")).toBeInTheDocument();
-        const documentDescriptionElement =
-            screen.getByText(documentDescription);
+        const documentDescriptionElement = screen.getByText(
+            searchResult.description
+        );
         expect(documentDescriptionElement).toBeInTheDocument();
-        expect(documentDescriptionElement).toHaveAttribute("href", documentUrl);
-        expect(screen.getByText(documentType)).toBeInTheDocument();
+        expect(documentDescriptionElement).toHaveAttribute(
+            "href",
+            searchResult.url
+        );
+        expect(screen.getByText(searchResult.type)).toBeInTheDocument();
         expect(
-            screen.getByText(indexedDate.toLocaleString())
+            screen.getByText(searchResult.indexed.toLocaleString())
         ).toBeInTheDocument();
         expect(screen.queryByRole("progressbar")).toBeNull();
     });
@@ -67,14 +69,7 @@ describe("Search page", () => {
     it("clears previous search results when a new search is triggered", async () => {
         const apiClientMock = new ApiClient();
         apiClientMock.findByNhsNumber = jest.fn(() => {
-            return [
-                {
-                    description: "Some description",
-                    type: "some type",
-                    url: "https://some.url",
-                    indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
-                },
-            ];
+            return [searchResultFactory.build()];
         });
         const nhsNumber = "123456789";
         render(<SearchPage client={apiClientMock} />);
