@@ -16,6 +16,7 @@ const UploadPage = ({ client }) => {
     const { register, handleSubmit } = useForm();
     const { ref: documentInputRef, ...documentInputProps } =
         register("document");
+    const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
 
     const doSubmit = async (data) => {
@@ -23,7 +24,7 @@ const UploadPage = ({ client }) => {
             const fileSize = data.document[0].size
             if (fileSize < 5*107374184){
                 setSubmissionState(states.UPLOADING);
-                await client.uploadDocument(data.document[0]);
+                await client.uploadDocument(data.document[0], data.nhsNumber);
                 setSubmissionState(states.SUCCEEDED);
             }
             else {
@@ -43,8 +44,10 @@ const UploadPage = ({ client }) => {
                     <Input
                         id={"nhs-number-input"}
                         label="Enter NHS number"
+                        name = "nhsNumber"
                         type="text"
-                        placeholder="012 345 6789"
+                        {...nhsNumberProps}
+                        inputRef={nhsNumberRef}
                     />
                     {showMetadataFields && (
                         <>

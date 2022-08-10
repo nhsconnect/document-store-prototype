@@ -9,7 +9,7 @@ jest.mock("../apiClients/apiClient");
 jest.mock("../providers/FeatureToggleProvider")
 
 describe("Upload page", () => {
-    describe("show metadata fields feature toggle is active", () => {
+    describe("SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE feature toggle is active", () => {
         beforeEach(() => {
             useFeatureToggle.mockImplementation(() => true);
         });
@@ -32,15 +32,17 @@ describe("Upload page", () => {
 
         it("displays success message when a document is successfully uploaded", async () => {
             const apiClientMock = new ApiClient();
+            const nhsNumber = "0987654321";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
+            userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
             userEvent.upload(screen.getByLabelText("Choose document"), document);
             userEvent.click(screen.getByText("Upload"));
 
             await waitFor(() => {
-                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document);
+                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document, nhsNumber);
             });
             expect(
                 screen.getByText("Document uploaded successfully")
@@ -49,6 +51,7 @@ describe("Upload page", () => {
 
         it("displays an error message when the document fails to upload", async () => {
             const apiClientMock = new ApiClient();
+            const nhsNumber = "0987654321";
             apiClientMock.uploadDocument = jest.fn((document) => {
                 throw new Error();
             });
@@ -56,10 +59,11 @@ describe("Upload page", () => {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
+            userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
             userEvent.upload(screen.getByLabelText("Choose document"), document);
             userEvent.click(screen.getByText("Upload"));
             await waitFor(() => {
-                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document);
+                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document, nhsNumber);
             });
             expect(
                 screen.getByText("File upload failed - please retry")
@@ -68,10 +72,12 @@ describe("Upload page", () => {
 
         it("displays a loading spinner when the document is being uploaded", async () => {
             const apiClientMock = new ApiClient();
+            const nhsNumber = "0987654321";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
+            userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
             userEvent.upload(screen.getByLabelText("Choose document"), document);
             userEvent.click(screen.getByText("Upload"));
             await waitFor(() => {
@@ -81,11 +87,13 @@ describe("Upload page", () => {
 
         it("does not upload documents of size greater than 5GB and displays an error", async () => {
             const apiClientMock = new ApiClient();
+            const nhsNumber = "0987654321";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain"
             });
             Object.defineProperty(document, 'size', {value: 5*107374184 + 1})
             render(<UploadPage client={apiClientMock} />);
+            userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
             userEvent.upload(screen.getByLabelText("Choose document"), document);
             userEvent.click(screen.getByText("Upload"));
             await waitFor(() => {
@@ -95,7 +103,7 @@ describe("Upload page", () => {
         })
     });
 
-    describe("show metadata field feature toggle is inactive", () => {
+    describe("SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE feature toggle is inactive", () => {
         beforeEach(() => {
             useFeatureToggle.mockImplementation(() => false);
         });

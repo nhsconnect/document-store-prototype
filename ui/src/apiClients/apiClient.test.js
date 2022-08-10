@@ -82,36 +82,21 @@ describe("test the uploadDocument method", () => {
                     },
                 },
             ],
-        };
-        const postMock = jest.fn(() => {
-            return responseBody;
-        });
-        const token = "token";
-        const auth = {
-            currentSession: async () => {
-                return {
-                    getIdToken: () => {
-                        return {
-                            getJwtToken: () => {
-                                return token;
-                            },
-                        };
-                    },
-                };
-            },
-        };
-        const api = { post: postMock };
-        const apiClient = new ApiClient(api, auth);
-        const document = new File(["hello"], "hello.txt", {
-            type: "text/plain",
-        });
+        }
+        const postMock = jest.fn(() => {return responseBody})
+        const token = "token"
+        const auth = {currentSession: async () => {return {getIdToken: () => {return {getJwtToken: () => {return token}}}}}}
+        const api = {post: postMock}
+        const apiClient = new ApiClient(api, auth)
+        const document = new File(['hello'], 'hello.txt', {type: 'text/plain'})
+        const nhsNumber = "0987654321"
         const requestBody = {
-            resourceType: "DocumentReference",
-            subject: {
-                identifier: {
-                    system: "https://fhir.nhs.uk/Id/nhs-number",
-                    value: "012 345 6789",
-                },
+            "resourceType": "DocumentReference",
+            "subject": {
+                "identifier": {
+                    "system": "https://fhir.nhs.uk/Id/nhs-number",
+                    "value": nhsNumber
+                }
             },
             type: {
                 coding: [
@@ -132,7 +117,7 @@ describe("test the uploadDocument method", () => {
             created: "2021-07-11T16:57:30+01:00",
         };
 
-        await apiClient.uploadDocument(document);
+        await apiClient.uploadDocument(document, nhsNumber);
         expect(postMock).toHaveBeenCalledWith(
             "doc-store-api",
             "/DocumentReference",
