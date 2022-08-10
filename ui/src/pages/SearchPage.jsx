@@ -60,6 +60,7 @@ const SearchPage = ({ client }) => {
                                 <Table.Row>
                                     <Table.Cell>Description</Table.Cell>
                                     <Table.Cell>Type</Table.Cell>
+                                    <Table.Cell>Uploaded At</Table.Cell>
                                 </Table.Row>
                             </Table.Head>
 
@@ -72,6 +73,9 @@ const SearchPage = ({ client }) => {
                                             </a>
                                         </Table.Cell>
                                         <Table.Cell>{result.type}</Table.Cell>
+                                        <Table.Cell>
+                                            {result.indexed.toLocaleString()}
+                                        </Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>

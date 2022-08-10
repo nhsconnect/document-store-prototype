@@ -30,12 +30,14 @@ describe("Search page", () => {
         const documentType = "some type";
         const documentUrl = "https://some.url";
         const apiClientMock = new ApiClient();
+        const indexedDate = new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515));
         apiClientMock.findByNhsNumber = jest.fn(() => {
             return [
                 {
                     description: documentDescription,
                     type: documentType,
                     url: documentUrl,
+                    indexed: indexedDate,
                 },
             ];
         });
@@ -56,6 +58,9 @@ describe("Search page", () => {
         expect(documentDescriptionElement).toBeInTheDocument();
         expect(documentDescriptionElement).toHaveAttribute("href", documentUrl);
         expect(screen.getByText(documentType)).toBeInTheDocument();
+        expect(
+            screen.getByText(indexedDate.toLocaleString())
+        ).toBeInTheDocument();
         expect(screen.queryByRole("progressbar")).toBeNull();
     });
 
@@ -67,6 +72,7 @@ describe("Search page", () => {
                     description: "Some description",
                     type: "some type",
                     url: "https://some.url",
+                    indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
                 },
             ];
         });
