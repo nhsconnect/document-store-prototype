@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import App from './App';
 import config from "./config";
 
-jest.mock("aws-amplify");
+jest.mock("aws-amplify")
 
 test('renders application title', () => {
   render(<App />);

@@ -29,9 +29,9 @@ const Authenticator = ({ children }) => {
 const App = () => {
     return (
         <FeatureToggleProvider>
-            <Authenticator>
-                <Layout>
+            <Layout>
                     <Router>
+                        <Authenticator>
                         <Routes>
                             <Route path="/" element={<HomePage/>}/>
                             <Route
@@ -46,9 +46,9 @@ const App = () => {
                         <div>
                             {/*<AmplifySignOut/>*/}
                         </div>
+                        </Authenticator>
                     </Router>
-                </Layout>
-            </Authenticator>
+            </Layout>
         </FeatureToggleProvider>
     );
 }
