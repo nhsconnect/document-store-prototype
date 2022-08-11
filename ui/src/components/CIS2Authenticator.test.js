@@ -69,7 +69,7 @@ describe("CIS2Authenticator", () => {
         });
     });
 
-    it("Given authentication failed then display an error summery", async () => {
+    it("Given authentication failed then display an error summary", async () => {
         render(<Authenticator><Authenticator.Errors/></Authenticator>);
         Hub.dispatch('auth', {
             event: 'signIn_failure', data: {
@@ -77,10 +77,12 @@ describe("CIS2Authenticator", () => {
                 "error": "invalid_token"
             }
         });
-        expect(screen.queryByText("The access token provided is expired, revoked, malformed, or invalid for other reasons.")).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.queryByText("The access token provided is expired, revoked, malformed, or invalid for other reasons.")).toBeInTheDocument();
+        });
     });
 
-    it("Given redirected with error then display an error summery", async () => {
+    it("Given redirected with error then display an error summary", async () => {
         useLocation.mockImplementation(() => ({
             search: "?error_description=The%20access%20token%20provided%20is%20expired%2C%20revoked%2C%20malformed%2C%20or%20invalid%20for%20other%20reasons."
         }));
