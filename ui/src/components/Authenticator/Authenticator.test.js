@@ -11,7 +11,7 @@ jest.mock("react-router", () => ({
     useLocation: jest.fn(),
 }));
 
-describe("CIS2Authenticator", () => {
+describe("Authenticator", () => {
     let defaultAuthConfig;
 
     beforeAll(() => {
@@ -46,7 +46,7 @@ describe("CIS2Authenticator", () => {
         useLocation.mockImplementation(() => ({}));
     });
 
-    it("Given user IS NOT authenticated then no children should be rendered", () => {
+    it("does not render children when user IS NOT authenticated", () => {
         render(
             <Authenticator>
                 <Authenticator.Protected>
@@ -59,7 +59,7 @@ describe("CIS2Authenticator", () => {
         ).not.toBeInTheDocument();
     });
 
-    it("Given user IS authenticated then children should be rendered", async () => {
+    it("renders children when user IS authenticated", async () => {
         render(
             <Authenticator>
                 <Authenticator.Protected>
@@ -78,7 +78,7 @@ describe("CIS2Authenticator", () => {
         });
     });
 
-    it("Given authentication failed then display an error summary", async () => {
+    it("displays an error summary when authentication fails", async () => {
         render(
             <Authenticator>
                 <Authenticator.Errors />
@@ -101,7 +101,7 @@ describe("CIS2Authenticator", () => {
         });
     });
 
-    it("Given redirected with error then display an error summary", async () => {
+    it("display an error summary when authentication redirects with an error", async () => {
         useLocation.mockImplementation(() => ({
             search: "?error_description=The%20access%20token%20provided%20is%20expired%2C%20revoked%2C%20malformed%2C%20or%20invalid%20for%20other%20reasons.",
         }));
