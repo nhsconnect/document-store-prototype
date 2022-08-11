@@ -12,6 +12,7 @@ const Authenticator = ({ children }) => {
     const isCIS2FederatedIdentityProviderEnabled = useFeatureToggle(
         "CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED"
     );
+    const setIsAuthenticatedOnSignedIn = status => setIsAuthenticated(status === "signedin")
 
     return (
         <AuthenticationContext.Provider
@@ -25,7 +26,8 @@ const Authenticator = ({ children }) => {
             {isCIS2FederatedIdentityProviderEnabled ? (
                 <CIS2Authenticator>{children}</CIS2Authenticator>
             ) : (
-                <AmplifyAuthenticator data-testid={"AmplifyAuthenticator"}>
+                <AmplifyAuthenticator data-testid={"AmplifyAuthenticator"}
+                                      handleAuthStateChange={setIsAuthenticatedOnSignedIn}>
                     {children}
                 </AmplifyAuthenticator>
             )}

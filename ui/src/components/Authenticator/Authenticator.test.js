@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Auth, Hub } from "aws-amplify";
 import React from "react";
 import { useLocation } from "react-router";
@@ -9,6 +10,22 @@ import Authenticator from "./Authenticator";
 
 jest.mock("react-router", () => ({
     useLocation: jest.fn(),
+}));
+jest.mock("@aws-amplify/ui-react", () => ({
+    AmplifyAuthenticator: ({ children, handleAuthStateChange }) => {
+        return (
+            <>
+                <button
+                    onClick={() => {
+                        handleAuthStateChange("signedin");
+                    }}
+                >
+                    Sign in
+                </button>
+                <div>{children}</div>
+            </>
+        );
+    },
 }));
 
 describe("Authenticator", () => {
@@ -28,7 +45,6 @@ describe("Authenticator", () => {
 
         afterAll(() => {
             config.Auth = defaultAuthConfig;
-            jest.clearAllMocks();
         });
 
         beforeEach(() => {
@@ -119,6 +135,46 @@ describe("Authenticator", () => {
                     screen.queryByText(
                         "The access token provided is expired, revoked, malformed, or invalid for other reasons."
                     )
+                ).toBeInTheDocument();
+            });
+        });
+    });
+
+    describe("CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED feature toggle is inactive", () => {
+        beforeEach(() => {
+            jest.spyOn(
+                FeatureToggleProvider,
+                "useFeatureToggle"
+            ).mockImplementation(() => false);
+        });
+
+        it("does not render children when user IS NOT authenticated", () => {
+            render(
+                <Authenticator>
+                    <Authenticator.Protected>
+                        <div>this-should-NOT-be-rendered</div>
+                    </Authenticator.Protected>
+                </Authenticator>
+            );
+            expect(
+                screen.queryByText("this-should-NOT-be-rendered")
+            ).not.toBeInTheDocument();
+        });
+
+        it("renders children when user IS authenticated", async () => {
+            render(
+                <Authenticator>
+                    <Authenticator.Protected>
+                        <div>this-should-be-rendered</div>
+                    </Authenticator.Protected>
+                </Authenticator>
+            );
+
+            userEvent.click(screen.getByText("Sign in"));
+
+            await waitFor(() => {
+                expect(
+                    screen.queryByText("this-should-be-rendered")
                 ).toBeInTheDocument();
             });
         });
