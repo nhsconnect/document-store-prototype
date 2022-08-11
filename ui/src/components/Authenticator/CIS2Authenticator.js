@@ -3,8 +3,8 @@ import { Auth, Hub } from "aws-amplify";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router";
 
-import awsConfig from "../config";
-import AuthenticationContext from "../providers/AuthenticatorErrorsProvider";
+import awsConfig from "../../config";
+import AuthenticationContext from "../../providers/AuthenticatorErrorsProvider";
 
 const getToken = async () => {
     const session = await Auth.currentSession();

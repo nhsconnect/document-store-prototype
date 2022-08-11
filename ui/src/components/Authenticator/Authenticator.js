@@ -2,8 +2,8 @@ import { AmplifyAuthenticator } from "@aws-amplify/ui-react";
 import { ErrorSummary } from "nhsuk-react-components";
 import { useContext, useEffect, useState } from "react";
 
-import AuthenticationContext from "../providers/AuthenticatorErrorsProvider";
-import { useFeatureToggle } from "../providers/FeatureToggleProvider";
+import AuthenticationContext from "../../providers/AuthenticatorErrorsProvider";
+import { useFeatureToggle } from "../../providers/FeatureToggleProvider";
 import CIS2Authenticator from "./CIS2Authenticator";
 
 const Authenticator = ({ children }) => {
