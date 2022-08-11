@@ -5,6 +5,7 @@
     "proxy": "http://localhost:4566",
     "dependencies": {
         "@aws-amplify/ui-react": "^1.2.23",
+        "@rehooks/local-storage": "^2.4.4",
         "@testing-library/jest-dom": "^5.15.0",
         "@testing-library/react": "^11.2.7",
         "@testing-library/user-event": "^12.8.3",
@@ -18,8 +19,7 @@
         "react-router": "^6.3.0",
         "react-router-dom": "^6.3.0",
         "react-scripts": "4.0.3",
-        "web-vitals": "^1.1.2",
-        "@rehooks/local-storage": "^2.4.4"
+        "web-vitals": "^1.1.2"
     },
     "scripts": {
         "start": "react-scripts start",
@@ -47,5 +47,8 @@
     },
     "devDependencies": {
         "fishery": "^2.2.2"
+    },
+    "engines": {
+        "node": ">=16.0.0"
     }
 }
