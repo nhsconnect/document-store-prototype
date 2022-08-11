@@ -188,7 +188,9 @@ describe("Upload page", () => {
             expect(
                 screen.getByLabelText("Enter Document Title")
             ).toBeInTheDocument();
-            expect(screen.queryByLabelText("Enter Clinical Code")).toBeNull();
+            expect(
+                screen.queryByLabelText("Enter Clinical Code")
+            ).not.toBeInTheDocument();
             expect(
                 screen.getByLabelText("Choose document")
             ).toBeInTheDocument();

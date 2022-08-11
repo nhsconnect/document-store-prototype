@@ -63,7 +63,7 @@ describe("Search page", () => {
         expect(
             screen.getByText(searchResult.indexed.toLocaleString())
         ).toBeInTheDocument();
-        expect(screen.queryByRole("progressbar")).toBeNull();
+        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
     it("displays search results in descending order by 'uploaded at' value when there are multiple results", async () => {
@@ -119,14 +119,14 @@ describe("Search page", () => {
             expect(screen.getByRole("progressbar")).toBeInTheDocument();
         });
         await waitFor(() => {
-            expect(screen.queryByRole("progressbar")).toBeNull();
+            expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
         });
         expect(screen.getByText("Documents")).toBeInTheDocument();
 
         userEvent.click(screen.getByText("Search"));
 
         await waitFor(() => {
-            expect(screen.queryByText("Documents")).toBeNull();
+            expect(screen.queryByText("Documents")).not.toBeInTheDocument();
         });
     });
 
