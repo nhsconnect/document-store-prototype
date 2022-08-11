@@ -1,9 +1,10 @@
 import awsConfig from "../config";
-import {useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import {Auth, Hub} from "aws-amplify";
 import {ErrorSummary} from "nhsuk-react-components";
 import {deleteFromStorage, writeStorage} from '@rehooks/local-storage';
 import {useLocation} from "react-router";
+import AuthenticationContext from "../providers/AuthenticatorErrorsProvider";
 
 const getToken = async () => {
     const session = await Auth.currentSession();
@@ -21,17 +22,17 @@ function useQuery() {
 
 const CIS2Authenticator = ({ children, autologin = true }) => {
     const [token, setToken] = useState();
-    const [error, setError] = useState();
     const [isAutologin] = useState(() => !token && autologin);
     const query = useQuery();
+    const {setError, setIsAuthenticated} = useContext(AuthenticationContext);
 
     const authHandler = async ({payload: {event, data}}) => {
-        console.log(event, data);
         switch (event) {
             case "signIn":
             case "cognitoHostedUI":
                 const userToken = await getToken();
                 setToken(userToken);
+                setIsAuthenticated(true);
                 break;
             case "signOut":
                 setToken(null);
@@ -75,13 +76,7 @@ const CIS2Authenticator = ({ children, autologin = true }) => {
     }, []);
 
     return <div data-testid={'CIS2Authenticator'}>
-        { error && <ErrorSummary>
-            <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
-            <ErrorSummary.Body>
-                <p>{ error.error_description }</p>
-            </ErrorSummary.Body>
-        </ErrorSummary> }
-        { token && children }
+        { children }
     </div>;
 };
 
