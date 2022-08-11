@@ -1,5 +1,5 @@
 import { Button, Input } from "nhsuk-react-components";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFeatureToggle } from "../providers/FeatureToggleProvider";
 
@@ -8,34 +8,39 @@ const states = {
     UPLOADING: "uploading",
     SUCCEEDED: "succeeded",
     FAILED: "failed",
-    FILE_SIZE_ERROR: "file-size-error"
-}
+    FILE_SIZE_ERROR: "file-size-error",
+};
 
 const UploadPage = ({ client }) => {
-    const showMetadataFields = useFeatureToggle("SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE");
+    const showMetadataFields = useFeatureToggle(
+        "SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE"
+    );
     const { register, handleSubmit } = useForm();
     const { ref: documentInputRef, ...documentInputProps } =
         register("document");
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
-    const { ref: documentTitleRef, ...documentTitleProps } = register("documentTitle");
+    const { ref: documentTitleRef, ...documentTitleProps } =
+        register("documentTitle");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
 
     const doSubmit = async (data) => {
-        try{
-            const fileSize = data.document[0].size
-            if (fileSize < 5*107374184){
+        try {
+            const fileSize = data.document[0].size;
+            if (fileSize < 5 * 107374184) {
                 setSubmissionState(states.UPLOADING);
-                await client.uploadDocument(data.document[0], data.nhsNumber, data.documentTitle);
+                await client.uploadDocument(
+                    data.document[0],
+                    data.nhsNumber,
+                    data.documentTitle
+                );
                 setSubmissionState(states.SUCCEEDED);
-            }
-            else {
+            } else {
                 setSubmissionState(states.FILE_SIZE_ERROR);
             }
-        }
-        catch (e) {
+        } catch (e) {
             setSubmissionState(states.FAILED);
         }
-    }
+    };
 
     return (
         <>
@@ -45,7 +50,7 @@ const UploadPage = ({ client }) => {
                     <Input
                         id={"nhs-number-input"}
                         label="Enter NHS number"
-                        name = "nhsNumber"
+                        name="nhsNumber"
                         type="text"
                         {...nhsNumberProps}
                         inputRef={nhsNumberRef}
@@ -54,10 +59,10 @@ const UploadPage = ({ client }) => {
                         id={"document-title-input"}
                         label="Enter Document Title"
                         type="text"
-                        name = "documentTitle"
+                        name="documentTitle"
                         placeholder="Document Title"
                         {...documentTitleProps}
-                        inputRef = {documentTitleRef}
+                        inputRef={documentTitleRef}
                     />
                     {showMetadataFields && (
                         <>
@@ -81,8 +86,7 @@ const UploadPage = ({ client }) => {
                     <Button type="submit">Upload</Button>
                     {submissionState === states.UPLOADING && (
                         <p>
-                            <progress aria-label={"Loading..."}>
-                            </progress>
+                            <progress aria-label={"Loading..."}></progress>
                         </p>
                     )}
                     {submissionState === states.SUCCEEDED && (
@@ -92,7 +96,9 @@ const UploadPage = ({ client }) => {
                         <p>File upload failed - please retry</p>
                     )}
                     {submissionState === states.FILE_SIZE_ERROR && (
-                        <p>File size greater than 5GB - upload a smaller file</p>
+                        <p>
+                            File size greater than 5GB - upload a smaller file
+                        </p>
                     )}
                 </form>
             </div>

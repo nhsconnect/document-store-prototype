@@ -2,11 +2,11 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ApiClient from "../apiClients/apiClient";
+import { useFeatureToggle } from "../providers/FeatureToggleProvider";
 import UploadPage from "./UploadPage";
-import {useFeatureToggle} from "../providers/FeatureToggleProvider";
 
 jest.mock("../apiClients/apiClient");
-jest.mock("../providers/FeatureToggleProvider")
+jest.mock("../providers/FeatureToggleProvider");
 
 describe("Upload page", () => {
     describe("SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE feature toggle is active", () => {
@@ -23,10 +23,18 @@ describe("Upload page", () => {
             expect(
                 screen.getByRole("heading", { name: "Upload Patient Records" })
             ).toBeInTheDocument();
-            expect(screen.getByLabelText("Enter NHS number")).toBeInTheDocument();
-            expect(screen.getByLabelText("Enter Document Title")).toBeInTheDocument();
-            expect(screen.getByLabelText("Enter Clinical Code")).toBeInTheDocument();
-            expect(screen.getByLabelText("Choose document")).toBeInTheDocument();
+            expect(
+                screen.getByLabelText("Enter NHS number")
+            ).toBeInTheDocument();
+            expect(
+                screen.getByLabelText("Enter Document Title")
+            ).toBeInTheDocument();
+            expect(
+                screen.getByLabelText("Enter Clinical Code")
+            ).toBeInTheDocument();
+            expect(
+                screen.getByLabelText("Choose document")
+            ).toBeInTheDocument();
             expect(screen.getByText("Upload")).toBeInTheDocument();
         });
 
@@ -38,13 +46,26 @@ describe("Upload page", () => {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
-            userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
-            userEvent.type(screen.getByLabelText("Enter Document Title"), documentTitle);
-            userEvent.upload(screen.getByLabelText("Choose document"), document);
+            userEvent.type(
+                screen.getByLabelText("Enter NHS number"),
+                nhsNumber
+            );
+            userEvent.type(
+                screen.getByLabelText("Enter Document Title"),
+                documentTitle
+            );
+            userEvent.upload(
+                screen.getByLabelText("Choose document"),
+                document
+            );
             userEvent.click(screen.getByText("Upload"));
 
             await waitFor(() => {
-                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document, nhsNumber, documentTitle);
+                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
+                    document,
+                    nhsNumber,
+                    documentTitle
+                );
             });
             expect(
                 screen.getByText("Document uploaded successfully")
@@ -62,12 +83,25 @@ describe("Upload page", () => {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
-            userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
-            userEvent.type(screen.getByLabelText("Enter Document Title"), documentTitle);
-            userEvent.upload(screen.getByLabelText("Choose document"), document);
+            userEvent.type(
+                screen.getByLabelText("Enter NHS number"),
+                nhsNumber
+            );
+            userEvent.type(
+                screen.getByLabelText("Enter Document Title"),
+                documentTitle
+            );
+            userEvent.upload(
+                screen.getByLabelText("Choose document"),
+                document
+            );
             userEvent.click(screen.getByText("Upload"));
             await waitFor(() => {
-                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(document, nhsNumber, documentTitle);
+                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
+                    document,
+                    nhsNumber,
+                    documentTitle
+                );
             });
             expect(
                 screen.getByText("File upload failed - please retry")
@@ -82,9 +116,18 @@ describe("Upload page", () => {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
-            userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
-            userEvent.type(screen.getByLabelText("Enter Document Title"), documentTitle);
-            userEvent.upload(screen.getByLabelText("Choose document"), document);
+            userEvent.type(
+                screen.getByLabelText("Enter NHS number"),
+                nhsNumber
+            );
+            userEvent.type(
+                screen.getByLabelText("Enter Document Title"),
+                documentTitle
+            );
+            userEvent.upload(
+                screen.getByLabelText("Choose document"),
+                document
+            );
             userEvent.click(screen.getByText("Upload"));
             await waitFor(() => {
                 expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -96,19 +139,34 @@ describe("Upload page", () => {
             const nhsNumber = "0987654321";
             const documentTitle = "Jane Doe - Patient Record";
             const document = new File(["hello"], "hello.txt", {
-                type: "text/plain"
+                type: "text/plain",
             });
-            Object.defineProperty(document, 'size', {value: 5*107374184 + 1})
+            Object.defineProperty(document, "size", {
+                value: 5 * 107374184 + 1,
+            });
             render(<UploadPage client={apiClientMock} />);
-            userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
-            userEvent.type(screen.getByLabelText("Enter Document Title"), documentTitle);
-            userEvent.upload(screen.getByLabelText("Choose document"), document);
+            userEvent.type(
+                screen.getByLabelText("Enter NHS number"),
+                nhsNumber
+            );
+            userEvent.type(
+                screen.getByLabelText("Enter Document Title"),
+                documentTitle
+            );
+            userEvent.upload(
+                screen.getByLabelText("Choose document"),
+                document
+            );
             userEvent.click(screen.getByText("Upload"));
             await waitFor(() => {
-                expect(screen.getByText("File size greater than 5GB - upload a smaller file")).toBeInTheDocument();
+                expect(
+                    screen.getByText(
+                        "File size greater than 5GB - upload a smaller file"
+                    )
+                ).toBeInTheDocument();
             });
             expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
-        })
+        });
     });
 
     describe("SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE feature toggle is inactive", () => {
@@ -124,10 +182,16 @@ describe("Upload page", () => {
             expect(
                 screen.getByRole("heading", { name: "Upload Patient Records" })
             ).toBeInTheDocument();
-            expect(screen.getByLabelText("Enter NHS number")).toBeInTheDocument();
-            expect(screen.getByLabelText("Enter Document Title")).toBeInTheDocument();
+            expect(
+                screen.getByLabelText("Enter NHS number")
+            ).toBeInTheDocument();
+            expect(
+                screen.getByLabelText("Enter Document Title")
+            ).toBeInTheDocument();
             expect(screen.queryByLabelText("Enter Clinical Code")).toBeNull();
-            expect(screen.getByLabelText("Choose document")).toBeInTheDocument();
+            expect(
+                screen.getByLabelText("Choose document")
+            ).toBeInTheDocument();
             expect(screen.getByText("Upload")).toBeInTheDocument();
         });
     });
