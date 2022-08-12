@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Auth, Hub } from "aws-amplify";
 import React from "react";
@@ -104,14 +104,18 @@ describe("Authenticator", () => {
                     <Authenticator.Errors />
                 </Authenticator>
             );
-            Hub.dispatch("auth", {
-                event: "signIn_failure",
-                data: {
-                    error_description:
-                        "The access token provided is expired, revoked, malformed, or invalid for other reasons.",
-                    error: "invalid_token",
-                },
+
+            act(() => {
+                Hub.dispatch("auth", {
+                    event: "signIn_failure",
+                    data: {
+                        error_description:
+                            "The access token provided is expired, revoked, malformed, or invalid for other reasons.",
+                        error: "invalid_token",
+                    },
+                });
             });
+
             await waitFor(() => {
                 expect(
                     screen.queryByText(
