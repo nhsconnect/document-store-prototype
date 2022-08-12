@@ -15,5 +15,9 @@ public class CreateDocumentReferenceRequestValidator {
                 throw new UnrecognisedCodingSystemException(coding.getSystem());
             }
         }
+        String description = documentReference.getDescription();
+        if (description == null) {
+            throw new DocumentReferenceValidationException("description");
+        }
     }
 }

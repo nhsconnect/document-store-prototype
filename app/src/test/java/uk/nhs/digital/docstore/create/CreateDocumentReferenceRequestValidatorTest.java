@@ -43,4 +43,15 @@ public class CreateDocumentReferenceRequestValidatorTest {
 
         assertThatThrownBy(() -> validator.validate(inputDocumentReference)).isExactlyInstanceOf(UnrecognisedCodingSystemException.class);
     }
+
+    @Test
+    void throwsAnExceptionIfTheDescriptionInTheDocumentReferenceRequestIsMissing() throws IOException {
+        String validRequestJson = testHelpers.getContentFromResource(
+                "create/valid-create-document-reference-request.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        inputDocumentReference.setDescription("");
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference)).isExactlyInstanceOf(DocumentReferenceValidationException.class);
+    }
 }
