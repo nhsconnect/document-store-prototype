@@ -56,7 +56,9 @@ describe("test the findByNhsNumber method", () => {
                 indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
             },
         ];
+
         const returnedDocumentList = await apiClient.findByNhsNumber(nhsNumber);
+
         expect(getMock).toHaveBeenCalledWith(
             "doc-store-api",
             "/DocumentReference",
@@ -82,28 +84,45 @@ describe("test the uploadDocument method", () => {
                     },
                 },
             ],
-        }
-        const postMock = jest.fn(() => {return responseBody})
-        const token = "token"
-        const auth = {currentSession: async () => {return {getIdToken: () => {return {getJwtToken: () => {return token}}}}}}
-        const api = {post: postMock}
-        const apiClient = new ApiClient(api, auth)
-        const document = new File(['hello'], 'hello.txt', {type: 'text/plain'})
-        const nhsNumber = "0987654321"
-        const documentTitle = "Jane Doe - Patient Record"
+        };
+        const postMock = jest.fn(() => {
+            return responseBody;
+        });
+        const token = "token";
+        const auth = {
+            currentSession: async () => {
+                return {
+                    getIdToken: () => {
+                        return {
+                            getJwtToken: () => {
+                                return token;
+                            },
+                        };
+                    },
+                };
+            },
+        };
+        const api = { post: postMock };
+        const apiClient = new ApiClient(api, auth);
+        const document = new File(["hello"], "hello.txt", {
+            type: "text/plain",
+        });
+        const nhsNumber = "0987654321";
+        const snomedCode = "22151000087106";
+        const documentTitle = "Jane Doe - Patient Record";
         const requestBody = {
-            "resourceType": "DocumentReference",
-            "subject": {
-                "identifier": {
-                    "system": "https://fhir.nhs.uk/Id/nhs-number",
-                    "value": nhsNumber
-                }
+            resourceType: "DocumentReference",
+            subject: {
+                identifier: {
+                    system: "https://fhir.nhs.uk/Id/nhs-number",
+                    value: nhsNumber,
+                },
             },
             type: {
                 coding: [
                     {
                         system: "http://snomed.info/sct",
-                        code: "962381000000101",
+                        code: snomedCode,
                     },
                 ],
             },
@@ -118,7 +137,13 @@ describe("test the uploadDocument method", () => {
             created: "2021-07-11T16:57:30+01:00",
         };
 
-        await apiClient.uploadDocument(document, nhsNumber, documentTitle);
+        await apiClient.uploadDocument(
+            document,
+            nhsNumber,
+            documentTitle,
+            snomedCode
+        );
+
         expect(postMock).toHaveBeenCalledWith(
             "doc-store-api",
             "/DocumentReference",

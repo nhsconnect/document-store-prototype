@@ -30,7 +30,7 @@ describe("Upload page", () => {
                 screen.getByLabelText("Enter Document Title")
             ).toBeInTheDocument();
             expect(
-                screen.getByLabelText("Enter Clinical Code")
+                screen.getByLabelText("Select Clinical Code")
             ).toBeInTheDocument();
             expect(
                 screen.getByLabelText("Choose document")
@@ -42,13 +42,19 @@ describe("Upload page", () => {
             const apiClientMock = new ApiClient();
             const nhsNumber = "0987654321";
             const documentTitle = "Jane Doe - Patient Record";
+            const snomedCode = "22151000087106";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
+
             userEvent.type(
                 screen.getByLabelText("Enter NHS number"),
                 nhsNumber
+            );
+            userEvent.selectOptions(
+                screen.getByLabelText("Select Clinical Code"),
+                snomedCode
             );
             userEvent.type(
                 screen.getByLabelText("Enter Document Title"),
@@ -61,21 +67,23 @@ describe("Upload page", () => {
             userEvent.click(screen.getByText("Upload"));
 
             await waitFor(() => {
-                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
-                    document,
-                    nhsNumber,
-                    documentTitle
-                );
+                expect(
+                    screen.getByText("Document uploaded successfully")
+                ).toBeInTheDocument();
             });
-            expect(
-                screen.getByText("Document uploaded successfully")
-            ).toBeInTheDocument();
+            expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
+                document,
+                nhsNumber,
+                documentTitle,
+                snomedCode
+            );
         });
 
         it("displays an error message when the document fails to upload", async () => {
             const apiClientMock = new ApiClient();
             const nhsNumber = "0987654321";
             const documentTitle = "Jane Doe - Patient Record";
+            const snomedCode = "22151000087106";
             apiClientMock.uploadDocument = jest.fn((document) => {
                 throw new Error();
             });
@@ -83,6 +91,7 @@ describe("Upload page", () => {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
+
             userEvent.type(
                 screen.getByLabelText("Enter NHS number"),
                 nhsNumber
@@ -91,16 +100,22 @@ describe("Upload page", () => {
                 screen.getByLabelText("Enter Document Title"),
                 documentTitle
             );
+            userEvent.selectOptions(
+                screen.getByLabelText("Select Clinical Code"),
+                snomedCode
+            );
             userEvent.upload(
                 screen.getByLabelText("Choose document"),
                 document
             );
             userEvent.click(screen.getByText("Upload"));
+
             await waitFor(() => {
                 expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
                     document,
                     nhsNumber,
-                    documentTitle
+                    documentTitle,
+                    snomedCode
                 );
             });
             expect(
@@ -112,10 +127,12 @@ describe("Upload page", () => {
             const apiClientMock = new ApiClient();
             const nhsNumber = "0987654321";
             const documentTitle = "Jane Doe - Patient Record";
+            const snomedCode = "22151000087106";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
             render(<UploadPage client={apiClientMock} />);
+
             userEvent.type(
                 screen.getByLabelText("Enter NHS number"),
                 nhsNumber
@@ -124,11 +141,16 @@ describe("Upload page", () => {
                 screen.getByLabelText("Enter Document Title"),
                 documentTitle
             );
+            userEvent.selectOptions(
+                screen.getByLabelText("Select Clinical Code"),
+                snomedCode
+            );
             userEvent.upload(
                 screen.getByLabelText("Choose document"),
                 document
             );
             userEvent.click(screen.getByText("Upload"));
+
             await waitFor(() => {
                 expect(screen.getByRole("progressbar")).toBeInTheDocument();
             });
@@ -138,6 +160,7 @@ describe("Upload page", () => {
             const apiClientMock = new ApiClient();
             const nhsNumber = "0987654321";
             const documentTitle = "Jane Doe - Patient Record";
+            const snomedCode = "22151000087106";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
@@ -145,6 +168,7 @@ describe("Upload page", () => {
                 value: 5 * 107374184 + 1,
             });
             render(<UploadPage client={apiClientMock} />);
+
             userEvent.type(
                 screen.getByLabelText("Enter NHS number"),
                 nhsNumber
@@ -153,11 +177,16 @@ describe("Upload page", () => {
                 screen.getByLabelText("Enter Document Title"),
                 documentTitle
             );
+            userEvent.selectOptions(
+                screen.getByLabelText("Select Clinical Code"),
+                snomedCode
+            );
             userEvent.upload(
                 screen.getByLabelText("Choose document"),
                 document
             );
             userEvent.click(screen.getByText("Upload"));
+
             await waitFor(() => {
                 expect(
                     screen.getByText(
@@ -176,6 +205,7 @@ describe("Upload page", () => {
         afterEach(() => {
             useFeatureToggle.mockReset();
         });
+
         it("renders the page", () => {
             render(<UploadPage />);
 
@@ -186,15 +216,46 @@ describe("Upload page", () => {
                 screen.getByLabelText("Enter NHS number")
             ).toBeInTheDocument();
             expect(
-                screen.getByLabelText("Enter Document Title")
-            ).toBeInTheDocument();
+                screen.queryByLabelText("Enter Document Title")
+            ).not.toBeInTheDocument();
             expect(
-                screen.queryByLabelText("Enter Clinical Code")
+                screen.queryByLabelText("Select Clinical Code")
             ).not.toBeInTheDocument();
             expect(
                 screen.getByLabelText("Choose document")
             ).toBeInTheDocument();
             expect(screen.getByText("Upload")).toBeInTheDocument();
+        });
+
+        it("displays success message when a document is successfully uploaded", async () => {
+            const apiClientMock = new ApiClient();
+            const nhsNumber = "0987654321";
+            const document = new File(["hello"], "hello.txt", {
+                type: "text/plain",
+            });
+            render(<UploadPage client={apiClientMock} />);
+
+            userEvent.type(
+                screen.getByLabelText("Enter NHS number"),
+                nhsNumber
+            );
+            userEvent.upload(
+                screen.getByLabelText("Choose document"),
+                document
+            );
+            userEvent.click(screen.getByText("Upload"));
+
+            await waitFor(() => {
+                expect(
+                    screen.getByText("Document uploaded successfully")
+                ).toBeInTheDocument();
+            });
+            expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
+                document,
+                nhsNumber,
+                "Jane Doe - Patient Record",
+                "22151000087106"
+            );
         });
     });
 });

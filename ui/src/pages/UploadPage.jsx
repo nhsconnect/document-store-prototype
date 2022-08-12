@@ -1,4 +1,4 @@
-import { Button, Input } from "nhsuk-react-components";
+import { Button, Input, Select } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFeatureToggle } from "../providers/FeatureToggleProvider";
@@ -21,6 +21,8 @@ const UploadPage = ({ client }) => {
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const { ref: documentTitleRef, ...documentTitleProps } =
         register("documentTitle");
+    const { ref: clinicalCodeRef, ...clinicalCodeProps } =
+        register("clinicalCode");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
 
     const doSubmit = async (data) => {
@@ -28,10 +30,19 @@ const UploadPage = ({ client }) => {
             const fileSize = data.document[0].size;
             if (fileSize < 5 * 107374184) {
                 setSubmissionState(states.UPLOADING);
+
+                const documentTitle = showMetadataFields
+                    ? data.documentTitle
+                    : "Jane Doe - Patient Record";
+                const clinicalCode = showMetadataFields
+                    ? data.clinicalCode
+                    : "22151000087106";
+
                 await client.uploadDocument(
                     data.document[0],
                     data.nhsNumber,
-                    data.documentTitle
+                    documentTitle,
+                    clinicalCode
                 );
                 setSubmissionState(states.SUCCEEDED);
             } else {
@@ -55,23 +66,30 @@ const UploadPage = ({ client }) => {
                         {...nhsNumberProps}
                         inputRef={nhsNumberRef}
                     />
-                    <Input
-                        id={"document-title-input"}
-                        label="Enter Document Title"
-                        type="text"
-                        name="documentTitle"
-                        placeholder="Document Title"
-                        {...documentTitleProps}
-                        inputRef={documentTitleRef}
-                    />
                     {showMetadataFields && (
                         <>
                             <Input
-                                id={"clinical-code-input"}
-                                label="Enter Clinical Code"
+                                id={"document-title-input"}
+                                label="Enter Document Title"
                                 type="text"
-                                placeholder="Clinical Code"
+                                name="documentTitle"
+                                placeholder="Document Title"
+                                {...documentTitleProps}
+                                inputRef={documentTitleRef}
                             />
+                            <Select
+                                name="clinicalCode"
+                                label="Select Clinical Code"
+                                {...clinicalCodeProps}
+                                selectRef={clinicalCodeRef}
+                            >
+                                <Select.Option
+                                    value="22151000087106"
+                                    defaultValue
+                                >
+                                    Paper Report (Record Artifact)
+                                </Select.Option>
+                            </Select>
                         </>
                     )}
                     <Input

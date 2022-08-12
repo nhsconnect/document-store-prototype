@@ -37,44 +37,50 @@ class ApiClient {
             : [];
     }
 
-  async uploadDocument(document, nhsNumber, documentTitle){
-    const requestBody = {
-      "resourceType": "DocumentReference",
-      "subject": {
-        "identifier": {
-          "system": "https://fhir.nhs.uk/Id/nhs-number",
-          "value": nhsNumber
-        }
-      },
-      "type": {
-        "coding": [
-          {
-            "system": "http://snomed.info/sct",
-            "code": "962381000000101"
-          }
-        ]
-      },
-      "content": [
-        {
-          "attachment": {
-            "contentType": "text/plain"
-          }
-        }
-      ],
-      "description": documentTitle,
-      "created": "2021-07-11T16:57:30+01:00"
+    async uploadDocument(document, nhsNumber, documentTitle, snomedCode) {
+        const requestBody = {
+            resourceType: "DocumentReference",
+            subject: {
+                identifier: {
+                    system: "https://fhir.nhs.uk/Id/nhs-number",
+                    value: nhsNumber,
+                },
+            },
+            type: {
+                coding: [
+                    {
+                        system: "http://snomed.info/sct",
+                        code: snomedCode,
+                    },
+                ],
+            },
+            content: [
+                {
+                    attachment: {
+                        contentType: "text/plain",
+                    },
+                },
+            ],
+            description: documentTitle,
+            created: "2021-07-11T16:57:30+01:00",
+        };
+        const token = (await this.auth.currentSession())
+            .getIdToken()
+            .getJwtToken();
+        const requestHeaders = {
+            Accept: "application/fhir+json",
+            Authorization: `Bearer ${token}`,
+        };
+        const response = await this.api.post(
+            "doc-store-api",
+            "/DocumentReference",
+            { body: requestBody, headers: requestHeaders }
+        );
+        const url = response.content[0].attachment.url;
+        let s3Url = setUrlHostToLocalHost(url);
+        await storageClient(s3Url, document);
+        console.log("document uploaded");
     }
-   const token = (await this.auth.currentSession()).getIdToken().getJwtToken()
-   const requestHeaders = {
-      'Accept': 'application/fhir+json',
-      'Authorization': `Bearer ${token}`,
-    }
-    const response = await this.api.post('doc-store-api', '/DocumentReference', {body: requestBody, headers: requestHeaders})
-    const url = response.content[0].attachment.url
-    let s3Url = setUrlHostToLocalHost(url);
-    await storageClient(s3Url, document)
-    console.log("document uploaded")
-  }
 }
 
 export default ApiClient;
