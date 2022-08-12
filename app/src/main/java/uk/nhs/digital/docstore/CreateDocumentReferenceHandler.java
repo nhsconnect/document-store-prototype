@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptorAndURL;
+import uk.nhs.digital.docstore.create.CreateDocumentReferenceRequestValidator;
 
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
     private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final FhirContext fhirContext;
+    private final CreateDocumentReferenceRequestValidator requestValidator = new CreateDocumentReferenceRequestValidator();
 
     public CreateDocumentReferenceHandler() {
         this.fhirContext = FhirContext.forR4();
@@ -43,7 +45,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
         DocumentDescriptorAndURL documentDescriptorAndURL;
         try {
             var inputDocumentReference = jsonParser.parseResource(NHSDocumentReference.class, input.getBody());
-            validateDocumentReference(inputDocumentReference);
+            requestValidator.validate(inputDocumentReference);
 
             logger.debug("Saving DocumentReference to DynamoDB");
             documentDescriptorAndURL = documentStore.generateDocumentDescriptorAndURL();
@@ -87,14 +89,5 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                         "Access-Control-Allow-Methods", "POST",
                         "Location", "DocumentReference/" + savedDocumentMetadata.getId()))
                 .withBody(resourceAsJson);
-    }
-
-    private void validateDocumentReference(NHSDocumentReference documentReference) {
-        CodeableConcept documentType = documentReference.getType();
-        for (Coding coding : documentType.getCoding()) {
-            if (!DOCUMENT_TYPE_CODING_SYSTEM.equals(coding.getSystem())) {
-                throw new UnrecognisedCodingSystemException(coding.getSystem());
-            }
-        }
     }
 }
