@@ -31,7 +31,7 @@ public class CreateDocumentReferenceRequestValidatorTest {
     }
 
     @Test
-    void throwsAnExceptionIfTheCodingSystemInTheDocumentReferenceRequestIsNotValid() throws IOException {
+    void throwsAnExceptionIfACodingSystemInTheDocumentReferenceRequestIsNotValid() throws IOException {
         String validRequestJson = testHelpers.getContentFromResource(
                 "create/valid-create-document-reference-request.json");
         var jsonParser = fhirContext.newJsonParser();
@@ -41,7 +41,8 @@ public class CreateDocumentReferenceRequestValidatorTest {
                 .setCoding(List.of(new Coding().setCode("1234").setSystem("invalid")));
         inputDocumentReference.setType(type);
 
-        assertThatThrownBy(() -> validator.validate(inputDocumentReference)).isExactlyInstanceOf(UnrecognisedCodingSystemException.class);
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(UnrecognisedCodingSystemException.class);
     }
 
     @Test
@@ -52,6 +53,21 @@ public class CreateDocumentReferenceRequestValidatorTest {
         var inputDocumentReference =
                 jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
         inputDocumentReference.setDescription("");
-        assertThatThrownBy(() -> validator.validate(inputDocumentReference)).isExactlyInstanceOf(DocumentReferenceValidationException.class);
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(MissingRequiredValueException.class);
+    }
+
+    @Test
+    void throwsAnExceptionIfACodingCodeInTheDocumentReferenceRequestIsNotValid() throws IOException {
+        String validRequestJson = testHelpers.getContentFromResource(
+                "create/valid-create-document-reference-request.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        var type = new CodeableConcept()
+                .setCoding(List.of(new Coding().setCode("invalid").setSystem("http://snomed.info/sct")));
+        inputDocumentReference.setType(type);
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(InvalidCodingCodeException.class);
     }
 }

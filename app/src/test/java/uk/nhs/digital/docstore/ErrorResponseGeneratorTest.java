@@ -5,6 +5,8 @@ import ca.uhn.fhir.parser.IParser;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.create.InvalidCodingCodeException;
+import uk.nhs.digital.docstore.create.MissingRequiredValueException;
 import uk.nhs.digital.docstore.search.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.search.MissingSearchParametersException;
 import uk.nhs.digital.docstore.search.UnrecognisedSubjectIdentifierSystemException;
@@ -68,7 +70,33 @@ public class ErrorResponseGeneratorTest {
     void returnsBadRequestIfDocumentTypeCodingSystemIsInvalid() throws IOException {
         String expectedErrorResponse = getContentFromResource("create/unsupported-coding-system-response.json");
 
-        var response = errorResponseGenerator.errorResponse(new UnrecognisedCodingSystemException("coding-system"), jsonParser);
+        var response = errorResponseGenerator.errorResponse(new UnrecognisedCodingSystemException("https://invalid-coding-system"), jsonParser);
+
+        assertThat(response.getStatusCode())
+                .isEqualTo(400);
+        assertResponseHasExpectedHeaders(response);
+        assertThatJson(response.getBody())
+                .isEqualTo(expectedErrorResponse);
+    }
+
+    @Test
+    void returnsBadRequestIfDocumentDescriptionIsMissing() throws IOException {
+        String expectedErrorResponse = getContentFromResource("create/missing-document-description-response.json");
+
+        var response = errorResponseGenerator.errorResponse(new MissingRequiredValueException("document-description"), jsonParser);
+
+        assertThat(response.getStatusCode())
+                .isEqualTo(400);
+        assertResponseHasExpectedHeaders(response);
+        assertThatJson(response.getBody())
+                .isEqualTo(expectedErrorResponse);
+    }
+
+    @Test
+    void returnsBadRequestIfCodingCodeIsInvalid() throws IOException {
+        String expectedErrorResponse = getContentFromResource("create/invalid-coding-code-response.json");
+
+        var response = errorResponseGenerator.errorResponse(new InvalidCodingCodeException("invalid-code"), jsonParser);
 
         assertThat(response.getStatusCode())
                 .isEqualTo(400);

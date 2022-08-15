@@ -7,6 +7,8 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.create.InvalidCodingCodeException;
+import uk.nhs.digital.docstore.create.MissingRequiredValueException;
 import uk.nhs.digital.docstore.search.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.search.MissingSearchParametersException;
 import uk.nhs.digital.docstore.search.UnrecognisedSubjectIdentifierSystemException;
@@ -16,6 +18,7 @@ import java.util.Map;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.CODEINVALID;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.EXCEPTION;
+import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.REQUIRED;
 
 public class ErrorResponseGenerator {
     private static final Logger logger
@@ -47,6 +50,16 @@ public class ErrorResponseGenerator {
             issueType = CODEINVALID;
             errorCode = "INVALID_CODE_SYSTEM";
             errorDisplay = "Invalid code system";
+        } else if (e instanceof MissingRequiredValueException) {
+            statusCode = 400;
+            issueType = REQUIRED;
+            errorCode = "INVALID_VALUE";
+            errorDisplay = "Missing required field";
+        } else if (e instanceof InvalidCodingCodeException) {
+            statusCode = 400;
+            issueType = CODEINVALID;
+            errorCode = "INVALID_CODE_VALUE";
+            errorDisplay = "Invalid coding code value";
         }
 
         logger.error(e.getMessage(), e);
