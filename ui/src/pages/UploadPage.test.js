@@ -196,6 +196,42 @@ describe("Upload page", () => {
             });
             expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
         });
+
+        it("displays an error message when the form is submitted if the document title is missing", async () => {
+            const apiClientMock = new ApiClient();
+            const nhsNumber = "0987654321";
+            const snomedCode = "22151000087106";
+            const document = new File(["hello"], "hello.txt", {
+                type: "text/plain",
+            });
+            Object.defineProperty(document, "size", {
+                value: 5 * 107374184 + 1,
+            });
+            render(<UploadPage client={apiClientMock} />);
+
+            userEvent.type(
+                screen.getByLabelText("Enter NHS number"),
+                nhsNumber
+            );
+            userEvent.selectOptions(
+                screen.getByLabelText("Select Clinical Code"),
+                snomedCode
+            );
+            userEvent.upload(
+                screen.getByLabelText("Choose document"),
+                document
+            );
+            userEvent.click(screen.getByText("Upload"));
+
+            await waitFor(() => {
+                expect(
+                    screen.getByText(
+                        "Please enter document title"
+                    )
+                ).toBeInTheDocument();
+            });
+            expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
+        })
     });
 
     describe("SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE feature toggle is inactive", () => {

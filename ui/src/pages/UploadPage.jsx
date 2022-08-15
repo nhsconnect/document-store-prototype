@@ -15,12 +15,12 @@ const UploadPage = ({ client }) => {
     const showMetadataFields = useFeatureToggle(
         "SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE"
     );
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, formState } = useForm();
     const { ref: documentInputRef, ...documentInputProps } =
         register("document");
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const { ref: documentTitleRef, ...documentTitleProps } =
-        register("documentTitle");
+        register("documentTitle", { required : showMetadataFields ? "Please enter document title" : false });
     const { ref: clinicalCodeRef, ...clinicalCodeProps } =
         register("clinicalCode");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
@@ -57,7 +57,7 @@ const UploadPage = ({ client }) => {
         <>
             <h2>Upload Patient Records</h2>
             <div>
-                <form onSubmit={handleSubmit(doSubmit)}>
+                <form onSubmit={handleSubmit(doSubmit)} noValidate>
                     <Input
                         id={"nhs-number-input"}
                         label="Enter NHS number"
@@ -74,6 +74,7 @@ const UploadPage = ({ client }) => {
                                 type="text"
                                 name="documentTitle"
                                 placeholder="Document Title"
+                                error={formState.errors.documentTitle?.message}
                                 {...documentTitleProps}
                                 inputRef={documentTitleRef}
                             />
