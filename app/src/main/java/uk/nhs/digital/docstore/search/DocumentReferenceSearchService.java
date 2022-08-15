@@ -5,6 +5,9 @@ import uk.nhs.digital.docstore.DocumentMetadata;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
 import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
+import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
+import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
+import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
 
 import java.net.URL;
 import java.util.List;

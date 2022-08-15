@@ -1,9 +1,10 @@
 package uk.nhs.digital.docstore.create;
-
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import uk.nhs.digital.docstore.NHSDocumentReference;
-import uk.nhs.digital.docstore.UnrecognisedCodingSystemException;
+import uk.nhs.digital.docstore.exceptions.InvalidCodingCodeException;
+import uk.nhs.digital.docstore.exceptions.MissingRequiredValueException;
+import uk.nhs.digital.docstore.exceptions.UnrecognisedCodingSystemException;
 
 import java.util.List;
 
@@ -19,12 +20,12 @@ public class CreateDocumentReferenceRequestValidator {
                 throw new UnrecognisedCodingSystemException(coding.getSystem());
             }
             if (!VALID_CODING_CODES.contains(coding.getCode())) {
-                throw new InvalidCodingCodeException(coding.getCode());
+                throw new InvalidCodingCodeException("path", coding.getCode());
             }
         }
         String description = documentReference.getDescription();
         if (description == null) {
-            throw new MissingRequiredValueException("description");
+            throw new MissingRequiredValueException("DocumentReference.description", "description");
         }
     }
 }

@@ -5,11 +5,7 @@ import ca.uhn.fhir.parser.IParser;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.create.InvalidCodingCodeException;
-import uk.nhs.digital.docstore.create.MissingRequiredValueException;
-import uk.nhs.digital.docstore.search.InvalidSubjectIdentifierException;
-import uk.nhs.digital.docstore.search.MissingSearchParametersException;
-import uk.nhs.digital.docstore.search.UnrecognisedSubjectIdentifierSystemException;
+import uk.nhs.digital.docstore.exceptions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,73 +26,11 @@ public class ErrorResponseGeneratorTest {
     }
 
     @Test
-    void returnsBadRequestIfSearchParametersAreInvalid() throws IOException {
-        String expectedErrorResponse = getContentFromResource("search/unrecognised-subject-identifier.json");
-        var response = errorResponseGenerator.errorResponse(new UnrecognisedSubjectIdentifierSystemException("system"), jsonParser);
+    void returnsBadRequestForExceptionsThatSerializeToOperationOutcomeIssues() throws IOException {
+        String expectedErrorResponse = getContentFromResource("test-exception-response.json");
 
-        assertThat(response.getStatusCode())
-                .isEqualTo(400);
-        assertResponseHasExpectedHeaders(response);
-        assertThatJson(response.getBody())
-                .isEqualTo(expectedErrorResponse);
-    }
-
-    @Test
-    void returnsBadRequestIfSystemIdentifierValueIsMissing() throws IOException {
-        String expectedErrorResponse = getContentFromResource("search/invalid-search-response.json");
-        var response = errorResponseGenerator.errorResponse(new InvalidSubjectIdentifierException("identifier"), jsonParser);
-
-        assertThat(response.getStatusCode())
-                .isEqualTo(400);
-        assertResponseHasExpectedHeaders(response);
-        assertThatJson(response.getBody())
-                .isEqualTo(expectedErrorResponse);
-    }
-
-    @Test
-    void returnsBadRequestIfSearchParametersAreMissing() throws IOException {
-        String expectedErrorResponse = getContentFromResource("search/missing-search-parameters-response.json");
-
-        var response = errorResponseGenerator.errorResponse(new MissingSearchParametersException("subject:identifier"), jsonParser);
-
-        assertThat(response.getStatusCode())
-                .isEqualTo(400);
-        assertResponseHasExpectedHeaders(response);
-        assertThatJson(response.getBody())
-                .isEqualTo(expectedErrorResponse);
-    }
-
-    @Test
-    void returnsBadRequestIfDocumentTypeCodingSystemIsInvalid() throws IOException {
-        String expectedErrorResponse = getContentFromResource("create/unsupported-coding-system-response.json");
-
-        var response = errorResponseGenerator.errorResponse(new UnrecognisedCodingSystemException("https://invalid-coding-system"), jsonParser);
-
-        assertThat(response.getStatusCode())
-                .isEqualTo(400);
-        assertResponseHasExpectedHeaders(response);
-        assertThatJson(response.getBody())
-                .isEqualTo(expectedErrorResponse);
-    }
-
-    @Test
-    void returnsBadRequestIfDocumentDescriptionIsMissing() throws IOException {
-        String expectedErrorResponse = getContentFromResource("create/missing-document-description-response.json");
-
-        var response = errorResponseGenerator.errorResponse(new MissingRequiredValueException("document-description"), jsonParser);
-
-        assertThat(response.getStatusCode())
-                .isEqualTo(400);
-        assertResponseHasExpectedHeaders(response);
-        assertThatJson(response.getBody())
-                .isEqualTo(expectedErrorResponse);
-    }
-
-    @Test
-    void returnsBadRequestIfCodingCodeIsInvalid() throws IOException {
-        String expectedErrorResponse = getContentFromResource("create/invalid-coding-code-response.json");
-
-        var response = errorResponseGenerator.errorResponse(new InvalidCodingCodeException("invalid-code"), jsonParser);
+        TestException exception = new TestException();
+        var response = errorResponseGenerator.errorResponse(exception, jsonParser);
 
         assertThat(response.getStatusCode())
                 .isEqualTo(400);
@@ -107,7 +41,7 @@ public class ErrorResponseGeneratorTest {
 
     @Test
     void returnInternalServerErrorForOtherErrors() throws IOException {
-        String expectedErrorResponse = getContentFromResource("search/internal-server-error-response.json");
+        String expectedErrorResponse = getContentFromResource("internal-server-error-response.json");
 
         var response = errorResponseGenerator.errorResponse(new Exception(), jsonParser);
 

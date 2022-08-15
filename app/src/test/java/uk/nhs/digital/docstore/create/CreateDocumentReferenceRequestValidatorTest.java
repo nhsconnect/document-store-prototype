@@ -6,7 +6,9 @@ import org.hl7.fhir.r4.model.Coding;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.NHSDocumentReference;
 import uk.nhs.digital.docstore.TestHelpers;
-import uk.nhs.digital.docstore.UnrecognisedCodingSystemException;
+import uk.nhs.digital.docstore.exceptions.InvalidCodingCodeException;
+import uk.nhs.digital.docstore.exceptions.MissingRequiredValueException;
+import uk.nhs.digital.docstore.exceptions.UnrecognisedCodingSystemException;
 
 import java.io.IOException;
 import java.util.List;

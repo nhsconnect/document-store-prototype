@@ -13,6 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
 import uk.nhs.digital.docstore.DocumentStore;
+import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
+import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
+import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
