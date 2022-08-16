@@ -23,7 +23,7 @@ const config = {
     },
     production: {
       CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
-      SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE: false,
+      SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE: true,
     },
   },
 };
