@@ -1,7 +1,6 @@
 import { Button, Input, Select } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useFeatureToggle } from "../providers/FeatureToggleProvider";
 
 const states = {
   IDLE: "idle",
@@ -11,9 +10,6 @@ const states = {
 };
 
 const UploadPage = ({ client }) => {
-  const showMetadataFields = useFeatureToggle(
-    "SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE"
-  );
   const { register, handleSubmit, formState } = useForm();
   const { ref: documentInputRef, ...documentInputProps } = register(
     "document",
@@ -29,7 +25,7 @@ const UploadPage = ({ client }) => {
   const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
   const { ref: documentTitleRef, ...documentTitleProps } = register(
     "documentTitle",
-    { required: showMetadataFields ? "Please enter document title" : false }
+    { required: "Please enter document title"}
   );
   const { ref: clinicalCodeRef, ...clinicalCodeProps } =
     register("clinicalCode");
@@ -38,18 +34,11 @@ const UploadPage = ({ client }) => {
   const doSubmit = async (data) => {
     try {
       setSubmissionState(states.UPLOADING);
-      const documentTitle = showMetadataFields
-        ? data.documentTitle
-        : "Jane Doe - Patient Record";
-      const clinicalCode = showMetadataFields
-        ? data.clinicalCode
-        : "22151000087106";
-
       await client.uploadDocument(
         data.document[0],
         data.nhsNumber,
-        documentTitle,
-        clinicalCode
+        data.documentTitle,
+        data.clinicalCode
       );
       setSubmissionState(states.SUCCEEDED);
     } catch (e) {
@@ -70,8 +59,6 @@ const UploadPage = ({ client }) => {
             {...nhsNumberProps}
             inputRef={nhsNumberRef}
           />
-          {showMetadataFields && (
-            <>
               <Input
                 id={"document-title-input"}
                 label="Enter Document Title"
@@ -92,8 +79,6 @@ const UploadPage = ({ client }) => {
                   Paper Report (Record Artifact)
                 </Select.Option>
               </Select>
-            </>
-          )}
           <Input
             id={"document-input"}
             label="Choose document"

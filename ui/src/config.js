@@ -15,15 +15,12 @@ const config = {
   features: {
     local: {
       CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-      SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE: true,
     },
     development: {
       CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
-      SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE: true,
     },
     production: {
       CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
-      SHOW_METADATA_FIELDS_ON_UPLOAD_PAGE: true,
     },
   },
 };
