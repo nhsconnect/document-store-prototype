@@ -84,7 +84,7 @@ describe("Upload page", () => {
             const nhsNumber = "0987654321";
             const documentTitle = "Jane Doe - Patient Record";
             const snomedCode = "22151000087106";
-            apiClientMock.uploadDocument = jest.fn((document) => {
+            apiClientMock.uploadDocument = jest.fn(() => {
                 throw new Error();
             });
             const document = new File(["hello"], "hello.txt", {
@@ -165,7 +165,7 @@ describe("Upload page", () => {
                 type: "text/plain",
             });
             Object.defineProperty(document, "size", {
-                value: 5 * 107374184 + 1,
+                value: (5 * 107374184) + 1,
             });
             render(<UploadPage client={apiClientMock} />);
 
@@ -197,16 +197,10 @@ describe("Upload page", () => {
             expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
         });
 
-        it("displays an error message when the form is submitted if the document title is missing", async () => {
+        it("displays an error message when the form is submitted if therequired fields are missing", async () => {
             const apiClientMock = new ApiClient();
             const nhsNumber = "0987654321";
             const snomedCode = "22151000087106";
-            const document = new File(["hello"], "hello.txt", {
-                type: "text/plain",
-            });
-            Object.defineProperty(document, "size", {
-                value: 5 * 107374184 + 1,
-            });
             render(<UploadPage client={apiClientMock} />);
 
             userEvent.type(
@@ -217,16 +211,17 @@ describe("Upload page", () => {
                 screen.getByLabelText("Select Clinical Code"),
                 snomedCode
             );
-            userEvent.upload(
-                screen.getByLabelText("Choose document"),
-                document
-            );
             userEvent.click(screen.getByText("Upload"));
 
             await waitFor(() => {
                 expect(
                     screen.getByText(
                         "Please enter document title"
+                    )
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText(
+                        "Please attach a file"
                     )
                 ).toBeInTheDocument();
             });

@@ -8,7 +8,6 @@ const states = {
     UPLOADING: "uploading",
     SUCCEEDED: "succeeded",
     FAILED: "failed",
-    FILE_SIZE_ERROR: "file-size-error",
 };
 
 const UploadPage = ({ client }) => {
@@ -17,7 +16,11 @@ const UploadPage = ({ client }) => {
     );
     const { register, handleSubmit, formState } = useForm();
     const { ref: documentInputRef, ...documentInputProps } =
-        register("document");
+        register("document", { validate : {
+            isFile: value => value[0] instanceof File  || "Please attach a file",
+            isLessThan5GB: value => value[0]?.size <= 5 * 107374184 || "File size greater than 5GB - upload a smaller file"
+            }
+        });
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const { ref: documentTitleRef, ...documentTitleProps } =
         register("documentTitle", { required : showMetadataFields ? "Please enter document title" : false });
@@ -27,27 +30,21 @@ const UploadPage = ({ client }) => {
 
     const doSubmit = async (data) => {
         try {
-            const fileSize = data.document[0].size;
-            if (fileSize < 5 * 107374184) {
-                setSubmissionState(states.UPLOADING);
+            setSubmissionState(states.UPLOADING);
+            const documentTitle = showMetadataFields
+                ? data.documentTitle
+                : "Jane Doe - Patient Record";
+            const clinicalCode = showMetadataFields
+                ? data.clinicalCode
+                : "22151000087106";
 
-                const documentTitle = showMetadataFields
-                    ? data.documentTitle
-                    : "Jane Doe - Patient Record";
-                const clinicalCode = showMetadataFields
-                    ? data.clinicalCode
-                    : "22151000087106";
-
-                await client.uploadDocument(
-                    data.document[0],
-                    data.nhsNumber,
-                    documentTitle,
-                    clinicalCode
-                );
-                setSubmissionState(states.SUCCEEDED);
-            } else {
-                setSubmissionState(states.FILE_SIZE_ERROR);
-            }
+            await client.uploadDocument(
+                data.document[0],
+                data.nhsNumber,
+                documentTitle,
+                clinicalCode
+            );
+            setSubmissionState(states.SUCCEEDED);
         } catch (e) {
             setSubmissionState(states.FAILED);
         }
@@ -99,13 +96,14 @@ const UploadPage = ({ client }) => {
                         type="file"
                         multiple={false}
                         name="document"
+                        error={formState.errors.document?.message}
                         {...documentInputProps}
                         inputRef={documentInputRef}
                     />
                     <Button type="submit">Upload</Button>
                     {submissionState === states.UPLOADING && (
                         <p>
-                            <progress aria-label={"Loading..."}></progress>
+                            <progress aria-label={"Loading..."}/>
                         </p>
                     )}
                     {submissionState === states.SUCCEEDED && (
@@ -113,11 +111,6 @@ const UploadPage = ({ client }) => {
                     )}
                     {submissionState === states.FAILED && (
                         <p>File upload failed - please retry</p>
-                    )}
-                    {submissionState === states.FILE_SIZE_ERROR && (
-                        <p>
-                            File size greater than 5GB - upload a smaller file
-                        </p>
                     )}
                 </form>
             </div>
