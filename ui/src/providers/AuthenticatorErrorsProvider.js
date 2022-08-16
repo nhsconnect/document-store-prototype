@@ -1,10 +1,10 @@
-import {createContext} from "react";
+import { createContext } from "react";
 
 const AuthenticationContext = createContext({
-    isAuthenticated: false,
-    setIsAuthenticated: () => {},
-    error: undefined,
-    setError: () => {}
+  isAuthenticated: false,
+  setIsAuthenticated: () => {},
+  error: undefined,
+  setError: () => {},
 });
 
 export default AuthenticationContext;
