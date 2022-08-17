@@ -27,5 +27,5 @@ Cypress.Commands.add("login", (username, password) => {
   cy.get("#username").type(username);
   cy.get("#password").type(password);
   cy.get('[data-test="sign-in-sign-in-button"]').last().click();
-  cy.url().should("eq", "http://localhost:3000/");
+  cy.url().should("eq", Cypress.config("baseUrl") + "/");
 });

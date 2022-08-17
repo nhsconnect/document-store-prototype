@@ -25,7 +25,7 @@ const UploadPage = ({ client }) => {
   const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
   const { ref: documentTitleRef, ...documentTitleProps } = register(
     "documentTitle",
-    { required: "Please enter document title"}
+    { required: "Please enter document title" }
   );
   const { ref: clinicalCodeRef, ...clinicalCodeProps } =
     register("clinicalCode");
@@ -59,26 +59,26 @@ const UploadPage = ({ client }) => {
             {...nhsNumberProps}
             inputRef={nhsNumberRef}
           />
-              <Input
-                id={"document-title-input"}
-                label="Enter Document Title"
-                type="text"
-                name="documentTitle"
-                placeholder="Document Title"
-                error={formState.errors.documentTitle?.message}
-                {...documentTitleProps}
-                inputRef={documentTitleRef}
-              />
-              <Select
-                name="clinicalCode"
-                label="Select Clinical Code"
-                {...clinicalCodeProps}
-                selectRef={clinicalCodeRef}
-              >
-                <Select.Option value="22151000087106" defaultValue>
-                  Paper Report (Record Artifact)
-                </Select.Option>
-              </Select>
+          <Input
+            id={"document-title-input"}
+            label="Enter Document Title"
+            type="text"
+            name="documentTitle"
+            placeholder="Document Title"
+            error={formState.errors.documentTitle?.message}
+            {...documentTitleProps}
+            inputRef={documentTitleRef}
+          />
+          <Select
+            name="clinicalCode"
+            label="Select Clinical Code"
+            {...clinicalCodeProps}
+            selectRef={clinicalCodeRef}
+          >
+            <Select.Option value="22151000087106" defaultValue>
+              Paper Report (Record Artifact)
+            </Select.Option>
+          </Select>
           <Input
             id={"document-input"}
             label="Choose document"
@@ -96,10 +96,12 @@ const UploadPage = ({ client }) => {
             </p>
           )}
           {submissionState === states.SUCCEEDED && (
-            <p>Document uploaded successfully</p>
+            <p data-testid="success-message">Document uploaded successfully</p>
           )}
           {submissionState === states.FAILED && (
-            <p>File upload failed - please retry</p>
+            <p data-testid="failure-message">
+              File upload failed - please retry
+            </p>
           )}
         </form>
       </div>
