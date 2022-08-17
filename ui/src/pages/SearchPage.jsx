@@ -68,7 +68,9 @@ const SearchPage = ({ client }) => {
                 {searchResults.map((result) => (
                   <Table.Row key={result.url}>
                     <Table.Cell>
-                      <a href={result.url}>{result.description}</a>
+                      <a href={result.url} data-testid="document-title">
+                        {result.description}
+                      </a>
                     </Table.Cell>
                     <Table.Cell>{result.type}</Table.Cell>
                     <Table.Cell>{result.indexed.toLocaleString()}</Table.Cell>
