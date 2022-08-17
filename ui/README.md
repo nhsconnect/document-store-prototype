@@ -1,70 +1,52 @@
-# Getting Started with Create React App
+# UI 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Pre-requisites
 
-## Available Scripts
+Before starting the UI, install dependencies using: 
+```bash
+npm ci
+```
 
-In the project directory, you can run:
+## Starting the UI
 
-### `npm start`
+As with any other React application built upon create-react-app, it can be served locally with hot reloading during
+development. However, as the application is authenticated using Cognito, logging in with valid credentials is still a
+necessity as is configuring the local application to connect to the relevant user pool.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+During deployment, the `ui/src/config.js` is modified to include values necessary to connect to backend services. This
+file needs to be modified to connect to a Cognito pool and the API Gateway. There are four placeholders to replace, with
+names like `%region%`.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+| Placeholder      | Terraform output                       |
+|------------------|----------------------------------------|
+| `%region%`       | None. The value should be: `eu-west-2` |
+| `%pool-id%`      | `cognito_user_pool_ids`                |
+| `%client-id%`    | `cognito_client_ids`                   |
+| `%api-endpoint%` | `api_gateway_url`                      |
 
-### `npm test`
+Be careful not to commit these values along with other changes.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Once the `config.js` has been edited, the UI can be started from the `ui` subdirectory with `npm`:
 
-### `npm run build`
+```bash
+npm run start
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Testing the UI
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Unit Tests
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Unit tests are run using Jest test runner. To run all units tests:
+```bash
+npm test
+```
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### E2E Tests
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+E2E tests are run using Cypress. Before running the tests, you must set valid AWS Cognito credentials. Copy the `cypress.env.json.example` file and rename the file to `cypress.env.json`. Replace the empty strings with a valid AWS Cognito username and password. Ensure the `config.js` file has been configured as explained above, and that localstack is running.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+To start Cypress:
+```bash
+npx cypress open
+```
