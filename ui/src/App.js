@@ -16,7 +16,7 @@ import UploadPage from "./pages/UploadPage";
 import Layout from "./components/layout";
 import FeatureToggleProvider from "./providers/FeatureToggleProvider";
 import { MultiStepUploadProvider } from "./providers/MultiStepUploadProvider";
-import { MultiStepUploadRoute } from "./routes/MultiStepUploadRoute";
+import { PatientTracePage } from "./pages/PatientTrace";
 
 Amplify.configure(awsConfig);
 
@@ -51,7 +51,9 @@ const App = () => {
                                     />
                                     <Route
                                         path="/upload/patient-trace"
-                                        element={null}
+                                        element={
+                                            <PatientTracePage client={client} />
+                                        }
                                     />
                                     <Route
                                         path="/upload/submit"

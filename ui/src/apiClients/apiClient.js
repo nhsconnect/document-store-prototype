@@ -81,6 +81,22 @@ class ApiClient {
         await storageClient(s3Url, document);
         console.log("document uploaded");
     }
+
+    async getPatientDetails(nhsNumber) {
+        if (nhsNumber === "999") {
+            throw Error("Error");
+        }
+        if (nhsNumber === "888") {
+            return [];
+        }
+        return [
+            {
+                name: "Joe Bloggs",
+                dateOfBirth: "05/10/2001",
+                postcode: "AB1 2CD",
+            },
+        ];
+    }
 }
 
 export default ApiClient;
