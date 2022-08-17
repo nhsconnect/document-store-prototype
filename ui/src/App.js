@@ -10,7 +10,6 @@ import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage";
 import Layout from "./components/layout";
 import FeatureToggleProvider from "./providers/FeatureToggleProvider";
-import { MultiStepUploadProvider } from "./providers/MultiStepUploadProvider";
 
 Amplify.configure(awsConfig);
 
@@ -32,19 +31,8 @@ const App = () => {
                 />
                 <Route
                   path="/upload"
-                  exact={true}
                   element={<UploadPage client={client} />}
                 />
-                <MultiStepUploadProvider>
-                  <Route
-                    path="/upload/patient-trace"
-                    element={null}
-                  />
-                  <Route
-                    path="/upload/submit"
-                    element={null}
-                  />
-                </MultiStepUploadProvider>
               </Routes>
               <div>{/*<AmplifySignOut/>*/}</div>
             </Authenticator.Protected>

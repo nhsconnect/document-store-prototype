@@ -15,15 +15,12 @@ const config = {
   features: {
     local: {
       CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-      PDS_TRACE_FOR_UPLOAD_ENABLED: true,
     },
     development: {
       CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
-      PDS_TRACE_FOR_UPLOAD_ENABLED: true,
     },
     production: {
       CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
-      PDS_TRACE_FOR_UPLOAD_ENABLED: false,
     },
   },
 };
