@@ -1,6 +1,11 @@
 import { Amplify, Auth, API } from "aws-amplify";
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Outlet,
+    Route,
+    Routes,
+} from "react-router-dom";
 import "./App.scss";
 import awsConfig from "./config";
 import ApiClient from "./apiClients/apiClient";
@@ -33,7 +38,11 @@ const App = () => {
                                 />
                                 <Route
                                     path="/upload"
-                                    element={<MultiStepUploadRoute />}
+                                    element={
+                                        <MultiStepUploadProvider>
+                                            <Outlet />
+                                        </MultiStepUploadProvider>
+                                    }
                                 >
                                     <Route
                                         path="/upload"
