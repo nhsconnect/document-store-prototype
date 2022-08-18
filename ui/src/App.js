@@ -57,7 +57,7 @@ const App = () => {
                                     />
                                     <Route
                                         path="/upload/submit"
-                                        element={null}
+                                        element={<h1>Upload document</h1>}
                                     />
                                 </Route>
                             </Routes>

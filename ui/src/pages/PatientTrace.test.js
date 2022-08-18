@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useNavigate } from "react-router";
 
 import ApiClient from "../apiClients/apiClient";
 import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
@@ -9,6 +10,10 @@ jest.mock("../apiClients/apiClient");
 const mockSetNhsNumber = jest.fn();
 jest.mock("../providers/MultiStepUploadProvider", () => ({
     useMultiStepUploadProviderContext: () => ["1112223334", mockSetNhsNumber],
+}));
+const mockNavigate = jest.fn();
+jest.mock("react-router", () => ({
+    useNavigate: () => mockNavigate,
 }));
 
 describe("PatientTracePage", () => {
@@ -20,8 +25,11 @@ describe("PatientTracePage", () => {
         ).toBeInTheDocument();
         expect(screen.queryByLabelText("Enter NHS number")).toBeInTheDocument();
         expect(
-            screen.queryByRole("button", { name: "Next" })
+            screen.queryByRole("button", { name: "Search" })
         ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Next" })
+        ).not.toBeInTheDocument();
     });
 
     it("gets the patient's data when the NHS number is submitted", async () => {
@@ -43,7 +51,7 @@ describe("PatientTracePage", () => {
             screen.getByRole("textbox", { name: "Enter NHS number" }),
             nhsNumber
         );
-        userEvent.click(screen.queryByRole("button", { name: "Next" }));
+        userEvent.click(screen.queryByRole("button", { name: "Search" }));
 
         await waitFor(() => {
             expect(apiClientMock.getPatientDetails).toHaveBeenCalledWith(
@@ -69,7 +77,7 @@ describe("PatientTracePage", () => {
             screen.getByRole("textbox", { name: "Enter NHS number" }),
             "0987654321"
         );
-        userEvent.click(screen.queryByRole("button", { name: "Next" }));
+        userEvent.click(screen.queryByRole("button", { name: "Search" }));
 
         await waitFor(() => {
             expect(
@@ -82,6 +90,12 @@ describe("PatientTracePage", () => {
         expect(
             screen.queryByText(`${patientData.postcode}`)
         ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Next" })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Search" })
+        ).not.toBeInTheDocument();
         expect(
             screen.getByRole("textbox", { name: "Enter NHS number" })
         ).toBeDisabled();
@@ -106,7 +120,7 @@ describe("PatientTracePage", () => {
             screen.getByRole("textbox", { name: "Enter NHS number" }),
             nhsNumber
         );
-        userEvent.click(screen.queryByRole("button", { name: "Next" }));
+        userEvent.click(screen.queryByRole("button", { name: "Search" }));
         await waitFor(() => {
             expect(
                 screen.queryByText(`${patientData.name}`)
@@ -117,6 +131,7 @@ describe("PatientTracePage", () => {
         await waitFor(() => {
             expect(mockSetNhsNumber).toBeCalledWith(nhsNumber);
         });
+        expect(mockNavigate).toHaveBeenCalledWith("/upload/submit");
     });
 
     it("displays a loading spinner when the patient's details are being requested", async () => {
@@ -132,7 +147,7 @@ describe("PatientTracePage", () => {
         render(<PatientTracePage client={new ApiClient()} />);
 
         userEvent.type(screen.getByLabelText("Enter NHS number"), "0987654321");
-        userEvent.click(screen.queryByRole("button", { name: "Next" }));
+        userEvent.click(screen.queryByRole("button", { name: "Search" }));
 
         await waitFor(() => {
             expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -150,7 +165,7 @@ describe("PatientTracePage", () => {
         render(<PatientTracePage client={new ApiClient()} />);
 
         userEvent.type(screen.getByLabelText("Enter NHS number"), "0987654321");
-        userEvent.click(screen.queryByRole("button", { name: "Next" }));
+        userEvent.click(screen.queryByRole("button", { name: "Search" }));
 
         await waitFor(() => {
             expect(
@@ -170,7 +185,7 @@ describe("PatientTracePage", () => {
         render(<PatientTracePage client={new ApiClient()} />);
 
         userEvent.type(screen.getByLabelText("Enter NHS number"), "0987654321");
-        userEvent.click(screen.queryByRole("button", { name: "Next" }));
+        userEvent.click(screen.queryByRole("button", { name: "Search" }));
 
         await waitFor(() => {
             expect(screen.getByText("Patient Not Found")).toBeInTheDocument();

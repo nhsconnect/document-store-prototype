@@ -7,6 +7,7 @@ import {
 } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
 
 const states = {
@@ -17,27 +18,27 @@ const states = {
 };
 
 export const PatientTracePage = ({ client }) => {
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, getValues } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});
     const [nhsNumber, setNhsNumber] = useMultiStepUploadProviderContext();
+    const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
-            if (submissionState === states.SUCCEEDED) {
-                setNhsNumber(data.nhsNumber);
-            } else {
-                setSubmissionState(states.SEARCHING);
-                const patientData = await client.getPatientDetails(
-                    data.nhsNumber
-                );
-                setPatientDetails(patientData);
-                setSubmissionState(states.SUCCEEDED);
-            }
+            setSubmissionState(states.SEARCHING);
+            const patientData = await client.getPatientDetails(data.nhsNumber);
+            setPatientDetails(patientData);
+            setSubmissionState(states.SUCCEEDED);
         } catch (e) {
             setSubmissionState(states.FAILED);
         }
+    };
+
+    const onNextClicked = () => {
+        setNhsNumber(getValues("nhsNumber"));
+        navigate("/upload/submit");
     };
 
     return (
@@ -98,7 +99,14 @@ export const PatientTracePage = ({ client }) => {
                         Technical Failure - Please retry.
                     </ErrorMessage>
                 )}
-                <Button type="submit">Next</Button>
+                {(submissionState === states.IDLE ||
+                    submissionState.FAILED ||
+                    submissionState.SEARCHING) && (
+                    <Button type="submit">Search</Button>
+                )}
+                {submissionState === states.SUCCEEDED && (
+                    <Button onClick={onNextClicked}>Next</Button>
+                )}
             </form>
         </>
     );
