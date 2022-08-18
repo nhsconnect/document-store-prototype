@@ -5,11 +5,16 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
+import java.util.Map;
+
 public class RetrievePatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         return new APIGatewayProxyResponseEvent()
-                .withStatusCode(200);
+                .withStatusCode(200)
+                .withHeaders(Map.of(
+                        "Content-Type", "application/fhir+json"))
+                .withBody("[]");
     }
 }
