@@ -123,6 +123,20 @@ resource "aws_lambda_function" "doc_ref_search_lambda" {
   }
 }
 
+resource "aws_lambda_function" "retrieve_patient_details_lambda" {
+  handler       = "uk.nhs.digital.docstore.RetrievePatientDetailsHandler::handleRequest"
+  function_name = "RetrievePatientDetailsHandler"
+  runtime       = "java11"
+  role          = aws_iam_role.lambda_execution_role.arn
+
+  timeout     = 15
+  memory_size = 448
+
+  filename = var.lambda_jar_filename
+
+  source_code_hash = filebase64sha256(var.lambda_jar_filename)
+}
+
 resource "aws_iam_role" "lambda_execution_role" {
   name = "LambdaExecution"
 
@@ -223,6 +237,15 @@ module "doc_ref_endpoint" {
   http_method        = "GET"
 }
 
+module "patient_details_endpoint" {
+  source             = "./modules/api_gateway_endpoint"
+  api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
+  parent_resource_id = aws_api_gateway_resource.patient_details_resource.id
+  lambda_arn         = aws_lambda_function.retrieve_patient_details_lambda.invoke_arn
+  path_part          = "{id}"
+  http_method        = "GET"
+}
+
 resource "aws_api_gateway_method" "create_doc_ref_method" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   resource_id   = aws_api_gateway_resource.doc_ref_resource.id
@@ -257,6 +280,24 @@ resource "aws_api_gateway_integration" "doc_ref_search_integration" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.doc_ref_search_lambda.invoke_arn
+}
+
+resource "aws_api_gateway_method" "retrieve_patient_details_method" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.patient_details_resource.id
+  http_method   = "GET"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.doc_ref_authorizer.id
+}
+
+resource "aws_api_gateway_integration" "retrieve_patient_details_integration" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_method.retrieve_patient_details_method.resource_id
+  http_method = aws_api_gateway_method.retrieve_patient_details_method.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.retrieve_patient_details_lambda.invoke_arn
 }
 
 resource "aws_api_gateway_method" "create_and_search_doc_preflight_method" {
@@ -316,6 +357,12 @@ resource "aws_api_gateway_resource" "doc_ref_resource" {
   path_part   = "DocumentReference"
 }
 
+resource "aws_api_gateway_resource" "patient_details_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
+  path_part   = "PatientDetails"
+}
+
 resource "aws_api_gateway_deployment" "api_deploy" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   stage_name  = var.api_gateway_stage
@@ -324,10 +371,14 @@ resource "aws_api_gateway_deployment" "api_deploy" {
     redeployment = sha1(jsonencode([
       aws_api_gateway_rest_api.lambda_api.body,
       module.doc_ref_endpoint,
+      module.patient_details_endpoint,
       aws_api_gateway_method.create_doc_ref_method,
       aws_api_gateway_resource.doc_ref_resource,
+      aws_api_gateway_resource.patient_details_resource,
       aws_api_gateway_integration.create_doc_ref_integration,
+      aws_api_gateway_integration.retrieve_patient_details_integration,
       aws_api_gateway_method.doc_ref_search_method,
+      aws_api_gateway_method.retrieve_patient_details_method,
       aws_api_gateway_integration.doc_ref_search_integration,
       aws_api_gateway_authorizer.doc_ref_authorizer,
       aws_api_gateway_integration.create_and_search_doc_preflight_integration,
@@ -372,6 +423,17 @@ resource "aws_lambda_permission" "api_gateway_permission_for_doc_ref_search" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.doc_ref_search_lambda.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The "/*/*" portion grants access from any method on any resource
+  # within the API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "api_gateway_permission_for_retrieve_patient_details" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.retrieve_patient_details_lambda.arn
   principal     = "apigateway.amazonaws.com"
 
   # The "/*/*" portion grants access from any method on any resource
