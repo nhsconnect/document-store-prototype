@@ -1,0 +1,66 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [{
+          "extension": [
+            {
+              "url": "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "https://fhir.hl7.org.uk/CodeSystem/UKCore-NHSNumberVerificationStatus",
+                    "version": "1.0.0",
+                    "code": "01",
+                    "display": "Number present and verified"
+                  }
+                ]
+              }
+            }
+          ],
+          "system": "https://fhir.nhs.uk/Id/nhs-number",
+          "value": "12345"
+        }],
+        "id": "1234567890",
+        "name": [
+          {
+            "use": "usual",
+            "given": [
+              "Jane"
+            ],
+            "family": "Doe"
+          }
+        ],
+        "birthDate": "1998-07-11",
+        "address": [
+          {
+            "use": "home",
+            "postalCode": "LS1 6AE",
+            "extension": [
+              {
+                "url": "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-AddressKey",
+                "extension": [
+                  {
+                    "url": "type",
+                    "valueCoding": {
+                      "system": "https://fhir.hl7.org.uk/CodeSystem/UKCore-AddressKeyType",
+                      "code": "PAF"
+                    }
+                  },
+                  {
+                    "url": "value",
+                    "valueString": "12345678"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
