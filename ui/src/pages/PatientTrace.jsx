@@ -2,12 +2,12 @@ import {
     Button,
     ErrorMessage,
     Input,
-    Label,
     SummaryList,
     WarningCallout,
 } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
 
 const states = {
     IDLE: "idle",
@@ -21,13 +21,20 @@ export const PatientTracePage = ({ client }) => {
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});
+    const [nhsNumber, setNhsNumber] = useMultiStepUploadProviderContext();
 
     const doSubmit = async (data) => {
         try {
-            setSubmissionState(states.SEARCHING);
-            const patientData = await client.getPatientDetails(data.nhsNumber);
-            setPatientDetails(patientData);
-            setSubmissionState(states.SUCCEEDED);
+            if (submissionState === states.SUCCEEDED) {
+                setNhsNumber(data.nhsNumber);
+            } else {
+                setSubmissionState(states.SEARCHING);
+                const patientData = await client.getPatientDetails(
+                    data.nhsNumber
+                );
+                setPatientDetails(patientData);
+                setSubmissionState(states.SUCCEEDED);
+            }
         } catch (e) {
             setSubmissionState(states.FAILED);
         }

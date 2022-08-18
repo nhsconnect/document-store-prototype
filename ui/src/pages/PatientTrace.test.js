@@ -2,9 +2,14 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ApiClient from "../apiClients/apiClient";
+import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
 import { PatientTracePage } from "./PatientTrace";
 
 jest.mock("../apiClients/apiClient");
+const mockSetNhsNumber = jest.fn();
+jest.mock("../providers/MultiStepUploadProvider", () => ({
+    useMultiStepUploadProviderContext: () => ["1112223334", mockSetNhsNumber],
+}));
 
 describe("PatientTracePage", () => {
     it("renders the page", () => {
@@ -80,6 +85,37 @@ describe("PatientTracePage", () => {
         expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
+    it("stores the patient's details in context when moving to next page", async () => {
+        const patientData = {
+            name: "Fred Smith",
+            dateOfBirth: "05/10/2099",
+            postcode: "AB1 2CD",
+        };
+        const nhsNumber = "0987654321";
+        ApiClient.mockImplementation(() => {
+            return {
+                getPatientDetails: jest.fn().mockReturnValue([patientData]),
+            };
+        });
+        render(<PatientTracePage client={new ApiClient()} />);
+
+        userEvent.type(
+            screen.getByRole("textbox", { name: "Enter NHS number" }),
+            nhsNumber
+        );
+        userEvent.click(screen.queryByRole("button", { name: "Next" }));
+        await waitFor(() => {
+            expect(
+                screen.queryByText(`${patientData.name}`)
+            ).toBeInTheDocument();
+        });
+        userEvent.click(screen.queryByRole("button", { name: "Next" }));
+
+        await waitFor(() => {
+            expect(mockSetNhsNumber).toBeCalledWith(nhsNumber);
+        });
+    });
+
     it("displays a loading spinner when the patient's details are being requested", async () => {
         ApiClient.mockImplementation(() => {
             return {
@@ -120,7 +156,7 @@ describe("PatientTracePage", () => {
         });
     });
 
-    it("displays a message when there no patient details are found", async () => {
+    it("displays a message when no patient details are found", async () => {
         ApiClient.mockImplementation(() => {
             return {
                 getPatientDetails: jest.fn().mockImplementation(() => {
