@@ -82,6 +82,9 @@ describe("PatientTracePage", () => {
         expect(
             screen.queryByText(`${patientData.postcode}`)
         ).toBeInTheDocument();
+        expect(
+            screen.getByRole("textbox", { name: "Enter NHS number" })
+        ).toBeDisabled();
         expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
