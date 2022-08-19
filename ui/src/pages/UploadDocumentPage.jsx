@@ -1,6 +1,7 @@
 import { Button, Input, Select } from "nhsuk-react-components";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
 
 const states = {
@@ -33,6 +34,13 @@ const UploadDocumentPage = ({ client }) => {
         register("clinicalCode");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [nhsNumber] = useMultiStepUploadProviderContext();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!nhsNumber) {
+            navigate("/upload/patient-trace");
+        }
+    });
 
     const doSubmit = async (data) => {
         try {
@@ -56,12 +64,13 @@ const UploadDocumentPage = ({ client }) => {
                 <form onSubmit={handleSubmit(doSubmit)} noValidate>
                     <Input
                         id={"nhs-number-input"}
-                        label="Enter NHS number"
+                        label="NHS number"
                         name="nhsNumber"
                         type="text"
                         {...nhsNumberProps}
                         inputRef={nhsNumberRef}
                         value={nhsNumber}
+                        readOnly
                     />
                     <Input
                         id={"document-title-input"}

@@ -9,75 +9,58 @@ jest.mock("../apiClients/apiClient");
 jest.mock("../providers/MultiStepUploadProvider", () => ({
     useMultiStepUploadProviderContext: jest.fn(),
 }));
+const mockNavigate = jest.fn();
+jest.mock("react-router", () => ({
+    useNavigate: () => mockNavigate,
+}));
 
 describe("UploadDocumentPage", () => {
-    const nhsNumber = "1112223334";
-    beforeEach(() => {
-        useMultiStepUploadProviderContext.mockReturnValue([
-            nhsNumber,
-            jest.fn(),
-        ]);
-    });
-
-    it("renders the page when the NHS number is available", () => {
-        render(<UploadDocumentPage />);
-
-        expect(
-            screen.getByRole("heading", { name: "Upload Patient Records" })
-        ).toBeInTheDocument();
-        expect(nhsNumberField()).toBeInTheDocument();
-        expect(nhsNumberField()).toHaveValue(nhsNumber);
-        expect(documentTitleField()).toBeInTheDocument();
-        expect(clinicalCodeSelector()).toBeInTheDocument();
-        expect(screen.getByLabelText("Choose document")).toBeInTheDocument();
-        expect(uploadButton()).toBeInTheDocument();
-    });
-
-    it("displays success message when a document is successfully uploaded", async () => {
-        const apiClientMock = new ApiClient();
-        const documentTitle = "Jane Doe - Patient Record";
-        const snomedCode = "22151000087106";
-        const document = new File(["hello"], "hello.txt", {
-            type: "text/plain",
+    describe("when there is an NHS number", () => {
+        const nhsNumber = "1112223334";
+        beforeEach(() => {
+            useMultiStepUploadProviderContext.mockReturnValue([
+                nhsNumber,
+                jest.fn(),
+            ]);
         });
-        render(<UploadDocumentPage client={apiClientMock} />);
 
-        selectClinicalCode(snomedCode);
-        enterTitle(documentTitle);
-        chooseDocument(document);
-        uploadDocument();
+        it("renders the page", () => {
+            render(<UploadDocumentPage />);
 
-        await waitFor(() => {
             expect(
-                screen.getByText("Document uploaded successfully")
+                screen.getByRole("heading", { name: "Upload Patient Records" })
             ).toBeInTheDocument();
+            expect(nhsNumberField()).toBeInTheDocument();
+            expect(nhsNumberField()).toHaveValue(nhsNumber);
+            expect(nhsNumberField()).toHaveAttribute("readonly");
+            expect(documentTitleField()).toBeInTheDocument();
+            expect(clinicalCodeSelector()).toBeInTheDocument();
+            expect(
+                screen.getByLabelText("Choose document")
+            ).toBeInTheDocument();
+            expect(uploadButton()).toBeInTheDocument();
+            expect(mockNavigate).not.toHaveBeenCalled();
         });
-        expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
-            document,
-            nhsNumber,
-            documentTitle,
-            snomedCode
-        );
-    });
 
-    it("displays an error message when the document fails to upload", async () => {
-        const apiClientMock = new ApiClient();
-        const documentTitle = "Jane Doe - Patient Record";
-        const snomedCode = "22151000087106";
-        apiClientMock.uploadDocument = jest.fn(() => {
-            throw new Error();
-        });
-        const document = new File(["hello"], "hello.txt", {
-            type: "text/plain",
-        });
-        render(<UploadDocumentPage client={apiClientMock} />);
+        it("displays success message when a document is successfully uploaded", async () => {
+            const apiClientMock = new ApiClient();
+            const documentTitle = "Jane Doe - Patient Record";
+            const snomedCode = "22151000087106";
+            const document = new File(["hello"], "hello.txt", {
+                type: "text/plain",
+            });
+            render(<UploadDocumentPage client={apiClientMock} />);
 
-        enterTitle(documentTitle);
-        selectClinicalCode(snomedCode);
-        chooseDocument(document);
-        uploadDocument();
+            selectClinicalCode(snomedCode);
+            enterTitle(documentTitle);
+            chooseDocument(document);
+            uploadDocument();
 
-        await waitFor(() => {
+            await waitFor(() => {
+                expect(
+                    screen.getByText("Document uploaded successfully")
+                ).toBeInTheDocument();
+            });
             expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
                 document,
                 nhsNumber,
@@ -85,74 +68,115 @@ describe("UploadDocumentPage", () => {
                 snomedCode
             );
         });
-        expect(
-            screen.getByText("File upload failed - please retry")
-        ).toBeInTheDocument();
-    });
 
-    it("displays a loading spinner when the document is being uploaded", async () => {
-        const apiClientMock = new ApiClient();
-        const documentTitle = "Jane Doe - Patient Record";
-        const snomedCode = "22151000087106";
-        const document = new File(["hello"], "hello.txt", {
-            type: "text/plain",
-        });
-        render(<UploadDocumentPage client={apiClientMock} />);
+        it("displays an error message when the document fails to upload", async () => {
+            const apiClientMock = new ApiClient();
+            const documentTitle = "Jane Doe - Patient Record";
+            const snomedCode = "22151000087106";
+            apiClientMock.uploadDocument = jest.fn(() => {
+                throw new Error();
+            });
+            const document = new File(["hello"], "hello.txt", {
+                type: "text/plain",
+            });
+            render(<UploadDocumentPage client={apiClientMock} />);
 
-        enterTitle(documentTitle);
-        selectClinicalCode(snomedCode);
-        chooseDocument(document);
-        uploadDocument();
+            enterTitle(documentTitle);
+            selectClinicalCode(snomedCode);
+            chooseDocument(document);
+            uploadDocument();
 
-        await waitFor(() => {
-            expect(progressBar()).toBeInTheDocument();
-        });
-    });
-
-    it("does not upload documents of size greater than 5GB and displays an error", async () => {
-        const apiClientMock = new ApiClient();
-        const documentTitle = "Jane Doe - Patient Record";
-        const snomedCode = "22151000087106";
-        const document = new File(["hello"], "hello.txt", {
-            type: "text/plain",
-        });
-        Object.defineProperty(document, "size", {
-            value: 5 * 107374184 + 1,
-        });
-        render(<UploadDocumentPage client={apiClientMock} />);
-
-        enterTitle(documentTitle);
-        selectClinicalCode(snomedCode);
-        chooseDocument(document);
-        uploadDocument();
-
-        await waitFor(() => {
+            await waitFor(() => {
+                expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
+                    document,
+                    nhsNumber,
+                    documentTitle,
+                    snomedCode
+                );
+            });
             expect(
-                screen.getByText(
-                    "File size greater than 5GB - upload a smaller file"
-                )
+                screen.getByText("File upload failed - please retry")
             ).toBeInTheDocument();
         });
-        expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
+
+        it("displays a loading spinner when the document is being uploaded", async () => {
+            const apiClientMock = new ApiClient();
+            const documentTitle = "Jane Doe - Patient Record";
+            const snomedCode = "22151000087106";
+            const document = new File(["hello"], "hello.txt", {
+                type: "text/plain",
+            });
+            render(<UploadDocumentPage client={apiClientMock} />);
+
+            enterTitle(documentTitle);
+            selectClinicalCode(snomedCode);
+            chooseDocument(document);
+            uploadDocument();
+
+            await waitFor(() => {
+                expect(progressBar()).toBeInTheDocument();
+            });
+        });
+
+        it("does not upload documents of size greater than 5GB and displays an error", async () => {
+            const apiClientMock = new ApiClient();
+            const documentTitle = "Jane Doe - Patient Record";
+            const snomedCode = "22151000087106";
+            const document = new File(["hello"], "hello.txt", {
+                type: "text/plain",
+            });
+            Object.defineProperty(document, "size", {
+                value: 5 * 107374184 + 1,
+            });
+            render(<UploadDocumentPage client={apiClientMock} />);
+
+            enterTitle(documentTitle);
+            selectClinicalCode(snomedCode);
+            chooseDocument(document);
+            uploadDocument();
+
+            await waitFor(() => {
+                expect(
+                    screen.getByText(
+                        "File size greater than 5GB - upload a smaller file"
+                    )
+                ).toBeInTheDocument();
+            });
+            expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
+        });
+
+        it("displays an error message when the form is submitted if the required fields are missing", async () => {
+            const apiClientMock = new ApiClient();
+            const snomedCode = "22151000087106";
+            render(<UploadDocumentPage client={apiClientMock} />);
+
+            selectClinicalCode(snomedCode);
+            uploadDocument();
+
+            await waitFor(() => {
+                expect(
+                    screen.getByText("Please enter document title")
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText("Please attach a file")
+                ).toBeInTheDocument();
+            });
+            expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
+        });
     });
 
-    it("displays an error message when the form is submitted if the required fields are missing", async () => {
-        const apiClientMock = new ApiClient();
-        const snomedCode = "22151000087106";
-        render(<UploadDocumentPage client={apiClientMock} />);
-
-        selectClinicalCode(snomedCode);
-        uploadDocument();
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("Please enter document title")
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText("Please attach a file")
-            ).toBeInTheDocument();
+    describe("when there is NOT an NHS number", () => {
+        beforeEach(() => {
+            useMultiStepUploadProviderContext.mockReturnValue([
+                undefined,
+                jest.fn(),
+            ]);
         });
-        expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
+        it("redirects to patient trace page when the NHS number is NOT available", () => {
+            render(<UploadDocumentPage />);
+
+            expect(mockNavigate).toHaveBeenCalledWith("/upload/patient-trace");
+        });
     });
 });
 
@@ -189,5 +213,5 @@ function documentTitleField() {
 }
 
 function nhsNumberField() {
-    return screen.getByLabelText("Enter NHS number");
+    return screen.getByLabelText("NHS number");
 }
