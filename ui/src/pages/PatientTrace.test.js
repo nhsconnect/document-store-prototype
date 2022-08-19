@@ -47,11 +47,8 @@ describe("PatientTracePage", () => {
         const nhsNumber = "0987654321";
         render(<PatientTracePage client={apiClientMock} />);
 
-        userEvent.type(
-            screen.getByRole("textbox", { name: "Enter NHS number" }),
-            nhsNumber
-        );
-        userEvent.click(screen.queryByRole("button", { name: "Search" }));
+        enterNhsNumber(nhsNumber);
+        startSearch();
 
         await waitFor(() => {
             expect(apiClientMock.getPatientDetails).toHaveBeenCalledWith(
@@ -73,11 +70,8 @@ describe("PatientTracePage", () => {
         });
         render(<PatientTracePage client={new ApiClient()} />);
 
-        userEvent.type(
-            screen.getByRole("textbox", { name: "Enter NHS number" }),
-            "0987654321"
-        );
-        userEvent.click(screen.queryByRole("button", { name: "Search" }));
+        enterNhsNumber("0987654321");
+        startSearch();
 
         await waitFor(() => {
             expect(
@@ -116,17 +110,14 @@ describe("PatientTracePage", () => {
         });
         render(<PatientTracePage client={new ApiClient()} />);
 
-        userEvent.type(
-            screen.getByRole("textbox", { name: "Enter NHS number" }),
-            nhsNumber
-        );
-        userEvent.click(screen.queryByRole("button", { name: "Search" }));
+        enterNhsNumber(nhsNumber);
+        startSearch();
         await waitFor(() => {
             expect(
                 screen.queryByText(`${patientData.name}`)
             ).toBeInTheDocument();
         });
-        userEvent.click(screen.queryByRole("button", { name: "Next" }));
+        clickNext();
 
         await waitFor(() => {
             expect(mockSetNhsNumber).toBeCalledWith(nhsNumber);
@@ -147,7 +138,7 @@ describe("PatientTracePage", () => {
         render(<PatientTracePage client={new ApiClient()} />);
 
         userEvent.type(screen.getByLabelText("Enter NHS number"), "0987654321");
-        userEvent.click(screen.queryByRole("button", { name: "Search" }));
+        startSearch();
 
         await waitFor(() => {
             expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -164,8 +155,8 @@ describe("PatientTracePage", () => {
         });
         render(<PatientTracePage client={new ApiClient()} />);
 
-        userEvent.type(screen.getByLabelText("Enter NHS number"), "0987654321");
-        userEvent.click(screen.queryByRole("button", { name: "Search" }));
+        enterNhsNumber("0987654321");
+        startSearch();
 
         await waitFor(() => {
             expect(
@@ -184,8 +175,8 @@ describe("PatientTracePage", () => {
         });
         render(<PatientTracePage client={new ApiClient()} />);
 
-        userEvent.type(screen.getByLabelText("Enter NHS number"), "0987654321");
-        userEvent.click(screen.queryByRole("button", { name: "Search" }));
+        enterNhsNumber("0987654321");
+        startSearch();
 
         await waitFor(() => {
             expect(screen.getByText("Patient Not Found")).toBeInTheDocument();
@@ -197,3 +188,15 @@ describe("PatientTracePage", () => {
         ).toBeInTheDocument();
     });
 });
+
+function clickNext() {
+    userEvent.click(screen.queryByRole("button", { name: "Next" }));
+}
+
+function enterNhsNumber(nhsNumber) {
+    userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
+}
+
+function startSearch() {
+    userEvent.click(screen.queryByRole("button", { name: "Search" }));
+}
