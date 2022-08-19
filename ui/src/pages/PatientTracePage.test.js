@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 
 import ApiClient from "../apiClients/apiClient";
 import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
-import { PatientTracePage } from "./PatientTrace";
+import { PatientTracePage } from "./PatientTracePage";
 
 jest.mock("../apiClients/apiClient");
 const mockSetNhsNumber = jest.fn();

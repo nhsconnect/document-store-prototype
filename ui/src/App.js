@@ -16,7 +16,7 @@ import UploadPage from "./pages/UploadPage";
 import Layout from "./components/layout";
 import FeatureToggleProvider from "./providers/FeatureToggleProvider";
 import { MultiStepUploadProvider } from "./providers/MultiStepUploadProvider";
-import { PatientTracePage } from "./pages/PatientTrace";
+import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
 
 Amplify.configure(awsConfig);
