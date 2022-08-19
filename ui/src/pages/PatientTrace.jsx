@@ -107,8 +107,8 @@ export const PatientTracePage = ({ client }) => {
                     </ErrorMessage>
                 )}
                 {(submissionState === states.IDLE ||
-                    submissionState.FAILED ||
-                    submissionState.SEARCHING) && (
+                    submissionState === states.FAILED ||
+                    submissionState === states.SEARCHING) && (
                     <Button type="submit">Search</Button>
                 )}
                 {submissionState === states.SUCCEEDED && (

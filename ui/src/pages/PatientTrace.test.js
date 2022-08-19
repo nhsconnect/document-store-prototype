@@ -195,6 +195,12 @@ describe("PatientTracePage", () => {
                 screen.getByText("Technical Failure - Please retry.")
             ).toBeInTheDocument();
         });
+        expect(
+            screen.queryByRole("button", { name: "Next" })
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: "Search" })
+        ).toBeInTheDocument();
     });
 
     it("displays a message when no patient details are found", async () => {
