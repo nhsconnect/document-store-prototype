@@ -6,7 +6,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.hl7.fhir.r4.model.*;
-import org.joda.time.LocalDate;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
@@ -17,7 +16,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.hl7.fhir.r4.model.Bundle.BundleType.SEARCHSET;
 
 public class RetrievePatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
     private static final Pattern SUBJECT_IDENTIFIER_PATTERN = Pattern.compile("^(?<systempart>(?<system>.*?)(?<!\\\\)\\|)?(?<identifier>.*)$");
@@ -47,57 +45,17 @@ public class RetrievePatientDetailsHandler implements RequestHandler<APIGatewayP
 
         System.out.println(nhsNumber);
 
-        Bundle bundle = new Bundle();
+
+        List<PatientDetails> patientDetailsList;
         if (nhsNumber.equals("9000000009")) {
-            Extension addressTypeExtension = new Extension();
-            Coding addressCoding = new Coding();
-            addressCoding.setSystem("https://fhir.hl7.org.uk/CodeSystem/UKCore-AddressKeyType").setCode("PAF");
-            addressTypeExtension.setUrl("type").setValue(addressCoding);
-            Extension addressValueExtension = new Extension();
-            addressValueExtension.setUrl("value").setValue(new StringType( "12345678"));
-
-            Identifier patientIdentifier = new Identifier();
-            Extension identifierExtension = new Extension();
-            CodeableConcept identifierCodeableConcept = new CodeableConcept();
-            Coding identifierCoding = new Coding();
-            identifierCoding
-                    .setSystem("https://fhir.hl7.org.uk/CodeSystem/UKCore-NHSNumberVerificationStatus")
-                    .setCode("01")
-                    .setVersion("1.0.0")
-                    .setDisplay("Number present and verified");
-            identifierExtension
-                    .setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus")
-                    .setValue(identifierCodeableConcept.setCoding(List.of(identifierCoding)));
-            patientIdentifier
-                    .setSystem(NHS_NUMBER_SYSTEM_ID)
-                    .setValue("9000000009")
-                    .setExtension(List.of(identifierExtension));
-
-            HumanName name = new HumanName();
-            name.setUse(HumanName.NameUse.USUAL).setFamily("Doe").setGiven(List.of(new StringType("Jane")));
-            LocalDate birthdate = new LocalDate(1998, 7, 11);
-
-            Patient patient = new Patient();
-            patient.setIdentifier(List.of(patientIdentifier));
-            patient.addAddress()
-                    .setPostalCode("LS1 6AE")
-                    .setUse(Address.AddressUse.HOME)
-                    .addExtension()
-                    .setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-AddressKey")
-                    .addExtension(addressTypeExtension).addExtension(addressValueExtension);
-            patient.setId("9000000009");
-            patient.setName(List.of(name));
-            patient.setBirthDate(birthdate.toDate());
-
-            Bundle.BundleEntryComponent bundleEntryComponent = new Bundle.BundleEntryComponent().setResource(patient);
-            bundle.setTotal(1)
-                    .setType(SEARCHSET)
-                    .setEntry(List.of(bundleEntryComponent));
+            PatientDetails patientDetails = new PatientDetails(List.of("Jane"), "Doe", "1998-07-11", "LS1 6AE", "9000000009");
+            patientDetailsList = List.of(patientDetails);
         } else if (nhsNumber.equals("9111231130")) {
-            bundle.setTotal(0)
-                    .setType(SEARCHSET);
+            patientDetailsList = List.of();
         } else throw new RuntimeException("Unexpected NHS number");
 
+        BundleMapper bundleMapper = new BundleMapper();
+        Bundle bundle = bundleMapper.toBundle(patientDetailsList);
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
                 .withHeaders(Map.of(
