@@ -18,12 +18,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class RetrievePatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
+public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
     private static final Pattern SUBJECT_IDENTIFIER_PATTERN = Pattern.compile("^(?<systempart>(?<system>.*?)(?<!\\\\)\\|)?(?<identifier>\\d{10})$");
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
     private final FhirContext fhirContext;
 
-    public RetrievePatientDetailsHandler() {
+    public SearchPatientDetailsHandler() {
         this.fhirContext = FhirContext.forR4();
     }
 

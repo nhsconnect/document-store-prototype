@@ -14,10 +14,10 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
 
-public class RetrievePatientDetailsHandlerTest {
+public class SearchPatientDetailsHandlerTest {
     @Test
     void returnsSuccessResponse() throws IOException, InterruptedException {
-        String expectedPatientDetailsResponse = getContentFromResource("retrieve-patient-details/patient-details-response.json");
+        String expectedPatientDetailsResponse = getContentFromResource("search-patient-details/patient-details-response.json");
         var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9000000009"))
                 .GET()
                 .build();
@@ -33,7 +33,7 @@ public class RetrievePatientDetailsHandlerTest {
 
     @Test
     void returnsMissingPatientResponseWhenPatientNotFound() throws IOException, InterruptedException {
-        String expectedPatientDetailsResponse = getContentFromResource("retrieve-patient-details/missing-patient-response.json");
+        String expectedPatientDetailsResponse = getContentFromResource("search-patient-details/missing-patient-response.json");
         var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9111231130"))
                 .GET()
                 .build();

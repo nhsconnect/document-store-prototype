@@ -123,9 +123,9 @@ resource "aws_lambda_function" "doc_ref_search_lambda" {
   }
 }
 
-resource "aws_lambda_function" "retrieve_patient_details_lambda" {
-  handler       = "uk.nhs.digital.docstore.patientdetails.RetrievePatientDetailsHandler::handleRequest"
-  function_name = "RetrievePatientDetailsHandler"
+resource "aws_lambda_function" "search_patient_details_lambda" {
+  handler       = "uk.nhs.digital.docstore.patientdetails.SearchPatientDetailsHandler::handleRequest"
+  function_name = "SearchPatientDetailsHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
 
@@ -247,7 +247,7 @@ module "patient_details_endpoint" {
   source             = "./modules/api_gateway_endpoint"
   api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
   parent_resource_id = aws_api_gateway_resource.patient_details_resource.id
-  lambda_arn         = aws_lambda_function.retrieve_patient_details_lambda.invoke_arn
+  lambda_arn         = aws_lambda_function.search_patient_details_lambda.invoke_arn
   path_part          = "{id}"
   http_method        = "GET"
 }
@@ -288,7 +288,7 @@ resource "aws_api_gateway_integration" "doc_ref_search_integration" {
   uri                     = aws_lambda_function.doc_ref_search_lambda.invoke_arn
 }
 
-resource "aws_api_gateway_method" "retrieve_patient_details_method" {
+resource "aws_api_gateway_method" "search_patient_details_method" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   resource_id   = aws_api_gateway_resource.patient_details_resource.id
   http_method   = "GET"
@@ -296,14 +296,14 @@ resource "aws_api_gateway_method" "retrieve_patient_details_method" {
   authorizer_id = aws_api_gateway_authorizer.doc_ref_authorizer.id
 }
 
-resource "aws_api_gateway_integration" "retrieve_patient_details_integration" {
+resource "aws_api_gateway_integration" "search_patient_details_integration" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_method.retrieve_patient_details_method.resource_id
-  http_method = aws_api_gateway_method.retrieve_patient_details_method.http_method
+  resource_id = aws_api_gateway_method.search_patient_details_method.resource_id
+  http_method = aws_api_gateway_method.search_patient_details_method.http_method
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.retrieve_patient_details_lambda.invoke_arn
+  uri                     = aws_lambda_function.search_patient_details_lambda.invoke_arn
 }
 
 resource "aws_api_gateway_method" "create_and_search_doc_preflight_method" {
@@ -382,9 +382,9 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_resource.doc_ref_resource,
       aws_api_gateway_resource.patient_details_resource,
       aws_api_gateway_integration.create_doc_ref_integration,
-      aws_api_gateway_integration.retrieve_patient_details_integration,
+      aws_api_gateway_integration.search_patient_details_integration,
       aws_api_gateway_method.doc_ref_search_method,
-      aws_api_gateway_method.retrieve_patient_details_method,
+      aws_api_gateway_method.search_patient_details_method,
       aws_api_gateway_integration.doc_ref_search_integration,
       aws_api_gateway_authorizer.doc_ref_authorizer,
       aws_api_gateway_integration.create_and_search_doc_preflight_integration,
@@ -436,10 +436,10 @@ resource "aws_lambda_permission" "api_gateway_permission_for_doc_ref_search" {
   source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
-resource "aws_lambda_permission" "api_gateway_permission_for_retrieve_patient_details" {
+resource "aws_lambda_permission" "api_gateway_permission_for_search_patient_details" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.retrieve_patient_details_lambda.arn
+  function_name = aws_lambda_function.search_patient_details_lambda.arn
   principal     = "apigateway.amazonaws.com"
 
   # The "/*/*" portion grants access from any method on any resource
