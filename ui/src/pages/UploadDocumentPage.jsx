@@ -33,7 +33,7 @@ const UploadDocumentPage = ({ client }) => {
     const { ref: clinicalCodeRef, ...clinicalCodeProps } =
         register("clinicalCode");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
-    const [nhsNumber] = useMultiStepUploadProviderContext();
+    const [nhsNumber, setNhsNumber] = useMultiStepUploadProviderContext();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -51,6 +51,7 @@ const UploadDocumentPage = ({ client }) => {
                 data.documentTitle,
                 data.clinicalCode
             );
+            setNhsNumber(null);
             setSubmissionState(states.SUCCEEDED);
         } catch (e) {
             setSubmissionState(states.FAILED);
