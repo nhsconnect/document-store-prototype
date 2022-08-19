@@ -83,10 +83,10 @@ class ApiClient {
     }
 
     async getPatientDetails(nhsNumber) {
-        if (nhsNumber === "999") {
+        if (nhsNumber === "9999999999") {
             throw Error("Error");
         }
-        if (nhsNumber === "888") {
+        if (nhsNumber === "0000000000") {
             return [];
         }
         return [
