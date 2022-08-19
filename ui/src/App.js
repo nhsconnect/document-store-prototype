@@ -17,6 +17,7 @@ import Layout from "./components/layout";
 import FeatureToggleProvider from "./providers/FeatureToggleProvider";
 import { MultiStepUploadProvider } from "./providers/MultiStepUploadProvider";
 import { PatientTracePage } from "./pages/PatientTrace";
+import UploadDocumentPage from "./pages/UploadDocumentPage";
 
 Amplify.configure(awsConfig);
 
@@ -57,7 +58,7 @@ const App = () => {
                                     />
                                     <Route
                                         path="/upload/submit"
-                                        element={<h1>Upload document</h1>}
+                                        element={<UploadDocumentPage />}
                                     />
                                 </Route>
                             </Routes>
