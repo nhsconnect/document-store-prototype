@@ -58,7 +58,11 @@ const App = () => {
                                     />
                                     <Route
                                         path="/upload/submit"
-                                        element={<UploadDocumentPage />}
+                                        element={
+                                            <UploadDocumentPage
+                                                client={client}
+                                            />
+                                        }
                                     />
                                 </Route>
                             </Routes>
