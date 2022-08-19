@@ -13,15 +13,11 @@ describe("UploadDocumentPage", () => {
         expect(
             screen.getByRole("heading", { name: "Upload Patient Records" })
         ).toBeInTheDocument();
-        expect(screen.getByLabelText("Enter NHS number")).toBeInTheDocument();
-        expect(
-            screen.getByLabelText("Enter Document Title")
-        ).toBeInTheDocument();
-        expect(
-            screen.getByLabelText("Select Clinical Code")
-        ).toBeInTheDocument();
+        expect(nhsNumberField()).toBeInTheDocument();
+        expect(documentTitleField()).toBeInTheDocument();
+        expect(clinicalCodeSelector()).toBeInTheDocument();
         expect(screen.getByLabelText("Choose document")).toBeInTheDocument();
-        expect(screen.getByText("Upload")).toBeInTheDocument();
+        expect(uploadButton()).toBeInTheDocument();
     });
 
     it("displays success message when a document is successfully uploaded", async () => {
@@ -34,17 +30,11 @@ describe("UploadDocumentPage", () => {
         });
         render(<UploadDocumentPage client={apiClientMock} />);
 
-        userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
-        userEvent.selectOptions(
-            screen.getByLabelText("Select Clinical Code"),
-            snomedCode
-        );
-        userEvent.type(
-            screen.getByLabelText("Enter Document Title"),
-            documentTitle
-        );
-        userEvent.upload(screen.getByLabelText("Choose document"), document);
-        userEvent.click(screen.getByText("Upload"));
+        enterNhsNumber(nhsNumber)
+        selectClinicalCode(snomedCode);
+        enterTitle(documentTitle);
+        chooseDocument(document);
+        uploadDocument();
 
         await waitFor(() => {
             expect(
@@ -72,17 +62,11 @@ describe("UploadDocumentPage", () => {
         });
         render(<UploadDocumentPage client={apiClientMock} />);
 
-        userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
-        userEvent.type(
-            screen.getByLabelText("Enter Document Title"),
-            documentTitle
-        );
-        userEvent.selectOptions(
-            screen.getByLabelText("Select Clinical Code"),
-            snomedCode
-        );
-        userEvent.upload(screen.getByLabelText("Choose document"), document);
-        userEvent.click(screen.getByText("Upload"));
+        enterNhsNumber(nhsNumber)
+        enterTitle(documentTitle);
+        selectClinicalCode(snomedCode);
+        chooseDocument(document);
+        uploadDocument();
 
         await waitFor(() => {
             expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
@@ -107,20 +91,14 @@ describe("UploadDocumentPage", () => {
         });
         render(<UploadDocumentPage client={apiClientMock} />);
 
-        userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
-        userEvent.type(
-            screen.getByLabelText("Enter Document Title"),
-            documentTitle
-        );
-        userEvent.selectOptions(
-            screen.getByLabelText("Select Clinical Code"),
-            snomedCode
-        );
-        userEvent.upload(screen.getByLabelText("Choose document"), document);
-        userEvent.click(screen.getByText("Upload"));
+        enterNhsNumber(nhsNumber)
+        enterTitle(documentTitle);
+        selectClinicalCode(snomedCode);
+        chooseDocument(document);
+        uploadDocument();
 
         await waitFor(() => {
-            expect(screen.getByRole("progressbar")).toBeInTheDocument();
+            expect(progressBar()).toBeInTheDocument();
         });
     });
 
@@ -137,17 +115,11 @@ describe("UploadDocumentPage", () => {
         });
         render(<UploadDocumentPage client={apiClientMock} />);
 
-        userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
-        userEvent.type(
-            screen.getByLabelText("Enter Document Title"),
-            documentTitle
-        );
-        userEvent.selectOptions(
-            screen.getByLabelText("Select Clinical Code"),
-            snomedCode
-        );
-        userEvent.upload(screen.getByLabelText("Choose document"), document);
-        userEvent.click(screen.getByText("Upload"));
+        enterNhsNumber(nhsNumber)
+        enterTitle(documentTitle);
+        selectClinicalCode(snomedCode);
+        chooseDocument(document);
+        uploadDocument();
 
         await waitFor(() => {
             expect(
@@ -159,18 +131,14 @@ describe("UploadDocumentPage", () => {
         expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
     });
 
-    it("displays an error message when the form is submitted if therequired fields are missing", async () => {
+    it("displays an error message when the form is submitted if the required fields are missing", async () => {
         const apiClientMock = new ApiClient();
         const nhsNumber = "0987654321";
         const snomedCode = "22151000087106";
         render(<UploadDocumentPage client={apiClientMock} />);
 
-        userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
-        userEvent.selectOptions(
-            screen.getByLabelText("Select Clinical Code"),
-            snomedCode
-        );
-        userEvent.click(screen.getByText("Upload"));
+        selectClinicalCode(snomedCode);
+        uploadDocument();
 
         await waitFor(() => {
             expect(
@@ -183,3 +151,43 @@ describe("UploadDocumentPage", () => {
         expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
     });
 });
+
+function chooseDocument(document) {
+    userEvent.upload(screen.getByLabelText("Choose document"), document);
+}
+
+function selectClinicalCode(snomedCode) {
+    userEvent.selectOptions(clinicalCodeSelector(), snomedCode);
+}
+
+function enterTitle(documentTitle) {
+    userEvent.type(documentTitleField(), documentTitle);
+}
+
+function enterNhsNumber(nhsHumber) {
+  userEvent.type(nhsNumberField(), nhsHumber);
+}
+
+function uploadDocument() {
+    userEvent.click(uploadButton());
+}
+
+function clinicalCodeSelector() {
+    return screen.getByLabelText("Select Clinical Code");
+}
+
+function progressBar() {
+    return screen.getByRole("progressbar");
+}
+
+function uploadButton() {
+    return screen.getByText("Upload");
+}
+
+function documentTitleField() {
+    return screen.getByLabelText("Enter Document Title");
+}
+
+function nhsNumberField() {
+    return screen.getByLabelText("Enter NHS number");
+}
