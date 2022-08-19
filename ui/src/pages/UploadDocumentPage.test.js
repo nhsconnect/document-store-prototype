@@ -2,18 +2,31 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ApiClient from "../apiClients/apiClient";
+import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
 import UploadDocumentPage from "./UploadDocumentPage";
 
 jest.mock("../apiClients/apiClient");
-describe("UploadDocumentPage", () => {
+jest.mock("../providers/MultiStepUploadProvider", () => ({
+    useMultiStepUploadProviderContext: jest.fn(),
+}));
 
-    it("renders the page", () => {
+describe("UploadDocumentPage", () => {
+    const nhsNumber = "1112223334";
+    beforeEach(() => {
+        useMultiStepUploadProviderContext.mockReturnValue([
+            nhsNumber,
+            jest.fn(),
+        ]);
+    });
+
+    it("renders the page when the NHS number is available", () => {
         render(<UploadDocumentPage />);
 
         expect(
             screen.getByRole("heading", { name: "Upload Patient Records" })
         ).toBeInTheDocument();
         expect(nhsNumberField()).toBeInTheDocument();
+        expect(nhsNumberField()).toHaveValue(nhsNumber);
         expect(documentTitleField()).toBeInTheDocument();
         expect(clinicalCodeSelector()).toBeInTheDocument();
         expect(screen.getByLabelText("Choose document")).toBeInTheDocument();
@@ -22,7 +35,6 @@ describe("UploadDocumentPage", () => {
 
     it("displays success message when a document is successfully uploaded", async () => {
         const apiClientMock = new ApiClient();
-        const nhsNumber = "0987654321";
         const documentTitle = "Jane Doe - Patient Record";
         const snomedCode = "22151000087106";
         const document = new File(["hello"], "hello.txt", {
@@ -30,7 +42,6 @@ describe("UploadDocumentPage", () => {
         });
         render(<UploadDocumentPage client={apiClientMock} />);
 
-        enterNhsNumber(nhsNumber)
         selectClinicalCode(snomedCode);
         enterTitle(documentTitle);
         chooseDocument(document);
@@ -51,7 +62,6 @@ describe("UploadDocumentPage", () => {
 
     it("displays an error message when the document fails to upload", async () => {
         const apiClientMock = new ApiClient();
-        const nhsNumber = "0987654321";
         const documentTitle = "Jane Doe - Patient Record";
         const snomedCode = "22151000087106";
         apiClientMock.uploadDocument = jest.fn(() => {
@@ -62,7 +72,6 @@ describe("UploadDocumentPage", () => {
         });
         render(<UploadDocumentPage client={apiClientMock} />);
 
-        enterNhsNumber(nhsNumber)
         enterTitle(documentTitle);
         selectClinicalCode(snomedCode);
         chooseDocument(document);
@@ -83,7 +92,6 @@ describe("UploadDocumentPage", () => {
 
     it("displays a loading spinner when the document is being uploaded", async () => {
         const apiClientMock = new ApiClient();
-        const nhsNumber = "0987654321";
         const documentTitle = "Jane Doe - Patient Record";
         const snomedCode = "22151000087106";
         const document = new File(["hello"], "hello.txt", {
@@ -91,7 +99,6 @@ describe("UploadDocumentPage", () => {
         });
         render(<UploadDocumentPage client={apiClientMock} />);
 
-        enterNhsNumber(nhsNumber)
         enterTitle(documentTitle);
         selectClinicalCode(snomedCode);
         chooseDocument(document);
@@ -104,7 +111,6 @@ describe("UploadDocumentPage", () => {
 
     it("does not upload documents of size greater than 5GB and displays an error", async () => {
         const apiClientMock = new ApiClient();
-        const nhsNumber = "0987654321";
         const documentTitle = "Jane Doe - Patient Record";
         const snomedCode = "22151000087106";
         const document = new File(["hello"], "hello.txt", {
@@ -115,7 +121,6 @@ describe("UploadDocumentPage", () => {
         });
         render(<UploadDocumentPage client={apiClientMock} />);
 
-        enterNhsNumber(nhsNumber)
         enterTitle(documentTitle);
         selectClinicalCode(snomedCode);
         chooseDocument(document);
@@ -133,7 +138,6 @@ describe("UploadDocumentPage", () => {
 
     it("displays an error message when the form is submitted if the required fields are missing", async () => {
         const apiClientMock = new ApiClient();
-        const nhsNumber = "0987654321";
         const snomedCode = "22151000087106";
         render(<UploadDocumentPage client={apiClientMock} />);
 
@@ -162,10 +166,6 @@ function selectClinicalCode(snomedCode) {
 
 function enterTitle(documentTitle) {
     userEvent.type(documentTitleField(), documentTitle);
-}
-
-function enterNhsNumber(nhsHumber) {
-  userEvent.type(nhsNumberField(), nhsHumber);
 }
 
 function uploadDocument() {

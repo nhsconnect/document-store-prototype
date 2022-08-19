@@ -1,6 +1,7 @@
 import { Button, Input, Select } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
 
 const states = {
     IDLE: "idle",
@@ -31,6 +32,7 @@ const UploadDocumentPage = ({ client }) => {
     const { ref: clinicalCodeRef, ...clinicalCodeProps } =
         register("clinicalCode");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
+    const [nhsNumber] = useMultiStepUploadProviderContext();
 
     const doSubmit = async (data) => {
         try {
@@ -59,6 +61,7 @@ const UploadDocumentPage = ({ client }) => {
                         type="text"
                         {...nhsNumberProps}
                         inputRef={nhsNumberRef}
+                        value={nhsNumber}
                     />
                     <Input
                         id={"document-title-input"}
