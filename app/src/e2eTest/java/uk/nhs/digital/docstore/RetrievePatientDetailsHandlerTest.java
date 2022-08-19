@@ -27,7 +27,23 @@ public class RetrievePatientDetailsHandlerTest {
         assertThat(patientDetailsResponse.statusCode()).isEqualTo(200);
         assertThat(patientDetailsResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(patientDetailsResponse.body())
-                .whenIgnoringPaths("$.meta", "$.entry[*].resource.content[*].attachment.url", "$.entry[*].resource.meta", "$.entry[*].resource.indexed")
+                .whenIgnoringPaths("$.meta", "$.entry[*].resource.meta")
+                .isEqualTo(expectedPatientDetailsResponse);
+    }
+
+    @Test
+    void returnsMissingPatientResponseWhenPatientNotFound() throws IOException, InterruptedException {
+        String expectedPatientDetailsResponse = getContentFromResource("retrieve-patient-details/missing-patient-response.json");
+        var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9111231130"))
+                .GET()
+                .build();
+
+        var patientDetailsResponse = newHttpClient().send(patientDetailsRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+
+        assertThat(patientDetailsResponse.statusCode()).isEqualTo(200);
+        assertThat(patientDetailsResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(patientDetailsResponse.body())
+                .whenIgnoringPaths("$.meta")
                 .isEqualTo(expectedPatientDetailsResponse);
     }
 

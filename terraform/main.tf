@@ -124,7 +124,7 @@ resource "aws_lambda_function" "doc_ref_search_lambda" {
 }
 
 resource "aws_lambda_function" "retrieve_patient_details_lambda" {
-  handler       = "uk.nhs.digital.docstore.RetrievePatientDetailsHandler::handleRequest"
+  handler       = "uk.nhs.digital.docstore.patientdetails.RetrievePatientDetailsHandler::handleRequest"
   function_name = "RetrievePatientDetailsHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
