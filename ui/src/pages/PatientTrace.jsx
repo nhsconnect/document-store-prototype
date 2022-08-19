@@ -18,8 +18,10 @@ const states = {
 };
 
 export const PatientTracePage = ({ client }) => {
-    const { register, handleSubmit, getValues } = useForm();
-    const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
+    const { register, formState, getValues, handleSubmit } = useForm();
+    const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
+        required: "Please enter an NHS number",
+    });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});
     const [nhsNumber, setNhsNumber] = useMultiStepUploadProviderContext();
@@ -49,6 +51,7 @@ export const PatientTracePage = ({ client }) => {
                     id={"nhs-number-input"}
                     label="Enter NHS number"
                     name="nhsNumber"
+                    error={formState.errors.nhsNumber?.message}
                     type="text"
                     {...nhsNumberProps}
                     inputRef={nhsNumberRef}

@@ -145,6 +145,20 @@ describe("PatientTracePage", () => {
         });
     });
 
+    it("displays an error message when the form is submitted and the NHS number is missing", async () => {
+        const apiClientMock = new ApiClient();
+        render(<PatientTracePage client={apiClientMock} />);
+
+        startSearch();
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Please enter an NHS number")
+            ).toBeInTheDocument();
+        });
+        expect(apiClientMock.getPatientDetails).not.toHaveBeenCalled();
+    });
+
     it("displays an error message when there is a problem retrieving the patient's details", async () => {
         ApiClient.mockImplementation(() => {
             return {
