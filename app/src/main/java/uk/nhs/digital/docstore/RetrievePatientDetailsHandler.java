@@ -46,7 +46,7 @@ public class RetrievePatientDetailsHandler implements RequestHandler<APIGatewayP
                 .setValue(identifierCodeableConcept.setCoding(List.of(identifierCoding)));
         patientIdentifier
                 .setSystem(NHS_NUMBER_SYSTEM_ID)
-                .setValue("12345")
+                .setValue("9000000009")
                 .setExtension(List.of(identifierExtension));
 
         HumanName name = new HumanName();
@@ -61,7 +61,7 @@ public class RetrievePatientDetailsHandler implements RequestHandler<APIGatewayP
                     .addExtension()
                         .setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-AddressKey")
                         .addExtension(addressTypeExtension).addExtension(addressValueExtension);
-        patient.setId("1234567890");
+        patient.setId("9000000009");
         patient.setName(List.of(name));
         patient.setBirthDate(birthdate.toDate());
 

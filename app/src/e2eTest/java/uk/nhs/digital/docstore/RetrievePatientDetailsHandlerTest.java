@@ -18,7 +18,7 @@ public class RetrievePatientDetailsHandlerTest {
     @Test
     void returnsSuccessResponse() throws IOException, InterruptedException {
         String expectedPatientDetailsResponse = getContentFromResource("retrieve-patient-details/patient-details-response.json");
-        var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C12345"))
+        var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9000000009"))
                 .GET()
                 .build();
 
