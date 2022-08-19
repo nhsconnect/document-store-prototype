@@ -20,7 +20,11 @@ const states = {
 export const PatientTracePage = ({ client }) => {
     const { register, formState, getValues, handleSubmit } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
-        required: "Please enter an NHS number",
+        required: "Please enter a 10 digit NHS number",
+        pattern: {
+            value: /^[0-9]{10}$/,
+            message: "Please enter a 10 digit NHS number",
+        },
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});

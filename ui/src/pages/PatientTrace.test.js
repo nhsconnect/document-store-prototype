@@ -153,11 +153,29 @@ describe("PatientTracePage", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("Please enter an NHS number")
+                screen.getByText("Please enter a 10 digit NHS number")
             ).toBeInTheDocument();
         });
         expect(apiClientMock.getPatientDetails).not.toHaveBeenCalled();
     });
+
+    it.each([["123456789"], ["12345678901"], ["123456789A"]])(
+        "displays an error message when the form is submitted and the NHS number is '%s''",
+        async (nhsNumber) => {
+            const apiClientMock = new ApiClient();
+            render(<PatientTracePage client={apiClientMock} />);
+
+            enterNhsNumber(nhsNumber);
+            startSearch();
+
+            await waitFor(() => {
+                expect(
+                    screen.getByText("Please enter a 10 digit NHS number")
+                ).toBeInTheDocument();
+            });
+            expect(apiClientMock.getPatientDetails).not.toHaveBeenCalled();
+        }
+    );
 
     it("displays an error message when there is a problem retrieving the patient's details", async () => {
         ApiClient.mockImplementation(() => {
