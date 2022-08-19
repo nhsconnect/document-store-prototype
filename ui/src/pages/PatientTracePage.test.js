@@ -92,7 +92,7 @@ describe("PatientTracePage", () => {
         ).not.toBeInTheDocument();
         expect(
             screen.getByRole("textbox", { name: "Enter NHS number" })
-        ).toBeDisabled();
+        ).toHaveAttribute("readonly");
         expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 

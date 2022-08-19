@@ -59,7 +59,7 @@ export const PatientTracePage = ({ client }) => {
                     type="text"
                     {...nhsNumberProps}
                     inputRef={nhsNumberRef}
-                    disabled={submissionState === states.SUCCEEDED}
+                    readOnly={submissionState === states.SUCCEEDED}
                 />
                 {submissionState === states.SEARCHING && (
                     <p>
