@@ -129,7 +129,7 @@ public class DocumentReferenceSearchE2eTest {
 
     @Test
     void returnsBadRequestIfSearchParametersAreInvalid() throws IOException, InterruptedException {
-        String expectedErrorResponse = getContentFromResource("search/unrecognised-subject-identifier.json");
+        String expectedErrorResponse = getContentFromResource("errors/unrecognised-subject-identifier-system.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject.identifier=unknown-system%7Cvalue"))
                 .GET()
                 .header("x-localstack-authorization", createBearerToken())

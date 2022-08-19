@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.hl7.fhir.r4.model.*;
+import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
@@ -18,7 +19,7 @@ import java.util.regex.Pattern;
 
 
 public class RetrievePatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
-    private static final Pattern SUBJECT_IDENTIFIER_PATTERN = Pattern.compile("^(?<systempart>(?<system>.*?)(?<!\\\\)\\|)?(?<identifier>.*)$");
+    private static final Pattern SUBJECT_IDENTIFIER_PATTERN = Pattern.compile("^(?<systempart>(?<system>.*?)(?<!\\\\)\\|)?(?<identifier>\\d{10})$");
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
     private final FhirContext fhirContext;
 
@@ -40,11 +41,10 @@ public class RetrievePatientDetailsHandler implements RequestHandler<APIGatewayP
                     .or(() -> Optional.ofNullable(searchParameters.get("subject.identifier")))
                     .orElseThrow(() -> new MissingSearchParametersException("subject:identifier"));
             nhsNumber = validSubject(subject);
-        } catch (MissingSearchParametersException e) {
+        } catch (Exception e) {
+            ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
+            return errorResponseGenerator.errorResponse(e, jsonParser);
         }
-
-        System.out.println(nhsNumber);
-
 
         List<PatientDetails> patientDetailsList;
         if (nhsNumber.equals("9000000009")) {

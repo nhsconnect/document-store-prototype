@@ -47,6 +47,51 @@ public class RetrievePatientDetailsHandlerTest {
                 .isEqualTo(expectedPatientDetailsResponse);
     }
 
+    @Test
+    void returnsErrorResponseWhenAnUnrecognisedSubjectIdentifierSystemIsInput() throws IOException, InterruptedException {
+        String expectedPatientDetailsErrorResponse = getContentFromResource("errors/unrecognised-subject-identifier-system.json");
+        var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=unrecognised-subject-identifier-system%7C9000000009"))
+                .GET()
+                .build();
+
+        var patientDetailsResponse = newHttpClient().send(patientDetailsRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+
+        assertThat(patientDetailsResponse.statusCode()).isEqualTo(400);
+        assertThat(patientDetailsResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(patientDetailsResponse.body())
+                .isEqualTo(expectedPatientDetailsErrorResponse);
+    }
+
+    @Test
+    void returnsErrorResponseWhenAnInvalidSubjectIdentifierIsInput() throws IOException, InterruptedException {
+        String expectedPatientDetailsErrorResponse = getContentFromResource("errors/invalid-subject-identifier.json");
+        var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7Cinvalid-subject-identifier"))
+                .GET()
+                .build();
+
+        var patientDetailsResponse = newHttpClient().send(patientDetailsRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+
+        assertThat(patientDetailsResponse.statusCode()).isEqualTo(400);
+        assertThat(patientDetailsResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(patientDetailsResponse.body())
+                .isEqualTo(expectedPatientDetailsErrorResponse);
+    }
+
+    @Test
+    void returnsErrorResponseWhenSearchParametersAreMissing() throws IOException, InterruptedException {
+        String expectedPatientDetailsErrorResponse = getContentFromResource("errors/missing-search-parameters.json");
+        var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails"))
+                .GET()
+                .build();
+
+        var patientDetailsResponse = newHttpClient().send(patientDetailsRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+
+        assertThat(patientDetailsResponse.statusCode()).isEqualTo(400);
+        assertThat(patientDetailsResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(patientDetailsResponse.body())
+                .isEqualTo(expectedPatientDetailsErrorResponse);
+    }
+
     private String getContentFromResource(String resourcePath) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(resourcePath).getFile());

@@ -135,6 +135,12 @@ resource "aws_lambda_function" "retrieve_patient_details_lambda" {
   filename = var.lambda_jar_filename
 
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
+
+  environment {
+    variables = {
+      AMPLIFY_BASE_URL = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
+    }
+  }
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
