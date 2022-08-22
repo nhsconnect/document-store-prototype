@@ -12,8 +12,14 @@ const getToken = async () => {
 };
 
 function useQuery() {
-  const { search } = useLocation();
-  return useMemo(() => new URLSearchParams(search), [search]);
+  const { search, hash } = useLocation();
+
+  return useMemo(() => {
+    if(hash !== undefined){
+      return new URLSearchParams(hash.replace("#", ""));
+    }
+    return new URLSearchParams(search)
+  }, [search, hash]);
 }
 
 const CIS2Authenticator = ({ children, autologin = true }) => {

@@ -140,6 +140,25 @@ describe("Authenticator", () => {
         ).toBeInTheDocument();
       });
     });
+
+    it("display an error summary when authentication redirects with an error in hash", async () => {
+      useLocation.mockImplementation(() => ({
+        hash:
+            "#error_description=The%20access%20token%20provided%20is%20expired%2C%20revoked%2C%20malformed%2C%20or%20invalid%20for%20other%20reasons.",
+      }));
+      render(
+          <Authenticator>
+            <Authenticator.Errors />
+          </Authenticator>
+      );
+      await waitFor(() => {
+        expect(
+            screen.queryByText(
+                "The access token provided is expired, revoked, malformed, or invalid for other reasons."
+            )
+        ).toBeInTheDocument();
+      });
+    });
   });
 
   describe("CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED feature toggle is inactive", () => {
