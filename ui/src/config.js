@@ -8,7 +8,8 @@ const config = {
             scope: ["openid"],
             redirectSignIn: "https://main.%amplify-app-id%.amplifyapp.com/",
             redirectSignOut: "%cognito-redirect-signout%",
-            responseType: "token"
+            responseType: "token",
+            providerId: "cis2devoidc"
         }
     },
     API: {
