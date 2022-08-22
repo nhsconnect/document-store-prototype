@@ -8,20 +8,12 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import org.hl7.fhir.r4.model.*;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
-import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
-import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
-import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
-    private static final Pattern SUBJECT_IDENTIFIER_PATTERN = Pattern.compile("^(?<systempart>(?<system>.*?)(?<!\\\\)\\|)?(?<identifier>\\d{10})$");
-    private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
     private final FhirContext fhirContext;
 
     public SearchPatientDetailsHandler() {
