@@ -3,13 +3,13 @@ const config = {
         region: "%region%",
         userPoolId: "%pool-id%",
         userPoolWebClientId: "%client-id%",
+        providerId: "cis2devoidc",
         oauth: {
             domain: "%cognito-domain%",
             scope: ["openid"],
             redirectSignIn: "https://main.%amplify-app-id%.amplifyapp.com/",
             redirectSignOut: "%cognito-redirect-signout%",
-            responseType: "token",
-            providerId: "cis2devoidc"
+            responseType: "token"
         }
     },
     API: {
