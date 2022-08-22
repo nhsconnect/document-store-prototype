@@ -7,6 +7,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.hl7.fhir.r4.model.*;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
+import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
@@ -37,10 +38,8 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
                 : requestEvent.getQueryStringParameters());
 
         try {
-            String subject = Optional.ofNullable(searchParameters.get("subject:identifier"))
-                    .or(() -> Optional.ofNullable(searchParameters.get("subject.identifier")))
-                    .orElseThrow(() -> new MissingSearchParametersException("subject:identifier"));
-            nhsNumber = validSubject(subject);
+            NHSNumberSearchParameterForm nhsNumberSearchParameterForm = new NHSNumberSearchParameterForm(searchParameters);
+            nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
         } catch (Exception e) {
             ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
             return errorResponseGenerator.errorResponse(e, jsonParser);
@@ -63,17 +62,5 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
                         "Access-Control-Allow-Origin", System.getenv("AMPLIFY_BASE_URL"),
                         "Access-Control-Allow-Methods", "GET"))
                 .withBody(jsonParser.encodeResourceToString(bundle));
-    }
-
-    private String validSubject(String subject) {
-        Matcher matcher = SUBJECT_IDENTIFIER_PATTERN.matcher(subject);
-        if (!matcher.matches() || matcher.group("identifier").isBlank()) {
-            throw new InvalidSubjectIdentifierException(subject);
-        }
-        if (matcher.group("systempart") != null && !NHS_NUMBER_SYSTEM_ID.equals(matcher.group("system"))) {
-            throw new UnrecognisedSubjectIdentifierSystemException(matcher.group("system"));
-        }
-
-        return matcher.group("identifier");
     }
 }
