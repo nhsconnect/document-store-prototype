@@ -69,31 +69,6 @@ describe("UploadDocumentPage", () => {
             );
         });
 
-        it("clears the NHS number from the context when a document is successfully uploaded", async () => {
-            const mockSetNhsNumber = jest.fn();
-            useMultiStepUploadProviderContext.mockReturnValue([
-                nhsNumber,
-                mockSetNhsNumber,
-            ]);
-            render(<UploadDocumentPage client={new ApiClient()} />);
-
-            selectClinicalCode("22151000087106");
-            enterTitle("Jane Doe - Patient Record");
-            chooseDocument(
-                new File(["hello"], "hello.txt", {
-                    type: "text/plain",
-                })
-            );
-            uploadDocument();
-
-            await waitFor(() => {
-                expect(
-                    screen.getByText("Document uploaded successfully")
-                ).toBeInTheDocument();
-            });
-            expect(mockSetNhsNumber).toHaveBeenCalledWith(null);
-        });
-
         it("displays an error message when the document fails to upload", async () => {
             const apiClientMock = new ApiClient();
             const documentTitle = "Jane Doe - Patient Record";
