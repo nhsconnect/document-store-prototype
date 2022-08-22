@@ -43,3 +43,6 @@ output "cognito_client_ids" {
   value = aws_cognito_user_pool_client.client[*].id
 }
 
+output "cognito_redirect_signin" {
+  value = aws_cognito_user_pool_client.client[*].default_redirect_uri
+}
