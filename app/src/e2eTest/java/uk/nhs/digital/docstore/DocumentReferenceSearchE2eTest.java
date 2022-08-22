@@ -64,7 +64,7 @@ public class DocumentReferenceSearchE2eTest {
 
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("1234"),
-                "NhsNumber", new AttributeValue("12345"),
+                "NhsNumber", new AttributeValue("9000000009"),
                 "Location", new AttributeValue(String.format("s3://%s/%s", DOC_STORE_BUCKET_NAME, S3_KEY)),
                 "ContentType", new AttributeValue("text/plain"),
                 "DocumentUploaded", new AttributeValue().withBOOL(true),
@@ -73,7 +73,7 @@ public class DocumentReferenceSearchE2eTest {
                 "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("2345"),
-                "NhsNumber", new AttributeValue("12345"),
+                "NhsNumber", new AttributeValue("9000000009"),
                 "Location", new AttributeValue(String.format("s3://%s/%s", DOC_STORE_BUCKET_NAME, "somewhere")),
                 "Content-Type", new AttributeValue("application/pdf"),
                 "DocumentUploaded", new AttributeValue().withBOOL(false),
@@ -84,7 +84,7 @@ public class DocumentReferenceSearchE2eTest {
     @Test
     void returnsEmptyBundleWhenNoMatchesFound() throws IOException, InterruptedException {
         String expectedEmptySearchResponse = getContentFromResource("search/empty-nhs-number-response.json");
-        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7Cdoesnt-exist"))
+        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9111231130"))
                 .GET()
                 .header("x-localstack-authorization", createBearerToken())
                 .build();
@@ -101,7 +101,7 @@ public class DocumentReferenceSearchE2eTest {
     @Test
     void returnsMatchingResults() throws IOException, InterruptedException {
         String expectedSearchResponse = getContentFromResource("search/nhs-number-response.json");
-        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C12345"))
+        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9000000009"))
                 .GET()
                 .header("x-localstack-authorization", createBearerToken())
                 .build();
@@ -130,7 +130,7 @@ public class DocumentReferenceSearchE2eTest {
     @Test
     void returnsBadRequestIfSearchParametersAreInvalid() throws IOException, InterruptedException {
         String expectedErrorResponse = getContentFromResource("errors/unrecognised-subject-identifier-system.json");
-        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject.identifier=unknown-system%7Cvalue"))
+        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject.identifier=unknown-system%7C9000000009"))
                 .GET()
                 .header("x-localstack-authorization", createBearerToken())
                 .build();

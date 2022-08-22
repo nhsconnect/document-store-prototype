@@ -57,11 +57,11 @@ class DocumentReferenceSearchServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            NHS_NUMBER_SYSTEM_ID + "|123456789",
-            "123456789",
+            NHS_NUMBER_SYSTEM_ID + "|1234567890",
+            "1234567890",
     })
     void supportsDifferentIdentifierSyntaxes(String identifier) throws MalformedURLException {
-        String nhsNumber = "123456789";
+        String nhsNumber = "1234567890";
         var metadataTemplate = theMetadata()
                 .withNhsNumber(nhsNumber)
                 .withDocumentUploaded(true);
@@ -86,7 +86,7 @@ class DocumentReferenceSearchServiceTest {
             "subject.identifier",
     })
     void supportsDifferentSearchSyntaxes(String parameterName) throws MalformedURLException {
-        String nhsNumber = randomNumeric(11);
+        String nhsNumber = "9000000009";
         var metadataTemplate = theMetadata()
                 .withNhsNumber(nhsNumber)
                 .withDocumentUploaded(true);
@@ -107,7 +107,7 @@ class DocumentReferenceSearchServiceTest {
 
     @Test
     void omitsPreSignedUrlIfDocumentIsNotAvailable() {
-        String nhsNumber = randomNumeric(11);
+        String nhsNumber = "9000000009";
         var metadataTemplate = theMetadata()
                 .withNhsNumber(nhsNumber)
                 .withDocumentUploaded(false);
@@ -142,8 +142,8 @@ class DocumentReferenceSearchServiceTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "urn:another-system|12345,urn:another-system",
-            "|12345,''"
+            "urn:another-system|9000000009,urn:another-system",
+            "|9000000009,''"
     })
     void raisesAnExceptionIfTheSubjectIdentifierSystemCannotBeUnderstood(String subjectIdentifier, String systemIdentifier) {
         assertThatThrownBy(
@@ -168,7 +168,7 @@ class DocumentReferenceSearchServiceTest {
 
     @Test
     void logsTheSearchActionObfuscatingPii() {
-        String nhsNumber = "12345678";
+        String nhsNumber = "1234567890";
         when(metadataStore.findByNhsNumber(nhsNumber))
                 .thenReturn(List.of());
 
@@ -176,6 +176,6 @@ class DocumentReferenceSearchServiceTest {
                 Map.of(SUBJECT_ID_PARAM_NAME, nhsNumber),
                 logger);
 
-        verify(logger).accept("documents with NHS number ending 5678");
+        verify(logger).accept("documents with NHS number ending 7890");
     }
 }

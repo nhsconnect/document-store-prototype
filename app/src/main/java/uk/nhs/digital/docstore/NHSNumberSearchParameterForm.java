@@ -25,7 +25,7 @@ public class NHSNumberSearchParameterForm {
 
     public void validate() {
         if (!matcher.matches() || matcher.group("identifier").isBlank() || !(NHS_NUMBER_ID_PATTERN.matcher(matcher.group("identifier")).matches())) {
-            throw new InvalidSubjectIdentifierException(matcher.group("identifier"));
+            throw new InvalidSubjectIdentifierException(matcher.group("systempart"));
         }
         if (matcher.group("systempart") != null && !NHS_NUMBER_SYSTEM_ID.equals(matcher.group("system"))) {
             throw new UnrecognisedSubjectIdentifierSystemException(matcher.group("system"));

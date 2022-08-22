@@ -1,9 +1,6 @@
 package uk.nhs.digital.docstore.search;
 
-import uk.nhs.digital.docstore.Document;
-import uk.nhs.digital.docstore.DocumentMetadata;
-import uk.nhs.digital.docstore.DocumentMetadataStore;
-import uk.nhs.digital.docstore.DocumentStore;
+import uk.nhs.digital.docstore.*;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
@@ -41,11 +38,8 @@ class DocumentReferenceSearchService {
     }
 
     private String getNhsNumberFrom(Map<String, String> queryParameters) {
-        String subject = Optional.ofNullable(queryParameters.get("subject:identifier"))
-                .or(() -> Optional.ofNullable(queryParameters.get("subject.identifier")))
-                .orElseThrow(() -> new MissingSearchParametersException("subject:identifier"));
-
-        return validSubject(subject);
+        NHSNumberSearchParameterForm nhsNumberSearchParameterForm = new NHSNumberSearchParameterForm(queryParameters);
+        return nhsNumberSearchParameterForm.getNhsNumber();
     }
 
     private String obfuscate(String string) {
@@ -59,17 +53,5 @@ class DocumentReferenceSearchService {
 
         var descriptor = DocumentDescriptor.from(metadata);
         return documentStore.generatePreSignedUrl(descriptor);
-    }
-
-    private String validSubject(String subject) {
-        Matcher matcher = SUBJECT_IDENTIFIER_PATTERN.matcher(subject);
-        if (!matcher.matches() || matcher.group("identifier").isBlank()) {
-            throw new InvalidSubjectIdentifierException(subject);
-        }
-        if (matcher.group("systempart") != null && !NHS_NUMBER_SYSTEM_ID.equals(matcher.group("system"))) {
-            throw new UnrecognisedSubjectIdentifierSystemException(matcher.group("system"));
-        }
-
-        return matcher.group("identifier");
     }
 }
