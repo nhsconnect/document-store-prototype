@@ -15,7 +15,7 @@ function useQuery() {
   const { search, hash } = useLocation();
 
   return useMemo(() => {
-    if(hash !== undefined){
+    if(hash !== undefined && hash !== ""){
       return new URLSearchParams(hash.replace("#", ""));
     }
     return new URLSearchParams(search)

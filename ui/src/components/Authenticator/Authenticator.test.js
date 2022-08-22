@@ -124,6 +124,7 @@ describe("Authenticator", () => {
 
     it("display an error summary when authentication redirects with an error", async () => {
       useLocation.mockImplementation(() => ({
+        hash: "",
         search:
           "?error_description=The%20access%20token%20provided%20is%20expired%2C%20revoked%2C%20malformed%2C%20or%20invalid%20for%20other%20reasons.",
       }));
