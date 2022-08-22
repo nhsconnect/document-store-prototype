@@ -1,9 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useNavigate } from "react-router";
 
 import ApiClient from "../apiClients/apiClient";
-import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
 import { PatientTracePage } from "./PatientTracePage";
 
 jest.mock("../apiClients/apiClient");
@@ -59,8 +57,11 @@ describe("PatientTracePage", () => {
 
     it("displays the patient's details when their demographic data is found", async () => {
         const patientData = {
-            name: "Fred Smith",
-            dateOfBirth: "05/10/2099",
+            name: {
+                given: ["Fred"],
+                family: "Smith",
+            },
+            dateOfBirth: new Date(Date.UTC(2099, 9, 5)),
             postcode: "AB1 2CD",
         };
         ApiClient.mockImplementation(() => {
@@ -75,11 +76,16 @@ describe("PatientTracePage", () => {
 
         await waitFor(() => {
             expect(
-                screen.queryByText(`${patientData.name}`)
+                screen.queryByText(`${patientData.name.given[0]}`)
             ).toBeInTheDocument();
         });
         expect(
-            screen.queryByText(`${patientData.dateOfBirth}`)
+            screen.queryByText(`${patientData.name.family}`)
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByText(
+                `${patientData.dateOfBirth.toLocaleDateString()}`
+            )
         ).toBeInTheDocument();
         expect(
             screen.queryByText(`${patientData.postcode}`)
@@ -98,8 +104,11 @@ describe("PatientTracePage", () => {
 
     it("stores the patient's details in context when moving to next page", async () => {
         const patientData = {
-            name: "Fred Smith",
-            dateOfBirth: "05/10/2099",
+            name: {
+                given: ["Fred"],
+                family: "Smith",
+            },
+            dateOfBirth: new Date(Date.UTC(2099, 9, 5)),
             postcode: "AB1 2CD",
         };
         const nhsNumber = "0987654321";
@@ -114,7 +123,7 @@ describe("PatientTracePage", () => {
         startSearch();
         await waitFor(() => {
             expect(
-                screen.queryByText(`${patientData.name}`)
+                screen.queryByText(`${patientData.name.family}`)
             ).toBeInTheDocument();
         });
         clickNext();

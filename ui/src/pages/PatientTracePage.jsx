@@ -70,15 +70,21 @@ export const PatientTracePage = ({ client }) => {
                     patientDetails.length > 0 && (
                         <SummaryList>
                             <SummaryList.Row>
-                                <SummaryList.Key>Name</SummaryList.Key>
+                                <SummaryList.Key>Family Name</SummaryList.Key>
                                 <SummaryList.Value>
-                                    {patientDetails[0].name}
+                                    {patientDetails[0].name.family}
+                                </SummaryList.Value>
+                            </SummaryList.Row>
+                            <SummaryList.Row>
+                                <SummaryList.Key>Given Name</SummaryList.Key>
+                                <SummaryList.Value>
+                                    {patientDetails[0].name.given[0]}
                                 </SummaryList.Value>
                             </SummaryList.Row>
                             <SummaryList.Row>
                                 <SummaryList.Key>DoB</SummaryList.Key>
                                 <SummaryList.Value>
-                                    {patientDetails[0].dateOfBirth}
+                                    {patientDetails[0].dateOfBirth.toLocaleDateString()}
                                 </SummaryList.Value>
                             </SummaryList.Row>
                             <SummaryList.Row>

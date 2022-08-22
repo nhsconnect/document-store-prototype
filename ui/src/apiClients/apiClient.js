@@ -83,19 +83,24 @@ class ApiClient {
     }
 
     async getPatientDetails(nhsNumber) {
-        if (nhsNumber === "9999999999") {
-            throw Error("Error");
-        }
-        if (nhsNumber === "0000000000") {
-            return [];
-        }
-        return [
-            {
-                name: "Joe Bloggs",
-                dateOfBirth: "05/10/2001",
-                postcode: "AB1 2CD",
+        const data = await this.api.get("doc-store-api", "/PatientDetails", {
+            headers: {
+                Accept: "application/fhir+json",
+                Authorization: `Bearer ${(await this.auth.currentSession())
+                    .getIdToken()
+                    .getJwtToken()}`,
             },
-        ];
+            queryStringParameters: {
+                "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+            },
+        });
+        return data.total > 0
+            ? data.entry.map(({ resource }) => ({
+                  dateOfBirth: new Date(resource.birthDate),
+                  postcode: resource.address[0].postalCode,
+                  name: resource.name[0],
+              }))
+            : [];
     }
 }
 
