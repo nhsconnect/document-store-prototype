@@ -49,6 +49,7 @@ function update_ui_config_file() {
   cognito_domain="$(jq -r '.cognito_user_pool_domain.value[0]' "$1")"
   cognito_redirect_signin="$(jq -r '.cognito_redirect_signin.value[0]' "$1")"
   cognito_redirect_signout="$(jq -r '.cognito_redirect_signin.value[0]' "$1")"
+  amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
   sed -i "s/%pool-id%/${user_pool}/" ui/src/config.js
   sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
   sed -i "s/%region%/${aws_region}/" ui/src/config.js
@@ -56,6 +57,7 @@ function update_ui_config_file() {
   sed -i "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
   sed -i "s/%cognito-redirect-signin%/${cognito_redirect_signin}/" ui/src/config.js
   sed -i "s/%cognito-redirect-signout%/${cognito_redirect_signout}/" ui/src/config.js
+  sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
 }
 
 function get_terraform_output() {
