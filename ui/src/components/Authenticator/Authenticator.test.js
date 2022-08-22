@@ -31,6 +31,7 @@ jest.mock("@aws-amplify/ui-react", () => ({
 describe("Authenticator", () => {
   describe("CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED feature toggle is active", () => {
     let defaultAuthConfig;
+    let federatedSignIn;
 
     beforeAll(() => {
       defaultAuthConfig = config.Auth;
@@ -53,7 +54,8 @@ describe("Authenticator", () => {
           jwtToken: "a-token",
         },
       }));
-      jest.spyOn(Auth, "federatedSignIn").mockImplementation(async () => true);
+      federatedSignIn = jest.spyOn(Auth, "federatedSignIn")
+      federatedSignIn.mockImplementation(async () => true);
       jest
         .spyOn(FeatureToggleProvider, "useFeatureToggle")
         .mockImplementation(
@@ -160,6 +162,17 @@ describe("Authenticator", () => {
         ).toBeInTheDocument();
       });
     });
+
+    it("does not call federatedSignIn if access token already exists", async () => {
+      render(
+          <Authenticator/>
+      );
+      await waitFor(()=>{
+        expect(federatedSignIn).not.toHaveBeenCalled();
+      })
+    });
+
+
   });
 
   describe("CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED feature toggle is inactive", () => {
