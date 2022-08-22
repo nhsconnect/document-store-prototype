@@ -3,6 +3,13 @@ const config = {
         region: "%region%",
         userPoolId: "%pool-id%",
         userPoolWebClientId: "%client-id%",
+        oauth: {
+            domain: "%cognito-domain%",
+            scope: ["openid"],
+            redirectSignIn: "%cognito-redirect-signin%",
+            redirectSignOut: "%cognito-redirect-signout%",
+            responseType: "code"
+        }
     },
     API: {
         endpoints: [
