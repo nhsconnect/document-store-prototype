@@ -25,7 +25,7 @@ const config = {
             PDS_TRACE_FOR_UPLOAD_ENABLED: false,
         },
         development: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
             PDS_TRACE_FOR_UPLOAD_ENABLED: false,
         },
         production: {
