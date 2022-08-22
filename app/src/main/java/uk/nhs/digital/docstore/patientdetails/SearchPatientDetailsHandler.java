@@ -6,6 +6,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.hl7.fhir.r4.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 
@@ -14,6 +16,8 @@ import java.util.Map;
 
 
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
+    private static final Logger logger
+            = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
     private final FhirContext fhirContext;
 
     public SearchPatientDetailsHandler() {
@@ -22,6 +26,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
+        logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
         String nhsNumber = "";
 
@@ -37,6 +42,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             return errorResponseGenerator.errorResponse(e, jsonParser);
         }
 
+        logger.debug("Generating response body");
         List<PatientDetails> patientDetailsList;
         if (nhsNumber.equals("9000000009")) {
             PatientDetails patientDetails = new PatientDetails(List.of("Jane"), "Doe", "1998-07-11", "LS1 6AE", "9000000009");
@@ -47,6 +53,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
 
         BundleMapper bundleMapper = new BundleMapper();
         Bundle bundle = bundleMapper.toBundle(patientDetailsList);
+        logger.debug("Processing finished - about to return the response");
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
                 .withHeaders(Map.of(

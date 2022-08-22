@@ -24,6 +24,7 @@ import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING
 
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+
     private static final Logger logger = LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
     private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
 
@@ -43,8 +44,10 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
+        logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
+        logger.debug("Querying DynamoDB");
         String userEmail = getEmail(requestEvent);
         Bundle bundle;
         try {
@@ -54,12 +57,13 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
             List<Document> documents = searchService.findByParameters(
                     searchParameters,
                     message -> logger.info(AUDIT, "{} searched for {}", userEmail, message));
+            logger.debug("Generating response contents");
             bundle = bundleMapper.toBundle(documents);
         } catch (Exception e) {
-            logger.error("Unable to perform search", e);
             return errorResponseGenerator.errorResponse(e, jsonParser);
         }
 
+        logger.debug("Processing finished - about to return the response");
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
                 .withHeaders(Map.of(
