@@ -6,7 +6,7 @@ const config = {
         oauth: {
             domain: "%cognito-domain%",
             scope: ["openid"],
-            redirectSignIn: "https://main.%amplify_app_id%.amplifyapp.com/",
+            redirectSignIn: "https://main.%amplify-app-id%.amplifyapp.com/",
             redirectSignOut: "%cognito-redirect-signout%",
             responseType: "code"
         }
