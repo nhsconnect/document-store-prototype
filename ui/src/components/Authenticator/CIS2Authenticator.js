@@ -11,11 +11,6 @@ const getToken = async () => {
   return session.idToken.jwtToken;
 };
 
-const checkIfAuthAttempted = () =>
-  parseInt(localStorage.getItem("attempts") ?? 0) > 0;
-const setAuthAsAttempted = () => writeStorage("attempts", 1);
-const unsetAuthAsAttempted = () => writeStorage("attempts", 0);
-
 function useQuery() {
   const { search } = useLocation();
   return useMemo(() => new URLSearchParams(search), [search]);
@@ -47,17 +42,15 @@ const CIS2Authenticator = ({ children, autologin = true }) => {
         setError(data);
         break;
     }
-    deleteFromStorage("attempts");
   };
 
   useEffect(() => {
     if (query.get("error_description")) {
       setError({ error_description: query.get("error_description") });
-      unsetAuthAsAttempted();
       return;
     }
 
-    if (isAutologin && !checkIfAuthAttempted()) {
+    if (isAutologin) {
       (async () => {
         try {
           await Auth.federatedSignIn({
@@ -66,7 +59,6 @@ const CIS2Authenticator = ({ children, autologin = true }) => {
         } catch (e) {
           setError(e);
         }
-        setAuthAsAttempted();
       })();
     }
 
