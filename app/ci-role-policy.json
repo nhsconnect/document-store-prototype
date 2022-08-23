@@ -87,7 +87,9 @@
         "cognito-idp:AdminDeleteUser",
         "cognito-idp:AdminInitiateAuth",
         "cognito-idp:AdminSetUserPassword",
-        "cognito-idp:CreateIdentityProvider"
+        "cognito-idp:CreateIdentityProvider",
+        "cognito-idp:DescribeIdentityProvider",
+        "cognito-idp:DeleteIdentityProvider"
       ],
       "Resource": "*"
     },
@@ -195,6 +197,14 @@
         "iam:PutRolePolicy",
         "iam:ListAttachedRolePolicies",
         "iam:PassRole"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowSsm",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameters"
       ],
       "Resource": "*"
     },
