@@ -101,13 +101,13 @@ plan-deploy)
   cd terraform
   assume_ci_role
   terraform init
-  terraform plan -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
+  terraform plan -var-file="../terraform/development.tfvars" -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
   ;;
 deploy)
   cd terraform
   assume_ci_role
   terraform init
-  terraform apply -var-file="../terraform/development.tfvars" tfplan
+  terraform apply tfplan
   ;;
 deploy-ui)
   get_terraform_output terraform_output.json
