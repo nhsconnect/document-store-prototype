@@ -109,7 +109,7 @@ plan-deploy)
   cd terraform
   assume_ci_role
   terraform init
-  terraform plan -var-file="../terraform/development.tfvars" -var client_id=$(get_cis2_client_id) -var client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
+  terraform plan -var-file="../terraform/development.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
   ;;
 deploy)
   cd terraform
