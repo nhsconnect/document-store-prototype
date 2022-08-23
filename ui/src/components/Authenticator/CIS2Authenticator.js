@@ -66,9 +66,11 @@ const CIS2Authenticator = ({ children, autologin = true }) => {
             console.info(e);
           }
           if(!userToken){
-          await Auth.federatedSignIn({
-            provider: awsConfig.Auth.providerId,
-          });
+            await Auth.federatedSignIn({
+              provider: awsConfig.Auth.providerId,
+            });
+          } else {
+            setIsAuthenticated(true);
           }
         } catch (e) {
           setError(e);
