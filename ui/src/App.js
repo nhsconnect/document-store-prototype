@@ -33,10 +33,32 @@ const App = () => {
                         <Authenticator.Protected>
                             <Routes>
                                 <Route path="/" element={<HomePage />} />
+
                                 <Route
                                     path="/search"
-                                    element={<SearchPage client={client} />}
-                                />
+                                    element={
+                                        <NhsNumberProvider>
+                                            <Outlet />
+                                        </NhsNumberProvider>
+                                    }
+                                >
+                                    <Route
+                                        path="/search"
+                                        element={<SearchPage client={client} />}
+                                    />
+                                    <Route
+                                        path="/search/patient-trace"
+                                        element={
+                                            <PatientTracePage
+                                                client={client}
+                                                nextPage={"/search/submit"}
+                                                title={
+                                                    "View Stored Patient Record"
+                                                }
+                                            />
+                                        }
+                                    />
+                                </Route>
                                 <Route
                                     path="/upload"
                                     element={

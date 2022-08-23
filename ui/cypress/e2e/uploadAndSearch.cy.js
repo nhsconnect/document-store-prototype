@@ -45,9 +45,22 @@ describe("upload and search transaction", () => {
         // return to the home page
         cy.visit("/");
 
-        // navigate to the view document page
-        cy.get('a[href="/search"]').click();
-        cy.url().should("eq", Cypress.config("baseUrl") + "/search");
+        if (config.features[process.env.NODE_ENV].PDS_TRACE_ENABLED) {
+            // navigate to the view document page
+            cy.get('a[href="/search/patient-trace"]').click();
+            cy.url().should(
+                "eq",
+                Cypress.config("baseUrl") + "/search/patient-trace"
+            );
+            cy.get('input[name="nhsNumber"]').type(nhsNumber);
+            cy.contains("Search").click();
+            cy.contains("Next", { timeout: 30000 }).click();
+            cy.url().should("eq", Cypress.config("baseUrl") + "/search/submit");
+        } else {
+            // navigate to the view document page
+            cy.get('a[href="/search"]').click();
+            cy.url().should("eq", Cypress.config("baseUrl") + "/search");
+        }
 
         //search for document
         cy.get('input[name="nhsNumber"]').type(nhsNumber);
