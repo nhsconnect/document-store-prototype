@@ -2,12 +2,12 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ApiClient from "../apiClients/apiClient";
-import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import UploadDocumentPage from "./UploadDocumentPage";
 
 jest.mock("../apiClients/apiClient");
-jest.mock("../providers/MultiStepUploadProvider", () => ({
-    useMultiStepUploadProviderContext: jest.fn(),
+jest.mock("../providers/NhsNumberProvider", () => ({
+    useNhsNumberProviderContext: jest.fn(),
 }));
 const mockNavigate = jest.fn();
 jest.mock("react-router", () => ({
@@ -18,10 +18,7 @@ describe("UploadDocumentPage", () => {
     describe("when there is an NHS number", () => {
         const nhsNumber = "1112223334";
         beforeEach(() => {
-            useMultiStepUploadProviderContext.mockReturnValue([
-                nhsNumber,
-                jest.fn(),
-            ]);
+            useNhsNumberProviderContext.mockReturnValue([nhsNumber, jest.fn()]);
         });
 
         it("renders the page", () => {
@@ -167,10 +164,7 @@ describe("UploadDocumentPage", () => {
 
     describe("when there is NOT an NHS number", () => {
         beforeEach(() => {
-            useMultiStepUploadProviderContext.mockReturnValue([
-                undefined,
-                jest.fn(),
-            ]);
+            useNhsNumberProviderContext.mockReturnValue([undefined, jest.fn()]);
         });
         it("redirects to patient trace page when the NHS number is NOT available", () => {
             render(<UploadDocumentPage />);

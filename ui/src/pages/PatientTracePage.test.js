@@ -6,8 +6,8 @@ import { PatientTracePage } from "./PatientTracePage";
 
 jest.mock("../apiClients/apiClient");
 const mockSetNhsNumber = jest.fn();
-jest.mock("../providers/MultiStepUploadProvider", () => ({
-    useMultiStepUploadProviderContext: () => ["1112223334", mockSetNhsNumber],
+jest.mock("../providers/NhsNumberProvider", () => ({
+    useNhsNumberProviderContext: () => ["1112223334", mockSetNhsNumber],
 }));
 const mockNavigate = jest.fn();
 jest.mock("react-router", () => ({

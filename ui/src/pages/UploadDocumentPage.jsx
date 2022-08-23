@@ -2,7 +2,7 @@ import { Button, Input, Select } from "nhsuk-react-components";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 
 const states = {
     IDLE: "idle",
@@ -33,7 +33,7 @@ const UploadDocumentPage = ({ client }) => {
     const { ref: clinicalCodeRef, ...clinicalCodeProps } =
         register("clinicalCode");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
-    const [nhsNumber] = useMultiStepUploadProviderContext();
+    const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
     useEffect(() => {

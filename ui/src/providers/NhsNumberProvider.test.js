@@ -1,12 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
-    useMultiStepUploadProviderContext,
-    MultiStepUploadProvider,
-} from "./MultiStepUploadProvider";
+    useNhsNumberProviderContext,
+    NhsNumberProvider,
+} from "./NhsNumberProvider";
 
 const TestComponent = ({ newNhsNumber }) => {
-    const [nhsNumber, setNhsNumber] = useMultiStepUploadProviderContext();
+    const [nhsNumber, setNhsNumber] = useNhsNumberProviderContext();
     return (
         <div>
             <p>NHS Number: {nhsNumber || "Null"}</p>
@@ -17,13 +17,13 @@ const TestComponent = ({ newNhsNumber }) => {
     );
 };
 
-describe("The multi step upload provider", () => {
+describe("The NHS number provider", () => {
     it("provides an NHS number value and setter", () => {
         const nhsNumber = 23456;
         render(
-            <MultiStepUploadProvider>
+            <NhsNumberProvider>
                 <TestComponent newNhsNumber={nhsNumber} />
-            </MultiStepUploadProvider>
+            </NhsNumberProvider>
         );
         expect(screen.getByText("NHS Number: Null")).toBeInTheDocument();
 

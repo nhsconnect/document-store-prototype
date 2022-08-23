@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { useMultiStepUploadProviderContext } from "../providers/MultiStepUploadProvider";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 
 const states = {
     IDLE: "idle",
@@ -28,7 +28,7 @@ export const PatientTracePage = ({ client }) => {
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});
-    const [nhsNumber, setNhsNumber] = useMultiStepUploadProviderContext();
+    const [nhsNumber, setNhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {

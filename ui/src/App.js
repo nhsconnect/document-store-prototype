@@ -15,7 +15,7 @@ import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage";
 import Layout from "./components/layout";
 import FeatureToggleProvider from "./providers/FeatureToggleProvider";
-import { MultiStepUploadProvider } from "./providers/MultiStepUploadProvider";
+import { NhsNumberProvider } from "./providers/NhsNumberProvider";
 import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
 
@@ -40,9 +40,9 @@ const App = () => {
                                 <Route
                                     path="/upload"
                                     element={
-                                        <MultiStepUploadProvider>
+                                        <NhsNumberProvider>
                                             <Outlet />
-                                        </MultiStepUploadProvider>
+                                        </NhsNumberProvider>
                                     }
                                 >
                                     <Route
