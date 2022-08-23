@@ -17,7 +17,7 @@ const states = {
     FAILED: "failed",
 };
 
-export const PatientTracePage = ({ client, nextPage }) => {
+export const PatientTracePage = ({ client, nextPage, title }) => {
     const { register, formState, getValues, handleSubmit } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
         required: "Please enter a 10 digit NHS number",
@@ -49,7 +49,7 @@ export const PatientTracePage = ({ client, nextPage }) => {
 
     return (
         <>
-            <h2>Upload Patient Records</h2>
+            <h2>{title}</h2>
             <form onSubmit={handleSubmit(doSubmit)} noValidate>
                 <Input
                     id={"nhs-number-input"}

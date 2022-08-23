@@ -56,6 +56,7 @@ const App = () => {
                                             <PatientTracePage
                                                 client={client}
                                                 nextPage={"/upload/submit"}
+                                                title={"Upload Patient Record"}
                                             />
                                         }
                                     />

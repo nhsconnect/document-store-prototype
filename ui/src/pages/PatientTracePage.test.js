@@ -16,10 +16,10 @@ jest.mock("react-router", () => ({
 
 describe("PatientTracePage", () => {
     it("renders the page", () => {
-        render(<PatientTracePage />);
+        render(<PatientTracePage title={"My test title"} />);
 
         expect(
-            screen.getByRole("heading", { name: "Upload Patient Records" })
+            screen.getByRole("heading", { name: "My test title" })
         ).toBeInTheDocument();
         expect(screen.queryByLabelText("Enter NHS number")).toBeInTheDocument();
         expect(
