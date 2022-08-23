@@ -23,6 +23,9 @@ resource "aws_cognito_user_pool_client" "client" {
   count = var.cloud_only_service_instances
 
   explicit_auth_flows = ["ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
+  allowed_oauth_flows = ["implicit"]
+  allowed_oauth_scopes = ["openid"]
+  supported_identity_providers = ["cis2devoidc"]
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
