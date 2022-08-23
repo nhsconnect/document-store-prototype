@@ -40,17 +40,17 @@ variable "s3_endpoint" {
 
 variable "cognito_cis2_provider_name" {
   type    = string
-  default = ""
+  default = "example"
 }
 
 variable "cognito_cis2_provider_client_id" {
   type    = string
-  default = ""
+  default = "0000"
 }
 
 variable "cognito_cis2_provider_client_secret" {
   type    = string
-  default = ""
+  default = "0000"
 }
 
 variable "cognito_cis2_provider_oidc_issuer" {
