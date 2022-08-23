@@ -3,10 +3,8 @@ import { Link } from "react-router-dom";
 import { useFeatureToggle } from "../providers/FeatureToggleProvider";
 
 const HomePage = () => {
-    const isMultiStepUploadPathEnabled = useFeatureToggle(
-        "PDS_TRACE_FOR_UPLOAD_ENABLED"
-    );
-    const uploadPathHref = isMultiStepUploadPathEnabled
+    const isPdsTraceEnabled = useFeatureToggle("PDS_TRACE_ENABLED");
+    const uploadPathHref = isPdsTraceEnabled
         ? "/upload/patient-trace"
         : "/upload";
     return (

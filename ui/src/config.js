@@ -9,8 +9,8 @@ const config = {
             scope: ["openid"],
             redirectSignIn: "https://main.%amplify-app-id%.amplifyapp.com/",
             redirectSignOut: "%cognito-redirect-signout%",
-            responseType: "token"
-        }
+            responseType: "token",
+        },
     },
     API: {
         endpoints: [
@@ -23,15 +23,15 @@ const config = {
     features: {
         local: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-            PDS_TRACE_FOR_UPLOAD_ENABLED: false,
+            PDS_TRACE_ENABLED: false,
         },
         development: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-            PDS_TRACE_FOR_UPLOAD_ENABLED: false,
+            PDS_TRACE_ENABLED: false,
         },
         production: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-            PDS_TRACE_FOR_UPLOAD_ENABLED: false,
+            PDS_TRACE_ENABLED: false,
         },
     },
 };

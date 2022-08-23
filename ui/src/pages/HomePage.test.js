@@ -6,9 +6,13 @@ import { BrowserRouter } from "react-router-dom";
 jest.mock("../providers/FeatureToggleProvider");
 
 describe("The home page", () => {
-    describe("the PDS_TRACE_FOR_UPLOAD_ENABLED toggle is active", () => {
+    describe("the PDS_TRACE_ENABLED toggle is active", () => {
         it("provides a link to the multi step upload path", () => {
-            useFeatureToggle.mockImplementation(() => true);
+            useFeatureToggle.mockImplementation((toggleName) => {
+                if (toggleName === "PDS_TRACE_ENABLED") {
+                    return true;
+                }
+            });
             render(
                 <BrowserRouter>
                     <HomePage />
@@ -22,9 +26,13 @@ describe("The home page", () => {
         });
     });
 
-    describe("the PDS_TRACE_FOR_UPLOAD_ENABLED toggle is inactive", () => {
+    describe("the PDS_TRACE_ENABLED toggle is inactive", () => {
         it("provides a link to the single step upload path", () => {
-            useFeatureToggle.mockImplementation(() => false);
+            useFeatureToggle.mockImplementation((toggleName) => {
+                if (toggleName === "PDS_TRACE_ENABLED") {
+                    return false;
+                }
+            });
             render(
                 <BrowserRouter>
                     <HomePage />
