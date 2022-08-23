@@ -165,10 +165,15 @@ describe("Authenticator", () => {
 
     it("does not call federatedSignIn if access token already exists", async () => {
       render(
-          <Authenticator/>
+          <Authenticator>
+            <Authenticator.Protected>
+              <div>this-should-be-rendered</div>
+            </Authenticator.Protected>
+          </Authenticator>
       );
       await waitFor(()=>{
         expect(federatedSignIn).not.toHaveBeenCalled();
+        expect(screen.queryByText("this-should-be-rendered")).toBeInTheDocument();
       })
     });
 
