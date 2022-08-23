@@ -96,7 +96,7 @@ describe("UploadDocumentPage", () => {
             ).toBeInTheDocument();
         });
 
-        it("displays a loading spinner when the document is being uploaded", async () => {
+        it("displays a loading spinner and disables the upload button when the document is being uploaded", async () => {
             const apiClientMock = new ApiClient();
             const documentTitle = "Jane Doe - Patient Record";
             const snomedCode = "22151000087106";
@@ -111,6 +111,7 @@ describe("UploadDocumentPage", () => {
             uploadDocument();
 
             await waitFor(() => {
+                expect(uploadButton()).toBeDisabled();
                 expect(progressBar()).toBeInTheDocument();
             });
         });

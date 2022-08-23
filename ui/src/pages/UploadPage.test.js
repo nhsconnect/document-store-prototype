@@ -93,7 +93,7 @@ describe("Upload page", () => {
       ).toBeInTheDocument();
     });
 
-    it("displays a loading spinner when the document is being uploaded", async () => {
+    it("displays a loading spinner and disables the upload button when the document is being uploaded", async () => {
       const apiClientMock = new ApiClient();
       const nhsNumber = "0987654321";
       const documentTitle = "Jane Doe - Patient Record";
@@ -116,6 +116,7 @@ describe("Upload page", () => {
       userEvent.click(screen.getByText("Upload"));
 
       await waitFor(() => {
+          expect(screen.getByText("Upload")).toBeDisabled();
         expect(screen.getByRole("progressbar")).toBeInTheDocument();
       });
     });

@@ -89,7 +89,9 @@ const UploadPage = ({ client }) => {
             {...documentInputProps}
             inputRef={documentInputRef}
           />
-          <Button type="submit">Upload</Button>
+          <Button type="submit" disabled={submissionState === states.UPLOADING}>
+            Upload
+          </Button>
           {submissionState === states.UPLOADING && (
             <p>
               <progress aria-label={"Loading..."} />
