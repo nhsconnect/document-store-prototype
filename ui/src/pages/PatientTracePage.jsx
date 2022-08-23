@@ -17,7 +17,7 @@ const states = {
     FAILED: "failed",
 };
 
-export const PatientTracePage = ({ client }) => {
+export const PatientTracePage = ({ client, nextPage }) => {
     const { register, formState, getValues, handleSubmit } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
         required: "Please enter a 10 digit NHS number",
@@ -44,7 +44,7 @@ export const PatientTracePage = ({ client }) => {
 
     const onNextClicked = () => {
         setNhsNumber(getValues("nhsNumber"));
-        navigate("/upload/submit");
+        navigate(nextPage);
     };
 
     return (

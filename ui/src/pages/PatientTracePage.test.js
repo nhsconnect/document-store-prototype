@@ -131,7 +131,40 @@ describe("PatientTracePage", () => {
         await waitFor(() => {
             expect(mockSetNhsNumber).toBeCalledWith(nhsNumber);
         });
-        expect(mockNavigate).toHaveBeenCalledWith("/upload/submit");
+    });
+
+    it("navigates to specified page when moving to next page", async () => {
+        const patientData = {
+            name: {
+                given: ["Fred"],
+                family: "Smith",
+            },
+            dateOfBirth: new Date(Date.UTC(2099, 9, 5)),
+            postcode: "AB1 2CD",
+        };
+        const expectedNextPage = "test/submit";
+        ApiClient.mockImplementation(() => {
+            return {
+                getPatientDetails: jest.fn().mockReturnValue([patientData]),
+            };
+        });
+        render(
+            <PatientTracePage
+                nextPage={expectedNextPage}
+                client={new ApiClient()}
+            />
+        );
+
+        enterNhsNumber("0987654321");
+        startSearch();
+        await waitFor(() => {
+            expect(nextButton()).toBeInTheDocument();
+        });
+        clickNext();
+
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+        });
     });
 
     it("displays a loading spinner when the patient's details are being requested", async () => {
@@ -246,4 +279,8 @@ function enterNhsNumber(nhsNumber) {
 
 function startSearch() {
     userEvent.click(screen.queryByRole("button", { name: "Search" }));
+}
+
+function nextButton() {
+    return screen.queryByRole("button", { name: "Next" });
 }
