@@ -86,7 +86,8 @@
         "cognito-idp:AdminCreateUser",
         "cognito-idp:AdminDeleteUser",
         "cognito-idp:AdminInitiateAuth",
-        "cognito-idp:AdminSetUserPassword"
+        "cognito-idp:AdminSetUserPassword",
+        "cognito-idp:CreateIdentityProvider"
       ],
       "Resource": "*"
     },
