@@ -24,6 +24,23 @@ describe("The home page", () => {
                 "/upload/patient-trace"
             );
         });
+
+        it("provides a link to the multi step search path", () => {
+            useFeatureToggle.mockImplementation((toggleName) => {
+                if (toggleName === "PDS_TRACE_ENABLED") {
+                    return true;
+                }
+            });
+            render(
+                <BrowserRouter>
+                    <HomePage />
+                </BrowserRouter>
+            );
+
+            expect(
+                screen.getByText("View Stored Patient Record")
+            ).toHaveAttribute("href", "/search/patient-trace");
+        });
     });
 
     describe("the PDS_TRACE_ENABLED toggle is inactive", () => {
@@ -43,6 +60,22 @@ describe("The home page", () => {
                 "href",
                 "/upload"
             );
+        });
+
+        it("provides a link to the single step search path", () => {
+            useFeatureToggle.mockImplementation((toggleName) => {
+                if (toggleName === "PDS_TRACE_ENABLED") {
+                    return false;
+                }
+            });
+            render(
+                <BrowserRouter>
+                    <HomePage />
+                </BrowserRouter>
+            );
+            expect(
+                screen.getByText("View Stored Patient Record")
+            ).toHaveAttribute("href", "/search");
         });
     });
 });
