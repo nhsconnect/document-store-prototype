@@ -8,7 +8,7 @@ import AuthenticationContext from "../../providers/AuthenticatorErrorsProvider";
 
 const getToken = async () => {
   const session = await Auth.currentSession();
-  return session.idToken.jwtToken;
+  return session?.idToken?.jwtToken;
 };
 
 function useQuery() {

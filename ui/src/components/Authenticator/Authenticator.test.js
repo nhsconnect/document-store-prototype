@@ -28,6 +28,10 @@ jest.mock("@aws-amplify/ui-react", () => ({
   },
 }));
 
+async function expectNever(callable) {
+  await expect(() => waitFor(callable)).rejects.toEqual(expect.anything());
+}
+
 describe("Authenticator", () => {
   describe("CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED feature toggle is active", () => {
     let defaultAuthConfig;
@@ -65,17 +69,22 @@ describe("Authenticator", () => {
       useLocation.mockImplementation(() => ({}));
     });
 
-    it("does not render children when user IS NOT authenticated", () => {
+
+
+    it("does not render children when user IS NOT authenticated", async () => {
+      jest.spyOn(Auth, "currentSession").mockImplementation(async () => false);
       render(
-        <Authenticator>
-          <Authenticator.Protected>
-            <div>this-should-NOT-be-rendered</div>
-          </Authenticator.Protected>
-        </Authenticator>
+          <Authenticator>
+            <Authenticator.Protected>
+              <div>this-should-NOT-be-rendered</div>
+            </Authenticator.Protected>
+          </Authenticator>
       );
-      expect(
-        screen.queryByText("this-should-NOT-be-rendered")
-      ).not.toBeInTheDocument();
+      await expectNever(() => {
+        expect(
+            screen.queryByText("this-should-NOT-be-rendered")
+        ).toBeInTheDocument();
+      });
     });
 
     it("renders children when user IS authenticated", async () => {
@@ -86,9 +95,11 @@ describe("Authenticator", () => {
           </Authenticator.Protected>
         </Authenticator>
       );
-      Hub.dispatch("auth", {
-        event: "signIn",
-        data: {},
+      act(() => {
+        Hub.dispatch("auth", {
+          event: "signIn",
+          data: {},
+        });
       });
       await waitFor(() => {
         expect(
@@ -164,17 +175,19 @@ describe("Authenticator", () => {
     });
 
     it("does not call federatedSignIn if access token already exists", async () => {
-      render(
-          <Authenticator>
-            <Authenticator.Protected>
-              <div>this-should-be-rendered</div>
-            </Authenticator.Protected>
-          </Authenticator>
-      );
-      await waitFor(()=>{
+      act(() => {
+        render(
+            <Authenticator>
+              <Authenticator.Protected>
+                <div>this-should-be-rendered</div>
+              </Authenticator.Protected>
+            </Authenticator>
+        );
+      });
+      await waitFor(() => {
         expect(federatedSignIn).not.toHaveBeenCalled();
         expect(screen.queryByText("this-should-be-rendered")).toBeInTheDocument();
-      })
+      });
     });
 
 
