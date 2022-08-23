@@ -21,6 +21,14 @@ function assume_ci_role() {
   export AWS_SESSION_TOKEN="${sts[2]}"
 }
 
+function get_cis2_client_id() {
+  echo "$(aws ssm get-parameters --region ${aws_region} --names /development/cis2/client_id --query Parameters[0].Value --output text)"
+}
+
+function get_cis2_client_secret() {
+  echo "$(aws ssm get-parameters --region ${aws_region} --names /development/cis2/client_secret --query Parameters[0].Value --output text)"
+}
+
 function export_aws_credentials() {
   export_aws_access_key="export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
   export_aws_secret_access_key="export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
@@ -101,7 +109,7 @@ plan-deploy)
   cd terraform
   assume_ci_role
   terraform init
-  terraform plan -var-file="../terraform/development.tfvars" -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
+  terraform plan -var-file="../terraform/development.tfvars" -var client_id=$(get_cis2_client_id) -var client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
   ;;
 deploy)
   cd terraform
