@@ -12,9 +12,7 @@ describe("upload and search transaction", () => {
             Cypress.env("cognito_password")
         );
 
-        if (
-            config.features[process.env.NODE_ENV].PDS_TRACE_FOR_UPLOAD_ENABLED
-        ) {
+        if (config.features[process.env.NODE_ENV].PDS_TRACE_ENABLED) {
             // navigate to the upload document page
             cy.get('a[href="/upload/patient-trace"]').click();
             cy.url().should(
