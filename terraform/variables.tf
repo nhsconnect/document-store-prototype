@@ -37,3 +37,43 @@ variable "s3_endpoint" {
   type    = string
   default = ""
 }
+
+variable "cognito_cis2_provider_name" {
+  type    = string
+  default = ""
+}
+
+variable "cognito_cis2_provider_client_id" {
+  type    = string
+  default = ""
+}
+
+variable "cognito_cis2_provider_client_secret" {
+  type    = string
+  default = ""
+}
+
+variable "cognito_cis2_provider_oidc_issuer" {
+  type    = string
+  default = ""
+}
+
+variable "cognito_cis2_provider_authorize_url" {
+  type    = string
+  default = ""
+}
+
+variable "cognito_cis2_provider_token_url" {
+  type    = string
+  default = ""
+}
+
+variable "cognito_cis2_provider_attributes_url" {
+  type    = string
+  default = ""
+}
+
+variable "cognito_cis2_provider_jwks_uri" {
+  type    = string
+  default = ""
+}

@@ -25,7 +25,7 @@ resource "aws_cognito_user_pool_client" "client" {
   explicit_auth_flows = ["ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
   allowed_oauth_flows = ["implicit"]
   allowed_oauth_scopes = ["openid"]
-  supported_identity_providers = ["cis2devoidc"]
+  supported_identity_providers = [aws_cognito_identity_provider.cis2_identity_provider.provider_name]
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
@@ -48,4 +48,21 @@ output "cognito_client_ids" {
 
 output "cognito_redirect_signin" {
   value = aws_cognito_user_pool_client.client[*].default_redirect_uri
+}
+
+resource "aws_cognito_identity_provider" "cis2_identity_provider" {
+  user_pool_id  = aws_cognito_user_pool.pool.id
+  provider_name = var.cognito_cis2_provider_name
+  provider_type = "OIDC"
+
+  provider_details = {
+    authorize_scopes = "openid"
+    client_id        = var.cognito_cis2_provider_client_id
+    client_secret    = var.cognito_cis2_provider_client_secret
+    oidc_issuer      = var.cognito_cis2_provider_oidc_issuer
+    authorize_url    = var.cognito_cis2_provider_authorize_url
+    token_url        = var.cognito_cis2_provider_token_url
+    attributes_url   = var.cognito_cis2_provider_attributes_url
+    jwks_uri         = var.cognito_cis2_provider_jwks_uri
+  }
 }
