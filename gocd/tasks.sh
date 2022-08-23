@@ -107,7 +107,7 @@ deploy)
   cd terraform
   assume_ci_role
   terraform init
-  terraform apply tfplan -var-file="../terraform/development.tfvars"
+  terraform apply -var-file="../terraform/development.tfvars" tfplan
   ;;
 deploy-ui)
   get_terraform_output terraform_output.json
