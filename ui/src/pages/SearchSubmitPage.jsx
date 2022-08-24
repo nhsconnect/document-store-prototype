@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input, Button, Table } from "nhsuk-react-components";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 
 const states = {
     INITIAL: "initial",
@@ -14,6 +15,7 @@ const SearchSubmitPage = ({ client }) => {
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
+    const [nhsNumber] = useNhsNumberProviderContext();
 
     const doSubmit = async (data) => {
         setSubmissionState(states.SEARCHING);
@@ -31,6 +33,7 @@ const SearchSubmitPage = ({ client }) => {
     return (
         <div>
             <div>
+                <h2>View Stored Patient Record</h2>
                 <form onSubmit={handleSubmit(doSubmit)}>
                     <Input
                         id={"nhs-number-input"}
@@ -38,6 +41,8 @@ const SearchSubmitPage = ({ client }) => {
                         label="Find by NHS number"
                         {...nhsNumberProps}
                         inputRef={nhsNumberRef}
+                        value={nhsNumber}
+                        readOnly
                     />
                     <Button>Search</Button>
                     {submissionState === states.SEARCHING && (

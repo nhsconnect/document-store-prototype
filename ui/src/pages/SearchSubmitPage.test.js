@@ -3,9 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { Factory } from "fishery";
 
 import ApiClient from "../apiClients/apiClient";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import SearchSubmitPage from "./SearchSubmitPage";
 
 jest.mock("../apiClients/apiClient");
+jest.mock("../providers/NhsNumberProvider", () => ({
+    useNhsNumberProviderContext: jest.fn(),
+}));
 
 const searchResultFactory = Factory.define(({ sequence }) => ({
     description: "Some description",
@@ -15,6 +19,24 @@ const searchResultFactory = Factory.define(({ sequence }) => ({
 }));
 
 describe("Search page", () => {
+    const nhsNumber = "1112223334";
+
+    beforeEach(() => {
+        useNhsNumberProviderContext.mockReturnValue([nhsNumber, jest.fn()]);
+    });
+
+    it("renders the page", () => {
+        render(<SearchSubmitPage />);
+
+        expect(
+            screen.getByRole("heading", { name: "View Stored Patient Record" })
+        ).toBeInTheDocument();
+        expect(nhsNumberField()).toBeInTheDocument();
+        expect(nhsNumberField()).toHaveValue(nhsNumber);
+        expect(nhsNumberField()).toHaveAttribute("readonly");
+        expect(searchButton()).toBeInTheDocument();
+    });
+
     it("displays a loading spinner when a document search is in progress", async () => {
         const apiClientMock = new ApiClient();
         apiClientMock.findByNhsNumber = jest.fn(() => {
@@ -22,10 +44,6 @@ describe("Search page", () => {
         });
         render(<SearchSubmitPage client={apiClientMock} />);
 
-        userEvent.type(
-            screen.getByLabelText("Find by NHS number"),
-            "123456789"
-        );
         userEvent.click(screen.getByText("Search"));
 
         await waitFor(() => {
@@ -39,10 +57,8 @@ describe("Search page", () => {
         apiClientMock.findByNhsNumber = jest.fn(() => {
             return [searchResult];
         });
-        const nhsNumber = "123456789";
         render(<SearchSubmitPage client={apiClientMock} />);
 
-        userEvent.type(screen.getByLabelText("Find by NHS number"), nhsNumber);
         userEvent.click(screen.getByText("Search"));
 
         await waitFor(() => {
@@ -86,10 +102,6 @@ describe("Search page", () => {
         });
         render(<SearchSubmitPage client={apiClientMock} />);
 
-        userEvent.type(
-            screen.getByLabelText("Find by NHS number"),
-            "123456789"
-        );
         userEvent.click(screen.getByText("Search"));
 
         await waitFor(() => {
@@ -109,10 +121,8 @@ describe("Search page", () => {
         apiClientMock.findByNhsNumber = jest.fn(() => {
             return [searchResultFactory.build()];
         });
-        const nhsNumber = "123456789";
         render(<SearchSubmitPage client={apiClientMock} />);
 
-        userEvent.type(screen.getByLabelText("Find by NHS number"), nhsNumber);
         userEvent.click(screen.getByText("Search"));
 
         await waitFor(() => {
@@ -137,10 +147,6 @@ describe("Search page", () => {
         });
         render(<SearchSubmitPage client={apiClientMock} />);
 
-        userEvent.type(
-            screen.getByLabelText("Find by NHS number"),
-            "123456789"
-        );
         userEvent.click(screen.getByText("Search"));
 
         await waitFor(() => {
@@ -155,10 +161,6 @@ describe("Search page", () => {
         });
         render(<SearchSubmitPage client={apiClientMock} />);
 
-        userEvent.type(
-            screen.getByLabelText("Find by NHS number"),
-            "123456789"
-        );
         userEvent.click(screen.getByText("Search"));
 
         await waitFor(() => {
@@ -170,3 +172,11 @@ describe("Search page", () => {
         });
     });
 });
+
+function nhsNumberField() {
+    return screen.getByLabelText("Find by NHS number");
+}
+
+function searchButton() {
+    return screen.queryByRole("button", { name: "Search" });
+}
