@@ -52,10 +52,11 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(apiClientMock.getPatientDetails).toHaveBeenCalledWith(
-                nhsNumber
-            );
+            expect(
+                screen.queryByText(patientData.postcode)
+            ).toBeInTheDocument();
         });
+        expect(apiClientMock.getPatientDetails).toHaveBeenCalledWith(nhsNumber);
     });
 
     it("displays the patient's details when their demographic data is found", async () => {
