@@ -18,6 +18,7 @@ import FeatureToggleProvider from "./providers/FeatureToggleProvider";
 import { NhsNumberProvider } from "./providers/NhsNumberProvider";
 import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
+import SearchSubmitPage from "./pages/SearchSubmitPage";
 
 Amplify.configure(awsConfig);
 
@@ -58,7 +59,14 @@ const App = () => {
                                             />
                                         }
                                     />
+                                    <Route
+                                        path="/search/submit"
+                                        element={
+                                            <SearchSubmitPage client={client} />
+                                        }
+                                    />
                                 </Route>
+
                                 <Route
                                     path="/upload"
                                     element={
