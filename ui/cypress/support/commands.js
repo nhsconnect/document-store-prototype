@@ -24,8 +24,14 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 Cypress.Commands.add("login", (username, password) => {
-  cy.get("#username").type(username);
-  cy.get("#password").type(password);
-  cy.get('[data-test="sign-in-sign-in-button"]').last().click();
-  cy.url().should("eq", Cypress.config("baseUrl") + "/");
+    cy.get("#username").type(username);
+    cy.get("#password").type(password);
+    cy.get('[data-test="sign-in-sign-in-button"]').last().click();
+    cy.url().should("eq", Cypress.config("baseUrl") + "/");
+});
+
+Cypress.Commands.add("cis2Login", (username, password) => {
+    cy.get('[placeholder="User Name"]').type(username);
+    cy.get('[placeholder="Password"]').type(password);
+    cy.contains("Continue").click();
 });

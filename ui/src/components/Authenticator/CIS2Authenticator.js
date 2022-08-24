@@ -5,10 +5,15 @@ import { useLocation } from "react-router";
 
 import awsConfig from "../../config";
 import AuthenticationContext from "../../providers/AuthenticatorErrorsProvider";
+import { useFeatureToggle } from "../../providers/FeatureToggleProvider";
 
 const getToken = async () => {
-    const session = await Auth.currentSession();
-    return session?.idToken?.jwtToken;
+    try {
+        const session = await Auth.currentSession();
+        return session?.idToken?.jwtToken;
+    } catch (e) {
+        return undefined;
+    }
 };
 
 function useQuery() {
@@ -24,7 +29,9 @@ function useQuery() {
 
 const CIS2Authenticator = ({ children }) => {
     const query = useQuery();
-    const { setError, setIsAuthenticated } = useContext(AuthenticationContext);
+    const { setError, setIsAuthenticated, tryLogin, setTryLogin } = useContext(
+        AuthenticationContext
+    );
 
     const authHandler = async ({ payload: { event, data } }) => {
         switch (event) {
@@ -53,17 +60,8 @@ const CIS2Authenticator = ({ children }) => {
 
         (async () => {
             try {
-                let userToken;
-                try {
-                    userToken = await getToken();
-                } catch (e) {
-                    console.info(e);
-                }
-                if (!userToken) {
-                    await Auth.federatedSignIn({
-                        provider: awsConfig.Auth.providerId,
-                    });
-                } else {
+                const userToken = await getToken();
+                if (userToken) {
                     setIsAuthenticated(true);
                 }
             } catch (e) {
@@ -73,6 +71,24 @@ const CIS2Authenticator = ({ children }) => {
 
         return Hub.listen("auth", authHandler);
     }, []);
+
+    useEffect(() => {
+        (async () => {
+            if (tryLogin) {
+                try {
+                    const userToken = await getToken();
+                    if (!userToken) {
+                        await Auth.federatedSignIn({
+                            provider: awsConfig.Auth.providerId,
+                        });
+                    }
+                } catch (e) {
+                    setError(e);
+                }
+                setTryLogin(false);
+            }
+        })();
+    }, [tryLogin]);
 
     return <div data-testid={"CIS2Authenticator"}>{children}</div>;
 };

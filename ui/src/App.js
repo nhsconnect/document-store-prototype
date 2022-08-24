@@ -1,7 +1,7 @@
 import { Amplify, Auth, API } from "aws-amplify";
 import React from "react";
 import {
-    BrowserRouter as Router,
+    BrowserRouter as Router, Navigate,
     Outlet,
     Route,
     Routes,
@@ -14,15 +14,98 @@ import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage";
 import Layout from "./components/layout";
-import FeatureToggleProvider from "./providers/FeatureToggleProvider";
+import FeatureToggleProvider, {useFeatureToggle} from "./providers/FeatureToggleProvider";
 import { NhsNumberProvider } from "./providers/NhsNumberProvider";
 import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
 import SearchSubmitPage from "./pages/SearchSubmitPage";
+import StartPage from "./pages/StartPage";
 
 Amplify.configure(awsConfig);
 
 const client = new ApiClient(API, Auth);
+const AppRoutes = () => {
+    const isCIS2Enabled = useFeatureToggle("CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED");
+    return <Routes>
+        {isCIS2Enabled && <>
+            <Route element={<StartPage />} path={"/"} />
+            <Route element={<Navigate to={"/home"} replace/>} path={"cis2-auth-callback"} />
+        </>}
+        <Route
+            element={
+                <Authenticator.Protected>
+                    <Outlet />
+                </Authenticator.Protected>
+            }
+        >
+            <Route path={isCIS2Enabled? "/home" : "/"} element={<HomePage />} />
+            <Route
+                path="/search"
+                element={
+                    <NhsNumberProvider>
+                        <Outlet />
+                    </NhsNumberProvider>
+                }
+            >
+                <Route
+                    path="/search"
+                    element={<SearchPage client={client} />}
+                />
+                <Route
+                    path="/search/patient-trace"
+                    element={
+                        <PatientTracePage
+                            client={client}
+                            nextPage={"/search/submit"}
+                            title={
+                                "View Stored Patient Record"
+                            }
+                        />
+                    }
+                />
+                <Route
+                    path="/search/submit"
+                    element={
+                        <SearchSubmitPage client={client} />
+                    }
+                />
+            </Route>
+
+            <Route
+                path="/upload"
+                element={
+                    <NhsNumberProvider>
+                        <Outlet />
+                    </NhsNumberProvider>
+                }
+            >
+                <Route
+                    path="/upload"
+                    exact={true}
+                    element={<UploadPage client={client} />}
+                />
+                <Route
+                    path="/upload/patient-trace"
+                    element={
+                        <PatientTracePage
+                            client={client}
+                            nextPage={"/upload/submit"}
+                            title={"Upload Patient Record"}
+                        />
+                    }
+                />
+                <Route
+                    path="/upload/submit"
+                    element={
+                        <UploadDocumentPage
+                            client={client}
+                        />
+                    }
+                />
+            </Route>
+        </Route>
+    </Routes>
+}
 
 const App = () => {
     return (
@@ -31,81 +114,7 @@ const App = () => {
                 <Authenticator>
                     <Layout>
                         <Authenticator.Errors />
-                        <Routes>
-                            <Route
-                                element={
-                                    <Authenticator.Protected>
-                                        <Outlet />
-                                    </Authenticator.Protected>
-                                }
-                            >
-                                <Route path="/" element={<HomePage />} />
-                                <Route
-                                    path="/search"
-                                    element={
-                                        <NhsNumberProvider>
-                                            <Outlet />
-                                        </NhsNumberProvider>
-                                    }
-                                >
-                                    <Route
-                                        path="/search"
-                                        element={<SearchPage client={client} />}
-                                    />
-                                    <Route
-                                        path="/search/patient-trace"
-                                        element={
-                                            <PatientTracePage
-                                                client={client}
-                                                nextPage={"/search/submit"}
-                                                title={
-                                                    "View Stored Patient Record"
-                                                }
-                                            />
-                                        }
-                                    />
-                                    <Route
-                                        path="/search/submit"
-                                        element={
-                                            <SearchSubmitPage client={client} />
-                                        }
-                                    />
-                                </Route>
-
-                                <Route
-                                    path="/upload"
-                                    element={
-                                        <NhsNumberProvider>
-                                            <Outlet />
-                                        </NhsNumberProvider>
-                                    }
-                                >
-                                    <Route
-                                        path="/upload"
-                                        exact={true}
-                                        element={<UploadPage client={client} />}
-                                    />
-                                    <Route
-                                        path="/upload/patient-trace"
-                                        element={
-                                            <PatientTracePage
-                                                client={client}
-                                                nextPage={"/upload/submit"}
-                                                title={"Upload Patient Record"}
-                                            />
-                                        }
-                                    />
-                                    <Route
-                                        path="/upload/submit"
-                                        element={
-                                            <UploadDocumentPage
-                                                client={client}
-                                            />
-                                        }
-                                    />
-                                </Route>
-                            </Route>
-                        </Routes>
+                        <AppRoutes />
                     </Layout>
                 </Authenticator>
             </Router>

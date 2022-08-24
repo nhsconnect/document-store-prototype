@@ -6,11 +6,17 @@ describe("upload and search transaction", () => {
         const documentTitle = "Jane Doe - Patient Record";
         cy.visit("/");
 
-        // log into the website
-        cy.login(
-            Cypress.env("cognito_username"),
-            Cypress.env("cognito_password")
-        );
+        if (
+            config.features[process.env.NODE_ENV]
+                .CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED
+        ) {
+            cy.contains("Start now").click();
+            // log into the website
+            cy.cis2Login(Cypress.env("username"), Cypress.env("password"));
+        } else {
+            // log into the website
+            cy.login(Cypress.env("username"), Cypress.env("password"));
+        }
 
         if (config.features[process.env.NODE_ENV].PDS_TRACE_ENABLED) {
             // navigate to the upload document page
@@ -44,6 +50,13 @@ describe("upload and search transaction", () => {
 
         // return to the home page
         cy.visit("/");
+
+        if (
+            config.features[process.env.NODE_ENV]
+                .CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED
+        ) {
+            cy.contains("Start now").click();
+        }
 
         if (config.features[process.env.NODE_ENV].PDS_TRACE_ENABLED) {
             // navigate to the view document page
