@@ -5,7 +5,6 @@ import { useLocation } from "react-router";
 
 import awsConfig from "../../config";
 import AuthenticationContext from "../../providers/AuthenticatorErrorsProvider";
-import { useFeatureToggle } from "../../providers/FeatureToggleProvider";
 
 const getToken = async () => {
     try {
@@ -16,7 +15,7 @@ const getToken = async () => {
     }
 };
 
-function useQuery() {
+export function useQuery() {
     const { search, hash } = useLocation();
 
     return useMemo(() => {
@@ -27,11 +26,54 @@ function useQuery() {
     }, [search, hash]);
 }
 
+const attemptFederatedLogin = (query, tryLogin, setError, setTryLogin) => async () => {
+
+    if (query.get("error_description")) {
+        setError({ error_description: query.get("error_description") });
+        setTryLogin(false);
+        return;
+    }
+
+    if (tryLogin) {
+        try {
+            const userToken = await getToken();
+            if (!userToken) {
+                await Auth.federatedSignIn({
+                    provider: awsConfig.Auth.providerId,
+                });
+            }
+        } catch (e) {
+            setError(e);
+        }
+        setTryLogin(false);
+    }
+};
+
+function checkAuthenticated(setIsAuthenticated, setError) {
+    (async () => {
+        try {
+            const userToken = await getToken();
+            if (userToken) {
+                setIsAuthenticated(true);
+            }
+        } catch (e) {
+            setError(e);
+        }
+    })();
+}
+
+function onFirstRender(query, setError, setIsAuthenticated, authHandler) {
+    return () => {
+        checkAuthenticated(setIsAuthenticated, setError);
+
+        return Hub.listen("auth", authHandler);
+    };
+}
+
 const CIS2Authenticator = ({ children }) => {
     const query = useQuery();
-    const { setError, setIsAuthenticated, tryLogin, setTryLogin } = useContext(
-        AuthenticationContext
-    );
+    const { setError, setIsAuthenticated, attemptLogin, setAttemptLogin } =
+        useContext(AuthenticationContext);
 
     const authHandler = async ({ payload: { event, data } }) => {
         switch (event) {
@@ -52,43 +94,14 @@ const CIS2Authenticator = ({ children }) => {
         }
     };
 
-    useEffect(() => {
-        if (query.get("error_description")) {
-            setError({ error_description: query.get("error_description") });
-            return;
-        }
+    useEffect(
+        onFirstRender(query, setError, setIsAuthenticated, authHandler),
+        []
+    );
 
-        (async () => {
-            try {
-                const userToken = await getToken();
-                if (userToken) {
-                    setIsAuthenticated(true);
-                }
-            } catch (e) {
-                setError(e);
-            }
-        })();
-
-        return Hub.listen("auth", authHandler);
-    }, []);
-
-    useEffect(() => {
-        (async () => {
-            if (tryLogin) {
-                try {
-                    const userToken = await getToken();
-                    if (!userToken) {
-                        await Auth.federatedSignIn({
-                            provider: awsConfig.Auth.providerId,
-                        });
-                    }
-                } catch (e) {
-                    setError(e);
-                }
-                setTryLogin(false);
-            }
-        })();
-    }, [tryLogin]);
+    useEffect(attemptFederatedLogin(query, attemptLogin, setError, setAttemptLogin), [
+        attemptLogin,
+    ]);
 
     return <div data-testid={"CIS2Authenticator"}>{children}</div>;
 };

@@ -9,7 +9,7 @@ import CIS2Authenticator from "./CIS2Authenticator";
 const Authenticator = ({ children }) => {
     const [error, setError] = useState();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [tryLogin, setTryLogin] = useState(false);
+    const [attemptLogin, setAttemptLogin] = useState(false);
     const isCIS2FederatedIdentityProviderEnabled = useFeatureToggle(
         "CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED"
     );
@@ -23,8 +23,8 @@ const Authenticator = ({ children }) => {
                 setError,
                 isAuthenticated,
                 setIsAuthenticated,
-                tryLogin,
-                setTryLogin,
+                attemptLogin,
+                setAttemptLogin,
             }}
         >
             {isCIS2FederatedIdentityProviderEnabled ? (
@@ -65,11 +65,13 @@ const Errors = ({ title = "There is a problem" }) => {
 Authenticator.Errors = Errors;
 
 const Protected = ({ children }) => {
-    const { isAuthenticated, setTryLogin } = useContext(AuthenticationContext);
+    const { isAuthenticated, setAttemptLogin } = useContext(
+        AuthenticationContext
+    );
 
     useEffect(() => {
         if (!isAuthenticated) {
-            setTryLogin(true);
+            setAttemptLogin(true);
         }
     }, [isAuthenticated]);
 
