@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Input, Button, Table } from "nhsuk-react-components";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import { useNavigate } from "react-router";
 
 const states = {
     INITIAL: "initial",
@@ -16,6 +17,13 @@ const SearchSubmitPage = ({ client }) => {
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [nhsNumber] = useNhsNumberProviderContext();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!nhsNumber) {
+            navigate("/search/patient-trace");
+        }
+    }, [nhsNumber, navigate]);
 
     const doSubmit = async (data) => {
         setSubmissionState(states.SEARCHING);
