@@ -32,8 +32,11 @@ describe("PatientTracePage", () => {
 
     it("gets the patient's data when the NHS number is submitted", async () => {
         const patientData = {
-            name: "Joe Bloggs",
-            dateOfBirth: "05/10/2001",
+            name: {
+                given: ["Fred"],
+                family: "Smith",
+            },
+            dateOfBirth: new Date(Date.UTC(2099, 9, 5)),
             postcode: "AB1 2CD",
         };
         ApiClient.mockImplementation(() => {
