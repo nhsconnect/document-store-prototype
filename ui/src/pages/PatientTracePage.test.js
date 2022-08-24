@@ -170,11 +170,7 @@ describe("PatientTracePage", () => {
     it("displays a loading spinner when the patient's details are being requested", async () => {
         ApiClient.mockImplementation(() => {
             return {
-                getPatientDetails: jest.fn().mockReturnValue({
-                    name: "",
-                    dateOfBirth: "",
-                    postcode: "",
-                }),
+                getPatientDetails: jest.fn().mockReturnValue([]),
             };
         });
         render(<PatientTracePage client={new ApiClient()} />);
