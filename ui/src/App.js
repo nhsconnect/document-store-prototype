@@ -31,10 +31,15 @@ const App = () => {
                 <Authenticator>
                     <Layout>
                         <Authenticator.Errors />
-                        <Authenticator.Protected>
-                            <Routes>
+                        <Routes>
+                            <Route
+                                element={
+                                    <Authenticator.Protected>
+                                        <Outlet />
+                                    </Authenticator.Protected>
+                                }
+                            >
                                 <Route path="/" element={<HomePage />} />
-
                                 <Route
                                     path="/search"
                                     element={
@@ -99,9 +104,8 @@ const App = () => {
                                         }
                                     />
                                 </Route>
-                            </Routes>
-                            <div>{/*<AmplifySignOut/>*/}</div>
-                        </Authenticator.Protected>
+                            </Route>
+                        </Routes>
                     </Layout>
                 </Authenticator>
             </Router>
