@@ -60,10 +60,10 @@ describe("upload and search transaction", () => {
             // navigate to the view document page
             cy.get('a[href="/search"]').click();
             cy.url().should("eq", Cypress.config("baseUrl") + "/search");
+            cy.get('input[name="nhsNumber"]').type(nhsNumber);
         }
 
         //search for document
-        cy.get('input[name="nhsNumber"]').type(nhsNumber);
         cy.get('button[type="submit"]').click();
 
         // wait for lambda to return results
