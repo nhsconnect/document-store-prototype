@@ -25,7 +25,7 @@ resource "aws_cognito_user_pool_client" "client" {
   explicit_auth_flows = ["ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
   allowed_oauth_flows = ["implicit"]
   allowed_oauth_scopes = ["openid"]
-  supported_identity_providers = [aws_cognito_identity_provider.cis2_identity_provider.provider_name]
+  supported_identity_providers = [aws_cognito_identity_provider.cis2_identity_provider[0].provider_name]
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
@@ -66,4 +66,6 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
     jwks_uri                    = var.cognito_cis2_provider_jwks_uri
     attributes_request_method   = "GET"
   }
+
+  count = var.cloud_only_service_instances
 }

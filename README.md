@@ -17,6 +17,14 @@ For the UI, this also includes:
 - Node v14.17.x
 - [npm v6.14.x](https://docs.npmjs.com/cli/v6/configuring-npm/install)
 
+Localstack can be installed within a virtual environment using the following commands:
+
+```bash
+python3 -m venv ./venv
+source ./venv/bin/activate
+pip3 install localstack
+```
+
 ## Testing
 
 The `test` source set contains unit tests. These don't have any dependencies on infrastructure or external services.
