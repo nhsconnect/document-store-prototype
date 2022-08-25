@@ -3,7 +3,7 @@ import { Factory } from "fishery";
 
 import ApiClient from "../apiClients/apiClient";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
-import SearchSubmitPage from "./SearchSubmitPage";
+import SearchResultsPage from "./SearchResultsPage";
 
 jest.mock("../apiClients/apiClient");
 jest.mock("../providers/NhsNumberProvider", () => ({
@@ -30,7 +30,7 @@ describe("Search page", () => {
         });
 
         it("renders the page", () => {
-            render(<SearchSubmitPage />);
+            render(<SearchResultsPage />);
 
             expect(
                 screen.getByRole("heading", {
@@ -49,7 +49,7 @@ describe("Search page", () => {
             apiClientMock.findByNhsNumber = jest.fn(() => {
                 return [];
             });
-            render(<SearchSubmitPage client={apiClientMock} />);
+            render(<SearchResultsPage client={apiClientMock} />);
 
             await waitFor(() => {
                 expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe("Search page", () => {
             apiClientMock.findByNhsNumber = jest.fn(() => {
                 return [searchResult];
             });
-            render(<SearchSubmitPage client={apiClientMock} />);
+            render(<SearchResultsPage client={apiClientMock} />);
 
             await waitFor(() => {
                 expect(apiClientMock.findByNhsNumber).toHaveBeenCalledWith(
@@ -103,7 +103,7 @@ describe("Search page", () => {
                     }),
                 ];
             });
-            render(<SearchSubmitPage client={apiClientMock} />);
+            render(<SearchResultsPage client={apiClientMock} />);
 
             await waitFor(() => {
                 expect(screen.getByText("Documents")).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("Search page", () => {
             apiClientMock.findByNhsNumber = jest.fn(() => {
                 return [];
             });
-            render(<SearchSubmitPage client={apiClientMock} />);
+            render(<SearchResultsPage client={apiClientMock} />);
 
             await waitFor(() => {
                 expect(screen.getByText("No record found")).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe("Search page", () => {
             apiClientMock.findByNhsNumber = jest.fn(() => {
                 throw Error("Search error!");
             });
-            render(<SearchSubmitPage client={apiClientMock} />);
+            render(<SearchResultsPage client={apiClientMock} />);
 
             await waitFor(() => {
                 expect(
@@ -152,7 +152,7 @@ describe("Search page", () => {
         });
 
         it("redirects to patient trace page when the NHS number is NOT available", () => {
-            render(<SearchSubmitPage />);
+            render(<SearchResultsPage />);
 
             expect(mockNavigate).toHaveBeenCalledWith("/search/patient-trace");
         });

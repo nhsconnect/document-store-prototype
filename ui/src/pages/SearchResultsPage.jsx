@@ -11,7 +11,7 @@ const states = {
     FAILED: "failed",
 };
 
-const SearchSubmitPage = ({ client }) => {
+const SearchResultsPage = ({ client }) => {
     const { register } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const [searchResults, setSearchResults] = useState([]);
@@ -104,4 +104,4 @@ const SearchSubmitPage = ({ client }) => {
     );
 };
 
-export default SearchSubmitPage;
+export default SearchResultsPage;

@@ -21,7 +21,7 @@ import FeatureToggleProvider, {
 import { NhsNumberProvider } from "./providers/NhsNumberProvider";
 import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
-import SearchSubmitPage from "./pages/SearchSubmitPage";
+import SearchResultsPage from "./pages/SearchResultsPage";
 import StartPage from "./pages/StartPage";
 import { useQuery } from "./components/Authenticator/CIS2Authenticator";
 
@@ -77,14 +77,14 @@ const AppRoutes = () => {
                         element={
                             <PatientTracePage
                                 client={client}
-                                nextPage={"/search/submit"}
+                                nextPage={"/search/results"}
                                 title={"View Stored Patient Record"}
                             />
                         }
                     />
                     <Route
-                        path="/search/submit"
-                        element={<SearchSubmitPage client={client} />}
+                        path="/search/results"
+                        element={<SearchResultsPage client={client} />}
                     />
                 </Route>
 

@@ -70,7 +70,7 @@ describe("upload and search transaction", () => {
             cy.get('input[name="nhsNumber"]').type(nhsNumber);
             cy.contains("Search").click();
             cy.contains("Next", { timeout: 30000 }).click();
-            cy.url().should("eq", Cypress.config("baseUrl") + "/search/submit");
+            cy.url().should("eq", Cypress.config("baseUrl") + "/search/results");
         } else {
             cy.url().should("eq", Cypress.config("baseUrl") + "/search");
             cy.get('input[name="nhsNumber"]').type(nhsNumber);
