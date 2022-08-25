@@ -19,10 +19,7 @@ describe("The home page", () => {
                 </BrowserRouter>
             );
 
-            expect(screen.getByText("Upload Patient Record")).toHaveAttribute(
-                "href",
-                "/upload/patient-trace"
-            );
+            expect(screen.getByText("Upload a document")).toBeInTheDocument()
         });
 
         it("provides a link to the multi step search path", () => {
@@ -38,8 +35,8 @@ describe("The home page", () => {
             );
 
             expect(
-                screen.getByText("View Stored Patient Record")
-            ).toHaveAttribute("href", "/search/patient-trace");
+                screen.getByText("Download and view a stored document")
+            ).toBeInTheDocument()
         });
     });
 
@@ -56,10 +53,7 @@ describe("The home page", () => {
                 </BrowserRouter>
             );
 
-            expect(screen.getByText("Upload Patient Record")).toHaveAttribute(
-                "href",
-                "/upload"
-            );
+            expect(screen.getByText("Upload a document")).toBeInTheDocument()
         });
 
         it("provides a link to the single step search path", () => {
@@ -74,8 +68,8 @@ describe("The home page", () => {
                 </BrowserRouter>
             );
             expect(
-                screen.getByText("View Stored Patient Record")
-            ).toHaveAttribute("href", "/search");
+                screen.getByText("Download and view a stored document")
+            ).toBeInTheDocument()
         });
     });
 });
