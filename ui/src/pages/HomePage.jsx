@@ -1,6 +1,8 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, {useEffect, useRef, useState} from "react";
 import { useFeatureToggle } from "../providers/FeatureToggleProvider";
+import {Button, ButtonLink, Fieldset, Radios} from "nhsuk-react-components";
+import {useForm} from "react-hook-form";
+import {useNavigate} from "react-router";
 
 const HomePage = () => {
     const isPdsTraceEnabled = useFeatureToggle("PDS_TRACE_ENABLED");
@@ -10,19 +12,33 @@ const HomePage = () => {
     const searchPathHref = isPdsTraceEnabled
         ? "/search/patient-trace"
         : "/search";
+    const { register, handleSubmit } = useForm();
+    let navigate = useNavigate();
+    const { ref: downloadTrxRef, ...downloadTrxProps } = register("downloadTrx");
+    const { ref: uploadTrxRef, ...uploadTrxProps } = register("uploadTrx");
+
+    const doSubmit = async (data) => {
+        const location = data.downloadTrx ? searchPathHref : uploadPathHref;
+        navigate(location, { replace: false });
+    };
+
     return (
-        <>
-            <h3>Document Store</h3>
-            <p>Use this service to:</p>
-            <ul>
-                <li>
-                    <Link to={searchPathHref}>View Stored Patient Record</Link>
-                </li>
-                <li>
-                    <Link to={uploadPathHref}>Upload Patient Record</Link>
-                </li>
-            </ul>
-        </>
+        <form onSubmit={handleSubmit(doSubmit)}>
+            <Fieldset>
+                <Fieldset.Legend headingLevel={'h1'} isPageHeading>How do you want to use the Document Store?</Fieldset.Legend>
+                <Radios
+                    name="document-store-action"
+                    hint="Select an option">
+                    <Radios.Radio id="download" value="true" inputRef={downloadTrxRef} {...downloadTrxProps}>
+                        Download and view a stored document
+                    </Radios.Radio>
+                    <Radios.Radio id="upload" value="true" inputRef={uploadTrxRef} {...uploadTrxProps}>
+                        Upload a document
+                    </Radios.Radio>
+                </Radios>
+            </Fieldset>
+            <Button type={"submit"}>Continue</Button>
+        </form>
     );
 };
 

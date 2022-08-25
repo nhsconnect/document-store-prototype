@@ -18,9 +18,10 @@ describe("upload and search transaction", () => {
             cy.login(Cypress.env("username"), Cypress.env("password"));
         }
 
+        cy.get('#upload').click();
+        cy.get('[type="submit"]').click();
+
         if (config.features[process.env.NODE_ENV].PDS_TRACE_ENABLED) {
-            // navigate to the upload document page
-            cy.get('a[href="/upload/patient-trace"]').click();
             cy.url().should(
                 "eq",
                 Cypress.config("baseUrl") + "/upload/patient-trace"
@@ -30,8 +31,6 @@ describe("upload and search transaction", () => {
             cy.contains("Next", { timeout: 30000 }).click();
             cy.url().should("eq", Cypress.config("baseUrl") + "/upload/submit");
         } else {
-            // navigate to the upload document page
-            cy.get('a[href="/upload"]').click();
             cy.url().should("eq", Cypress.config("baseUrl") + "/upload");
             cy.get('input[name="nhsNumber"]').type(nhsNumber);
         }
@@ -58,9 +57,12 @@ describe("upload and search transaction", () => {
             cy.contains("Start now").click();
         }
 
+
+        // navigate to the view document page
+        cy.get('#download').click();
+        cy.get('[type="submit"]').click();
+
         if (config.features[process.env.NODE_ENV].PDS_TRACE_ENABLED) {
-            // navigate to the view document page
-            cy.get('a[href="/search/patient-trace"]').click();
             cy.url().should(
                 "eq",
                 Cypress.config("baseUrl") + "/search/patient-trace"
@@ -70,8 +72,6 @@ describe("upload and search transaction", () => {
             cy.contains("Next", { timeout: 30000 }).click();
             cy.url().should("eq", Cypress.config("baseUrl") + "/search/submit");
         } else {
-            // navigate to the view document page
-            cy.get('a[href="/search"]').click();
             cy.url().should("eq", Cypress.config("baseUrl") + "/search");
             cy.get('input[name="nhsNumber"]').type(nhsNumber);
             //search for document
