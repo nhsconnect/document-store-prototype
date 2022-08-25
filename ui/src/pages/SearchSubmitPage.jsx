@@ -43,7 +43,6 @@ const SearchSubmitPage = ({ client }) => {
         <div>
             <div>
                 <h2>View Stored Patient Record</h2>
-                <form>
                     <Input
                         id={"nhs-number-input"}
                         name="nhsNumber"
@@ -58,7 +57,6 @@ const SearchSubmitPage = ({ client }) => {
                             <progress aria-label={"Loading..."}></progress>
                         </p>
                     )}
-                </form>
             </div>
             {submissionState === states.FAILED && (
                 <p>
