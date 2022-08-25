@@ -17,7 +17,7 @@ const HomePage = () => {
     const { ref: trxRef, ...trxProps } = register("trx");
 
     const doSubmit = async (data) => {
-        const location = data.trxRef === "download" ? searchPathHref : uploadPathHref;
+        const location = data.trx === "download" ? searchPathHref : uploadPathHref;
         navigate(location, { replace: false });
     };
 
