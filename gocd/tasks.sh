@@ -63,8 +63,8 @@ function update_ui_config_file() {
   sed -i "s/%region%/${aws_region}/" ui/src/config.js
   sed -i "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
   sed -i "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
-  sed -i "s/%cognito-redirect-signin%/${cognito_redirect_signin}/" ui/src/config.js
-  sed -i "s/%cognito-redirect-signout%/${cognito_redirect_signout}/" ui/src/config.js
+  sed -i "s~%cognito-redirect-signin%~${cognito_redirect_signin}~" ui/src/config.js
+  sed -i "s~%cognito-redirect-signout%~${cognito_redirect_signout}~" ui/src/config.js
   sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
 }
 
