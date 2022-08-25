@@ -5,13 +5,8 @@ import {useForm} from "react-hook-form";
 import {useNavigate} from "react-router";
 
 const HomePage = () => {
-    const isPdsTraceEnabled = useFeatureToggle("PDS_TRACE_ENABLED");
-    const uploadPathHref = isPdsTraceEnabled
-        ? "/upload/patient-trace"
-        : "/upload";
-    const searchPathHref = isPdsTraceEnabled
-        ? "/search/patient-trace"
-        : "/search";
+    const uploadPathHref = "/upload/patient-trace";
+    const searchPathHref = "/search/patient-trace";
     const { register, handleSubmit } = useForm();
     let navigate = useNavigate();
     const { ref: trxRef, ...trxProps } = register("trx");

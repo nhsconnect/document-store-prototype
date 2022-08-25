@@ -16,22 +16,19 @@ const config = {
         endpoints: [
             {
                 name: "doc-store-api",
-                endpoint: "%api-endpoint%",
+                endpoint: "http://localhost:3000/restapis/9swyrfm4d4/test/_user_request_",
             },
         ],
     },
     features: {
         local: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-            PDS_TRACE_ENABLED: false,
         },
         development: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-            PDS_TRACE_ENABLED: false,
         },
         production: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-            PDS_TRACE_ENABLED: false,
         },
     },
 };

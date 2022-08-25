@@ -18,22 +18,17 @@ describe("upload and search transaction", () => {
             cy.login(Cypress.env("username"), Cypress.env("password"));
         }
 
-        cy.get('#upload').click();
+        cy.get("#upload").click();
         cy.get('[type="submit"]').click();
 
-        if (config.features[process.env.NODE_ENV].PDS_TRACE_ENABLED) {
-            cy.url().should(
-                "eq",
-                Cypress.config("baseUrl") + "/upload/patient-trace"
-            );
-            cy.get('input[name="nhsNumber"]').type(nhsNumber);
-            cy.contains("Search").click();
-            cy.contains("Next", { timeout: 30000 }).click();
-            cy.url().should("eq", Cypress.config("baseUrl") + "/upload/submit");
-        } else {
-            cy.url().should("eq", Cypress.config("baseUrl") + "/upload");
-            cy.get('input[name="nhsNumber"]').type(nhsNumber);
-        }
+        cy.url().should(
+            "eq",
+            Cypress.config("baseUrl") + "/upload/patient-trace"
+        );
+        cy.get('input[name="nhsNumber"]').type(nhsNumber);
+        cy.contains("Search").click();
+        cy.contains("Next", { timeout: 30000 }).click();
+        cy.url().should("eq", Cypress.config("baseUrl") + "/upload/submit");
 
         // fill out fields on upload document page
         cy.get('input[name="documentTitle"]').type(documentTitle);
@@ -57,26 +52,18 @@ describe("upload and search transaction", () => {
             cy.contains("Start now").click();
         }
 
-
         // navigate to the view document page
-        cy.get('#download').click();
+        cy.get("#download").click();
         cy.get('[type="submit"]').click();
 
-        if (config.features[process.env.NODE_ENV].PDS_TRACE_ENABLED) {
-            cy.url().should(
-                "eq",
-                Cypress.config("baseUrl") + "/search/patient-trace"
-            );
-            cy.get('input[name="nhsNumber"]').type(nhsNumber);
-            cy.contains("Search").click();
-            cy.contains("Next", { timeout: 30000 }).click();
-            cy.url().should("eq", Cypress.config("baseUrl") + "/search/results");
-        } else {
-            cy.url().should("eq", Cypress.config("baseUrl") + "/search");
-            cy.get('input[name="nhsNumber"]').type(nhsNumber);
-            //search for document
-            cy.get('button[type="submit"]').click();
-        }
+        cy.url().should(
+            "eq",
+            Cypress.config("baseUrl") + "/search/patient-trace"
+        );
+        cy.get('input[name="nhsNumber"]').type(nhsNumber);
+        cy.contains("Search").click();
+        cy.contains("Next", { timeout: 30000 }).click();
+        cy.url().should("eq", Cypress.config("baseUrl") + "/search/results");
 
         // wait for lambda to return results
         cy.get('a[data-testid="document-title"]', { timeout: 30000 })

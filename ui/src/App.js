@@ -12,8 +12,6 @@ import awsConfig from "./config";
 import ApiClient from "./apiClients/apiClient";
 import Authenticator from "./components/Authenticator/Authenticator";
 import HomePage from "./pages/HomePage";
-import SearchPage from "./pages/SearchPage";
-import UploadPage from "./pages/UploadPage";
 import Layout from "./components/layout";
 import FeatureToggleProvider, {
     useFeatureToggle,
@@ -69,10 +67,6 @@ const AppRoutes = () => {
                     }
                 >
                     <Route
-                        path="/search"
-                        element={<SearchPage client={client} />}
-                    />
-                    <Route
                         path="/search/patient-trace"
                         element={
                             <PatientTracePage
@@ -96,11 +90,6 @@ const AppRoutes = () => {
                         </NhsNumberProvider>
                     }
                 >
-                    <Route
-                        path="/upload"
-                        exact={true}
-                        element={<UploadPage client={client} />}
-                    />
                     <Route
                         path="/upload/patient-trace"
                         element={
