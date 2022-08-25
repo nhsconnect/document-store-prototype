@@ -77,3 +77,8 @@ variable "cognito_cis2_provider_jwks_uri" {
   type    = string
   default = ""
 }
+
+variable "cognito_cis2_client_callback_urls" {
+  type = list(string)
+  default = ""
+}
