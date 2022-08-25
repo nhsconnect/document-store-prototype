@@ -74,10 +74,9 @@ describe("upload and search transaction", () => {
             cy.get('a[href="/search"]').click();
             cy.url().should("eq", Cypress.config("baseUrl") + "/search");
             cy.get('input[name="nhsNumber"]').type(nhsNumber);
+            //search for document
+            cy.get('button[type="submit"]').click();
         }
-
-        //search for document
-        cy.get('button[type="submit"]').click();
 
         // wait for lambda to return results
         cy.get('a[data-testid="document-title"]', { timeout: 30000 })

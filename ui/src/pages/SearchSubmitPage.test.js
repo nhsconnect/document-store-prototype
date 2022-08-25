@@ -1,5 +1,4 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { Factory } from "fishery";
 
 import ApiClient from "../apiClients/apiClient";
@@ -41,7 +40,7 @@ describe("Search page", () => {
             expect(nhsNumberField()).toBeInTheDocument();
             expect(nhsNumberField()).toHaveValue(nhsNumber);
             expect(nhsNumberField()).toHaveAttribute("readonly");
-            expect(searchButton()).toBeInTheDocument();
+            expect(searchButton()).not.toBeInTheDocument();
             expect(mockNavigate).not.toHaveBeenCalled();
         });
 
@@ -51,8 +50,6 @@ describe("Search page", () => {
                 return [];
             });
             render(<SearchSubmitPage client={apiClientMock} />);
-
-            userEvent.click(screen.getByText("Search"));
 
             await waitFor(() => {
                 expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -66,8 +63,6 @@ describe("Search page", () => {
                 return [searchResult];
             });
             render(<SearchSubmitPage client={apiClientMock} />);
-
-            userEvent.click(screen.getByText("Search"));
 
             await waitFor(() => {
                 expect(apiClientMock.findByNhsNumber).toHaveBeenCalledWith(
@@ -110,8 +105,6 @@ describe("Search page", () => {
             });
             render(<SearchSubmitPage client={apiClientMock} />);
 
-            userEvent.click(screen.getByText("Search"));
-
             await waitFor(() => {
                 expect(screen.getByText("Documents")).toBeInTheDocument();
             });
@@ -124,40 +117,12 @@ describe("Search page", () => {
             expect(resultRows[2].innerHTML).toContain("oldest");
         });
 
-        it("clears previous search results when a new search is triggered", async () => {
-            const apiClientMock = new ApiClient();
-            apiClientMock.findByNhsNumber = jest.fn(() => {
-                return [searchResultFactory.build()];
-            });
-            render(<SearchSubmitPage client={apiClientMock} />);
-
-            userEvent.click(screen.getByText("Search"));
-
-            await waitFor(() => {
-                expect(screen.getByRole("progressbar")).toBeInTheDocument();
-            });
-            await waitFor(() => {
-                expect(
-                    screen.queryByRole("progressbar")
-                ).not.toBeInTheDocument();
-            });
-            expect(screen.getByText("Documents")).toBeInTheDocument();
-
-            userEvent.click(screen.getByText("Search"));
-
-            await waitFor(() => {
-                expect(screen.queryByText("Documents")).not.toBeInTheDocument();
-            });
-        });
-
         it("displays a message when a document search returns no results", async () => {
             const apiClientMock = new ApiClient();
             apiClientMock.findByNhsNumber = jest.fn(() => {
                 return [];
             });
             render(<SearchSubmitPage client={apiClientMock} />);
-
-            userEvent.click(screen.getByText("Search"));
 
             await waitFor(() => {
                 expect(screen.getByText("No record found")).toBeInTheDocument();
@@ -170,8 +135,6 @@ describe("Search page", () => {
                 throw Error("Search error!");
             });
             render(<SearchSubmitPage client={apiClientMock} />);
-
-            userEvent.click(screen.getByText("Search"));
 
             await waitFor(() => {
                 expect(

@@ -117,10 +117,10 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
                     submissionState === states.SEARCHING) && (
                     <Button type="submit">Search</Button>
                 )}
-                {submissionState === states.SUCCEEDED && (
-                    <Button onClick={onNextClicked}>Next</Button>
-                )}
             </form>
+            {submissionState === states.SUCCEEDED && (
+                <Button onClick={onNextClicked}>Next</Button>
+            )}
         </>
     );
 };

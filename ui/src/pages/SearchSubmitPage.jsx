@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Input, Button, Table } from "nhsuk-react-components";
+import { Input, Table } from "nhsuk-react-components";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import { useNavigate } from "react-router";
 
@@ -12,7 +12,7 @@ const states = {
 };
 
 const SearchSubmitPage = ({ client }) => {
-    const { register, handleSubmit } = useForm();
+    const { register } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
@@ -22,27 +22,28 @@ const SearchSubmitPage = ({ client }) => {
     useEffect(() => {
         if (!nhsNumber) {
             navigate("/search/patient-trace");
+            return;
         }
-    }, [nhsNumber, navigate]);
-
-    const doSubmit = async (data) => {
-        setSubmissionState(states.SEARCHING);
-        setSearchResults([]);
-        try {
-            const results = await client.findByNhsNumber(data.nhsNumber);
-            results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
-            setSearchResults(results);
-            setSubmissionState(states.SUCCEEDED);
-        } catch (error) {
-            setSubmissionState(states.FAILED);
-        }
-    };
+        const search = async () => {
+            setSubmissionState(states.SEARCHING);
+            setSearchResults([]);
+            try {
+                const results = await client.findByNhsNumber(nhsNumber);
+                results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
+                setSearchResults(results);
+                setSubmissionState(states.SUCCEEDED);
+            } catch (error) {
+                setSubmissionState(states.FAILED);
+            }
+        };
+        void search();
+    }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
     return (
         <div>
             <div>
                 <h2>View Stored Patient Record</h2>
-                <form onSubmit={handleSubmit(doSubmit)}>
+                <form>
                     <Input
                         id={"nhs-number-input"}
                         name="nhsNumber"
@@ -52,7 +53,6 @@ const SearchSubmitPage = ({ client }) => {
                         value={nhsNumber}
                         readOnly
                     />
-                    <Button>Search</Button>
                     {submissionState === states.SEARCHING && (
                         <p>
                             <progress aria-label={"Loading..."}></progress>
