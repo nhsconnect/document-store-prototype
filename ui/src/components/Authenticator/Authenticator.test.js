@@ -190,6 +190,49 @@ describe("Authenticator", () => {
                 ).toBeInTheDocument();
             });
         });
+
+        it("does not call federatedSignIn if unauthenticated user attempts to access protected route", async () => {
+            jest.spyOn(Auth, "currentSession").mockImplementation(
+                async () => false
+            );
+            render(
+                <Authenticator>
+                    <Authenticator.Protected>
+                        <div>this-should-NOT-be-rendered</div>
+                    </Authenticator.Protected>
+                </Authenticator>
+            );
+
+            await waitFor(() => {
+                expect(federatedSignIn).toHaveBeenCalled();
+            });
+        });
+
+        it("does not try to redirect back to CIS2 when authentication redirects with an error", async () => {
+            jest.spyOn(Auth, "currentSession").mockImplementation(
+                async () => false
+            );
+            useLocation.mockImplementation(() => ({
+                hash: "",
+                search: "?error_description=The%20access%20token%20provided%20is%20expired%2C%20revoked%2C%20malformed%2C%20or%20invalid%20for%20other%20reasons.",
+            }));
+            render(
+                <Authenticator>
+                    <Authenticator.Errors />
+                    <Authenticator.Protected>
+                        <div>this-should-NOT-be-rendered</div>
+                    </Authenticator.Protected>
+                </Authenticator>
+            );
+            await waitFor(() => {
+                expect(
+                    screen.getByText(
+                        "The access token provided is expired, revoked, malformed, or invalid for other reasons."
+                    )
+                ).toBeInTheDocument();
+            });
+            expect(federatedSignIn).not.toHaveBeenCalled();
+        });
     });
 
     describe("CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED feature toggle is inactive", () => {

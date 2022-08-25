@@ -1,6 +1,5 @@
-import { deleteFromStorage, writeStorage } from "@rehooks/local-storage";
 import { Auth, Hub } from "aws-amplify";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { useLocation } from "react-router";
 
 import awsConfig from "../../config";
@@ -26,28 +25,28 @@ export function useQuery() {
     }, [search, hash]);
 }
 
-const attemptFederatedLogin = (query, tryLogin, setError, setTryLogin) => async () => {
-
-    if (query.get("error_description")) {
-        setError({ error_description: query.get("error_description") });
-        setTryLogin(false);
-        return;
-    }
-
-    if (tryLogin) {
-        try {
-            const userToken = await getToken();
-            if (!userToken) {
-                await Auth.federatedSignIn({
-                    provider: awsConfig.Auth.providerId,
-                });
-            }
-        } catch (e) {
-            setError(e);
+const attemptFederatedLogin =
+    (query, attemptLogin, setError, setAttemptLogin) => async () => {
+        if (query.get("error_description")) {
+            setError({ error_description: query.get("error_description") });
+            setAttemptLogin(false);
+            return;
         }
-        setTryLogin(false);
-    }
-};
+
+        if (attemptLogin) {
+            try {
+                const userToken = await getToken();
+                if (!userToken) {
+                    await Auth.federatedSignIn({
+                        provider: awsConfig.Auth.providerId,
+                    });
+                }
+            } catch (e) {
+                setError(e);
+            }
+            setAttemptLogin(false);
+        }
+    };
 
 function checkAuthenticated(setIsAuthenticated, setError) {
     (async () => {
@@ -62,7 +61,7 @@ function checkAuthenticated(setIsAuthenticated, setError) {
     })();
 }
 
-function onFirstRender(query, setError, setIsAuthenticated, authHandler) {
+function onFirstRender(setError, setIsAuthenticated, authHandler) {
     return () => {
         checkAuthenticated(setIsAuthenticated, setError);
 
@@ -75,33 +74,38 @@ const CIS2Authenticator = ({ children }) => {
     const { setError, setIsAuthenticated, attemptLogin, setAttemptLogin } =
         useContext(AuthenticationContext);
 
-    const authHandler = async ({ payload: { event, data } }) => {
-        switch (event) {
-            case "signIn":
-            case "cognitoHostedUI":
-                setIsAuthenticated(true);
-                break;
-            case "signOut":
-                break;
-            case "signIn_failure":
-            case "cognitoHostedUI_failure":
-            default:
-                if (data === undefined) {
-                    data = { error_description: "There was a problem" };
-                }
-                setError(data);
-                break;
-        }
-    };
+    useEffect(() => {
+        const authHandler = async ({ payload: { event, data } }) => {
+            switch (event) {
+                case "signIn":
+                case "cognitoHostedUI":
+                    setIsAuthenticated(true);
+                    break;
+                case "signOut":
+                    break;
+                case "signIn_failure":
+                case "cognitoHostedUI_failure":
+                default:
+                    if (data === undefined) {
+                        data = { error_description: "There was a problem" };
+                    }
+                    setError(data);
+                    break;
+            }
+        };
+        onFirstRender(setError, setIsAuthenticated, authHandler)();
+    }, [setError, setIsAuthenticated]);
 
     useEffect(
-        onFirstRender(query, setError, setIsAuthenticated, authHandler),
-        []
+        () =>
+            attemptFederatedLogin(
+                query,
+                attemptLogin,
+                setError,
+                setAttemptLogin
+            )(),
+        [attemptLogin, query, setAttemptLogin, setError]
     );
-
-    useEffect(attemptFederatedLogin(query, attemptLogin, setError, setAttemptLogin), [
-        attemptLogin,
-    ]);
 
     return <div data-testid={"CIS2Authenticator"}>{children}</div>;
 };
