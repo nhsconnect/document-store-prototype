@@ -14,11 +14,10 @@ const HomePage = () => {
         : "/search";
     const { register, handleSubmit } = useForm();
     let navigate = useNavigate();
-    const { ref: downloadTrxRef, ...downloadTrxProps } = register("downloadTrx");
-    const { ref: uploadTrxRef, ...uploadTrxProps } = register("uploadTrx");
+    const { ref: trxRef, ...trxProps } = register("trx");
 
     const doSubmit = async (data) => {
-        const location = data.downloadTrx ? searchPathHref : uploadPathHref;
+        const location = data.trxRef === "download" ? searchPathHref : uploadPathHref;
         navigate(location, { replace: false });
     };
 
@@ -29,10 +28,10 @@ const HomePage = () => {
                 <Radios
                     name="document-store-action"
                     hint="Select an option">
-                    <Radios.Radio id="download" value="true" inputRef={downloadTrxRef} {...downloadTrxProps}>
+                    <Radios.Radio id="download" value="download" inputRef={trxRef} {...trxProps}>
                         Download and view a stored document
                     </Radios.Radio>
-                    <Radios.Radio id="upload" value="true" inputRef={uploadTrxRef} {...uploadTrxProps}>
+                    <Radios.Radio id="upload" value="upload" inputRef={trxRef} {...trxProps}>
                         Upload a document
                     </Radios.Radio>
                 </Radios>
