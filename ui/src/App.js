@@ -41,8 +41,7 @@ const AppRoutes = () => {
                     <Route
                         element={
                             <Navigate
-                                to={"/home"}
-                                search={query.toString()}
+                                to={`/home?${query.toString()}`}
                                 replace
                             />
                         }
