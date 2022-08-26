@@ -21,7 +21,7 @@ describe("PatientTracePage", () => {
         expect(
             screen.getByRole("heading", { name: "My test title" })
         ).toBeInTheDocument();
-        expect(screen.queryByLabelText("Enter NHS number")).toBeInTheDocument();
+        expect(screen.queryByLabelText("NHS number")).toBeInTheDocument();
         expect(
             screen.queryByRole("button", { name: "Search" })
         ).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe("PatientTracePage", () => {
             screen.queryByRole("button", { name: "Search" })
         ).not.toBeInTheDocument();
         expect(
-            screen.getByRole("textbox", { name: "Enter NHS number" })
+            screen.getByRole("textbox", { name: "NHS number" })
         ).toHaveAttribute("readonly");
         expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
@@ -179,7 +179,7 @@ describe("PatientTracePage", () => {
         });
         render(<PatientTracePage client={new ApiClient()} />);
 
-        userEvent.type(screen.getByLabelText("Enter NHS number"), "0987654321");
+        userEvent.type(screen.getByLabelText("NHS number"), "0987654321");
         startSearch();
 
         await waitFor(() => {
@@ -234,7 +234,7 @@ describe("PatientTracePage", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("Technical Failure - Please retry.")
+                screen.getByText("Technical error - Please retry.")
             ).toBeInTheDocument();
         });
         expect(
@@ -274,7 +274,7 @@ function clickNext() {
 }
 
 function enterNhsNumber(nhsNumber) {
-    userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
+    userEvent.type(screen.getByLabelText("NHS number"), nhsNumber);
 }
 
 function startSearch() {

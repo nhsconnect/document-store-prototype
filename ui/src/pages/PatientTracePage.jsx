@@ -1,6 +1,6 @@
 import {
     Button,
-    ErrorMessage,
+    ErrorMessage, ErrorSummary, Fieldset,
     Input,
     SummaryList,
     WarningCallout,
@@ -49,18 +49,28 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
 
     return (
         <>
-            <h2>{title}</h2>
             <form onSubmit={handleSubmit(doSubmit)} noValidate>
-                <Input
-                    id={"nhs-number-input"}
-                    label="Enter NHS number"
-                    name="nhsNumber"
-                    error={formState.errors.nhsNumber?.message}
-                    type="text"
-                    {...nhsNumberProps}
-                    inputRef={nhsNumberRef}
-                    readOnly={submissionState === states.SUCCEEDED}
-                />
+                {submissionState === states.FAILED && (
+                    <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
+                        <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
+                        <ErrorSummary.Body>
+                            <p>Technical error - Please retry.</p>
+                        </ErrorSummary.Body>
+                    </ErrorSummary>
+                )}
+                <Fieldset>
+                    <Fieldset.Legend headingLevel={'h1'} isPageHeading>{ title }</Fieldset.Legend>
+                    <Input
+                        id={"nhs-number-input"}
+                        label="NHS number"
+                        name="nhsNumber"
+                        error={formState.errors.nhsNumber?.message}
+                        type="text"
+                        {...nhsNumberProps}
+                        inputRef={nhsNumberRef}
+                        readOnly={submissionState === states.SUCCEEDED}
+                    />
+                </Fieldset>
                 {submissionState === states.SEARCHING && (
                     <p>
                         <progress aria-label={"Loading..."} />
@@ -107,11 +117,6 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
                             </p>
                         </WarningCallout>
                     )}
-                {submissionState === states.FAILED && (
-                    <ErrorMessage>
-                        Technical Failure - Please retry.
-                    </ErrorMessage>
-                )}
                 {(submissionState === states.IDLE ||
                     submissionState === states.FAILED ||
                     submissionState === states.SEARCHING) && (
