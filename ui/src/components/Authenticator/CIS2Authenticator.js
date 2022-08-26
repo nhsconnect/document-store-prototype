@@ -27,8 +27,8 @@ export function useQuery() {
 
 const attemptFederatedLogin =
     (query, attemptLogin, setError, setAttemptLogin) => async () => {
-        if (query.get("error_description")) {
-            setError({ error_description: query.get("error_description") });
+        if (query.has("error")) {
+            setError(true);
             setAttemptLogin(false);
             return;
         }
@@ -42,7 +42,7 @@ const attemptFederatedLogin =
                     });
                 }
             } catch (e) {
-                setError(e);
+                setError(true);
             }
             setAttemptLogin(false);
         }
@@ -56,7 +56,7 @@ function checkAuthenticated(setIsAuthenticated, setError) {
                 setIsAuthenticated(true);
             }
         } catch (e) {
-            setError(e);
+            setError(true);
         }
     })();
 }
@@ -86,10 +86,7 @@ const CIS2Authenticator = ({ children }) => {
                 case "signIn_failure":
                 case "cognitoHostedUI_failure":
                 default:
-                    if (data === undefined) {
-                        data = { error_description: "There was a problem" };
-                    }
-                    setError(data);
+                    setError(true);
                     break;
             }
         };

@@ -120,8 +120,7 @@ describe("Authenticator", () => {
                 Hub.dispatch("auth", {
                     event: "signIn_failure",
                     data: {
-                        error_description:
-                            "The access token provided is expired, revoked, malformed, or invalid for other reasons.",
+                        error_description: "invalid_scope",
                         error: "invalid_token",
                     },
                 });
@@ -129,9 +128,7 @@ describe("Authenticator", () => {
 
             await waitFor(() => {
                 expect(
-                    screen.queryByText(
-                        "The access token provided is expired, revoked, malformed, or invalid for other reasons."
-                    )
+                    screen.queryByText("Technical error - Please retry")
                 ).toBeInTheDocument();
             });
         });
@@ -139,7 +136,7 @@ describe("Authenticator", () => {
         it("display an error summary when authentication redirects with an error", async () => {
             useLocation.mockImplementation(() => ({
                 hash: "",
-                search: "?error_description=The%20access%20token%20provided%20is%20expired%2C%20revoked%2C%20malformed%2C%20or%20invalid%20for%20other%20reasons.",
+                search: "?error=invalid_scope",
             }));
             render(
                 <Authenticator>
@@ -148,16 +145,14 @@ describe("Authenticator", () => {
             );
             await waitFor(() => {
                 expect(
-                    screen.queryByText(
-                        "The access token provided is expired, revoked, malformed, or invalid for other reasons."
-                    )
+                    screen.queryByText("Technical error - Please retry")
                 ).toBeInTheDocument();
             });
         });
 
         it("display an error summary when authentication redirects with an error in hash", async () => {
             useLocation.mockImplementation(() => ({
-                hash: "#error_description=The%20access%20token%20provided%20is%20expired%2C%20revoked%2C%20malformed%2C%20or%20invalid%20for%20other%20reasons.",
+                hash: "#error=invalid_scope",
             }));
             render(
                 <Authenticator>
@@ -166,9 +161,7 @@ describe("Authenticator", () => {
             );
             await waitFor(() => {
                 expect(
-                    screen.queryByText(
-                        "The access token provided is expired, revoked, malformed, or invalid for other reasons."
-                    )
+                    screen.queryByText("Technical error - Please retry")
                 ).toBeInTheDocument();
             });
         });
@@ -214,7 +207,7 @@ describe("Authenticator", () => {
             );
             useLocation.mockImplementation(() => ({
                 hash: "",
-                search: "?error_description=The%20access%20token%20provided%20is%20expired%2C%20revoked%2C%20malformed%2C%20or%20invalid%20for%20other%20reasons.",
+                search: "?error=invalid_scope",
             }));
             render(
                 <Authenticator>
@@ -226,9 +219,7 @@ describe("Authenticator", () => {
             );
             await waitFor(() => {
                 expect(
-                    screen.getByText(
-                        "The access token provided is expired, revoked, malformed, or invalid for other reasons."
-                    )
+                    screen.getByText("Technical error - Please retry")
                 ).toBeInTheDocument();
             });
             expect(federatedSignIn).not.toHaveBeenCalled();

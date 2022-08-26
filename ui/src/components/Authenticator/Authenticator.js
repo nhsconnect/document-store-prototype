@@ -7,7 +7,7 @@ import { useFeatureToggle } from "../../providers/FeatureToggleProvider";
 import CIS2Authenticator from "./CIS2Authenticator";
 
 const Authenticator = ({ children }) => {
-    const [error, setError] = useState();
+    const [error, setError] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [attemptLogin, setAttemptLogin] = useState(false);
     const isCIS2FederatedIdentityProviderEnabled = useFeatureToggle(
@@ -43,24 +43,17 @@ const Authenticator = ({ children }) => {
 
 const Errors = ({ title = "There is a problem" }) => {
     const { error } = useContext(AuthenticationContext);
-    const [display, setDisplay] = useState(false);
 
-    useEffect(() => {
-        if (error) setDisplay(true);
-    }, [error]);
-
-    return display ? (
+    return error ? (
         <ErrorSummary>
             <ErrorSummary.Title id="error-summary-title">
                 {title}
             </ErrorSummary.Title>
             <ErrorSummary.Body>
-                <p>{error.error_description}</p>
+                <p>Technical error - Please retry</p>
             </ErrorSummary.Body>
         </ErrorSummary>
-    ) : (
-        <div />
-    );
+    ) : null;
 };
 Authenticator.Errors = Errors;
 
