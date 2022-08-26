@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Input, Table } from "nhsuk-react-components";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import { useNavigate } from "react-router";
+import BackButton from "../components/BackButton";
 
 const states = {
     INITIAL: "initial",
@@ -40,7 +41,8 @@ const SearchResultsPage = ({ client }) => {
     }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
     return (
-        <div>
+        <>
+            <BackButton />
             <div>
                 <h2>View Stored Patient Record</h2>
                     <Input
@@ -100,7 +102,7 @@ const SearchResultsPage = ({ client }) => {
                     {searchResults.length === 0 && <p>No record found</p>}
                 </>
             )}
-        </div>
+        </>
     );
 };
 

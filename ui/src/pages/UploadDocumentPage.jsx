@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import BackButton from "../components/BackButton";
 
 const states = {
     IDLE: "idle",
@@ -59,6 +60,7 @@ const UploadDocumentPage = ({ client }) => {
 
     return (
         <>
+            <BackButton />
             <h2>Upload Patient Records</h2>
             <div>
                 <form onSubmit={handleSubmit(doSubmit)} noValidate>
