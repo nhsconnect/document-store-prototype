@@ -279,23 +279,6 @@ describe("PatientTracePage", () => {
             )
         ).toBeInTheDocument();
     });
-
-    it("navigates to previous page when clicking the back button", async () => {
-        useNavigateSpy.mockRestore();
-        const history = createMemoryHistory({initialEntries: ["/", "/patient-trace"], initialIndex: 1});
-
-        render(
-            <ReactRouter.Router navigator={history} location={"/patient-trace"}>
-                <PatientTracePage/>
-            </ReactRouter.Router>
-        );
-
-        userEvent.click(screen.queryByText("Back"));
-
-        await waitFor(() => {
-            expect(history.location.pathname).toBe("/");
-        });
-    });
 });
 
 function clickNext() {
