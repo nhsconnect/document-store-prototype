@@ -1,11 +1,12 @@
 import {
+    BackLink,
     Button,
     ErrorMessage, ErrorSummary, Fieldset,
     Input,
     SummaryList,
     WarningCallout,
 } from "nhsuk-react-components";
-import React, { useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
@@ -47,8 +48,14 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
         navigate(nextPage);
     };
 
+    const onBack = (e) => {
+        e.preventDefault();
+        navigate(-1);
+    };
+
     return (
         <>
+            <BackLink onClick={onBack}>Back</BackLink>
             <form onSubmit={handleSubmit(doSubmit)} noValidate>
                 {submissionState === states.FAILED && (
                     <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>

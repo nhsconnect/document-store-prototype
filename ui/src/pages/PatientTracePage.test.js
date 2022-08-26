@@ -3,18 +3,30 @@ import userEvent from "@testing-library/user-event";
 
 import ApiClient from "../apiClients/apiClient";
 import { PatientTracePage } from "./PatientTracePage";
+import * as ReactRouter from "react-router";
+import { createMemoryHistory } from 'history';
 
 jest.mock("../apiClients/apiClient");
 const mockSetNhsNumber = jest.fn();
 jest.mock("../providers/NhsNumberProvider", () => ({
     useNhsNumberProviderContext: () => ["1112223334", mockSetNhsNumber],
 }));
-const mockNavigate = jest.fn();
-jest.mock("react-router", () => ({
-    useNavigate: () => mockNavigate,
-}));
 
 describe("PatientTracePage", () => {
+
+    const mockNavigate = jest.fn();
+    let useNavigateSpy;
+
+    afterEach(() => {
+        jest.clearAllMocks();
+        useNavigateSpy.mockRestore();
+    });
+
+    beforeEach(() => {
+        useNavigateSpy = jest.spyOn(ReactRouter, "useNavigate")
+        useNavigateSpy.mockImplementation(() => mockNavigate);
+    });
+
     it("renders the page", () => {
         render(<PatientTracePage title={"My test title"} />);
 
@@ -266,6 +278,23 @@ describe("PatientTracePage", () => {
                 "Please verify NHS number again. However, if you are sure it's correct you can proceed."
             )
         ).toBeInTheDocument();
+    });
+
+    it("navigates to previous page when clicking the back button", async () => {
+        useNavigateSpy.mockRestore();
+        const history = createMemoryHistory({initialEntries: ["/", "/patient-trace"], initialIndex: 1});
+
+        render(
+            <ReactRouter.Router navigator={history} location={"/patient-trace"}>
+                <PatientTracePage/>
+            </ReactRouter.Router>
+        );
+
+        userEvent.click(screen.queryByText("Back"));
+
+        await waitFor(() => {
+            expect(history.location.pathname).toBe("/");
+        });
     });
 });
 
