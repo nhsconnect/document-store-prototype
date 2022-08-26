@@ -21,13 +21,12 @@ import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import StartPage from "./pages/StartPage";
-import { useQuery } from "./components/Authenticator/CIS2Authenticator";
+import CIS2AuthenticationResultNavigator from "./components/Authenticator/CIS2AuthenticationResultNavigator";
 
 Amplify.configure(awsConfig);
 
 const client = new ApiClient(API, Auth);
 const AppRoutes = () => {
-    const query = useQuery();
     const isCIS2Enabled = useFeatureToggle(
         "CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED"
     );
@@ -37,12 +36,7 @@ const AppRoutes = () => {
                 <>
                     <Route element={<StartPage />} path={"/"} />
                     <Route
-                        element={
-                            <Navigate
-                                to={`/home?${query.toString()}`}
-                                replace
-                            />
-                        }
+                        element={<CIS2AuthenticationResultNavigator />}
                         path={"cis2-auth-callback"}
                     />
                 </>
