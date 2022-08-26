@@ -84,6 +84,7 @@ const SearchResultsPage = ({ client }) => {
                                         <Table.Cell>
                                             <a
                                                 href={result.url}
+                                                target="_blank"
                                                 data-testid="document-title"
                                             >
                                                 {result.description}

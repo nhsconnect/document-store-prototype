@@ -144,6 +144,29 @@ describe("Search page", () => {
                 ).toBeInTheDocument();
             });
         });
+
+        it("open document in new tab when user clicks on document description link", async () => {
+            const apiClientMock = new ApiClient();
+            const searchResult = searchResultFactory.build();
+            apiClientMock.findByNhsNumber = jest.fn(() => {
+                return [searchResult];
+            });
+            window.open = jest.fn();
+            render(<SearchResultsPage client={apiClientMock} />);
+
+            await waitFor(() => {
+                expect(screen.getByText("Documents")).toBeInTheDocument();
+            });
+            const documentDescriptionElement = screen.getByText(
+                searchResult.description
+            );
+            expect(documentDescriptionElement.getAttribute("href")).toBe(
+                searchResult.url
+            );
+            expect(documentDescriptionElement.getAttribute("target")).toBe(
+                "_blank"
+            );
+        });
     });
 
     describe("when there is NOT an NHS number", () => {

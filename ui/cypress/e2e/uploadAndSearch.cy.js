@@ -69,5 +69,7 @@ describe("upload and search transaction", () => {
         cy.get('a[data-testid="document-title"]', { timeout: 30000 })
             .first()
             .should("have.text", documentTitle);
+
+        cy.get('a[data-testid="document-title"]').should('have.attr', 'target', '_blank')
     });
 });
