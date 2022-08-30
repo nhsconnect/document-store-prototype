@@ -106,28 +106,28 @@ const UploadDocumentPage = ({ client }) => {
                         {...documentInputProps}
                         inputRef={documentInputRef}
                     />
-                    <Button
-                        type="submit"
-                        disabled={submissionState === states.UPLOADING}
-                    >
-                        Upload
-                    </Button>
-                    {submissionState === states.UPLOADING && (
-                        <p>
-                            <progress aria-label={"Loading..."} />
-                        </p>
-                    )}
-                    {submissionState === states.SUCCEEDED && (
-                        <p data-testid="success-message">
-                            Document uploaded successfully
-                        </p>
-                    )}
-                    {submissionState === states.FAILED && (
-                        <p data-testid="failure-message">
-                            File upload failed - please retry
-                        </p>
-                    )}
                 </Fieldset>
+                <Button
+                    type="submit"
+                    disabled={submissionState === states.UPLOADING}
+                >
+                    Upload
+                </Button>
+                {submissionState === states.UPLOADING && (
+                    <p>
+                        <progress aria-label={"Loading..."} />
+                    </p>
+                )}
+                {submissionState === states.SUCCEEDED && (
+                    <p data-testid="success-message">
+                        Document uploaded successfully
+                    </p>
+                )}
+                {submissionState === states.FAILED && (
+                    <p data-testid="failure-message">
+                        File upload failed - please retry
+                    </p>
+                )}
             </form>
         </>
     );
