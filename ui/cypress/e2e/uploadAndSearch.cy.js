@@ -37,10 +37,13 @@ describe("upload and search transaction", () => {
         );
         cy.get('button[type="submit"]').click();
 
-        // wait for lambda to return a success message
-        cy.get('p[data-testid="success-message"]', { timeout: 30000 }).should(
-            "be.visible"
+        // upload success page
+        cy.url({ timeout: 30000 }).should(
+            "eq",
+            Cypress.config("baseUrl") + "/upload/success"
         );
+        cy.contains("Done").click();
+        cy.url().should("eq", Cypress.config("baseUrl") + "/home");
 
         // return to the home page
         cy.visit("/");
@@ -70,6 +73,10 @@ describe("upload and search transaction", () => {
             .first()
             .should("have.text", documentTitle);
 
-        cy.get('a[data-testid="document-title"]').should('have.attr', 'target', '_blank')
+        cy.get('a[data-testid="document-title"]').should(
+            "have.attr",
+            "target",
+            "_blank"
+        );
     });
 });

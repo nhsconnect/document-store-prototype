@@ -39,31 +39,21 @@ describe("UploadDocumentPage", () => {
             expect(mockNavigate).not.toHaveBeenCalled();
         });
 
-        it("displays success message when a document is successfully uploaded", async () => {
+        it("navigates to a success page when a document is successfully uploaded", async () => {
             const apiClientMock = new ApiClient();
-            const documentTitle = "Jane Doe - Patient Record";
-            const snomedCode = "22151000087106";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
             render(<UploadDocumentPage client={apiClientMock} />);
 
-            selectClinicalCode(snomedCode);
-            enterTitle(documentTitle);
+            selectClinicalCode("22151000087106");
+            enterTitle("Jane Doe - Patient Record");
             chooseDocument(document);
             uploadDocument();
 
             await waitFor(() => {
-                expect(
-                    screen.getByText("Document uploaded successfully")
-                ).toBeInTheDocument();
+                expect(mockNavigate).toHaveBeenCalledWith("/upload/success");
             });
-            expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
-                document,
-                nhsNumber,
-                documentTitle,
-                snomedCode
-            );
         });
 
         it("displays an error message when the document fails to upload", async () => {

@@ -8,7 +8,6 @@ import BackButton from "../components/BackButton";
 const states = {
     IDLE: "idle",
     UPLOADING: "uploading",
-    SUCCEEDED: "succeeded",
     FAILED: "failed",
 };
 
@@ -52,7 +51,7 @@ const UploadDocumentPage = ({ client }) => {
                 data.documentTitle,
                 data.clinicalCode
             );
-            setSubmissionState(states.SUCCEEDED);
+            navigate("/upload/success");
         } catch (e) {
             setSubmissionState(states.FAILED);
         }
@@ -116,11 +115,6 @@ const UploadDocumentPage = ({ client }) => {
                 {submissionState === states.UPLOADING && (
                     <p>
                         <progress aria-label={"Loading..."} />
-                    </p>
-                )}
-                {submissionState === states.SUCCEEDED && (
-                    <p data-testid="success-message">
-                        Document uploaded successfully
                     </p>
                 )}
                 {submissionState === states.FAILED && (
