@@ -1,4 +1,4 @@
-import { Button, Input, Select } from "nhsuk-react-components";
+import { Button, Fieldset, Input, Select } from "nhsuk-react-components";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -61,9 +61,11 @@ const UploadDocumentPage = ({ client }) => {
     return (
         <>
             <BackButton />
-            <h2>Upload Patient Records</h2>
-            <div>
-                <form onSubmit={handleSubmit(doSubmit)} noValidate>
+            <form onSubmit={handleSubmit(doSubmit)} noValidate>
+                <Fieldset>
+                    <Fieldset.Legend headingLevel={"h1"} isPageHeading>
+                        Upload Patient Records
+                    </Fieldset.Legend>
                     <Input
                         id={"nhs-number-input"}
                         label="NHS number"
@@ -125,8 +127,8 @@ const UploadDocumentPage = ({ client }) => {
                             File upload failed - please retry
                         </p>
                     )}
-                </form>
-            </div>
+                </Fieldset>
+            </form>
         </>
     );
 };
