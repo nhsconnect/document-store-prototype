@@ -44,7 +44,7 @@ const SearchResultsPage = ({ client }) => {
         <>
             <BackButton />
             <Fieldset>
-                    <Fieldset.Legend headingLevel={'h1'} isPageHeading>View Stored Patient Record</Fieldset.Legend>
+                    <Fieldset.Legend headingLevel={'h1'} isPageHeading>Download and view a stored document</Fieldset.Legend>
                     <Input
                         id={"nhs-number-input"}
                         name="nhsNumber"

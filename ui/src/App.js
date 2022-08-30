@@ -66,7 +66,7 @@ const AppRoutes = () => {
                             <PatientTracePage
                                 client={client}
                                 nextPage={"/search/results"}
-                                title={"View Stored Patient Record"}
+                                title={"Download and view a stored document"}
                             />
                         }
                     />
@@ -90,7 +90,7 @@ const AppRoutes = () => {
                             <PatientTracePage
                                 client={client}
                                 nextPage={"/upload/submit"}
-                                title={"Upload Patient Record"}
+                                title={"Upload a document"}
                             />
                         }
                     />

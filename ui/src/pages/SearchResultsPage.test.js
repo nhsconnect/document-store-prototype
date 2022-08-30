@@ -34,7 +34,7 @@ describe("Search page", () => {
 
             expect(
                 screen.getByRole("heading", {
-                    name: "View Stored Patient Record",
+                    name: "Download and view a stored document",
                 })
             ).toBeInTheDocument();
             expect(nhsNumberField()).toBeInTheDocument();
