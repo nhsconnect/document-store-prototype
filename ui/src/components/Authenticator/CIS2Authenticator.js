@@ -90,7 +90,7 @@ const CIS2Authenticator = ({ children }) => {
                     break;
             }
         };
-        onFirstRender(setError, setIsAuthenticated, authHandler)();
+        return onFirstRender(setError, setIsAuthenticated, authHandler)();
     }, [setError, setIsAuthenticated]);
 
     useEffect(
