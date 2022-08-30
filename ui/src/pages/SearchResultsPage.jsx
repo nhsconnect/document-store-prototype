@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Input, Table } from "nhsuk-react-components";
+import {Fieldset, Input, Table} from "nhsuk-react-components";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
@@ -43,8 +43,8 @@ const SearchResultsPage = ({ client }) => {
     return (
         <>
             <BackButton />
-            <div>
-                <h2>View Stored Patient Record</h2>
+            <Fieldset>
+                    <Fieldset.Legend headingLevel={'h1'} isPageHeading>View Stored Patient Record</Fieldset.Legend>
                     <Input
                         id={"nhs-number-input"}
                         name="nhsNumber"
@@ -59,7 +59,7 @@ const SearchResultsPage = ({ client }) => {
                             <progress aria-label={"Loading..."}></progress>
                         </p>
                     )}
-            </div>
+            </Fieldset>
             {submissionState === states.FAILED && (
                 <p>
                     Sorry, the search failed due to an internal error. Please
