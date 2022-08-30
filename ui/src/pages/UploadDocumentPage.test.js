@@ -25,7 +25,7 @@ describe("UploadDocumentPage", () => {
             render(<UploadDocumentPage />);
 
             expect(
-                screen.getByRole("heading", { name: "Upload Patient Records" })
+                screen.getByRole("heading", { name: "Upload a document" })
             ).toBeInTheDocument();
             expect(nhsNumberField()).toBeInTheDocument();
             expect(nhsNumberField()).toHaveValue(nhsNumber);

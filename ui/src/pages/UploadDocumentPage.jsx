@@ -64,7 +64,7 @@ const UploadDocumentPage = ({ client }) => {
             <form onSubmit={handleSubmit(doSubmit)} noValidate>
                 <Fieldset>
                     <Fieldset.Legend headingLevel={"h1"} isPageHeading>
-                        Upload Patient Records
+                        Upload a document
                     </Fieldset.Legend>
                     <Input
                         id={"nhs-number-input"}
