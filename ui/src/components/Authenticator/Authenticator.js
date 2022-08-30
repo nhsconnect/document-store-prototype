@@ -1,4 +1,4 @@
-import { AmplifyAuthenticator } from "@aws-amplify/ui-react";
+import { AmplifyAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
 import { ErrorSummary } from "nhsuk-react-components";
 import { useContext, useEffect, useState } from "react";
 
@@ -71,5 +71,20 @@ const Protected = ({ children }) => {
     return <>{isAuthenticated && children}</>;
 };
 Authenticator.Protected = Protected;
+
+const SignOut = () => {
+    const { isAuthenticated } = useContext(
+        AuthenticationContext
+    );
+
+    if (isAuthenticated){
+        return <AmplifySignOut>
+            <slot name="amplify-sign-out">Sign out</slot>
+        </AmplifySignOut>
+    } else {
+        return null;
+    }
+}
+Authenticator.SignOut = SignOut;
 
 export default Authenticator;

@@ -7,11 +7,13 @@ import { useLocation } from "react-router";
 import config from "../../config";
 import * as FeatureToggleProvider from "../../providers/FeatureToggleProvider";
 import Authenticator from "./Authenticator";
+import {AmplifySignOut} from "@aws-amplify/ui-react";
 
 jest.mock("react-router", () => ({
     useLocation: jest.fn(),
 }));
 jest.mock("@aws-amplify/ui-react", () => ({
+    ...jest.requireActual("@aws-amplify/ui-react"),
     AmplifyAuthenticator: ({ children, handleAuthStateChange }) => {
         return (
             <>
@@ -263,6 +265,28 @@ describe("Authenticator", () => {
                     screen.queryByText("this-should-be-rendered")
                 ).toBeInTheDocument();
             });
+        });
+
+        it("renders the amplify sign out button when user is authenticated", () => {
+            render(
+                <Authenticator>
+                    <Authenticator.SignOut />
+                </Authenticator>
+            );
+
+            userEvent.click(screen.getByText("Sign in"));
+
+            expect(screen.getByText("Sign out")).toBeInTheDocument();
+        });
+
+        it("does not render the amplify sign out button when user is not authenticated", () => {
+            render(
+                <Authenticator>
+                    <Authenticator.SignOut />
+                </Authenticator>
+            );
+
+            expect(screen.queryByText("Sign out")).not.toBeInTheDocument();
         });
     });
 });
