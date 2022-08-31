@@ -2,7 +2,6 @@ import { Amplify, Auth, API } from "aws-amplify";
 import React from "react";
 import {
     BrowserRouter as Router,
-    Navigate,
     Outlet,
     Route,
     Routes,

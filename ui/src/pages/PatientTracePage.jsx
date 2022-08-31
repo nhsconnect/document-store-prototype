@@ -1,12 +1,12 @@
 import {
-    BackLink,
     Button,
-    ErrorMessage, ErrorSummary, Fieldset,
+    ErrorSummary,
+    Fieldset,
     Input,
     SummaryList,
     WarningCallout,
 } from "nhsuk-react-components";
-import React, {useEffect, useRef, useState} from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
