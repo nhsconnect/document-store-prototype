@@ -50,3 +50,7 @@ To start Cypress:
 ```bash
 npx cypress open
 ```
+
+## Feature Toggles
+
+We have implemented a rudimentary feature toggle system using the `config.js` file. Feature activation is determined at build time depending on the `NODE_ENV` environment variable. There is a feature toggle React [context provider](ui/src/providers/FeatureToggleProvider.jsx) and custom hook for checking the value of the toggle.
