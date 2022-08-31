@@ -1,8 +1,7 @@
-import React, {useEffect, useRef, useState} from "react";
-import { useFeatureToggle } from "../providers/FeatureToggleProvider";
-import {Button, ButtonLink, Fieldset, Radios} from "nhsuk-react-components";
-import {useForm} from "react-hook-form";
-import {useNavigate} from "react-router";
+import React from "react";
+import { Button, Fieldset, Radios } from "nhsuk-react-components";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
 
 const HomePage = () => {
