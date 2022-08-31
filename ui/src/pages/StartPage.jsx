@@ -1,7 +1,7 @@
 import React from "react";
 import { ButtonLink } from "nhsuk-react-components";
 
-export default () => {
+const StartPage = () => {
     return (
         <>
             <h1>Document Store</h1>
@@ -18,3 +18,5 @@ export default () => {
         </>
     );
 };
+
+export default StartPage;
