@@ -43,16 +43,18 @@ describe("upload and search transaction", () => {
             Cypress.config("baseUrl") + "/upload/success"
         );
         cy.contains("Done").click();
-        cy.url().should("eq", Cypress.config("baseUrl") + "/home");
-
-        // return to the home page
-        cy.visit("/");
-
         if (
             config.features[process.env.NODE_ENV]
                 .CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED
         ) {
+            cy.url().should("eq", Cypress.config("baseUrl") + "/home");
+
+            // return to the home page
+            cy.visit("/");
+
             cy.contains("Start now").click();
+        } else {
+            cy.url().should("eq", Cypress.config("baseUrl") + "/");
         }
 
         // navigate to the view document page

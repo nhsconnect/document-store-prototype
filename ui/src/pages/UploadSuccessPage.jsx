@@ -1,11 +1,11 @@
 import { Button } from "nhsuk-react-components";
 import { useNavigate } from "react-router";
 
-const UploadSuccessPage = () => {
+const UploadSuccessPage = ({ nextPagePath }) => {
     const navigate = useNavigate();
 
     const onDone = () => {
-        navigate("/home");
+        navigate(nextPagePath);
     };
 
     return (

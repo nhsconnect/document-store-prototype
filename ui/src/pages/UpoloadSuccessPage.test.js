@@ -22,11 +22,12 @@ describe("UploadSuccessPage", () => {
         ).toBeInTheDocument();
     });
 
-    it("redirects to home page when done button is clicked", () => {
-        render(<UploadSuccessPage />);
+    it("redirects to specified page when done button is clicked", () => {
+        const nextPagePath = "/my-next-page";
+        render(<UploadSuccessPage nextPagePath={nextPagePath} />);
 
         userEvent.click(screen.getByRole("button", { name: "Done" }));
 
-        expect(mockNavigate).toHaveBeenCalledWith("/home");
+        expect(mockNavigate).toHaveBeenCalledWith(nextPagePath);
     });
 });

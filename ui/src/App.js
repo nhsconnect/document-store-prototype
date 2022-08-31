@@ -30,6 +30,7 @@ const AppRoutes = () => {
     const isCIS2Enabled = useFeatureToggle(
         "CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED"
     );
+    const homePagePath = isCIS2Enabled ? "/home" : "/";
     return (
         <Routes>
             {isCIS2Enabled && (
@@ -48,10 +49,7 @@ const AppRoutes = () => {
                     </Authenticator.Protected>
                 }
             >
-                <Route
-                    path={isCIS2Enabled ? "/home" : "/"}
-                    element={<HomePage />}
-                />
+                <Route path={homePagePath} element={<HomePage />} />
                 <Route
                     path="/search"
                     element={
@@ -100,7 +98,9 @@ const AppRoutes = () => {
                     />
                     <Route
                         path="/upload/success"
-                        element={<UploadSuccessPage />}
+                        element={
+                            <UploadSuccessPage nextPagePath={homePagePath} />
+                        }
                     />
                 </Route>
             </Route>
