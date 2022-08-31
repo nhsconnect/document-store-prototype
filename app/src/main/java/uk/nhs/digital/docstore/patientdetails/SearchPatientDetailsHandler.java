@@ -42,6 +42,8 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             return errorResponseGenerator.errorResponse(e, jsonParser);
         }
 
+        /* Currently, we are providing fake responses based on the PDS API sandbox environment test scenarios. See here for more information:
+        https://digital.nhs.uk/developer/api-catalogue/personal-demographics-service-fhir#api-Default-get-patient*/
         logger.debug("Generating response body");
         List<PatientDetails> patientDetailsList;
         if (nhsNumber.equals("9000000009")) {
