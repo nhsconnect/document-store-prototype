@@ -14,6 +14,10 @@ const getToken = async () => {
     }
 };
 
+/**
+ * Extracts information returned by CIS2 in the url. Most likely errors. Sometimes, these are in the query and sometimes they're in the hash.
+ * @returns URLSearchParams
+ */
 export function useQuery() {
     const { search, hash } = useLocation();
 
@@ -61,6 +65,9 @@ function checkAuthenticated(setIsAuthenticated, setError) {
     })();
 }
 
+/* on first render, we want to check whether a user is authenticated and set the value in the parent authenticator context.
+We also want to set up a listener to listen to future authentication events.
+More information can be found here: https://docs.amplify.aws/guides/authentication/listening-for-auth-events/q/platform/js/*/
 function onFirstRender(setError, setIsAuthenticated, authHandler) {
     return () => {
         checkAuthenticated(setIsAuthenticated, setError);

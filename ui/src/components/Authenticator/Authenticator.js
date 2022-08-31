@@ -57,6 +57,8 @@ const Errors = ({ title = "There is a problem" }) => {
 };
 Authenticator.Errors = Errors;
 
+/*Prevent users from accessing private pages if they are unauthenticated.
+If they are unauthenticated, we set the attemptLogin state to true to tell CIS2 authenticator component that the user should be redirected to the login form. The Amplify Authenticator performs the same function for the Cognito authentication flow. */
 const Protected = ({ children }) => {
     const { isAuthenticated, setAttemptLogin } = useContext(
         AuthenticationContext
