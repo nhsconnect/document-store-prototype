@@ -2,7 +2,7 @@ import React from "react";
 
 import Header from "./Header";
 import "./layout.scss";
-import { Footer, Hero } from "nhsuk-react-components";
+import { Footer } from "nhsuk-react-components";
 import { PhaseBanner } from "./PhaseBanner";
 
 const Layout = ({ children }) => {
