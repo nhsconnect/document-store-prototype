@@ -66,7 +66,7 @@ const Protected = ({ children }) => {
         if (!isAuthenticated) {
             setAttemptLogin(true);
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, setAttemptLogin]);
 
     return <>{isAuthenticated && children}</>;
 };
