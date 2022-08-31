@@ -784,3 +784,177 @@ Two matching documents:
  ]
 }
 ```
+### Retrieve `Patient` details
+Returns a subset of patient details for patient trace purposes
+
+#### Request
+
+`GET /PatientDetails?system.identifier=https://fhir.nhs.uk/Id/nhs-number|{nhs-number}`
+
+Parameters:
+
+| Name       | Value                    |
+|------------|--------------------------|
+| nhs-number | The patient's NHS number |
+
+Headers:
+
+| Name          | Value                                                                                   |
+|---------------|-----------------------------------------------------------------------------------------|
+| Accept        | application/fhir+json                                                                   |
+| Authorization | [AWS signature](https://docs.aws.amazon.com/apigateway/api-reference/signing-requests/) |
+
+#### Response
+
+Status: `200 OK`
+
+Headers:
+
+| Name         | Value                                                |
+|--------------|------------------------------------------------------|
+| Content-Type | application/fhir+json                                |
+
+Body:
+```json
+{
+   "resourceType": "Bundle",
+   "type": "searchset",
+   "total": 1,
+   "entry": [
+      {
+         "resource": {
+            "resourceType": "Patient",
+            "identifier": [{
+               "extension": [
+                  {
+                     "url": "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
+                     "valueCodeableConcept": {
+                        "coding": [
+                           {
+                              "system": "https://fhir.hl7.org.uk/CodeSystem/UKCore-NHSNumberVerificationStatus",
+                              "version": "1.0.0",
+                              "code": "01",
+                              "display": "Number present and verified"
+                           }
+                        ]
+                     }
+                  }
+               ],
+               "system": "https://fhir.nhs.uk/Id/nhs-number",
+               "value": "9000000009"
+            }],
+            "id": "9000000009",
+            "name": [
+               {
+                  "use": "usual",
+                  "given": [
+                     "Jane"
+                  ],
+                  "family": "Doe"
+               }
+            ],
+            "birthDate": "1998-07-11",
+            "address": [
+               {
+                  "use": "home",
+                  "postalCode": "LS1 6AE",
+                  "extension": [
+                     {
+                        "url": "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-AddressKey",
+                        "extension": [
+                           {
+                              "url": "type",
+                              "valueCoding": {
+                                 "system": "https://fhir.hl7.org.uk/CodeSystem/UKCore-AddressKeyType",
+                                 "code": "PAF"
+                              }
+                           },
+                           {
+                              "url": "value",
+                              "valueString": "12345678"
+                           }
+                        ]
+                     }
+                  ]
+               }
+            ]
+         }
+      }
+   ]
+}
+```
+
+where `entry` may consist of zero or more objects containing results.
+
+#### Errors
+
+##### Bad parameter
+If no search parameter is provided, or it uses an invalid system identifier or value, a response will be returned with
+the following structure. See the table below for the different values used in each error.
+
+Status: 400
+
+Body:
+```json
+{
+ "resourceType": "OperationOutcome",
+ "issue": [
+   {
+     "severity": "error",
+     "code": "code-invalid",
+     "details": {
+       "coding": [
+         {
+           "system": "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1",
+           "code": "<error-code>",
+           "display": "<error-message>"
+         }
+       ]
+     }
+   }
+ ]
+}
+```
+
+| Error type                     | Error code                | Error message             |
+|--------------------------------|---------------------------|---------------------------|
+| Unrecognised system identifier | INVALID_IDENTIFIER_SYSTEM | Invalid identifier system |
+| Invalid subject identifier     | INVALID_IDENTIFIER_VALUE  | Invalid identifier value  |
+| Missing search parameter       | INVALID_PARAMETER         | Invalid parameter         |        |
+
+
+##### Internal server error
+Status: 500
+
+Body:
+```json
+{
+ "resourceType": "OperationOutcome",
+ "issue": [
+   {
+     "severity": "error",
+     "code": "exception",
+     "details": {
+       "coding": [
+         {
+           "system": "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1",
+           "code": "INTERNAL_SERVER_ERROR",
+           "display": "Internal server error"
+         }
+       ]
+     }
+   }
+ ]
+}
+```
+
+#### Examples
+
+No matches found:
+```json
+{
+ "resourceType": "Bundle",
+ "type": "searchset",
+ "total": 0
+}
+```

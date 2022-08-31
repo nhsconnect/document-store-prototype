@@ -11,6 +11,6 @@
 #### Design
 API endpoints - 1 lambda for each:
 * `GET /DocumentReference/:id` - get metadata by id
-* `GET /DocumentReference?subject.id=nhs_no|123` - search metadata by nhs number
+* `GET /DocumentReference?subject.id=nhs_no|{nhsNumber}` - search metadata by nhs number
 * `PUT /DocumentReference` - upload new document reference
-* `GET /Binary/:id` - get binary by id
+* `GET /PatientDetails?subject.id=nhs_no|{nhsNumber}` - search Patient Demographic Service by nhs number
