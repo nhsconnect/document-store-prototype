@@ -54,15 +54,23 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
             <BackButton />
             <form onSubmit={handleSubmit(doSubmit)} noValidate>
                 {submissionState === states.FAILED && (
-                    <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
-                        <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
+                    <ErrorSummary
+                        aria-labelledby="error-summary-title"
+                        role="alert"
+                        tabIndex={-1}
+                    >
+                        <ErrorSummary.Title id="error-summary-title">
+                            There is a problem
+                        </ErrorSummary.Title>
                         <ErrorSummary.Body>
                             <p>Technical error - Please retry.</p>
                         </ErrorSummary.Body>
                     </ErrorSummary>
                 )}
                 <Fieldset>
-                    <Fieldset.Legend headingLevel={'h1'} isPageHeading>{ title }</Fieldset.Legend>
+                    <Fieldset.Legend headingLevel={"h1"} isPageHeading>
+                        {title}
+                    </Fieldset.Legend>
                     <Input
                         id={"nhs-number-input"}
                         label="NHS number"
