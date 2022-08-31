@@ -17,13 +17,104 @@ For the UI, this also includes:
 - Node v14.17.x
 - [npm v6.14.x](https://docs.npmjs.com/cli/v6/configuring-npm/install)
 
-Localstack can be installed within a virtual environment using the following commands:
+### LocalStack
+
+LocalStack can be installed within a virtual environment using the following commands:
 
 ```bash
 python3 -m venv ./venv
 source ./venv/bin/activate
 pip3 install localstack
 ```
+
+## Running services locally
+
+It is possible to run the Document Store backend locally (minus Cognito or CIS2). Authentication through the UI will still require either Cognito to be set up in AWS, or CIS2 to be configured (depending on the value of the `CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED` feature toggle on the frontend).   
+
+To make the Localstack running on Local environment compatible with Apple Silicon set the following environment variable:
+
+```bash
+export LAMBDA_CONTAINER_REGISTRY=mlupin/docker-lambda
+```
+
+### Starting the Document Store
+
+1. Start LocalStack:
+
+```bash
+source ./venv/bin/activate
+./start-localstack
+```
+
+2. Configure LocalStack:
+
+```bash
+./gradlew bootstrapLocalStack   # or ./gradlew bLS
+```
+
+3. Deploy the application backend:
+
+```bash
+./gradlew deployToLocalStack   # or ./gradlew dTLS
+```
+
+The Terraform output from the deployment will include two important values:
+
+- `api_gateway_rest_api_id`
+- `api_gateway_rest_api_stage`
+
+These can be used to construct requests with `curl` or Postman, and also to construct the API endpoint in `ui/config.js`. The URLs will have the following form:
+
+```
+http://HOST:4566/restapis/API-ID/STAGE/_user_request_/PATH
+```
+
+where `HOST` is the hostname or IP of the Docker container for LocalStack, `API-ID` is the value from
+`api_gateway_rest_api_id`, `STAGE` is the value from `api_gateway_rest_api_stage`, and `PATH` is the remainder of the
+endpoint path. For example, to request the metadata for a document with ID `1234`, the URL might look like:
+
+```
+http://localhost:4566/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234
+```
+
+### Starting the UI
+
+For information on starting and testing the UI, please visit [the UI ReadMe](/ui/README.md)
+
+## Running services on AWS
+
+### AWS authentication
+
+Before running any operations against AWS, ensure that you have [configured the command line interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
+
+### Create terraform state bucket
+
+#### Create bucket
+```bash
+aws s3api create-bucket --bucket document-store-terraform-state --acl private --create-bucket-configuration '{ "LocationConstraint": "eu-west-2" }'
+```
+
+#### Configure public access
+```bash
+aws s3api put-public-access-block --bucket document-store-terraform-state --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+```
+
+#### Toggle on versioning
+```bash
+aws s3api put-bucket-versioning --bucket document-store-terraform-state --versioning-configuration Status=Enabled
+```
+
+### Initialising GoCD Agents
+In order to deploy to AWS from the pipeline, a GoCD agent must have a role and policy attached to it. These need to be created before running the pipeline for the first time. This can be done by running the following gradle tasks:
+
+1. Create a CI Role:
+    ```bash
+    ./gradlew bootstrapCIRole
+    ```
+2. Attach a policy to a CI Role:
+    ```bash
+    ./gradlew attachPolicyToCIRole
+    ```
 
 ## Testing
 
@@ -36,6 +127,7 @@ simulate AWS. Since we are using the open source version of LocalStack, we are u
 1. Start LocalStack:
 
 ```bash
+source ./venv/bin/activate
 ./start-localstack
 ```
 
@@ -45,7 +137,7 @@ simulate AWS. Since we are using the open source version of LocalStack, we are u
 ./gradlew bootstrapLocalStack   # or ./gradlew bLS 
 ```
 
-3. Apply Terraform changes and start the E2E tests:
+3. Apply Terraform changes (i.e. deploy to LocalStack) and start the E2E tests:
 
 ```bash
 ./gradlew e2eTest   # or ./gradlew eT
@@ -113,99 +205,6 @@ like [direnv](https://direnv.net/)):
 export DS_TEST_HOST="$(docker-machine ip)"
 export EDGE_HOST_NAME=0.0.0.0
 ```
-
-## Running services locally
-
-It is possible to run the prototype largely locally. This includes the backend Lambda functions and their associated
-services (DynamoDB, S3, etc.), and the frontend UI.
-
-To make the Localstack running on Local environment compatible with Apple Silicon use the env_variables
-
-```bash
-export LAMBDA_CONTAINER_REGISTRY=mlupin/docker-lambda
-```
-
-### Starting the Document Store
-
-The steps required to run the Document Store on a developer’s machine is largely covered in the previous section on [testing](#testing), including information about setting up [environment variables](#environment-variables).
-
-The relevant ones are repeated here for simplicity.
-
-1. Start LocalStack:
-
-```bash
-./start-localstack
-```
-
-2. Configure LocalStack:
-
-```bash
-./gradlew bootstrapLocalStack   # or ./gradlew bLS
-```
-
-3. Deploy the application:
-
-```bash
-./gradlew deployToLocalStack   # or ./gradlew dTLS
-```
-
-The Terraform output from the deployment will include two important values:
-
-- `api_gateway_rest_api_id`
-- `api_gateway_rest_api_stage`
-
-These can be used to construct requests with `curl` or Postman. The URLs will have the following form:
-
-```
-http://HOST:4566/restapis/API-ID/STAGE/_user_request_/PATH
-```
-
-where `HOST` is the hostname or IP of the Docker container for LocalStack, `API-ID` is the value from
-`api_gateway_rest_api_id`, `STAGE` is the value from `api_gateway_rest_api_stage`, and `PATH` is the remainder of the
-endpoint path. For example, to request the metadata for a document with ID `1234`, the URL might look like:
-
-```
-http://localhost:4566/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234
-```
-
-### Starting the UI
-
-For information on starting and testing the UI, please visit [the UI ReadMe](/ui/README.md)
-
-## Running services on AWS
-
-### AWS authentication
-
-Before running any operations against AWS, ensure that you have [configured the command line interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
-
-### Create terraform state bucket
-
-#### Create bucket
-```bash
-aws s3api create-bucket --bucket document-store-terraform-state --acl private --create-bucket-configuration '{ "LocationConstraint": "eu-west-2" }'
-```
-
-#### Configure public access
-```bash
-aws s3api put-public-access-block --bucket document-store-terraform-state --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
-```
-
-#### Toggle on versioning
-```bash
-aws s3api put-bucket-versioning --bucket document-store-terraform-state --versioning-configuration Status=Enabled
-```
-
-### Initialising GoCD Agents
-In order to deploy to AWS from the pipeline, a GoCD agent must have a role and policy attached to it. These need to be created before running the pipeline for the first time. This can be done by running the following gradle tasks:
-
-1. Create a CI Role:
-    ```bash
-    ./gradlew bootstrapCIRole
-    ```
-2. Attach a policy to a CI Role:
-    ```bash
-    ./gradlew attachPolicyToCIRole
-    ```
 
 ## APIs
 
