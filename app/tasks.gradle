@@ -1,20 +1,5 @@
 //file:noinspection HttpUrlsUsage
 
-tasks.register('bootstrapLocalStack', Exec) {
-    def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
-
-    group 'localstack'
-    description 'Configure the LocalStack environment to support Terraform.'
-
-    executable = 'aws'
-    args = ['s3api', 'create-bucket',
-            '--bucket=document-store-terraform-state',
-            "--create-bucket-configuration={\"LocationConstraint\": \"eu-west-2\"}",
-            "--endpoint-url=http://${dockerHostname}:4566"]
-    environment('AWS_SECRET_ACCESS_KEY', "test")
-    environment('AWS_ACCESS_KEY_ID', "test")
-}
-
 tasks.register('bootstrapCIRole', Exec) {
     description 'Create the role for GoCD to assume'
 
@@ -34,10 +19,9 @@ tasks.register('initializeTerraform', Exec) {
 
     group 'localstack'
     description 'Initialize Terraform plugins.'
-    mustRunAfter bootstrapLocalStack
 
     executable = 'terraform'
-    args = ['init', '-backend-config=force_path_style=true']
+    args = ['init', '-backend-config=local.s3.tfbackend']
     environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
     environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
     environment('AWS_SECRET_ACCESS_KEY', "test")

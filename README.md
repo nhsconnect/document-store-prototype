@@ -46,10 +46,12 @@ source ./venv/bin/activate
 ./start-localstack
 ```
 
-2. Configure LocalStack:
+2. Bootstrap terraform for the localstack environment:
 
 ```bash
-./gradlew bootstrapLocalStack   # or ./gradlew bLS
+./bootstrap-terraform.sh local
+cd terraform
+terraform init -backend-config local.s3.tfbackend
 ```
 
 3. Deploy the application backend:

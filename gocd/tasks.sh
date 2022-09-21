@@ -108,13 +108,13 @@ build-ui)
 plan-deploy)
   cd terraform
   assume_ci_role
-  terraform init
+  terraform init -backend-config dev.s3.tfbackend
   terraform plan -var-file="../terraform/development.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
   ;;
 deploy)
   cd terraform
   assume_ci_role
-  terraform init
+  terraform init -backend-config dev.s3.tfbackend
   terraform apply tfplan
   ;;
 deploy-ui)
@@ -126,14 +126,14 @@ extract-raw-terraform-output)
   terraform_output_name=$2
   cd terraform
   assume_ci_role
-  terraform init
+  terraform init -backend-config dev.s3.tfbackend
   terraform output -raw "${terraform_output_name}" > "../${terraform_output_name}_artifact"
   ;;
 extract-json-terraform-output)
   terraform_output_name=$2
   cd terraform
   assume_ci_role
-  terraform init
+  terraform init -backend-config dev.s3.tfbackend
   terraform output -json "${terraform_output_name}" > "../${terraform_output_name}_artifact"
   ;;
 export-aws-creds)
