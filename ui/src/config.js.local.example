@@ -1,0 +1,37 @@
+
+const config = {
+    Auth: {
+        region: "eu-west-2",
+        userPoolId: "eu-west-2_XDRU8Uou1",
+        userPoolWebClientId: "kmj0d2q2j4muf4e4tp2t0954r",
+        providerId: "COGNITO",
+        oauth: {
+            domain: "doc-store-user-pool.auth.eu-west-2.amazoncognito.com",
+            scope: ["openid"],
+            redirectSignIn: "https://main.d2rql9jqxx3zwn.amplifyapp.com/cis2-auth-callback",
+            redirectSignOut: "%cognito-redirect-signout%",
+            responseType: "token",
+        },
+    },
+    API: {
+        endpoints: [
+            {
+                name: "doc-store-api",
+                endpoint: process.env.REACT_APP_DOCUMENT_STORE_BASE_URI
+            },
+        ],
+    },
+    features: {
+        local: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
+        },
+        development: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
+        },
+        production: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
+        },
+    },
+};
+
+export default config;

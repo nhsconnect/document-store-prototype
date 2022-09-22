@@ -63,7 +63,7 @@ The Terraform output from the deployment will include two important values:
 - `api_gateway_rest_api_id`
 - `api_gateway_rest_api_stage`
 
-These can be used to construct requests with `curl` or Postman, and also to construct the API endpoint in `ui/config.js`. The URLs will have the following form:
+These can be used to construct requests with `curl` or Postman, and also to construct the API endpoint in `ui/src/config.js`. The URLs will have the following form:
 
 ```
 http://HOST:4566/restapis/API-ID/STAGE/_user_request_/PATH

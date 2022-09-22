@@ -156,3 +156,5 @@ venv/
 
 app/bin
 testHarness/bin
+
+.idea/
