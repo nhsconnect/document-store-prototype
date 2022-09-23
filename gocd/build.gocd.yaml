@@ -132,10 +132,6 @@ pipelines:
                       - Dojofile-node
                       - 'gocd/tasks.sh build-ui'
             test-ui:
-              artifacts:
-                - build:
-                    source: ui/ui.tgz
-                    destination: tars
               tasks:
                 - exec:
                     command: dojo
