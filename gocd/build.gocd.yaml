@@ -130,13 +130,20 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-node
-                      - 'gocd/tasks.sh test-ui'
+                      - 'gocd/tasks.sh build-ui'
+            test-ui:
+              artifacts:
+                - build:
+                     source: ui/ui.tgz
+                     destination: tars
+              tasks:
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-node
-                      - 'gocd/tasks.sh build-ui'
+                      - 'gocd/tasks.sh test-ui'
+
       - deploy_ui:
           clean_workspace: true
           jobs:
