@@ -134,9 +134,21 @@ pipelines:
             test-ui:
               artifacts:
                 - build:
-                     source: ui/ui.tgz
-                     destination: tars
+                    source: ui/ui.tgz
+                    destination: tars
               tasks:
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - 'gocd/tasks.sh install-ui-dependencies'
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - 'gocd/tasks.sh configure-ui'
                 - exec:
                     command: dojo
                     arguments:
