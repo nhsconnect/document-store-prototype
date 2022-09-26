@@ -158,8 +158,7 @@ function tf_plan {
 
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
-#    terraform plan -var-file=$NHS_ENVIRONMENT.tfvars -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan
-   -var cognito_cis2_provider_client_id=${cis2_client_id} -var cognito_cis2_provider_client_secret=${cis2_client_secret} -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan
+#    terraform plan -var-file=$NHS_ENVIRONMENT.tfvars -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -var cognito_cis2_provider_client_id=${cis2_client_id} -var cognito_cis2_provider_client_secret=${cis2_client_secret} -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan
   elif [[ "${operation}" == "destroy" ]]; then
     terraform plan -var-file="../terraform/${NHS_ENVIRONMENT}.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -destroy
   else
@@ -223,6 +222,18 @@ tf_plan)
 #  check_env
 #  dojo -c Dojofile-infra "./tasks _tf_apply"
 #  ;;
+plan-destroy-old)
+  cd terraform
+  assume_ci_role
+  terraform init -backend-config old.development.s3.tfbackend
+  terraform plan -var-file="../terraform/dev.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan -destroy
+  ;;
+deploy-old)
+  cd terraform
+  assume_ci_role
+  terraform init -backend-config old.development.s3.tfbackend
+  terraform apply tfplan
+  ;;
 plan-deploy)
   cd terraform
   assume_ci_role

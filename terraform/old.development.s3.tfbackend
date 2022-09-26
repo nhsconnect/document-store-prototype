@@ -1,0 +1,4 @@
+bucket     = "document-store-terraform-state"
+region     = "eu-west-2"
+key        = "document-store/terraform.tfstate"
+encrypt    = true
