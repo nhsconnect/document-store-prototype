@@ -70,7 +70,7 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - ./tasks extract-json-terraform-output cognito_user_pool_ids'
+                      - ./tasks extract-json-terraform-output cognito_user_pool_ids
                 - exec:
                     command: dojo
                     arguments:
