@@ -223,20 +223,6 @@ tf_plan)
 #  check_env
 #  dojo -c Dojofile-infra "./tasks _tf_apply"
 #  ;;
-plan-destroy-old)
-  cd terraform
-  assume_ci_role
-#  tf_init
-  terraform init -backend-config old.development.s3.tfbackend
-  terraform plan -var-file="../terraform/dev.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan -destroy
-  ;;
-deploy-old)
-  cd terraform
-  assume_ci_role
-#  tf_init
-  terraform init -backend-config old.development.s3.tfbackend
-  terraform apply tfplan
-  ;;
 plan-deploy)
   cd terraform
   assume_ci_role

@@ -54,18 +54,6 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - ./tasks plan-destroy-old
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-infra
-                      - ./tasks deploy-old
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-infra
                       - ./tasks plan-deploy
                 - exec:
                     command: dojo
