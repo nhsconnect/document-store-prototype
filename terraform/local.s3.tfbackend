@@ -1,0 +1,6 @@
+bucket           = "prs-local-terraform-state"
+dynamodb_table   = "prs-local-terraform-state-locking"
+region           = "eu-west-2"
+key              = "prs/terraform.tfstate"
+encrypt          = true
+force_path_style = true

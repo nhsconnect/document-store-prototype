@@ -6,12 +6,7 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket  = "document-store-terraform-state"
-    key     = "document-store/terraform.tfstate"
-    region  = "eu-west-2"
-    encrypt = true
-  }
+  backend "s3" {}
 }
 
 provider "aws" {
