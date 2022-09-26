@@ -52,31 +52,31 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh plan-deploy'
+                      - ./tasks plan-deploy
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh deploy'
+                      - ./tasks deploy
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh  extract-raw-terraform-output api_gateway_url'
+                      - ./tasks extract-raw-terraform-output api_gateway_url
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh extract-json-terraform-output cognito_user_pool_ids'
+                      - ./tasks extract-json-terraform-output cognito_user_pool_ids'
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh extract-json-terraform-output cognito_client_ids'
+                      - ./tasks extract-json-terraform-output cognito_client_ids
       - testHarness:
           clean_workspace: true
           jobs:
@@ -97,13 +97,13 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - "gocd/tasks.sh export-aws-creds"
+                      - ./tasks export-aws-creds
                 - exec:
                     command: ls
                 - exec:
                     command: dojo
                     arguments:
-                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOL_IDS=\"$(cat properties/cognito_user_pool_ids_artifact)\" COGNITO_CLIENT_IDS=\"$(cat properties/cognito_client_ids_artifact)\" gocd/tasks.sh run-test-harness"
+                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOL_IDS=\"$(cat properties/cognito_user_pool_ids_artifact)\" COGNITO_CLIENT_IDS=\"$(cat properties/cognito_client_ids_artifact)\" ./tasks run-test-harness"
       - build_ui:
           clean_workspace: true
           jobs:
@@ -118,39 +118,41 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-node
-                      - 'gocd/tasks.sh install-ui-dependencies'
+                      - ./tasks install-ui-dependencies
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh configure-ui'
+                      - ./tasks configure-ui
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-node
-                      - 'gocd/tasks.sh build-ui'
-            test-ui:
+                      - ./tasks build-ui
+            unit-test-ui:
               tasks:
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-node
-                      - 'gocd/tasks.sh install-ui-dependencies'
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-infra
-                      - 'gocd/tasks.sh configure-ui'
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-node
-                      - 'gocd/tasks.sh test-ui'
+                      - ./tasks test-ui
+#            cypress-test-ui:
+#              tasks:
+#                - exec:
+#                    command: dojo
+#                    arguments:
+#                      - -c
+#                      - Dojofile-infra
+#                      - ./tasks configure-ui
+#                - exec:
+#                    command: dojo
+#                    arguments:
+#                      - -c
+#                      - Dojofile-node
+#                      - ./tasks integration-test-ui
 
       - deploy_ui:
           clean_workspace: true
@@ -166,5 +168,5 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - 'gocd/tasks.sh deploy-ui'
+                      - ./tasks deploy-ui
 
