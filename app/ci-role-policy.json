@@ -88,8 +88,9 @@
         "cognito-idp:AdminInitiateAuth",
         "cognito-idp:AdminSetUserPassword",
         "cognito-idp:CreateIdentityProvider",
+        "cognito-idp:DeleteIdentityProvider",
         "cognito-idp:DescribeIdentityProvider",
-        "cognito-idp:DeleteIdentityProvider"
+        "cognito-idp:UpdateIdentityProvider"
       ],
       "Resource": "*"
     },
@@ -189,13 +190,14 @@
       "Sid": "AllowIam",
       "Effect": "Allow",
       "Action": [
+        "iam:AttachRolePolicy",
         "iam:CreateRole",
+        "iam:CreateInstanceProfile",
         "iam:GetRole",
         "iam:GetRolePolicy",
-        "iam:AttachRolePolicy",
+        "iam:ListAttachedRolePolicies",
         "iam:ListRolePolicies",
         "iam:PutRolePolicy",
-        "iam:ListAttachedRolePolicies",
         "iam:PassRole"
       ],
       "Resource": "*"
