@@ -192,7 +192,7 @@
       "Action": [
         "iam:AttachRolePolicy",
         "iam:CreateRole",
-        "iam:CreateInstanceProfile",
+        "iam:*InstanceProfile*",
         "iam:GetRole",
         "iam:GetRolePolicy",
         "iam:ListAttachedRolePolicies",
