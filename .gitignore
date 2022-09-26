@@ -23,6 +23,7 @@ gradle-app.setting
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
+.idea/*
 .idea/inspectionProfiles/
 .idea/**/workspace.xml
 .idea/**/tasks.xml
@@ -125,6 +126,11 @@ example: *tfplan*
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Local .terraform directories
+**/.terraform/*
+/terraform/tfplan
+/terraform/.terraform.lock.hcl
 
 ### Java template
 # Compiled class file
