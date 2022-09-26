@@ -204,7 +204,8 @@
       "Sid": "AllowSsm",
       "Effect": "Allow",
       "Action": [
-        "ssm:GetParameters"
+        "ssm:GetParameters",
+        "ssm:GetParameter"
       ],
       "Resource": "*"
     },
