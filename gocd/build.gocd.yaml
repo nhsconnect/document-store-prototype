@@ -29,6 +29,8 @@ pipelines:
                     arguments:
                       - "./gradlew app:build"
       - deploy_backend:
+          environment_variables:
+            NHS_ENVIRONMENT: dev
           clean_workspace: true
           jobs:
             terraform:
