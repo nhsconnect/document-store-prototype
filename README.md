@@ -51,6 +51,7 @@ source ./venv/bin/activate
 ```bash
 ./bootstrap-terraform.sh local
 cd terraform
+rm -rf .terraform
 terraform init -backend-config local.s3.tfbackend
 ```
 
