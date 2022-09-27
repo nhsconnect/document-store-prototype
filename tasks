@@ -90,9 +90,8 @@ function update_ui_config_file() {
 }
 
 function get_terraform_output() {
-  cd terraform
   assume_ci_role
-  terraform init -backend-config dev.s3.tfbackend
+  tf_init
   terraform output -json >"../$1"
   cd ..
 }
@@ -107,8 +106,8 @@ function repackage_tgz_as_zip() {
 }
 
 function check_env {
-  if [[ -z "${NHS_ENVIRONMENT}" ]]; then
-    echo "Must set NHS_ENVIRONMENT"
+  if [[ -z "${ENVIRONMENT}" ]]; then
+    echo "Must set ENVIRONMENT"
     exit 1
   fi
 }
@@ -138,8 +137,8 @@ function tf_init {
 
   terraform init -reconfigure \
     -backend-config key="prs/terraform.tfstate" \
-    -backend-config bucket="prs-${NHS_ENVIRONMENT}-terraform-state" \
-    -backend-config dynamodb_table="prs-${NHS_ENVIRONMENT}-terraform-state-locking" \
+    -backend-config bucket="prs-${ENVIRONMENT}-terraform-state" \
+    -backend-config dynamodb_table="prs-${ENVIRONMENT}-terraform-state-locking" \
     -backend-config region=${AWS_DEFAULT_REGION}
 
   echo "*** out of tf_init ***"
@@ -149,7 +148,7 @@ function tf_plan {
   echo "*** in tf_plan ***"
   operation=$1
 
-  #  echo "*** var file *** " -var-file=$NHS_ENVIRONMENT.tfvars
+  #  echo "*** var file *** " -var-file=$ENVIRONMENT.tfvars
   #  echo "*** cognito cis2 client id is *** " -var cognito_cis2_provider_client_id=$(get_cis2_client_id)
   #  echo "*** cognito cis2 client secret is *** " -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret)
   #  echo "*** lambda_jar_filename is *** " -var lambda_jar_filename=../app/build/libs/app.jar
@@ -159,9 +158,9 @@ function tf_plan {
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
     echo not yet implemented
-#    terraform plan -var-file=$NHS_ENVIRONMENT.tfvars -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -var cognito_cis2_provider_client_id=${cis2_client_id} -var cognito_cis2_provider_client_secret=${cis2_client_secret} -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan
+#    terraform plan -var-file=$ENVIRONMENT.tfvars -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -var cognito_cis2_provider_client_id=${cis2_client_id} -var cognito_cis2_provider_client_secret=${cis2_client_secret} -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan
   elif [[ "${operation}" == "destroy" ]]; then
-    terraform plan -var-file="../terraform/${NHS_ENVIRONMENT}.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -destroy
+    terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -destroy
   else
     echo "Unknown operation (should be create or destroy), got: ${operation}"
     exit 1
@@ -208,7 +207,7 @@ tf)
   dojo -c Dojofile-infra "./tasks _tf"
   ;;
 _tf_plan)
-  #  assume_role_for_ci_agent $NHS_ENVIRONMENT
+  #  assume_role_for_ci_agent $ENVIRONMENT
   tf_plan "$2"
   ;;
 tf_plan)
@@ -216,7 +215,7 @@ tf_plan)
   dojo -c Dojofile-infra "./tasks _tf_plan $2"
   ;;
 #_tf_apply)
-#  _assume_environment_role $NHS_ENVIRONMENT
+#  _assume_environment_role $ENVIRONMENT
 #  tf_apply
 #  ;;
 #tf_apply)
@@ -224,15 +223,13 @@ tf_plan)
 #  dojo -c Dojofile-infra "./tasks _tf_apply"
 #  ;;
 plan-deploy)
-  cd terraform
   assume_ci_role
-  terraform init -reconfigure -backend-config dev.s3.tfbackend
+  tf_init
   terraform plan -var-file="../terraform/dev.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
   ;;
 deploy)
-  cd terraform
   assume_ci_role
-  terraform init -reconfigure -backend-config dev.s3.tfbackend
+  tf_init
   terraform apply tfplan
   ;;
 deploy-ui)
@@ -242,16 +239,14 @@ deploy-ui)
   ;;
 extract-raw-terraform-output)
   terraform_output_name=$2
-  cd terraform
   assume_ci_role
-  terraform init -backend-config dev.s3.tfbackend
+  tf_init
   terraform output -raw "${terraform_output_name}" >"../${terraform_output_name}_artifact"
   ;;
 extract-json-terraform-output)
   terraform_output_name=$2
-  cd terraform
   assume_ci_role
-  terraform init -backend-config dev.s3.tfbackend
+  tf_init
   terraform output -json "${terraform_output_name}" >"../${terraform_output_name}_artifact"
   ;;
 export-aws-creds)
