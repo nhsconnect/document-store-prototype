@@ -159,6 +159,8 @@ pipelines:
 #                      - ./tasks integration-test-ui
 
       - deploy_ui:
+          environment_variables:
+            ENVIRONMENT: dev
           clean_workspace: true
           jobs:
             deploy:
