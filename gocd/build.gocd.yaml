@@ -54,13 +54,13 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - ./tasks tf_plan create
+                      - ./tasks plan-deploy
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - ./tasks tf_apply
+                      - ./tasks deploy
                 - exec:
                     command: dojo
                     arguments:
@@ -143,20 +143,21 @@ pipelines:
                       - -c
                       - Dojofile-node
                       - ./tasks test-ui
-      #            cypress-test-ui:
-      #              tasks:
-      #                - exec:
-      #                    command: dojo
-      #                    arguments:
-      #                      - -c
-      #                      - Dojofile-infra
-      #                      - ./tasks configure-ui
-      #                - exec:
-      #                    command: dojo
-      #                    arguments:
-      #                      - -c
-      #                      - Dojofile-node
-      #                      - ./tasks integration-test-ui
+#            cypress-test-ui:
+#              tasks:
+#                - exec:
+#                    command: dojo
+#                    arguments:
+#                      - -c
+#                      - Dojofile-infra
+#                      - ./tasks configure-ui
+#                - exec:
+#                    command: dojo
+#                    arguments:
+#                      - -c
+#                      - Dojofile-node
+#                      - ./tasks integration-test-ui
+
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: dev
@@ -174,3 +175,4 @@ pipelines:
                       - -c
                       - Dojofile-infra
                       - ./tasks deploy-ui
+
