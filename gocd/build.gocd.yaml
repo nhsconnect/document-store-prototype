@@ -25,10 +25,9 @@ pipelines:
                     destination: test-reports
               tasks:
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
-                      - -c
-                      - ./tasks build-gradle
+                      - "./gradlew app:build"
       - deploy_backend:
           environment_variables:
             ENVIRONMENT: dev
