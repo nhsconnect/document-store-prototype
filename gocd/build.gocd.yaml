@@ -54,7 +54,7 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - ./tasks tf_iam_plan
+                      - ./tasks tf_iam_plan create
                 - exec:
                     command: dojo
                     arguments:
