@@ -54,13 +54,13 @@ pipelines:
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - ./tasks plan-deploy
+                      - ./tasks tf_plan create
                 - exec:
                     command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
-                      - ./tasks deploy
+                      - ./tasks tf_apply
                 - exec:
                     command: dojo
                     arguments:
