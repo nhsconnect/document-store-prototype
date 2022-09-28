@@ -25,7 +25,7 @@ pipelines:
                     destination: test-reports
               tasks:
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - "./gradlew app:build"
       - deploy_backend:
@@ -50,31 +50,31 @@ pipelines:
                     job: build
                     source: jars
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-infra
                       - ./tasks tf_plan create
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-infra
                       - ./tasks tf_apply
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-infra
                       - ./tasks extract-raw-terraform-output api_gateway_url
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-infra
                       - ./tasks extract-json-terraform-output cognito_user_pool_ids
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-infra
@@ -95,7 +95,7 @@ pipelines:
                     job: terraform
                     source: properties
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-infra
@@ -103,7 +103,7 @@ pipelines:
                 - exec:
                     command: ls
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOL_IDS=\"$(cat properties/cognito_user_pool_ids_artifact)\" COGNITO_CLIENT_IDS=\"$(cat properties/cognito_client_ids_artifact)\" ./tasks run-test-harness"
       - build_ui:
@@ -118,19 +118,19 @@ pipelines:
                     destination: tars
               tasks:
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-node
                       - ./tasks install-ui-dependencies
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-infra
                       - ./tasks configure-ui
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-node
@@ -138,7 +138,7 @@ pipelines:
             unit-test-ui:
               tasks:
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-node
@@ -146,13 +146,13 @@ pipelines:
 #            cypress-test-ui:
 #              tasks:
 #                - exec:
-#                    command: dojo
+#                    command: /bin/bash
 #                    arguments:
 #                      - -c
 #                      - Dojofile-infra
 #                      - ./tasks configure-ui
 #                - exec:
-#                    command: dojo
+#                    command: /bin/bash
 #                    arguments:
 #                      - -c
 #                      - Dojofile-node
@@ -170,7 +170,7 @@ pipelines:
                     job: build
                     source: tars
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - Dojofile-infra
