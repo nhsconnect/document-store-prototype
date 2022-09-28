@@ -50,29 +50,31 @@ pipelines:
                     job: build
                     source: jars
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
-                      - ./tasks tf_plan create
+                      - Dojofile-infra
+                      - ./tasks plan-deploy
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
-                      - ./tasks tf_apply
+                      - Dojofile-infra
+                      - ./tasks deploy
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
                       - ./tasks extract-raw-terraform-output api_gateway_url
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
                       - ./tasks extract-json-terraform-output cognito_user_pool_ids
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
@@ -93,7 +95,7 @@ pipelines:
                     job: terraform
                     source: properties
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
@@ -101,7 +103,7 @@ pipelines:
                 - exec:
                     command: ls
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOL_IDS=\"$(cat properties/cognito_user_pool_ids_artifact)\" COGNITO_CLIENT_IDS=\"$(cat properties/cognito_client_ids_artifact)\" ./tasks run-test-harness"
       - build_ui:
@@ -116,19 +118,19 @@ pipelines:
                     destination: tars
               tasks:
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - Dojofile-node
                       - ./tasks install-ui-dependencies
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
                       - ./tasks configure-ui
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - Dojofile-node
@@ -136,7 +138,7 @@ pipelines:
             unit-test-ui:
               tasks:
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - Dojofile-node
@@ -144,13 +146,13 @@ pipelines:
 #            cypress-test-ui:
 #              tasks:
 #                - exec:
-#                    command: /bin/bash
+#                    command: dojo
 #                    arguments:
 #                      - -c
 #                      - Dojofile-infra
 #                      - ./tasks configure-ui
 #                - exec:
-#                    command: /bin/bash
+#                    command: dojo
 #                    arguments:
 #                      - -c
 #                      - Dojofile-node
