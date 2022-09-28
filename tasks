@@ -222,6 +222,9 @@ build-ui)
   cd build
   tar -czf ../ui.tgz *
   ;;
+build-gradle)
+  ./gradlew app:build
+  ;;
 _tf)
   check_env
   tf_init

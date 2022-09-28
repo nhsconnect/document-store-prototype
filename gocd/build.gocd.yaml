@@ -27,7 +27,8 @@ pipelines:
                 - exec:
                     command: /bin/bash
                     arguments:
-                      - "./gradlew app:build"
+                      - -c
+                      - ./tasks build-gradle
       - deploy_backend:
           environment_variables:
             ENVIRONMENT: dev
