@@ -37,9 +37,6 @@ function assume_role_for_ci_agent {
   json="$(aws sts assume-role --role-arn "$desired_role_arn")"
 }
 
-cis2_client_id= echo _get_aws_ssm_secret /development/cis2/client_id
-cis2_client_secret= echo _get_aws_ssm_secret /development/cis2/client_secret
-
 function get_cis2_client_id() {
    #_get_aws_ssm_secret /development/cis2/client_id
   echo "$(aws ssm get-parameters --region ${aws_region} --names /development/cis2/client_id --query Parameters[0].Value --output text)"
@@ -144,14 +141,42 @@ function tf_init {
   echo "*** out of tf_init ***"
 }
 
+function tf_init_iam() {
+    check_env
+    cd terraform-iam
+
+    terraform init -reconfigure \
+            -backend-config key="prs/iam-terraform.tfstate" \
+            -backend-config bucket="prs-${ENVIRONMENT}-terraform-state" \
+            -backend-config dynamodb_table="prs-${ENVIRONMENT}-iam-terraform-state-locking" \
+            -backend-config region=${AWS_DEFAULT_REGION}
+
+}
+
+function tf_iam_plan_func() {
+  tf_init_iam
+
+  terraform get # modules
+    if [[ "${operation}" == "create" ]]; then
+      echo not yet implemented
+    terraform plan -var-file=$ENVIRONMENT.tfvars  -out=iam.tfplan
+    elif [[ "${operation}" == "destroy" ]]; then
+       terraform plan -var-file=$ENVIRONMENT.tfvars -out=iam.tfplan -destroy
+    else
+      echo "Unknown operation (should be create or destroy), got: ${operation}"
+      exit 1
+    fi
+
+}
+
+function tf_iam_apply() {
+    cd terraform-iam
+    terraform apply iam.tfplan
+}
+
 function tf_plan {
   echo "*** in tf_plan ***"
   operation=$1
-
-  #  echo "*** var file *** " -var-file=$ENVIRONMENT.tfvars
-  #  echo "*** cognito cis2 client id is *** " -var cognito_cis2_provider_client_id=$(get_cis2_client_id)
-  #  echo "*** cognito cis2 client secret is *** " -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret)
-  #  echo "*** lambda_jar_filename is *** " -var lambda_jar_filename=../app/build/libs/app.jar
 
   tf_init
 
@@ -205,6 +230,24 @@ _tf)
 tf)
   check_env
   dojo -c Dojofile-infra "./tasks _tf"
+  ;;
+_tf_iam_plan)
+  check_env
+  #assume_role_for_ci_agent $ENVIRONMENT
+  tf_iam_plan_func
+  ;;
+tf_iam_plan)
+  check_env
+  dojo -c Dojofile-infra "./tasks _tf_iam_plan $2"
+  ;;
+_tf_iam_apply)
+  check_env
+  #assume_role_for_ci_agent $ENVIRONMENT
+  tf_iam_apply
+  ;;
+tf_iam_apply)
+  check_env
+  dojo -c Dojofile-infra "./tasks _tf_iam_apply $2"
   ;;
 _tf_plan)
   #  assume_role_for_ci_agent $ENVIRONMENT
