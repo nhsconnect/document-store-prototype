@@ -53,13 +53,11 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - Dojofile-infra
                       - ./tasks tf_plan create
                 - exec:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - Dojofile-infra
                       - ./tasks tf_apply
                 - exec:
                     command: /bin/bash
