@@ -34,7 +34,7 @@ function assume_role_for_ci_agent {
   desired_account_id=$(_get_aws_ssm_secret "/prs/${environment}/user-input/external/aws-account-id")
   desired_role_arn="arn:aws:iam::$desired_account_id:role/$ROLE_NAME"
 
-  json="$(aws sts assume-role --role-arn "$desired_role_arn")"
+  json="$(aws sts assume-role --role-arn "$desired_role_arn" --role-session-name "$session_name")"
 }
 
 cis2_client_id= echo _get_aws_ssm_secret /development/cis2/client_id
