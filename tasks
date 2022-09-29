@@ -25,7 +25,7 @@ function assume_ci_role() {
 function _get_aws_ssm_secret {
   secret_id=$1
   echo "*** secret id is *** " secret_id
-  json=$(aws ssm get-parameter --with-decryption --region "eu-west-2" --name $secret_id)
+  json=$(aws ssm get-parameter --with-decryption --region "eu-west-2" --names $secret_id --query Parameters[0].Value --output text)
   if [ $? != 0 ]; then
     echo >&2 "Failed to obtain AWS secret from SSM: $secret_id"
     exit $EXIT_CODE_GENERAL_FAILURE
