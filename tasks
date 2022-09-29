@@ -28,7 +28,7 @@ function assume_role_for_ci_agent {
   _clear_aws_env_credentials
   session_name="document-store-session"
 
-  ROLE_NAME='ci-role'
+  ROLE_NAME='Deployer'
 
   echo >&2 "Assuming $ROLE_NAME role for CI agent in ${environment} account"
   desired_account_id=$(_get_aws_ssm_secret "/prs/${environment}/user-input/external/aws-account-id")
@@ -152,13 +152,13 @@ function tf_init_iam() {
     -backend-config key="prs/iam-terraform.tfstate" \
     -backend-config bucket="prs-${ENVIRONMENT}-terraform-state" \
     -backend-config dynamodb_table="prs-${ENVIRONMENT}-iam-terraform-state-locking" \
-    -backend-config region=${AWS_DEFAULT_REGION}
+    -backend-config region="eu-west-2"
 
 }
 
 function tf_iam_plan_func() {
   tf_init_iam
-
+  operation=$1
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
     echo not yet implemented
@@ -173,7 +173,7 @@ function tf_iam_plan_func() {
 }
 
 function tf_iam_apply() {
-  cd terraform-iam
+  tf_init_iam
   terraform apply iam.tfplan
 }
 
@@ -239,8 +239,8 @@ tf)
   ;;
 _tf_iam_plan)
   check_env
-  assume_role_for_ci_agent $ENVIRONMENT
-  tf_iam_plan_func
+  #assume_role_for_ci_agent $ENVIRONMENT
+  tf_iam_plan_func "$2"
   ;;
 tf_iam_plan)
   check_env
@@ -248,7 +248,7 @@ tf_iam_plan)
   ;;
 _tf_iam_apply)
   check_env
-  assume_role_for_ci_agent $ENVIRONMENT
+  #assume_role_for_ci_agent $ENVIRONMENT
   tf_iam_apply
   ;;
 tf_iam_apply)
@@ -256,7 +256,7 @@ tf_iam_apply)
   dojo -c Dojofile-infra "./tasks _tf_iam_apply $2"
   ;;
 _tf_plan)
-  assume_role_for_ci_agent $ENVIRONMENT
+  #assume_role_for_ci_agent $ENVIRONMENT
   tf_plan "$2"
   ;;
 tf_plan)

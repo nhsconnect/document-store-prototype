@@ -124,6 +124,7 @@ terraform.rc
 **/.terraform/*
 /terraform/tfplan
 /terraform/.terraform.lock.hcl
+/terraform-iam/iam.tfplan
 
 ### Java template
 # Compiled class file
