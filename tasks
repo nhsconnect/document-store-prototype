@@ -239,7 +239,7 @@ tf)
   ;;
 _tf_iam_plan)
   check_env
-  #assume_role_for_ci_agent $ENVIRONMENT
+  assume_role_for_ci_agent $ENVIRONMENT
   tf_iam_plan_func
   ;;
 tf_iam_plan)
@@ -248,7 +248,7 @@ tf_iam_plan)
   ;;
 _tf_iam_apply)
   check_env
-  #assume_role_for_ci_agent $ENVIRONMENT
+  assume_role_for_ci_agent $ENVIRONMENT
   tf_iam_apply
   ;;
 tf_iam_apply)
@@ -256,7 +256,7 @@ tf_iam_apply)
   dojo -c Dojofile-infra "./tasks _tf_iam_apply $2"
   ;;
 _tf_plan)
-  #assume_role_for_ci_agent $ENVIRONMENT
+  assume_role_for_ci_agent $ENVIRONMENT
   tf_plan "$2"
   ;;
 tf_plan)
