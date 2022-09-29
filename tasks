@@ -256,7 +256,7 @@ tf_iam_apply)
   dojo -c Dojofile-infra "./tasks _tf_iam_apply $2"
   ;;
 _tf_plan)
-  #assume_role_for_ci_agent $ENVIRONMENT
+  assume_role_for_ci_agent $ENVIRONMENT
   tf_plan "$2"
   ;;
 tf_plan)
