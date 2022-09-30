@@ -52,12 +52,12 @@ cis2_client_id= echo _get_aws_ssm_secret /development/cis2/client_id
 cis2_client_secret= echo _get_aws_ssm_secret /development/cis2/client_secret
 
 function get_cis2_client_id() {
-  _get_aws_ssm_secret /development/cis2/client_id
+  #_get_aws_ssm_secret /development/cis2/client_id
   echo "$(aws ssm get-parameters --region ${aws_region} --names /development/cis2/client_id --query Parameters[0].Value --output text)"
 }
 
 function get_cis2_client_secret() {
-  _get_aws_ssm_secret /development/cis2/client_secret
+  #_get_aws_ssm_secret /development/cis2/client_secret
   echo "$(aws ssm get-parameters --region ${aws_region} --names /development/cis2/client_secret --query Parameters[0].Value --output text)"
 }
 
