@@ -186,7 +186,7 @@ function tf_plan {
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
     echo not yet implemented
-    terraform plan -lock=false -var-file=$ENVIRONMENT.tfvars -var lambda_jar_filename=../app/build/libs/app.jar -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -out=tfplan
+    terraform plan -lock=false -var-file=$ENVIRONMENT.tfvars -var lambda_jar_filename=../jars/libs/app.jar -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -out=tfplan
   elif [[ "${operation}" == "destroy" ]]; then
     terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -destroy
   else
