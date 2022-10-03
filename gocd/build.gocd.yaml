@@ -1,7 +1,7 @@
 format_version: 4
 pipelines:
-  "document-store-prototype":
-    group: document-store
+  "paperless-record-service.dev":
+    group: paperless-record-service
     label_template: "${git[:8]}"
     materials:
       git:
@@ -176,3 +176,181 @@ pipelines:
                       - Dojofile-infra
                       - ./tasks deploy-ui
 
+  "paperless-record-service.pre-prod":
+    group: paperless-record-service
+    label_template: "${git[:8]}"
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - .git*
+          - .idea/**/*.*
+          - documentation/**/*.*
+          - gradle/**/*.*
+      dev_env:
+        pipeline: paperless-record-service.dev
+        stage: deploy_ui
+    stages:
+      - build_backend:
+          clean_workspace: true
+          jobs:
+            build:
+              artifacts:
+                - build:
+                    source: app/build/libs
+                    destination: jars
+                - test:
+                    source: app/build/test-results
+                    destination: test-reports
+              tasks:
+                - exec:
+                    command: dojo
+                    arguments:
+                      - "./gradlew app:build"
+      - deploy_backend:
+          environment_variables:
+            ENVIRONMENT: pre-prod
+          clean_workspace: true
+          jobs:
+            terraform:
+              artifacts:
+                - build:
+                    source: api_gateway_url_artifact
+                    destination: properties
+                - build:
+                    source: cognito_user_pool_ids_artifact
+                    destination: properties
+                - build:
+                    source: cognito_client_ids_artifact
+                    destination: properties
+              tasks:
+                - fetch:
+                    stage: build_backend
+                    job: build
+                    source: jars
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - ./tasks plan-deploy
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - ./tasks deploy
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - ./tasks extract-raw-terraform-output api_gateway_url
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - ./tasks extract-json-terraform-output cognito_user_pool_ids
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - ./tasks extract-json-terraform-output cognito_client_ids
+      - testHarness:
+          clean_workspace: true
+          jobs:
+            runTestHarness:
+              environment_variables:
+                API_AUTH: IAM
+              artifacts:
+                - test:
+                    source: testHarness/build/test-results
+                    destination: test-reports
+              tasks:
+                - fetch:
+                    stage: deploy_backend
+                    job: terraform
+                    source: properties
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - ./tasks export-aws-creds
+                - exec:
+                    command: ls
+                - exec:
+                    command: dojo
+                    arguments:
+                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOL_IDS=\"$(cat properties/cognito_user_pool_ids_artifact)\" COGNITO_CLIENT_IDS=\"$(cat properties/cognito_client_ids_artifact)\" ./tasks run-test-harness"
+      - build_ui:
+          environment_variables:
+            ENVIRONMENT: pre-prod
+          clean_workspace: true
+          jobs:
+            build:
+              artifacts:
+                - build:
+                    source: ui/ui.tgz
+                    destination: tars
+              tasks:
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - ./tasks install-ui-dependencies
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - ./tasks configure-ui
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - ./tasks build-ui
+            unit-test-ui:
+              tasks:
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-node
+                      - ./tasks test-ui
+      #            cypress-test-ui:
+      #              tasks:
+      #                - exec:
+      #                    command: dojo
+      #                    arguments:
+      #                      - -c
+      #                      - Dojofile-infra
+      #                      - ./tasks configure-ui
+      #                - exec:
+      #                    command: dojo
+      #                    arguments:
+      #                      - -c
+      #                      - Dojofile-node
+      #                      - ./tasks integration-test-ui
+
+      - deploy_ui:
+          environment_variables:
+            ENVIRONMENT: pre-prod
+          clean_workspace: true
+          jobs:
+            deploy:
+              tasks:
+                - fetch:
+                    stage: build_ui
+                    job: build
+                    source: tars
+                - exec:
+                    command: dojo
+                    arguments:
+                      - -c
+                      - Dojofile-infra
+                      - ./tasks deploy-ui

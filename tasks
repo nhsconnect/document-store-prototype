@@ -6,7 +6,7 @@ readonly aws_region=eu-west-2
 AWS_DEFAULT_REGION=eu-west-2
 
 function assume_ci_role() {
-  role_arn="$(aws ssm get-parameters --region ${aws_region} --names /document-store/dev/user-input/ci-role --query Parameters[0].Value --output text)"
+  role_arn="$(aws ssm get-parameters --region ${aws_region} --names /document-store/${ENVIRONMENT}/user-input/ci-role --query Parameters[0].Value --output text)"
   session_name="document-store-session"
 
   echo "Assuming ci-role in document store..."
@@ -215,7 +215,7 @@ readonly command="$1"
 case "${command}" in
 install-ui-dependencies)
   cd ui
-  npm install
+  npm ci
   ;;
 configure-ui)
   get_terraform_output terraform_output.json
@@ -223,7 +223,7 @@ configure-ui)
   ;;
 test-ui)
   cd ui
-  npm install
+  npm ci
   CI=true npm test
   ;;
 build-ui)
@@ -278,7 +278,7 @@ build-ui)
 plan-deploy)
   assume_ci_role
   tf_init
-  terraform plan -var-file="../terraform/dev.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
+  terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../jars/libs/app.jar -out=tfplan
   ;;
 deploy)
   assume_ci_role
