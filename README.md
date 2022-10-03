@@ -88,24 +88,14 @@ For information on starting and testing the UI, please visit [the UI ReadMe](/ui
 
 ### AWS authentication
 
-Before running any operations against AWS, ensure that you have [configured the command line interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
+Ensure the correct role has been assumed before running any operations against AWS, [see here for details](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
 
-### Create terraform state bucket
+### Create terraform state bucket and the DynamoDB locking table
 
-#### Create bucket
-```bash
-aws s3api create-bucket --bucket document-store-terraform-state --acl private --create-bucket-configuration '{ "LocationConstraint": "eu-west-2" }'
-```
-
-#### Configure public access
-```bash
-aws s3api put-public-access-block --bucket document-store-terraform-state --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
-```
-
-#### Toggle on versioning
-```bash
-aws s3api put-bucket-versioning --bucket document-store-terraform-state --versioning-configuration Status=Enabled
-```
+  ```bash
+    ./bootstrap-terraform.sh "environment"
+  ```
+example: `./bootstrap-terraform.sh pre-prod`
 
 ### Initialising GoCD Agents
 In order to deploy to AWS from the pipeline, a GoCD agent must have a role and policy attached to it. These need to be created before running the pipeline for the first time. This can be done by running the following gradle tasks:

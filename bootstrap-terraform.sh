@@ -2,7 +2,6 @@
 
 ENVIRONMENT=${1:-local}
 REGION=eu-west-2
-#ENDPOINT=https://${REGION}.amazonaws.com
 
 if [ $ENVIRONMENT == "local" ]; then
     ENDPOINT=http://localhost:4566
