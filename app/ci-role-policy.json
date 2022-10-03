@@ -15,7 +15,7 @@
         "amplify:CreateApp",
         "amplify:UpdateApp"
       ],
-      "Resource": "arn:aws:amplify:*:533825906475:apps/*"
+      "Resource": ["arn:aws:amplify:*:533825906475:apps/*", "arn:aws:amplify:*:694282683086:apps/*"]
     },
     {
       "Sid": "AllowCognito",
@@ -41,7 +41,7 @@
         "cognito-identity:*"
       ],
       "Resource": [
-        "arn:aws:cognito-identity:*:533825906475:identitypool/*"
+        "arn:aws:cognito-identity:*:533825906475:identitypool/*", "arn:aws:cognito-identity:*:694282683086:identitypool/*"
       ]
     },
     {
@@ -107,7 +107,9 @@
         "dynamodb:PurchaseReservedCapacityOfferings",
         "dynamodb:DescribeLimits",
         "dynamodb:ListExports",
-        "dynamodb:ListStreams"
+        "dynamodb:ListStreams",
+        "dynamodb:PutItem",
+        "dynamodb:GetItem"
       ],
       "Resource": "*"
     },
@@ -122,14 +124,19 @@
         "arn:aws:dynamodb:*:533825906475:table/*/backup/*",
         "arn:aws:dynamodb:*:533825906475:table/*/index/*",
         "arn:aws:dynamodb:*:533825906475:table/*/export/*",
-        "arn:aws:dynamodb:*:533825906475:table/*/stream/*"
+        "arn:aws:dynamodb:*:533825906475:table/*/stream/*",
+        "arn:aws:dynamodb::694282683086:global-table/*",
+        "arn:aws:dynamodb:*:694282683086:table/*/backup/*",
+        "arn:aws:dynamodb:*:694282683086:table/*/index/*",
+        "arn:aws:dynamodb:*:694282683086:table/*/export/*",
+        "arn:aws:dynamodb:*:694282683086:table/*/stream/*"
       ]
     },
     {
       "Sid": "AllowDynamo3",
       "Effect": "Allow",
       "Action": "dynamodb:*",
-      "Resource": "arn:aws:dynamodb:*:533825906475:table/*"
+      "Resource": ["arn:aws:dynamodb:*:533825906475:table/*", "arn:aws:dynamodb:*:694282683086:table/*"]
     },
     {
       "Sid": "AllowLambda",
@@ -157,7 +164,11 @@
         "arn:aws:lambda:*:533825906475:layer:*:*",
         "arn:aws:lambda:*:533825906475:function:*:*",
         "arn:aws:lambda:*:533825906475:code-signing-config:*",
-        "arn:aws:lambda:*:533825906475:event-source-mapping:*"
+        "arn:aws:lambda:*:533825906475:event-source-mapping:*",
+        "arn:aws:lambda:*:694282683086:layer:*:*",
+        "arn:aws:lambda:*:694282683086:function:*:*",
+        "arn:aws:lambda:*:694282683086:code-signing-config:*",
+        "arn:aws:lambda:*:694282683086:event-source-mapping:*"
       ]
     },
     {
@@ -166,7 +177,9 @@
       "Action": "lambda:*",
       "Resource": [
         "arn:aws:lambda:*:533825906475:layer:*",
-        "arn:aws:lambda:*:533825906475:function:*"
+        "arn:aws:lambda:*:533825906475:function:*",
+        "arn:aws:lambda:*:694282683086:layer:*",
+        "arn:aws:lambda:*:694282683086:function:*"
       ]
     },
     {
