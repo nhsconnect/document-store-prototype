@@ -84,6 +84,7 @@ pipelines:
           jobs:
             runTestHarness:
               environment_variables:
+                ENVIRONMENT: dev
                 API_AUTH: IAM
               artifacts:
                 - test:
@@ -263,6 +264,7 @@ pipelines:
           jobs:
             runTestHarness:
               environment_variables:
+                ENVIRONMENT: pre-prod
                 API_AUTH: IAM
               artifacts:
                 - test:
