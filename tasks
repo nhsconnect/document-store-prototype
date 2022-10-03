@@ -22,38 +22,38 @@ function assume_ci_role() {
   export AWS_SESSION_TOKEN="${sts[2]}"
 }
 
-function _get_aws_ssm_secret {
-  secret_id=$1
-  json=$(aws ssm get-parameter --with-decryption --region "eu-west-2" --name $secret_id)
-  if [ $? != 0 ]; then
-    echo >&2 "Failed to obtain AWS secret from SSM: $secret_id"
-    exit $EXIT_CODE_GENERAL_FAILURE
-  fi
-  echo $json | jq -r ".Parameter.Value"
-}
-
-function assume_role_for_ci_agent {
-  environment=$1
-  echo "Environment is $1"
-  _clear_aws_env_credentials
-  session_name="document-store-session"
-
-  ROLE_NAME='ci-role'
-
-  echo >&2 "Assuming $ROLE_NAME role for CI agent in ${environment} account"
-  desired_account_id=$(_get_aws_ssm_secret "/prs/${environment}/user-input/external/aws-account-id")
-  desired_role_arn="arn:aws:iam::$desired_account_id:role/$ROLE_NAME"
-
-  json="$(aws sts assume-role --role-arn "$desired_role_arn")"
-}
+#function _get_aws_ssm_secret {
+#  secret_id=$1
+#  json=$(aws ssm get-parameter --with-decryption --region "eu-west-2" --name $secret_id)
+#  if [ $? != 0 ]; then
+#    echo >&2 "Failed to obtain AWS secret from SSM: $secret_id"
+#    exit $EXIT_CODE_GENERAL_FAILURE
+#  fi
+#  echo $json | jq -r ".Parameter.Value"
+#}
+#
+#function assume_role_for_ci_agent {
+#  environment=$1
+#  echo "Environment is $1"
+#  _clear_aws_env_credentials
+#  session_name="document-store-session"
+#
+#  ROLE_NAME='ci-role'
+#
+#  echo >&2 "Assuming $ROLE_NAME role for CI agent in ${environment} account"
+#  desired_account_id=$(_get_aws_ssm_secret "/prs/${environment}/user-input/external/aws-account-id")
+#  desired_role_arn="arn:aws:iam::$desired_account_id:role/$ROLE_NAME"
+#
+#  json="$(aws sts assume-role --role-arn "$desired_role_arn")"
+#}
 
 function get_cis2_client_id() {
-   #_get_aws_ssm_secret /development/cis2/client_id
+  #_get_aws_ssm_secret /development/cis2/client_id
   echo "$(aws ssm get-parameters --region ${aws_region} --names /development/cis2/client_id --query Parameters[0].Value --output text)"
 }
 
 function get_cis2_client_secret() {
-   #_get_aws_ssm_secret /development/cis2/client_secret
+  #_get_aws_ssm_secret /development/cis2/client_secret
   echo "$(aws ssm get-parameters --region ${aws_region} --names /development/cis2/client_secret --query Parameters[0].Value --output text)"
 }
 
@@ -119,30 +119,30 @@ function check_env {
   fi
 }
 
-function _get_aws_ssm_secret {
-  secret_id=$1
-  echo "*** secret id is *** " secret_id
-  json=$(aws ssm get-parameter --with-decryption --region "eu-west-2" --name $secret_id)
-  if [ $? != 0 ]; then
-    echo >&2 "Failed to obtain AWS secret from SSM: $secret_id"
-    exit $EXIT_CODE_GENERAL_FAILURE
-  fi
-  echo $json | jq -r ".Parameter.Value"
-}
+#function _get_aws_ssm_secret {
+#  secret_id=$1
+#  echo "*** secret id is *** " secret_id
+#  json=$(aws ssm get-parameter --with-decryption --region "eu-west-2" --name $secret_id)
+#  if [ $? != 0 ]; then
+#    echo >&2 "Failed to obtain AWS secret from SSM: $secret_id"
+#    exit $EXIT_CODE_GENERAL_FAILURE
+#  fi
+#  echo $json | jq -r ".Parameter.Value"
+#}
 
-function _clear_aws_env_credentials {
-  unset AWS_ACCESS_KEY_ID
-  unset AWS_SECRET_ACCESS_KEY
-  unset AWS_SESSION_TOKEN
-  unset AWS_SECURITY_TOKEN
-}
+#function _clear_aws_env_credentials {
+#  unset AWS_ACCESS_KEY_ID
+#  unset AWS_SECRET_ACCESS_KEY
+#  unset AWS_SESSION_TOKEN
+#  unset AWS_SECURITY_TOKEN
+#}
 
 function tf_init {
   echo "*** in tf_init ***"
   check_env
   cd terraform
 
-  terraform init -reconfigure \
+  terraform init \
     -backend-config key="prs/terraform.tfstate" \
     -backend-config bucket="prs-${ENVIRONMENT}-terraform-state" \
     -backend-config dynamodb_table="prs-${ENVIRONMENT}-terraform-state-locking" \
@@ -151,65 +151,65 @@ function tf_init {
   echo "*** out of tf_init ***"
 }
 
-function tf_init_iam() {
-    check_env
-    cd terraform-iam
+#function tf_init_iam() {
+#    check_env
+#    cd terraform-iam
+#
+#    terraform init -reconfigure \
+#            -backend-config key="prs/iam-terraform.tfstate" \
+#            -backend-config bucket="prs-${ENVIRONMENT}-terraform-state" \
+#            -backend-config dynamodb_table="prs-${ENVIRONMENT}-iam-terraform-state-locking" \
+#            -backend-config region=${AWS_DEFAULT_REGION}
+#
+#}
+#
+#function tf_iam_plan_func() {
+#  tf_init_iam
+#  operation=$1
+#  terraform get # modules
+#    if [[ "${operation}" == "create" ]]; then
+#      echo not yet implemented
+#    terraform plan -var-file=$ENVIRONMENT.tfvars  -out=iam.tfplan
+#    elif [[ "${operation}" == "destroy" ]]; then
+#       terraform plan -var-file=$ENVIRONMENT.tfvars -out=iam.tfplan -destroy
+#    else
+#      echo "Unknown operation (should be create or destroy), got: ${operation}"
+#      exit 1
+#    fi
+#
+#}
 
-    terraform init -reconfigure \
-            -backend-config key="prs/iam-terraform.tfstate" \
-            -backend-config bucket="prs-${ENVIRONMENT}-terraform-state" \
-            -backend-config dynamodb_table="prs-${ENVIRONMENT}-iam-terraform-state-locking" \
-            -backend-config region=${AWS_DEFAULT_REGION}
+#function tf_iam_apply() {
+#    cd terraform-iam
+#    terraform apply iam.tfplan
+#}
 
-}
+#function tf_plan {
+#  echo "*** in tf_plan ***"
+#  operation=$1
+#
+#  tf_init
+#
+#  terraform get # modules
+#  if [[ "${operation}" == "create" ]]; then
+#    echo not yet implemented
+#    terraform plan -var-file=$ENVIRONMENT.tfvars -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -var cognito_cis2_provider_client_id=${cis2_client_id} -var cognito_cis2_provider_client_secret=${cis2_client_secret} -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan
+#  elif [[ "${operation}" == "destroy" ]]; then
+#    terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -destroy
+#  else
+#    echo "Unknown operation (should be create or destroy), got: ${operation}"
+#    exit 1
+#  fi
+#
+#  echo "*** out of tf_plan ***"
+#
+#}
 
-function tf_iam_plan_func() {
-  tf_init_iam
-  operation=$1
-  terraform get # modules
-    if [[ "${operation}" == "create" ]]; then
-      echo not yet implemented
-    terraform plan -var-file=$ENVIRONMENT.tfvars  -out=iam.tfplan
-    elif [[ "${operation}" == "destroy" ]]; then
-       terraform plan -var-file=$ENVIRONMENT.tfvars -out=iam.tfplan -destroy
-    else
-      echo "Unknown operation (should be create or destroy), got: ${operation}"
-      exit 1
-    fi
-
-}
-
-function tf_iam_apply() {
-    cd terraform-iam
-    terraform apply iam.tfplan
-}
-
-function tf_plan {
-  echo "*** in tf_plan ***"
-  operation=$1
-
-  tf_init
-
-  terraform get # modules
-  if [[ "${operation}" == "create" ]]; then
-    echo not yet implemented
-    terraform plan -var-file=$ENVIRONMENT.tfvars -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -var cognito_cis2_provider_client_id=${cis2_client_id} -var cognito_cis2_provider_client_secret=${cis2_client_secret} -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan
-  elif [[ "${operation}" == "destroy" ]]; then
-    terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" -var cognito_cis2_provider_client_id=$(get_cis2_client_id) -var cognito_cis2_provider_client_secret=$(get_cis2_client_secret) -var lambda_jar_filename=../app/build/libs/app.jar -out=tfplan -destroy
-  else
-    echo "Unknown operation (should be create or destroy), got: ${operation}"
-    exit 1
-  fi
-
-  echo "*** out of tf_plan ***"
-
-}
-
-function tf_apply {
-  tf_init
-  terraform get # modules
-  terraform apply tfplan
-}
+#function tf_apply {
+#  tf_init
+#  terraform get # modules
+#  terraform apply tfplan
+#}
 
 readonly command="$1"
 case "${command}" in
@@ -232,49 +232,49 @@ build-ui)
   cd build
   tar -czf ../ui.tgz *
   ;;
-_tf)
-  check_env
-  tf_init
-  bash
-  ;;
-tf)
-  check_env
-  dojo -c Dojofile-infra "./tasks _tf"
-  ;;
-_tf_iam_plan)
-  check_env
-  assume_role_for_ci_agent $ENVIRONMENT
-  tf_iam_plan_func "$2"
-  ;;
-tf_iam_plan)
-  check_env
-  dojo -c Dojofile-infra "./tasks _tf_iam_plan $2"
-  ;;
-_tf_iam_apply)
-  check_env
-  assume_role_for_ci_agent $ENVIRONMENT
-  tf_iam_apply
-  ;;
-tf_iam_apply)
-  check_env
-  dojo -c Dojofile-infra "./tasks _tf_iam_apply $2"
-  ;;
-_tf_plan)
-  assume_role_for_ci_agent $ENVIRONMENT
-  tf_plan "$2"
-  ;;
-tf_plan)
-  check_env
-  dojo -c Dojofile-infra "./tasks _tf_plan $2"
-  ;;
-_tf_apply)
-  _assume_environment_role $ENVIRONMENT
-  tf_apply
-  ;;
-tf_apply)
-  check_env
-  dojo -c Dojofile-infra "./tasks _tf_apply"
-  ;;
+#_tf)
+#  check_env
+#  tf_init
+#  bash
+#  ;;
+#tf)
+#  check_env
+#  dojo -c Dojofile-infra "./tasks _tf"
+#  ;;
+#_tf_iam_plan)
+#  check_env
+#  assume_role_for_ci_agent $ENVIRONMENT
+#  tf_iam_plan_func "$2"
+#  ;;
+#tf_iam_plan)
+#  check_env
+#  dojo -c Dojofile-infra "./tasks _tf_iam_plan $2"
+#  ;;
+#_tf_iam_apply)
+#  check_env
+#  assume_role_for_ci_agent $ENVIRONMENT
+#  tf_iam_apply
+#  ;;
+#tf_iam_apply)
+#  check_env
+#  dojo -c Dojofile-infra "./tasks _tf_iam_apply $2"
+#  ;;
+#_tf_plan)
+#  assume_role_for_ci_agent $ENVIRONMENT
+#  tf_plan "$2"
+#  ;;
+#tf_plan)
+#  check_env
+#  dojo -c Dojofile-infra "./tasks _tf_plan $2"
+#  ;;
+#_tf_apply)
+#  _assume_environment_role $ENVIRONMENT
+#  tf_apply
+#  ;;
+#tf_apply)
+#  check_env
+#  dojo -c Dojofile-infra "./tasks _tf_apply"
+#  ;;
 plan-deploy)
   assume_ci_role
   tf_init
