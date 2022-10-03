@@ -170,7 +170,7 @@ pipelines:
                     job: build
                     source: tars
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - Dojofile-infra
