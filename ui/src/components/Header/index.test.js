@@ -8,4 +8,9 @@ describe("Header component", () => {
 
     expect(screen.queryByText("Document Store")).toBeTruthy();
   });
+  it("displays a logout button", () => {
+    render(<Header />);
+
+    expect(screen.queryByText("Logout")).toBeTruthy();
+  });
 });
