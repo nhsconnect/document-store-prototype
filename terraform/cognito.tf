@@ -34,7 +34,8 @@ resource "aws_cognito_user_pool_client" "client" {
 resource "aws_cognito_user_pool_domain" "domain" {
   domain       = "doc-store-user-pool"
   user_pool_id = aws_cognito_user_pool.pool[0].id
-  count        = var.cloud_only_service_instances
+  #TODO: WIP - Find a way to manage cognito cross environments.
+  count        = var.environment=="dev" ?  1 : 0
 }
 
 output "cognito_user_pool_ids" {
