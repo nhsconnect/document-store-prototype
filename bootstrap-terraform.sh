@@ -57,25 +57,11 @@ function createDynamoDBTable {
       ${ENDPOINT:+--endpoint-url=$ENDPOINT}
 }
 
-#function createDynamoDBTableForIamRoles {
-#  TABLE_NAME=prs-${ENVIRONMENT}-iam-terraform-state-locking
-#
-#  aws dynamodb create-table \
-#      --table-name $TABLE_NAME \
-#      --attribute-definitions AttributeName=LockID,AttributeType=S \
-#      --key-schema AttributeName=LockID,KeyType=HASH \
-#      --billing-mode PROVISIONED \
-#      --provisioned-throughput ReadCapacityUnits=2,WriteCapacityUnits=2 \
-#      --tags Key=createdBy,Value=prm-repo-team Key=name,Value="PRS terraform state locking table for ${ENVIRONMENT} environment" \
-#      --endpoint-url=$ENDPOINT
-#}
-
 read -r -p "Are you sure you want to bootstrap terraform for the ${ENVIRONMENT} environment at ${ENDPOINT}? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
     createS3Bucket
     createDynamoDBTable
-#    createDynamoDBTableForIamRoles
 else
     exit
 fi
