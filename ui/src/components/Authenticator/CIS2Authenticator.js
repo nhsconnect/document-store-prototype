@@ -89,7 +89,6 @@ const CIS2Authenticator = ({ children }) => {
                     setIsAuthenticated(true);
                     break;
                 case "signOut":
-                    console.log("**signing out**");
                     setIsAuthenticated(false);
                     break;
                 case "signIn_failure":
