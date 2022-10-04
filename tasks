@@ -92,17 +92,11 @@ function check_env {
 }
 
 function tf_init {
-  echo "*** in tf_init ***"
   check_env
   cd terraform
 
   terraform init \
-    -backend-config key="prs/terraform.tfstate" \
-    -backend-config bucket="prs-${ENVIRONMENT}-terraform-state" \
-    -backend-config dynamodb_table="prs-${ENVIRONMENT}-terraform-state-locking" \
-    -backend-config region=${aws_region}
-
-  echo "*** out of tf_init ***"
+    -backend-config ${ENVIRONMENT}.s3.tfbackend
 }
 
 readonly command="$1"

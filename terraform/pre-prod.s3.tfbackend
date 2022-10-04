@@ -1,0 +1,5 @@
+bucket     = "prs-pre-prod-terraform-state"
+dynamodb_table = "prs-pre-prod-terraform-state-locking"
+region     = "eu-west-2"
+key        = "prs/terraform.tfstate"
+encrypt    = true
