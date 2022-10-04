@@ -28,7 +28,7 @@ const config = {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
         },
         production: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
         },
     },
 };
