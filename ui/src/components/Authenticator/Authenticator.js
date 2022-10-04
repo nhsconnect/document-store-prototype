@@ -1,7 +1,7 @@
 import { AmplifyAuthenticator } from "@aws-amplify/ui-react";
-import { ErrorSummary } from "nhsuk-react-components";
-import { useContext, useEffect, useState } from "react";
-
+import { Auth } from 'aws-amplify';
+import {ButtonLink, ErrorSummary} from "nhsuk-react-components";
+import React, { useContext, useEffect, useState } from "react";
 import AuthenticationContext from "../../providers/AuthenticatorErrorsProvider";
 import { useFeatureToggle } from "../../providers/FeatureToggleProvider";
 import CIS2Authenticator from "./CIS2Authenticator";
@@ -73,5 +73,18 @@ const Protected = ({ children }) => {
     return <>{isAuthenticated && children}</>;
 };
 Authenticator.Protected = Protected;
+
+const LogOut = () => {
+    async function signOut() {
+        try {
+            await Auth.signOut();
+        } catch (error) {
+            console.error('error signing out: ', error);
+        }
+    }
+
+    return <ButtonLink onClick={signOut}>Log Out</ButtonLink>;
+};
+Authenticator.LogOut = LogOut;
 
 export default Authenticator;

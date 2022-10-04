@@ -1,8 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import Header from ".";
-import {MemoryRouter, useNavigate} from "react-router";
-import userEvent from "@testing-library/user-event";
 
 const mockNavigate = jest.fn();
  jest.mock("react-router",() => ({
@@ -20,13 +18,5 @@ describe("Header component", () => {
     render(<Header />);
 
     expect(screen.queryByText("Log Out")).toBeTruthy();
-  });
-  it("redirect to StartPage when user clicks logout button", () => {
-    render(
-      <MemoryRouter >
-        <Header />
-      </MemoryRouter>);
-    userEvent.click(screen.getByRole("button", { name: "Log Out" }));
-    expect(mockNavigate).toHaveBeenCalledWith("/");
   });
 });

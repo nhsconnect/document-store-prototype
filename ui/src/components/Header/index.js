@@ -1,15 +1,9 @@
 import React from "react";
-import {ButtonLink} from "nhsuk-react-components";
-import {useNavigate} from "react-router";
-
 import {Header} from "nhsuk-react-components";
+import Authenticator from "../Authenticator/Authenticator";
 
 
 export const HeaderContainer = () => {
-  const navigate = useNavigate();
-  const handleLogOut = () => {
-    navigate("/");
-  };
   return (
     <Header transactional>
       <Header.Container>
@@ -18,7 +12,7 @@ export const HeaderContainer = () => {
           Document Store
         </Header.ServiceName>
         <Header.Content>
-          <ButtonLink onClick={handleLogOut}>Log Out</ButtonLink>
+          <Authenticator.LogOut />
         </Header.Content>
       </Header.Container>
     </Header>

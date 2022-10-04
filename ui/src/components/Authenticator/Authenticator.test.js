@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { Auth, Hub } from "aws-amplify";
 import React from "react";
 import { useLocation } from "react-router";
-
 import config from "../../config";
 import * as FeatureToggleProvider from "../../providers/FeatureToggleProvider";
 import Authenticator from "./Authenticator";
@@ -262,6 +261,37 @@ describe("Authenticator", () => {
                 expect(
                     screen.queryByText("this-should-be-rendered")
                 ).toBeInTheDocument();
+            });
+        });
+
+
+        it.skip("WIP does not renders children once user has logged out", async () => {
+            jest.spyOn(Auth, "signOut").mockImplementation(
+                async () => null
+            );
+            render(
+                <Authenticator>
+                    <Authenticator.Protected>
+                        <Authenticator.LogOut />
+                        <div>this-should-not-be-rendered</div>
+                    </Authenticator.Protected>
+                </Authenticator>
+            );
+
+            userEvent.click(screen.getByText("Sign in"));
+
+            await waitFor(() => {
+                expect(
+                    screen.queryByText("this-should-not-be-rendered")
+                ).toBeInTheDocument();
+            });
+
+            userEvent.click(screen.getByText("Log Out"));
+
+            await waitFor(() => {
+                expect(
+                    screen.queryByText("this-should-not-be-rendered")
+                ).not.toBeInTheDocument();
             });
         });
     });

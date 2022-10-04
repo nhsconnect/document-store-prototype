@@ -2,13 +2,13 @@
 const config = {
     Auth: {
         region: "eu-west-2",
-        userPoolId: "eu-west-2_XDRU8Uou1",
-        userPoolWebClientId: "kmj0d2q2j4muf4e4tp2t0954r",
+        userPoolId: "eu-west-2_Y8etyk9V6",
+        userPoolWebClientId: "7mm2u6re8jsptrgallf74g2c6c",
         providerId: "COGNITO",
         oauth: {
             domain: "doc-store-user-pool.auth.eu-west-2.amazoncognito.com",
             scope: ["openid"],
-            redirectSignIn: "https://main.d2rql9jqxx3zwn.amplifyapp.com/cis2-auth-callback",
+            redirectSignIn: "https://main.d1p55zjnm05qd2.amplifyapp.com/cis2-auth-callback",
             redirectSignOut: "%cognito-redirect-signout%",
             responseType: "token",
         },
