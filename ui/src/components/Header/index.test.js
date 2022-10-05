@@ -11,12 +11,6 @@ const mockNavigate = jest.fn();
 describe("Header component", () => {
   it("displays site service name", () => {
     render(<Header />);
-
     expect(screen.queryByText("Document Store")).toBeTruthy();
-  });
-  it("displays a logout button when user logged in", () => {
-    render(<Header />);
-
-    expect(screen.queryByText("Log Out")).toBeTruthy();
   });
 });
