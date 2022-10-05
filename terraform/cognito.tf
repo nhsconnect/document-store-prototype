@@ -29,6 +29,7 @@ resource "aws_cognito_user_pool_client" "client" {
   supported_identity_providers         = [aws_cognito_identity_provider.cis2_identity_provider[0].provider_name]
   callback_urls                        = concat(var.cognito_cis2_client_callback_urls, ["https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"])
   default_redirect_uri                 = "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
+  logout_urls                          = ["https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com"]
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
@@ -52,6 +53,10 @@ output "cognito_client_ids" {
 
 output "cognito_redirect_signin" {
   value = aws_cognito_user_pool_client.client[*].default_redirect_uri
+}
+
+output "cognito_redirect_signout" {
+  value = aws_cognito_user_pool_client.client[*].logout_urls[0]
 }
 
 resource "aws_cognito_identity_provider" "cis2_identity_provider" {
