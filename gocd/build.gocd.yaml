@@ -103,6 +103,27 @@ common:
             - -c
             - Dojofile-infra
             - ./tasks deploy-ui
+  e2e_test: &e2e_test
+    tasks:
+      - exec:
+          command: dojo
+          arguments:
+            - -c
+            - Dojofile-node
+            - ./tasks install-ui-dependencies
+      - exec:
+          command: dojo
+          arguments:
+            - -c
+            - Dojofile-infra
+            - ./tasks configure-ui
+      - exec:
+          command: dojo
+          arguments:
+            - -c
+            - Dojofile-node
+            - ./node_modules/.bin/cypress
+            - run
 
 pipelines:
   "paperless-record-service.dev":
@@ -187,6 +208,13 @@ pipelines:
           jobs:
             deploy: *deploy_ui
 
+      - e2e_tests:
+          environment_variables:
+            ENVIRONMENT: dev
+          clean_workspace: true
+          jobs:
+            e2e-tests: *e2e_test
+
 
   "paperless-record-service.pre-prod":
     group: paperless-record-service
@@ -270,3 +298,9 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
+      - e2e_tests:
+          environment_variables:
+            ENVIRONMENT: dev
+          clean_workspace: true
+          jobs:
+            e2e-tests: *e2e_test

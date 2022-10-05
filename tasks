@@ -29,6 +29,16 @@ function get_cis2_client_secret() {
   echo "$(aws ssm get-parameters --region ${aws_region} --names /development/cis2/client_secret --query Parameters[0].Value --output text)"
 }
 
+function get_cypress_username() {
+     echo "$(aws ssm get-parameters --region ${aws_region} --names /prs/${ENVIRONMENT}/user-input/cypress-username --query Parameters[0].Value --output text)"
+
+}
+
+function get_cypress_password() {
+     echo "$(aws ssm get-parameters --region ${aws_region} --names /prs/${ENVIRONMENT}/user-input/cypress-password --query Parameters[0].Value --output text)"
+
+}
+
 function export_aws_credentials() {
   export_aws_access_key="export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
   export_aws_secret_access_key="export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
@@ -143,7 +153,7 @@ extract-raw-terraform-output)
   ;;
 extract-json-terraform-output)
   terraform_output_name=$2
-  assume_ci_role
+  #assume_ci_role
   tf_init
   terraform output -json "${terraform_output_name}" >"../${terraform_output_name}_artifact"
   ;;
@@ -156,4 +166,8 @@ run-test-harness)
   rm temp_aws_credentials.sh
   ./gradlew testHarness:test
   ;;
+run-e2e-tests)
+  tf_init
+  amplify_app_id="$(terraform output -json | jq -r '.amplify_app_ids.value[0]')"
+  CYPRESS_BASE_URL="https://main.${amplify_app_id}.amplifyapp.com/" ./node_modules/.bin/cypress run --env REACT_APP_ENV=${ENVIRONMENT},username=$(get_cypress_username),password=$(get_cypress_password)
 esac
