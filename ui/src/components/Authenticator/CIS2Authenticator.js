@@ -89,7 +89,7 @@ const CIS2Authenticator = ({ children }) => {
                     setIsAuthenticated(true);
                     break;
                 case "signOut":
-                    setIsAuthenticated(false);
+                case "oAuthSignOut":
                     break;
                 case "signIn_failure":
                 case "cognitoHostedUI_failure":
