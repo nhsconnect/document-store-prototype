@@ -57,7 +57,7 @@ found [here](https://digital.nhs.uk/developer/guides-and-documentation/security-
 
 #### Configuration
 
-In order to use Cognito User Pool authentication, the config file must have the following settings:
+In order to use CIS2 authentication, the config file must have the following settings:
 
 - Auth providerId: "cis2devoidc"
 - CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true
