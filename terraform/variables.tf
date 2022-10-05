@@ -86,3 +86,8 @@ variable "cognito_cis2_client_callback_urls" {
   type = list(string)
   default = [""]
 }
+
+variable "cognito_cis2_client_signout_urls" {
+  type = list(string)
+  default = [""]
+}
