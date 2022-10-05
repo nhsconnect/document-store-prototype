@@ -56,7 +56,7 @@ output "cognito_redirect_signin" {
 }
 
 output "cognito_redirect_signout" {
-  value = aws_cognito_user_pool_client.client[*].logout_urls
+  value = element(aws_cognito_user_pool_client.client[*].logout_urls, 0)
 }
 
 resource "aws_cognito_identity_provider" "cis2_identity_provider" {
