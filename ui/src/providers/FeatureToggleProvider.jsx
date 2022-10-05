@@ -14,7 +14,7 @@ export const useFeatureToggle = (toggleName) => {
 const FeatureToggleProvider = ({ children }) => {
   return (
     <FeatureToggleContext.Provider
-      value={config.features[process.env.NODE_ENV]}
+      value={config.features[process.env.REACT_APP_ENV]}
     >
       {children}
     </FeatureToggleContext.Provider>

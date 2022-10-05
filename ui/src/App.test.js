@@ -8,7 +8,7 @@ describe("App tests", () => {
   let defaultFeaturesConfig;
 
   beforeAll(() => {
-    process.env.NODE_ENV = "test";
+    process.env.REACT_APP_ENV = "test";
     defaultFeaturesConfig = config.features;
   });
 

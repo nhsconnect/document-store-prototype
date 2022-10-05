@@ -24,10 +24,10 @@ const config = {
         local: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
         },
-        development: {
+        dev: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
         },
-        production: {
+        "pre-prod": {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
         },
     },

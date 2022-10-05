@@ -116,7 +116,7 @@ test-ui)
   ;;
 build-ui)
   cd ui
-  npm run build
+  REACT_APP_ENV=${ENVIRONMENT} npm run build
   cd build
   tar -czf ../ui.tgz *
   ;;

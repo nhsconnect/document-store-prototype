@@ -7,7 +7,7 @@ describe("upload and search transaction", () => {
         cy.visit("/");
 
         if (
-            config.features[process.env.NODE_ENV]
+            config.features[Cypress.env("REACT_APP_ENV")]
                 .CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED
         ) {
             cy.contains("Start now").click();
@@ -44,7 +44,7 @@ describe("upload and search transaction", () => {
         );
         cy.contains("Done").click();
         if (
-            config.features[process.env.NODE_ENV]
+            config.features[Cypress.env("REACT_APP_ENV")]
                 .CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED
         ) {
             cy.url().should("eq", Cypress.config("baseUrl") + "/home");
