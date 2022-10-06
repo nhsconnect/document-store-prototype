@@ -79,7 +79,7 @@ const LogOut = () => {
 
   async function signOut() {
     try {
-      await Auth.signOut();
+      await Auth.signOut({ global: true });
     } catch (error) {
       console.error('error signing out: ', error);
     }
