@@ -30,12 +30,12 @@ function get_cis2_client_secret() {
 }
 
 function get_cypress_username() {
-     echo "$(aws ssm get-parameters --region ${aws_region} --names /prs/${ENVIRONMENT}/user-input/cypress-username --query Parameters[0].Value --output text)"
+  echo "$(aws ssm get-parameters --region ${aws_region} --names /prs/${ENVIRONMENT}/user-input/cypress-username --query Parameters[0].Value --output text)"
 
 }
 
 function get_cypress_password() {
-     echo "$(aws ssm get-parameters --region ${aws_region} --names /prs/${ENVIRONMENT}/user-input/cypress-password --with-decryption --query Parameters[0].Value --output text)"
+  echo "$(aws ssm get-parameters --region ${aws_region} --names /prs/${ENVIRONMENT}/user-input/cypress-password --with-decryption --query Parameters[0].Value --output text)"
 
 }
 
@@ -61,8 +61,7 @@ function deploy_ui() {
 }
 
 function get_signout_url {
-  if [[ $ENVIRONMENT -eq "dev" ]]
-  then
+  if [[ $ENVIRONMENT -eq "dev" ]]; then
     echo '.cognito_redirect_signout.value[1]'
   else
     echo '.cognito_redirect_signout.value[0]'
@@ -92,21 +91,13 @@ function create_cypress_config_file() {
   username=$(get_cypress_username)
   password=$(get_cypress_password)
 
-  SEDOPTION=
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    SEDOPTION="-i ''"
-  fi
-  sed $SEDOPTION "s/%environment%/${ENVIRONMENT}/" ui/cypress.env.json
-  sed $SEDOPTION "s/%username%/${username}/" ui/cypress.env.json
-  sed $SEDOPTION "s~%password%~${password}~" ui/cypress.env.json
+  sed -i "s/%environment%/${ENVIRONMENT}/" ui/cypress.env.json
+  sed -i "s/%username%/${username}/" ui/cypress.env.json
+  sed -i "s~%password%~${password}~" ui/cypress.env.json
 }
 
 function export_cypress_base_url() {
-  echo "CYPRESS_BASE_URL=https://main.\"$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com\"" > ui/cypress.sh
-}
-
-function export_cypress_cache_folder() {
-    export CYPRESS_CACHE_FOLDER="/home/dojo/.cache/Cypress/10.6.0/Cypress/Cypress"
+  echo "CYPRESS_BASE_URL=https://main.\"$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com\"" >ui/cypress.sh
 }
 
 function get_terraform_output() {
@@ -144,7 +135,6 @@ readonly command="$1"
 case "${command}" in
 install-ui-dependencies)
   cd ui
-  export_cypress_cache_folder
   npm ci
   ;;
 configure-ui)

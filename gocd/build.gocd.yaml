@@ -118,12 +118,6 @@ common:
           command: dojo
           arguments:
             - -c
-            - Dojofile-node
-            - ./tasks install-ui-dependencies
-      - exec:
-          command: dojo
-          arguments:
-            - -c
             - Dojofile-infra
             - ./tasks configure-e2e-tests
       - exec:
@@ -131,7 +125,7 @@ common:
           arguments:
             - -c
             - Dojofile-node
-            - ./tasks run-e2e-tests
+            - ./tasks install-ui-dependencies && ./tasks run-e2e-tests
 
 pipelines:
   "paperless-record-service.dev":
@@ -277,7 +271,7 @@ pipelines:
             deploy: *deploy_ui
       - e2e_tests:
           environment_variables:
-            ENVIRONMENT: dev
+            ENVIRONMENT: pre-prod
           clean_workspace: true
           jobs:
             e2e-tests: *e2e_test
