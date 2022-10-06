@@ -35,7 +35,7 @@ function get_cypress_username() {
 }
 
 function get_cypress_password() {
-     echo "$(aws ssm get-parameters --region ${aws_region} --names /prs/${ENVIRONMENT}/user-input/cypress-password --query Parameters[0].Value --output text)"
+     echo "$(aws ssm get-parameters --region ${aws_region} --names /prs/${ENVIRONMENT}/user-input/cypress-password --with-decryption --query Parameters[0].Value --output text)"
 
 }
 
@@ -76,6 +76,19 @@ function update_ui_config_file() {
   sed -i "s~%cognito-redirect-signin%~${cognito_redirect_signin}~" ui/src/config.js
   sed -i "s~%cognito-redirect-signout%~${cognito_redirect_signout}~" ui/src/config.js
   sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
+}
+
+function create_cypress_config_file() {
+  cp ui/cypress.env.json.example ui/cypress.env.json
+  username=$(get_cypress_username)
+  password=$(get_cypress_password)
+  sed -i "" "s/%environment%/${ENVIRONMENT}/" ui/cypress.env.json
+  sed -i "" "s/%username%/${username}/" ui/cypress.env.json
+  sed -i "" "s~%password%~${password}~" ui/cypress.env.json
+}
+
+function export_cypress_base_url() {
+  echo "CYPRESS_BASE_URL=https://main.\"$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com\"" > ui/cypress.sh
 }
 
 function get_terraform_output() {
@@ -153,7 +166,7 @@ extract-raw-terraform-output)
   ;;
 extract-json-terraform-output)
   terraform_output_name=$2
-  #assume_ci_role
+  assume_ci_role
   tf_init
   terraform output -json "${terraform_output_name}" >"../${terraform_output_name}_artifact"
   ;;
@@ -166,8 +179,16 @@ run-test-harness)
   rm temp_aws_credentials.sh
   ./gradlew testHarness:test
   ;;
+configure-e2e-tests)
+  get_terraform_output terraform_output.json
+  export_cypress_base_url terraform_output.json
+  create_cypress_config_file
+  ;;
 run-e2e-tests)
-  tf_init
-  amplify_app_id="$(terraform output -json | jq -r '.amplify_app_ids.value[0]')"
-  CYPRESS_BASE_URL="https://main.${amplify_app_id}.amplifyapp.com/" ./node_modules/.bin/cypress run --env REACT_APP_ENV=${ENVIRONMENT},username=$(get_cypress_username),password=$(get_cypress_password)
+  cd ui
+  source ./cypress.sh
+  echo $CYPRESS_BASE_URL
+  rm cypress.sh
+  CYPRESS_BASE_URL=${CYPRESS_BASE_URL} ./node_modules/.bin/cypress run
+  ;;
 esac

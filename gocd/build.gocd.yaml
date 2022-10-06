@@ -24,6 +24,9 @@ common:
       - build:
           source: cognito_client_ids_artifact
           destination: properties
+      - build:
+          source: amplify_app_ids_artifact
+          destination: properties
     tasks:
       - fetch:
           stage: build_backend
@@ -59,6 +62,12 @@ common:
             - -c
             - Dojofile-infra
             - ./tasks extract-json-terraform-output cognito_client_ids
+      - exec:
+          command: dojo
+          arguments:
+            - -c
+            - Dojofile-infra
+            - ./tasks extract-json-terraform-output amplify_app_ids
   build_ui: &build_ui
     artifacts:
       - build:
@@ -116,14 +125,13 @@ common:
           arguments:
             - -c
             - Dojofile-infra
-            - ./tasks configure-ui
+            - ./tasks configure-e2e-tests
       - exec:
           command: dojo
           arguments:
             - -c
             - Dojofile-node
-            - ./node_modules/.bin/cypress
-            - run
+            - ./tasks run-e2e-tests
 
 pipelines:
   "paperless-record-service.dev":
@@ -183,23 +191,7 @@ pipelines:
           clean_workspace: true
           jobs:
             build: *build_ui
-
             unit-test-ui: *unit_test_ui
-
-      #            cypress-test-ui:
-      #              tasks:
-      #                - exec:
-      #                    command: dojo
-      #                    arguments:
-      #                      - -c
-      #                      - Dojofile-infra
-      #                      - ./tasks configure-ui
-      #                - exec:
-      #                    command: dojo
-      #                    arguments:
-      #                      - -c
-      #                      - Dojofile-node
-      #                      - ./tasks integration-test-ui
 
       - deploy_ui:
           environment_variables:
@@ -277,21 +269,6 @@ pipelines:
           jobs:
             build: *build_ui
             unit-test-ui: *unit_test_ui
-      #            cypress-test-ui:
-      #              tasks:
-      #                - exec:
-      #                    command: dojo
-      #                    arguments:
-      #                      - -c
-      #                      - Dojofile-infra
-      #                      - ./tasks configure-ui
-      #                - exec:
-      #                    command: dojo
-      #                    arguments:
-      #                      - -c
-      #                      - Dojofile-node
-      #                      - ./tasks integration-test-ui
-
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: pre-prod
