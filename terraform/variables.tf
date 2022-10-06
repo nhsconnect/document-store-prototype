@@ -91,8 +91,3 @@ variable "cognito_cis2_client_signout_urls" {
   type = list(string)
   default = [""]
 }
-
-variable "cognito_allowed_scopes" {
-  type = list(string)
-  default = [""]
-}

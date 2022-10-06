@@ -7,4 +7,3 @@ cognito_cis2_provider_attributes_url = "https://am.nhsdev.auth-ptl.cis2.spineser
 cognito_cis2_provider_jwks_uri       = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/connect/jwk_uri"
 cognito_cis2_client_callback_urls    = ["http://localhost:3000/cis2-auth-callback"]
 cognito_cis2_client_signout_urls     = ["http://localhost:3000"]
-cognito_allowed_scopes               = ["aws.cognito.signin.user.admin"]

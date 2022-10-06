@@ -25,7 +25,7 @@ resource "aws_cognito_user_pool_client" "client" {
   allowed_oauth_flows_user_pool_client = true
   explicit_auth_flows                  = ["ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
   allowed_oauth_flows                  = ["implicit"]
-  allowed_oauth_scopes                 = concat(["openid"], var.cognito_allowed_scopes)
+  allowed_oauth_scopes                 = ["openid"]
   supported_identity_providers         = [aws_cognito_identity_provider.cis2_identity_provider[0].provider_name]
   callback_urls                        = concat(var.cognito_cis2_client_callback_urls, ["https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"])
   default_redirect_uri                 = "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
