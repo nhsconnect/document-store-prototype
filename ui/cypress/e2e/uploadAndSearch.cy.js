@@ -80,5 +80,12 @@ describe("upload and search transaction", () => {
             "target",
             "_blank"
         );
+
+        cy.contains("Log Out").click();
+
+        cy.url().should(
+            "eq",
+            Cypress.config("baseUrl") + "/"
+        );
     });
 });
