@@ -21,6 +21,11 @@ jest.mock("@aws-amplify/ui-react", () => ({
         >
           Sign in
         </button>
+        <button
+            onClick={() => {
+              handleAuthStateChange("oAuthSignOut");
+            }}
+        >Sign out</button>
         <div>{children}</div>
       </>
     );
@@ -42,7 +47,7 @@ describe("Authenticator", () => {
         domain: "doc-store-user-pool.auth.eu-west-2.amazoncognito.com",
         scope: ["openid"],
         redirectSignIn: "http://localhost:3000",
-        redirectSignOut: "",
+        redirectSignOut: "http://localhost:3000",
         responseType: "code",
       };
     });
@@ -270,6 +275,36 @@ describe("Authenticator", () => {
         expect(
           screen.queryByText("Log Out")
         ).toBeInTheDocument();
+      });
+    });
+
+    it("does not renders children once user has logged out", async () => {
+      jest.spyOn(Auth, "signOut").mockImplementation(async() => {
+        userEvent.click(screen.getByText("Sign out"));
+      });
+
+      render(
+          <Authenticator>
+            <Authenticator.LogOut />
+            <Authenticator.Protected>
+              <div>this-should-NOT-be-rendered</div>
+            </Authenticator.Protected>
+          </Authenticator>
+      );
+
+      userEvent.click(screen.getByText("Sign in"));
+
+      await waitFor(() => {
+        userEvent.click(screen.getByText("Log Out"));
+      });
+
+      await waitFor(() => {
+        expect(
+            screen.queryByText("this-should-NOT-be-rendered")
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText("Log Out")
+        ).not.toBeInTheDocument();
       });
     });
   });
