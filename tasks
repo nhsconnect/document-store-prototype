@@ -105,6 +105,10 @@ function export_cypress_base_url() {
   echo "CYPRESS_BASE_URL=https://main.\"$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com\"" > ui/cypress.sh
 }
 
+function export_cypress_cache_folder() {
+    export CYPRESS_CACHE_FOLDER="/home/dojo/.cache/Cypress/10.6.0/Cypress/Cypress"
+}
+
 function get_terraform_output() {
   assume_ci_role
   tf_init
@@ -140,6 +144,7 @@ readonly command="$1"
 case "${command}" in
 install-ui-dependencies)
   cd ui
+  export_cypress_cache_folder
   npm ci
   ;;
 configure-ui)
