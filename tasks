@@ -91,9 +91,14 @@ function create_cypress_config_file() {
   cp ui/cypress.env.json.example ui/cypress.env.json
   username=$(get_cypress_username)
   password=$(get_cypress_password)
-  sed -i "s/%environment%/${ENVIRONMENT}/" ui/cypress.env.json
-  sed -i "s/%username%/${username}/" ui/cypress.env.json
-  sed -i "s~%password%~${password}~" ui/cypress.env.json
+
+  SEDOPTION=
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    SEDOPTION="-i ''"
+  fi
+  sed $SEDOPTION "s/%environment%/${ENVIRONMENT}/" ui/cypress.env.json
+  sed $SEDOPTION "s/%username%/${username}/" ui/cypress.env.json
+  sed $SEDOPTION "s~%password%~${password}~" ui/cypress.env.json
 }
 
 function export_cypress_base_url() {
