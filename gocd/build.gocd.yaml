@@ -14,6 +14,10 @@ common:
           arguments:
             - "./gradlew app:build"
   plan_terraform: &plan_terraform
+    artifacts:
+      - build:
+          source: terraform/tfplan
+          destination: terraform/
     tasks:
       - fetch:
           stage: build_backend
@@ -40,6 +44,12 @@ common:
           source: amplify_app_ids_artifact
           destination: properties
     tasks:
+      - fetch:
+            stage: plan_terraform
+            job: plan
+            source: terraform/tfplan
+            destination: terraform/
+            is_file: yes
       - exec:
           command: dojo
           arguments:
@@ -157,13 +167,13 @@ pipelines:
             ENVIRONMENT: dev
           clean_workspace: true
           jobs:
-            terraform: *plan_terraform
+            plan: *plan_terraform
       - deploy_terraform:
           environment_variables:
             ENVIRONMENT: dev
           clean_workspace: true
           jobs:
-            terraform: *deploy_terraform
+            apply: *deploy_terraform
 
       - build_ui:
           environment_variables:
@@ -213,14 +223,14 @@ pipelines:
             ENVIRONMENT: pre-prod
           clean_workspace: true
           jobs:
-            terraform: *plan_terraform
+            plan: *plan_terraform
 
       - deploy_terraform:
           environment_variables:
             ENVIRONMENT: pre-prod
           clean_workspace: true
           jobs:
-            terraform: *deploy_terraform
+            apply: *deploy_terraform
       - build_ui:
           environment_variables:
             ENVIRONMENT: pre-prod
@@ -265,7 +275,7 @@ pipelines:
             ENVIRONMENT: prod
           clean_workspace: true
           jobs:
-            terraform: *plan_terraform
+            plan: *plan_terraform
 
       - deploy_terraform:
           approval:
@@ -275,12 +285,9 @@ pipelines:
             ENVIRONMENT: prod
           clean_workspace: true
           jobs:
-            terraform: *deploy_terraform
+            apply: *deploy_terraform
 
       - build_ui:
-          approval:
-            type: manual
-            allow_only_on_success: true
           environment_variables:
             ENVIRONMENT: prod
           clean_workspace: true
@@ -288,9 +295,6 @@ pipelines:
             build: *build_ui
             unit-test-ui: *unit_test_ui
       - deploy_ui:
-          approval:
-            type: manual
-            allow_only_on_success: true
           environment_variables:
             ENVIRONMENT: prod
           clean_workspace: true
