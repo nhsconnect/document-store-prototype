@@ -13,6 +13,7 @@ describe("upload and search transaction", () => {
             cy.contains("Start now").click();
             // log into the website
             cy.cis2Login(Cypress.env("username"), Cypress.env("password"));
+            cy.wait(3000);
         } else {
             // log into the website
             cy.login(Cypress.env("username"), Cypress.env("password"));
