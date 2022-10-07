@@ -97,7 +97,7 @@ function create_cypress_config_file() {
 }
 
 function export_cypress_base_url() {
-  echo "CYPRESS_BASE_URL=https://main.\"$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com\"" >ui/cypress.sh
+  echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com" > ui/cypress.sh
 }
 
 function get_terraform_output() {
