@@ -45,11 +45,15 @@ common:
           destination: properties
     tasks:
       - fetch:
-            stage: plan_terraform
-            job: plan
-            source: terraform/tfplan
-            destination: terraform/
-            is_file: yes
+          stage: plan_terraform
+          job: plan
+          source: terraform/tfplan
+          destination: terraform/
+          is_file: yes
+      - fetch:
+          stage: build_backend
+          job: build
+          source: jars
       - exec:
           command: dojo
           arguments:
