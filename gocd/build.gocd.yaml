@@ -244,7 +244,7 @@ pipelines:
 
       - deploy_terraform:
           environment_variables:
-            ENVIRONMENT: dev
+            ENVIRONMENT: pre-prod
           clean_workspace: true
           jobs:
             terraform: *deploy_terraform
