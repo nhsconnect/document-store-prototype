@@ -215,7 +215,7 @@ pipelines:
           - gradle/**/*.*
       dev_env:
         pipeline: paperless-record-service.dev
-        stage: deploy_ui
+        stage: e2e_tests
     stages:
       - build_backend:
           clean_workspace: true
