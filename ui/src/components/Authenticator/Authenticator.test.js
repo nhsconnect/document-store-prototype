@@ -7,11 +7,9 @@ import config from "../../config";
 import * as FeatureToggleProvider from "../../providers/FeatureToggleProvider";
 import Authenticator from "./Authenticator";
 
-jest.mock("react-router", () => ({
-  useLocation: jest.fn(),
-}));
 const mockNavigate = jest.fn();
 jest.mock("react-router", () => ({
+  useLocation: jest.fn(),
   useNavigate: () => mockNavigate,
 }));
 jest.mock("@aws-amplify/ui-react", () => ({
