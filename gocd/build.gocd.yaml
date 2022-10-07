@@ -13,6 +13,18 @@ common:
           command: dojo
           arguments:
             - "./gradlew app:build"
+  plan_terraform: &plan_terraform
+    tasks:
+      - fetch:
+          stage: build_backend
+          job: build
+          source: jars
+      - exec:
+          command: dojo
+          arguments:
+            - -c
+            - Dojofile-infra
+            - ./tasks tf_plan
   deploy_terraform: &deploy_terraform
     artifacts:
       - build:
@@ -28,16 +40,6 @@ common:
           source: amplify_app_ids_artifact
           destination: properties
     tasks:
-      - fetch:
-          stage: build_backend
-          job: build
-          source: jars
-      - exec:
-          command: dojo
-          arguments:
-            - -c
-            - Dojofile-infra
-            - ./tasks tf_plan
       - exec:
           command: dojo
           arguments:
@@ -150,13 +152,18 @@ pipelines:
           clean_workspace: true
           jobs:
             build: *build_backend
-      - deploy_backend:
+      - plan_terraform:
+          environment_variables:
+            ENVIRONMENT: dev
+          clean_workspace: true
+          jobs:
+            terraform: *plan_terraform
+      - deploy_terraform:
           environment_variables:
             ENVIRONMENT: dev
           clean_workspace: true
           jobs:
             terraform: *deploy_terraform
-
       - testHarness:
           clean_workspace: true
           jobs:
@@ -228,12 +235,20 @@ pipelines:
           jobs:
             build: *build_backend
 
-      - deploy_backend:
+      - plan_terraform:
           environment_variables:
             ENVIRONMENT: pre-prod
           clean_workspace: true
           jobs:
+            terraform: *plan_terraform
+
+      - deploy_terraform:
+          environment_variables:
+            ENVIRONMENT: dev
+          clean_workspace: true
+          jobs:
             terraform: *deploy_terraform
+
       - testHarness:
           clean_workspace: true
           jobs:
@@ -281,3 +296,59 @@ pipelines:
           clean_workspace: true
           jobs:
             e2e-tests: *e2e_test
+  "paperless-record-service.prod":
+    group: paperless-record-service
+    label_template: "${git[:8]}"
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - .git*
+          - .idea/**/*.*
+          - documentation/**/*.*
+          - gradle/**/*.*
+      pre_prod_env:
+        pipeline: paperless-record-service.pre-prod
+        stage: deploy_ui
+    stages:
+      - build_backend:
+          clean_workspace: true
+          jobs:
+            build: *build_backend
+
+      - plan_terraform:
+          environment_variables:
+            ENVIRONMENT: pre-prod
+          clean_workspace: true
+          jobs:
+            terraform: *plan_terraform
+
+      - deploy_terraform:
+          approval:
+            type: manual
+            allow_only_on_success: true
+          environment_variables:
+            ENVIRONMENT: dev
+          clean_workspace: true
+          jobs:
+            terraform: *deploy_terraform
+
+      - build_ui:
+          approval:
+            type: manual
+            allow_only_on_success: true
+          environment_variables:
+            ENVIRONMENT: prod
+          clean_workspace: true
+          jobs:
+            build: *build_ui
+            unit-test-ui: *unit_test_ui
+      - deploy_ui:
+          approval:
+            type: manual
+            allow_only_on_success: true
+          environment_variables:
+            ENVIRONMENT: prod
+          clean_workspace: true
+          jobs:
+            deploy: *deploy_ui
