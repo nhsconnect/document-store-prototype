@@ -10,6 +10,10 @@ import Authenticator from "./Authenticator";
 jest.mock("react-router", () => ({
   useLocation: jest.fn(),
 }));
+const mockNavigate = jest.fn();
+jest.mock("react-router", () => ({
+  useNavigate: () => mockNavigate,
+}));
 jest.mock("@aws-amplify/ui-react", () => ({
   AmplifyAuthenticator: ({children, handleAuthStateChange}) => {
     return (
@@ -306,6 +310,28 @@ describe("Authenticator", () => {
             screen.queryByText("Log Out")
         ).not.toBeInTheDocument();
       });
+    });
+
+    it("redirects to start page after log out", async() => {
+      render(
+          <Authenticator>
+            <Authenticator.LogOut />
+            <Authenticator.Protected>
+              <div>this-should-NOT-be-rendered</div>
+            </Authenticator.Protected>
+          </Authenticator>
+      );
+
+      userEvent.click(screen.getByText("Sign in"));
+
+      await waitFor(() => {
+        userEvent.click(screen.getByText("Log Out"));
+      });
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/");
+      });
+
     });
   });
 });
