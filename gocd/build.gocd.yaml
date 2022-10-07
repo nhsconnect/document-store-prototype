@@ -127,12 +127,11 @@ common:
             - Dojofile-node
             - ./tasks install-ui-dependencies && ./tasks run-e2e-tests
     artifacts:
-      - test-screenshots:
+      - test:
           source: ui/cypress/screenshots
-          destination: cypress-screenshots
-      - test-videos:
+      - test:
           source: ui/cypress/videos
-          destination: cypress-videos
+
 
 pipelines:
   "paperless-record-service.dev":
