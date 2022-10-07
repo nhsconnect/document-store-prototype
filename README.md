@@ -112,53 +112,10 @@ In order to deploy to AWS from the pipeline, a GoCD agent must have a role and p
 ## Testing
 
 The `test` source set contains unit tests. These don't have any dependencies on infrastructure or external services.
-These are run in CI. There is also a suite of E2E tests within the `e2eTest` source set which require LocalStack to
-simulate AWS. Since we are using the open source version of LocalStack, we are unable to run the E2E tests in CI.
+These are run in CI. There is also a suite of API tests within the `e2eTest` source set which require LocalStack to
+simulate AWS. Since we are using the open source version of LocalStack, we are unable to run the API tests in CI.
 
-### Running E2E Tests
-
-1. Start LocalStack:
-
-```bash
-source ./venv/bin/activate
-./start-localstack
-```
-
-2. Configure LocalStack:
-
-```bash
-./gradlew bootstrapLocalStack   # or ./gradlew bLS 
-```
-
-3. Apply Terraform changes (i.e. deploy to LocalStack) and start the E2E tests:
-
-```bash
-./gradlew e2eTest   # or ./gradlew eT
-```
-
-Steps 1 and 2 only need to be performed once before starting the E2E tests. Once LocalStack is running, the third step
-can be done in isolation to apply any changes and re-run the tests.
-
-### Running test harness
-A subset of the end-to-end tests can be run as tests against any existing document store endpoint
-
-Against AWS
-```bash
- DOCUMENT_STORE_BASE_URI=<replace with api endpoint> API_AUTH=IAM ./gradlew testHarness:test
-```
-
-Against LocalStack
-```bash
- DOCUMENT_STORE_BASE_URI=<replace with api endpoint> ./gradlew testHarness:test
-```
-
-When running against the AWS deployed API, run this before to set the AWS credentials needed to sign the API requests
-
-```bash
-eval $(assume-role doc-store)
-```
-
-When running against localstack the `DOCUMENT_STORE_BASE_URI` is `http://localhost:4566/restapis/<replace with rest api id>/<replace with stage name>/_user_request_/` where both the `rest api id` and `stage name` can be found in terraform output
+There also a set of E2E test that run in the browser using Cypress. See [the UI ReadMe](/ui/README.md)
 
 ### Reading logs
 

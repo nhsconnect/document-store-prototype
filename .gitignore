@@ -154,6 +154,5 @@ hs_err_pid*
 venv/
 
 app/bin
-testHarness/bin
 
 .idea/

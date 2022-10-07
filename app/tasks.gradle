@@ -86,20 +86,3 @@ tasks.register('e2eTest', Test) {
     environment('AWS_ACCESS_KEY_ID', 'test')
     environment('DOCUMENT_STORE_BUCKET_NAME', getDocumentStoreBucketName.documentStoreBucketName)
 }
-
-tasks.register('testHarness', Test) {
-    group 'verification'
-    description 'Run all test harness'
-
-    useJUnitPlatform()
-
-    testClassesDirs = sourceSets.e2eTest.output.classesDirs
-    classpath = sourceSets.e2eTest.runtimeClasspath
-
-    environment('AWS_SECRET_ACCESS_KEY', "test")
-    environment('AWS_ACCESS_KEY_ID', "test")
-
-    filter {
-        includeTestsMatching "uk.nhs.digital.docstore.CreateDocumentReferenceE2eTest"
-    }
-}

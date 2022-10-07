@@ -183,11 +183,6 @@ export-aws-creds)
   assume_ci_role
   export_aws_credentials
   ;;
-run-test-harness)
-  source ./temp_aws_credentials.sh
-  rm temp_aws_credentials.sh
-  ./gradlew testHarness:test
-  ;;
 configure-e2e-tests)
   get_terraform_output terraform_output.json
   export_cypress_base_url terraform_output.json

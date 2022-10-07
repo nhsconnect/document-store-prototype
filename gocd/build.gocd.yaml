@@ -164,34 +164,7 @@ pipelines:
           clean_workspace: true
           jobs:
             terraform: *deploy_terraform
-      - testHarness:
-          clean_workspace: true
-          jobs:
-            runTestHarness:
-              environment_variables:
-                ENVIRONMENT: dev
-                API_AUTH: IAM
-              artifacts:
-                - test:
-                    source: testHarness/build/test-results
-                    destination: test-reports
-              tasks:
-                - fetch:
-                    stage: deploy_backend
-                    job: terraform
-                    source: properties
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-infra
-                      - ./tasks export-aws-creds
-                - exec:
-                    command: ls
-                - exec:
-                    command: dojo
-                    arguments:
-                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOL_IDS=\"$(cat properties/cognito_user_pool_ids_artifact)\" COGNITO_CLIENT_IDS=\"$(cat properties/cognito_client_ids_artifact)\" ./tasks run-test-harness"
+
       - build_ui:
           environment_variables:
             ENVIRONMENT: dev
@@ -248,35 +221,6 @@ pipelines:
           clean_workspace: true
           jobs:
             terraform: *deploy_terraform
-
-      - testHarness:
-          clean_workspace: true
-          jobs:
-            runTestHarness:
-              environment_variables:
-                ENVIRONMENT: pre-prod
-                API_AUTH: IAM
-              artifacts:
-                - test:
-                    source: testHarness/build/test-results
-                    destination: test-reports
-              tasks:
-                - fetch:
-                    stage: deploy_backend
-                    job: terraform
-                    source: properties
-                - exec:
-                    command: dojo
-                    arguments:
-                      - -c
-                      - Dojofile-infra
-                      - ./tasks export-aws-creds
-                - exec:
-                    command: ls
-                - exec:
-                    command: dojo
-                    arguments:
-                      - "DOCUMENT_STORE_BASE_URI=$(cat properties/api_gateway_url_artifact) COGNITO_USER_POOL_IDS=\"$(cat properties/cognito_user_pool_ids_artifact)\" COGNITO_CLIENT_IDS=\"$(cat properties/cognito_client_ids_artifact)\" ./tasks run-test-harness"
       - build_ui:
           environment_variables:
             ENVIRONMENT: pre-prod
