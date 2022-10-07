@@ -318,7 +318,7 @@ pipelines:
 
       - plan_terraform:
           environment_variables:
-            ENVIRONMENT: pre-prod
+            ENVIRONMENT: prod
           clean_workspace: true
           jobs:
             terraform: *plan_terraform
@@ -328,7 +328,7 @@ pipelines:
             type: manual
             allow_only_on_success: true
           environment_variables:
-            ENVIRONMENT: dev
+            ENVIRONMENT: prod
           clean_workspace: true
           jobs:
             terraform: *deploy_terraform
