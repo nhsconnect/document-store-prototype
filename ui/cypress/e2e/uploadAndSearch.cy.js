@@ -18,7 +18,7 @@ describe("upload and search transaction", () => {
             cy.login(Cypress.env("username"), Cypress.env("password"));
         }
 
-        cy.get("#upload").should('be.visible').click();
+        cy.get("#upload").click();
         cy.get('[type="submit"]').click();
 
         cy.url().should(
