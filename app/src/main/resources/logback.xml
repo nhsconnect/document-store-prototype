@@ -21,7 +21,9 @@
 					<omitEmptyFields>true</omitEmptyFields>
 					<pattern>
 						{
-						"type": "%marker"
+						"type": "%marker",
+						"class": "%C{0}",
+						"line": "%L"
 						}
 					</pattern>
 				</pattern>
