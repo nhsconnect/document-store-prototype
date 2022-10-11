@@ -53,6 +53,7 @@ const UploadDocumentPage = ({ client }) => {
             );
             navigate("/upload/success");
         } catch (e) {
+            console.error(e);
             setSubmissionState(states.FAILED);
         }
     };
