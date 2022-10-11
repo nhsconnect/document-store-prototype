@@ -13,6 +13,7 @@
 			<providers>
 				<message/>
 				<timestamp/>
+				<mdc/>
 				<logLevel/>
 				<loggerName/>
 				<stackTrace/>

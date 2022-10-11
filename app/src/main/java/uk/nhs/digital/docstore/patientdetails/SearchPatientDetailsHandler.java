@@ -10,22 +10,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
+import uk.nhs.digital.docstore.config.Tracer;
 
 import java.util.List;
 import java.util.Map;
 
 
-public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
+public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger logger
             = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
     private final FhirContext fhirContext;
 
-    public SearchPatientDetailsHandler() {
+    private final Tracer tracer;
+
+    public SearchPatientDetailsHandler(Tracer tracer) {
+        this.tracer = tracer;
         this.fhirContext = FhirContext.forR4();
     }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
+        tracer.setMDCContext(requestEvent);
+
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
         String nhsNumber = "";

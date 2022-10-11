@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import uk.nhs.digital.docstore.utils.CommonUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class DocumentMetadataStore {
 
     public DocumentMetadata save(DocumentMetadata documentMetadata) {
         if (documentMetadata.getId() == null) {
-            documentMetadata.setId(UUID.randomUUID().toString());
+            documentMetadata.setId(CommonUtils.generateRandomUUIDString());
         }
         mapper.save(documentMetadata);
         return documentMetadata;
