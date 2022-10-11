@@ -32,17 +32,13 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
     private final FhirContext fhirContext;
     private final CreateDocumentReferenceRequestValidator requestValidator = new CreateDocumentReferenceRequestValidator();
 
-    private final Tracer tracer;
-
     public CreateDocumentReferenceHandler(Tracer tracer) {
-        this.tracer = tracer;
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
     }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-        tracer.setMDCContext(input);
 
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();

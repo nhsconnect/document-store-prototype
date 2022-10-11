@@ -15,12 +15,12 @@ public class Tracer {
 
     public static final String TRACE_ID_KEY = "traceId";
 
-    public void setMDCContext(APIGatewayProxyRequestEvent requestEvent) {
+    public static void setMDCContext(APIGatewayProxyRequestEvent requestEvent) {
         clearMDCContext();
         handleTraceId(requestEvent.getHeaders());
     }
 
-    private void handleTraceId(Map<String, String> headers) {
+    private static void handleTraceId(Map<String, String> headers) {
         if (headers.containsKey(TRACE_ID_KEY)) {
             setTraceId(headers.get(TRACE_ID_KEY));
         } else {
@@ -29,11 +29,11 @@ public class Tracer {
         }
     }
 
-    public void setTraceId(String traceId) {
+    public static void setTraceId(String traceId) {
         MDC.put(TRACE_ID_KEY, traceId);
     }
 
-    private void clearMDCContext() {
+    private static void clearMDCContext() {
         MDC.remove(TRACE_ID_KEY);
     }
 }

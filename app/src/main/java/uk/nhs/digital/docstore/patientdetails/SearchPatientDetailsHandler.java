@@ -16,21 +16,19 @@ import java.util.List;
 import java.util.Map;
 
 
-public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
     private static final Logger logger
             = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
     private final FhirContext fhirContext;
 
-    private final Tracer tracer;
-
-    public SearchPatientDetailsHandler(Tracer tracer) {
-        this.tracer = tracer;
+    public SearchPatientDetailsHandler() {
         this.fhirContext = FhirContext.forR4();
     }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
-        tracer.setMDCContext(requestEvent);
+
+        Tracer.setMDCContext(requestEvent);
 
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
