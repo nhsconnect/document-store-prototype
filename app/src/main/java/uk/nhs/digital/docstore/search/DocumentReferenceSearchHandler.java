@@ -16,6 +16,7 @@ import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
 import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
+import uk.nhs.digital.docstore.config.Tracer;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,9 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
+
+        Tracer.setMDCContext(requestEvent);
+
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
@@ -52,8 +56,8 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         Bundle bundle;
         try {
             Map<String, String> searchParameters = (requestEvent.getQueryStringParameters() == null
-                                                    ? Map.of()
-                                                    : requestEvent.getQueryStringParameters());
+                    ? Map.of()
+                    : requestEvent.getQueryStringParameters());
             List<Document> documents = searchService.findByParameters(
                     searchParameters,
                     message -> logger.info(AUDIT, "{} searched for {}", userEmail, message));

@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
+import uk.nhs.digital.docstore.config.Tracer;
 
 import java.net.URL;
 import java.util.Map;
@@ -37,6 +38,9 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
     }
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
+
+        Tracer.setMDCContext(event);
+
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
