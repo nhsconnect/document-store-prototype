@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 // import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
 
-const HomePage = () => {
+const Home = () => {
     const uploadPathHref = "/upload/patient-trace";
     const searchPathHref = "/search/patient-trace";
     const { register, handleSubmit } = useForm();
@@ -53,4 +53,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default Home;

@@ -1,26 +1,8 @@
-import { Amplify, Auth, API } from "aws-amplify";
+import {Amplify, API, Auth} from "aws-amplify";
 import React from "react";
-// import {
-//     BrowserRouter as Router,
-//     Outlet,
-//     Route,
-//     Routes,
-// } from "react-router-dom";
 import awsConfig from "../config";
 import ApiClient from "../apiClients/apiClient";
-import Authenticator from "../components/Authenticator/Authenticator";
-import HomePage from "./HomePage";
-import Layout from "../components/layout";
-import FeatureToggleProvider, {
-    useFeatureToggle,
-} from "../providers/FeatureToggleProvider";
-import { NhsNumberProvider } from "../providers/NhsNumberProvider";
-import { PatientTracePage } from "./PatientTracePage";
-import UploadDocumentPage from "./UploadDocumentPage";
-import SearchResultsPage from "./SearchResultsPage";
 import StartPage from "./StartPage";
-import CIS2AuthenticationResultNavigator from "../components/Authenticator/CIS2AuthenticationResultNavigator";
-import UploadSuccessPage from "./UploadSuccessPage";
 
 Amplify.configure(awsConfig);
 
@@ -48,7 +30,7 @@ const client = new ApiClient(API, Auth);
 //                     </Authenticator.Protected>
 //                 }
 //             >
-//                 <Route path={homePagePath} element={<HomePage />} />
+//                 <Route path={homePagePath} element={<Home />} />
 //                 <Route
 //                     path="/search"
 //                     element={
@@ -109,16 +91,7 @@ const client = new ApiClient(API, Auth);
 
 const Index = () => {
     return (
-        <FeatureToggleProvider>
-            {/*<Router>*/}
-            {/*    <Authenticator>*/}
-                    <Layout>
-                        <Authenticator.Errors />
-                        {/*<AppRoutes />*/}
-                    </Layout>
-                {/*</Authenticator>*/}
-            {/*</Router>*/}
-        </FeatureToggleProvider>
+        <StartPage />
     );
 };
 

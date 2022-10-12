@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import HomePage from "./HomePage";
+import Home from "./home";
 import { useFeatureToggle } from "../providers/FeatureToggleProvider";
 import { BrowserRouter } from "react-router-dom";
 
@@ -9,7 +9,7 @@ describe("The home page", () => {
         it("provides a link to the multi step upload path", () => {
             render(
                 <BrowserRouter>
-                    <HomePage />
+                    <Home />
                 </BrowserRouter>
             );
 
@@ -19,7 +19,7 @@ describe("The home page", () => {
         it("provides a link to the multi step search path", () => {
             render(
                 <BrowserRouter>
-                    <HomePage />
+                    <Home />
                 </BrowserRouter>
             );
 
