@@ -1,5 +1,5 @@
 import React from "react";
-//import "./index.scss";
+import "./PhaseBanner.module.scss";
 
 export const PhaseBanner = ({ tag, children }) => (
   <div className="nhsuk-header">

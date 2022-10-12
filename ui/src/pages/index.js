@@ -111,12 +111,12 @@ const Index = () => {
     return (
         <FeatureToggleProvider>
             {/*<Router>*/}
-                <Authenticator>
+            {/*    <Authenticator>*/}
                     <Layout>
                         <Authenticator.Errors />
                         {/*<AppRoutes />*/}
                     </Layout>
-                </Authenticator>
+                {/*</Authenticator>*/}
             {/*</Router>*/}
         </FeatureToggleProvider>
     );
