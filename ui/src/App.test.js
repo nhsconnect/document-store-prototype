@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import App from "./App";
+import Index from "./pages";
 import config from "./config";
 
 jest.mock("aws-amplify");
 
-describe("App tests", () => {
+describe("Index tests", () => {
   let defaultFeaturesConfig;
 
   beforeAll(() => {
@@ -20,7 +20,7 @@ describe("App tests", () => {
     config.features = {
       test: { CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true },
     };
-    render(<App />);
+    render(<Index />);
     expect(screen.getByTestId("CIS2Authenticator")).toBeTruthy();
   });
 
@@ -28,7 +28,7 @@ describe("App tests", () => {
     config.features = {
       test: { CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false },
     };
-    render(<App />);
+    render(<Index />);
     expect(screen.getByTestId("AmplifyAuthenticator")).toBeTruthy();
   });
 });

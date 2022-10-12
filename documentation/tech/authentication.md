@@ -66,7 +66,7 @@ The following placeholder values must also be replaced:
 
 | Placeholder      | Replacement values                   |
 |------------------|----------------------------------------|
-| `%cognito-domain%`| App integration domain name from AWS console |
+| `%cognito-domain%`| Index integration domain name from AWS console |
 | `%cognito-redirect-signin%`      | `%client-application-domain%/cis2-auth-callback`                |
 | `%cognito-redirect-signout%`    | To be determined              |
 
