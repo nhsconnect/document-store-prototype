@@ -5,7 +5,7 @@ import React, {useContext, useEffect, useState} from "react";
 import AuthenticationContext from "../../providers/AuthenticatorErrorsProvider";
 import {useFeatureToggle} from "../../providers/FeatureToggleProvider";
 import CIS2Authenticator from "./CIS2Authenticator";
-import {useNavigate} from "react-router";
+// import {useNavigate} from "react-router";
 
 const Authenticator = ({children}) => {
   const [error, setError] = useState(false);
@@ -77,7 +77,7 @@ Authenticator.Protected = Protected;
 
 const LogOut = () => {
   const {isAuthenticated} = useContext(AuthenticationContext);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const isCIS2FederatedIdentityProviderEnabled = useFeatureToggle(
         "CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED"
     );
@@ -86,7 +86,7 @@ const LogOut = () => {
     try {
       await Auth.signOut();
       if (!isCIS2FederatedIdentityProviderEnabled) {
-          navigate("/");
+          // navigate("/");
       }
     } catch (error) {
       console.error('error signing out: ', error);

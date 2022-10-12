@@ -1,6 +1,6 @@
 import { Auth, Hub } from "aws-amplify";
 import { useContext, useEffect, useMemo } from "react";
-import { useLocation } from "react-router";
+// import { useLocation } from "react-router";
 
 import awsConfig from "../../config";
 import AuthenticationContext from "../../providers/AuthenticatorErrorsProvider";
