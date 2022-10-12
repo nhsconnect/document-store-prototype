@@ -8,7 +8,7 @@ import {
 } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import BackButton from "../components/BackButton";
 
@@ -31,7 +31,7 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});
     const [nhsNumber, setNhsNumber] = useNhsNumberProviderContext();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
@@ -46,7 +46,7 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
 
     const onNextClicked = () => {
         setNhsNumber(getValues("nhsNumber"));
-        navigate(nextPage);
+        // navigate(nextPage);
     };
 
     return (

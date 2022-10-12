@@ -1,7 +1,7 @@
 import { Button, Fieldset, Input, Select } from "nhsuk-react-components";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import BackButton from "../components/BackButton";
 
@@ -34,7 +34,7 @@ const UploadDocumentPage = ({ client }) => {
         register("clinicalCode");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [nhsNumber] = useNhsNumberProviderContext();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     useEffect(() => {
         if (!nhsNumber) {
@@ -51,7 +51,7 @@ const UploadDocumentPage = ({ client }) => {
                 data.documentTitle,
                 data.clinicalCode
             );
-            navigate("/upload/success");
+            // navigate("/upload/success");
         } catch (e) {
             console.error(e);
             setSubmissionState(states.FAILED);

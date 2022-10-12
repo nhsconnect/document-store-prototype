@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {Fieldset, Input, Table} from "nhsuk-react-components";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
 
 const states = {
@@ -18,11 +18,11 @@ const SearchResultsPage = ({ client }) => {
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [nhsNumber] = useNhsNumberProviderContext();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     useEffect(() => {
         if (!nhsNumber) {
-            navigate("/search/patient-trace");
+            // navigate("/search/patient-trace");
             return;
         }
         const search = async () => {
