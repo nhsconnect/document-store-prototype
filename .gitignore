@@ -156,3 +156,5 @@ venv/
 app/bin
 
 .idea/
+
+.next
