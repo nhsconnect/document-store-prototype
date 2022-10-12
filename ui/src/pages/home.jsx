@@ -53,4 +53,19 @@ const Home = () => {
     );
 };
 
+export const getServerSideProps = ({ query }) => {
+    if (query.trx) {
+        return {
+            redirect: {
+                destination: '/PatientTracePage',
+                statusCode: 302,
+            },
+            props: {
+                nextPage: query.trx
+            }
+        }
+    }
+    return {}
+}
+
 export default Home;

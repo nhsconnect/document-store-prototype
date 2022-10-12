@@ -4,6 +4,7 @@
     "private": true,
     "proxy": "http://localhost:4566",
     "dependencies": {
+        "@aws-amplify/cli": "^10.2.3",
         "@aws-amplify/ui-react": "^1.2.23",
         "@rehooks/local-storage": "^2.4.4",
         "@testing-library/jest-dom": "^5.15.0",
@@ -12,14 +13,14 @@
         "aws-amplify": "^4.3.5",
         "cypress": "^10.6.0",
         "history": "^5.3.0",
+        "next": "latest",
         "nhsuk-frontend": "^6.1.2",
         "nhsuk-react-components": "^2.0.0",
         "prettier": "^2.7.1",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
         "react-hook-form": "^7.34.0",
-        "web-vitals": "^1.1.2",
-        "next": "latest"
+        "web-vitals": "^1.1.2"
     },
     "scripts": {
         "start": "REACT_APP_ENV=local next start",

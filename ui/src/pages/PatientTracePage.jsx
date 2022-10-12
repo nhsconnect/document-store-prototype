@@ -40,6 +40,7 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
             setPatientDetails(patientData);
             setSubmissionState(states.SUCCEEDED);
         } catch (e) {
+            console.log(e)
             setSubmissionState(states.FAILED);
         }
     };
@@ -52,7 +53,7 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
     return (
         <>
             <BackButton />
-            <form onSubmit={handleSubmit(doSubmit)} noValidate>
+            <form action="/PatientTraceResultsPage" method="GET"  noValidate>
                 {submissionState === states.FAILED && (
                     <ErrorSummary
                         aria-labelledby="error-summary-title"
