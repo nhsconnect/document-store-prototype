@@ -6,7 +6,6 @@ import React from "react";
 //     Route,
 //     Routes,
 // } from "react-router-dom";
-import "../App.scss";
 import awsConfig from "../config";
 import ApiClient from "../apiClients/apiClient";
 import Authenticator from "../components/Authenticator/Authenticator";

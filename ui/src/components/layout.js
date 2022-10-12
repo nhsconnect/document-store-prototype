@@ -1,7 +1,7 @@
 import React from "react";
 
 import Header from "./Header";
-import "./layout.scss";
+// import "./layout.scss";
 import { Footer } from "nhsuk-react-components";
 import { PhaseBanner } from "./PhaseBanner";
 
