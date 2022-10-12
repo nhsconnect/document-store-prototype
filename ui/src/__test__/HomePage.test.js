@@ -1,16 +1,16 @@
 import { render, screen } from "@testing-library/react";
-import Home from "./home";
+import Home from "../pages/home";
 import { useFeatureToggle } from "../providers/FeatureToggleProvider";
-import { BrowserRouter } from "react-router-dom";
+// import { BrowserRouter } from "react-router-dom";
 
 jest.mock("../providers/FeatureToggleProvider");
 
 describe("The home page", () => {
         it("provides a link to the multi step upload path", () => {
             render(
-                <BrowserRouter>
+                // <BrowserRouter>
                     <Home />
-                </BrowserRouter>
+                // </BrowserRouter>
             );
 
             expect(screen.getByText("Upload a document")).toBeInTheDocument()
@@ -18,9 +18,9 @@ describe("The home page", () => {
 
         it("provides a link to the multi step search path", () => {
             render(
-                <BrowserRouter>
+                // <BrowserRouter>
                     <Home />
-                </BrowserRouter>
+                // </BrowserRouter>
             );
 
             expect(

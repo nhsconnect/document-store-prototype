@@ -2,8 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ApiClient from "../apiClients/apiClient";
-import { PatientTracePage } from "./PatientTracePage";
-import * as ReactRouter from "react-router";
+import { PatientTracePage } from "../pages/PatientTracePage";
+// import * as ReactRouter from "react-router";
 import { createMemoryHistory } from 'history';
 
 jest.mock("../apiClients/apiClient");

@@ -140,3 +140,5 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
         </>
     );
 };
+
+export default PatientTracePage;

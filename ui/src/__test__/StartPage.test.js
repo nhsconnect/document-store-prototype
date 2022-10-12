@@ -1,5 +1,5 @@
 import { screen, render } from "@testing-library/react";
-import StartPage from "./StartPage";
+import StartPage from "../pages/StartPage";
 
 describe("The start page", () => {
     it("renders a button link to the home page", () => {

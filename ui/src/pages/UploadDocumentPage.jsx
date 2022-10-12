@@ -38,9 +38,9 @@ const UploadDocumentPage = ({ client }) => {
 
     useEffect(() => {
         if (!nhsNumber) {
-            navigate("/upload/patient-trace");
+            // navigate("/upload/patient-trace");
         }
-    }, [nhsNumber, navigate]);
+    }, [nhsNumber]);
 
     const doSubmit = async (data) => {
         try {

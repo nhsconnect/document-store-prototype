@@ -3,6 +3,7 @@ import Authenticator from "../components/Authenticator/Authenticator";
 import React from "react";
 import FeatureToggleProvider from "../providers/FeatureToggleProvider";
 import Layout from "../components/layout";
+import {NhsNumberProvider} from "../providers/NhsNumberProvider";
 
 function MyApp({ Component, pageProps }) {
     return (
@@ -10,7 +11,9 @@ function MyApp({ Component, pageProps }) {
             {/*<Authenticator>*/}
                 <Layout>
                     <Authenticator.Errors />
-                    <Component {...pageProps} />
+                    <NhsNumberProvider>
+                        <Component {...pageProps} />
+                    </NhsNumberProvider>
                 </Layout>
             {/*</Authenticator>*/}
         </FeatureToggleProvider>);

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import UploadSuccessPage from "./UploadSuccessPage";
+import UploadSuccessPage from "../pages/UploadSuccessPage";
 
 const mockNavigate = jest.fn();
 jest.mock("react-router", () => ({

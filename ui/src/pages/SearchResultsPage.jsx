@@ -38,7 +38,7 @@ const SearchResultsPage = ({ client }) => {
             }
         };
         void search();
-    }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
+    }, [client, nhsNumber, setSubmissionState, setSearchResults]);
 
     return (
         <>

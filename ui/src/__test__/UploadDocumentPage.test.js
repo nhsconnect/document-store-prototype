@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 
 import ApiClient from "../apiClients/apiClient";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
-import UploadDocumentPage from "./UploadDocumentPage";
+import UploadDocumentPage from "../pages/UploadDocumentPage";
 
 jest.mock("../apiClients/apiClient");
 jest.mock("../providers/NhsNumberProvider", () => ({

@@ -3,7 +3,7 @@ import { Factory } from "fishery";
 
 import ApiClient from "../apiClients/apiClient";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
-import SearchResultsPage from "./SearchResultsPage";
+import SearchResultsPage from "../pages/SearchResultsPage";
 
 jest.mock("../apiClients/apiClient");
 jest.mock("../providers/NhsNumberProvider", () => ({
