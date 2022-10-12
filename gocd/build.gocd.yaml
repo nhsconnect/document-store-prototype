@@ -267,7 +267,7 @@ pipelines:
           - gradle/**/*.*
       pre_prod_env:
         pipeline: paperless-record-service.pre-prod
-        stage: e2e-tests
+        stage: e2e_tests
     stages:
       - build_backend:
           clean_workspace: true
