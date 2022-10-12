@@ -7,6 +7,7 @@ import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotificatio
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3EventNotificationRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.config.Tracer;
 
 import java.time.Instant;
 import java.util.List;
@@ -19,6 +20,7 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
 
     @Override
     public Void handleRequest(S3Event event, Context context) {
+        Tracer.setMDCContext();
         List<S3EventNotificationRecord> records = event.getRecords();
         LOGGER.info("Marking {} document(s) as uploaded", records.size());
 

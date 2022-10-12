@@ -40,7 +40,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
 
-        Tracer.setMDCContext(input);
+        Tracer.setMDCContext();
 
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();

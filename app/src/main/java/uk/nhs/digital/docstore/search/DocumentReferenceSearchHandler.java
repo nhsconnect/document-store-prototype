@@ -46,7 +46,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
 
-        Tracer.setMDCContext(requestEvent);
+        Tracer.setMDCContext();
 
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
