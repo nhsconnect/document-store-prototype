@@ -1,13 +1,14 @@
 package uk.nhs.digital.docstore.config;
+import com.amazonaws.services.lambda.runtime.Context;
 import org.slf4j.MDC;
-import uk.nhs.digital.docstore.utils.CommonUtils;
+
 
 public class Tracer {
-    public static final String CORRELATION_ID_LOG_VAR_NAME = "correlationId";
+    public static final String CORRELATION_ID_LOG_VAR_NAME = "requestId";
 
-    public static void setMDCContext() {
+    public static void setMDCContext(Context context) {
         clearMDCContext();
-        MDC.put(CORRELATION_ID_LOG_VAR_NAME, CommonUtils.generateRandomUUIDString());
+        MDC.put(CORRELATION_ID_LOG_VAR_NAME, context.getAwsRequestId());
     }
 
     private static void clearMDCContext() {

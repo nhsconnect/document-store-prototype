@@ -39,7 +39,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
 
-        Tracer.setMDCContext();
+        Tracer.setMDCContext(context);
 
         logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();

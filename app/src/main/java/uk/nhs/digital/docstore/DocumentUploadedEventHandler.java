@@ -20,7 +20,7 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
 
     @Override
     public Void handleRequest(S3Event event, Context context) {
-        Tracer.setMDCContext();
+        Tracer.setMDCContext(context);
         List<S3EventNotificationRecord> records = event.getRecords();
         LOGGER.info("Marking {} document(s) as uploaded", records.size());
 

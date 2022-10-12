@@ -1,37 +1,32 @@
 package uk.nhs.digital.docstore.config;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import com.amazonaws.services.lambda.runtime.Context;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.nhs.digital.docstore.config.Tracer.CORRELATION_ID_LOG_VAR_NAME;
 
+@ExtendWith(MockitoExtension.class)
 class TracerTest {
-    private static Tracer tracer;
-    private APIGatewayProxyRequestEvent requestEvent;
-
-    @BeforeAll
-    static void setUp() {
-        tracer = new Tracer();
-    }
-
-    @BeforeEach
-    public void testSetUp() {requestEvent = spy(new APIGatewayProxyRequestEvent());}
 
     @Test
     void shouldCreateAndAddCorrelationIdToMDC() {
+        var context = mock(Context.class);
+        var requestId = UUID.randomUUID().toString();
 
-        tracer.setMDCContext();
+        when(context.getAwsRequestId()).thenReturn(requestId);
+
+        Tracer.setMDCContext(context);
 
         var mdcCorrelationIdValue = MDC.get(CORRELATION_ID_LOG_VAR_NAME);
 
-        assertThat(mdcCorrelationIdValue).isNotNull();
-        assertThat(UUID.fromString(mdcCorrelationIdValue)).isNotNull();
+        assertThat(mdcCorrelationIdValue).isEqualTo(requestId);
     }
 
 }
