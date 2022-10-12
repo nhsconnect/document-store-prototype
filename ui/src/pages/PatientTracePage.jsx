@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 // import { useNavigate } from "react-router";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import BackButton from "../components/BackButton";
+import { Link } from "next/link"
 
 const states = {
     IDLE: "idle",
@@ -52,8 +53,8 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
 
     return (
         <>
-            <BackButton />
-            <form action="/PatientTraceResultsPage" method="GET"  noValidate>
+            <BackButton href={"/home"}/>
+            <form action="/PatientTraceResultsPage" method="GET" noValidate>
                 {submissionState === states.FAILED && (
                     <ErrorSummary
                         aria-labelledby="error-summary-title"
@@ -136,7 +137,7 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
                 )}
             </form>
             {submissionState === states.SUCCEEDED && (
-                <Button onClick={onNextClicked}>Next</Button>
+                <Button><Link>Next</Link></Button>
             )}
         </>
     );

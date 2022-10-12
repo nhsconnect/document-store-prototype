@@ -1,47 +1,45 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
-import { useForm } from "react-hook-form";
-// import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
+import { withSSRContext } from "aws-amplify";
+import { useRouter } from "next/router";
 
 const Home = () => {
-    const uploadPathHref = "/upload/patient-trace";
-    const searchPathHref = "/search/patient-trace";
-    const { register, handleSubmit } = useForm();
-    // let navigate = useNavigate();
-    const { ref: trxRef, ...trxProps } = register("trx");
-
-    const doSubmit = async (data) => {
-        const location =
-            data.trx === "download" ? searchPathHref : uploadPathHref;
-        // navigate(location, { replace: false });
-    };
-
+    const downloadRef = useRef(null)
+    const uploadRef = useRef(null)
+    const router = useRouter()
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        if (downloadRef.current.checked) {
+            router.push('/PatientTracePage?trx=download')
+        }
+        if (uploadRef.current.checked) {
+            router.push('/PatientTracePage?trx=upload')
+        }
+    }
     return (
         <>
-            <BackButton />
-            <form onSubmit={handleSubmit(doSubmit)}>
+            <BackButton href={"/start"}/>
+            <form action="/PatientTracePage" method="GET" onSubmit={handleSubmit}>
                 <Fieldset>
                     <Fieldset.Legend headingLevel={"h1"} isPageHeading>
                         How do you want to use the Document Store?
                     </Fieldset.Legend>
                     <Radios
-                        name="document-store-action"
+                        name="trx"
                         hint="Select an option"
                     >
                         <Radios.Radio
                             id="download"
                             value="download"
-                            inputRef={trxRef}
-                            {...trxProps}
+                            inputRef={downloadRef}
                         >
                             Download and view a stored document
                         </Radios.Radio>
                         <Radios.Radio
                             id="upload"
                             value="upload"
-                            inputRef={trxRef}
-                            {...trxProps}
+                            inputRef={uploadRef}
                         >
                             Upload a document
                         </Radios.Radio>
@@ -53,19 +51,22 @@ const Home = () => {
     );
 };
 
-export const getServerSideProps = ({ query }) => {
-    if (query.trx) {
-        return {
-            redirect: {
-                destination: '/PatientTracePage',
-                statusCode: 302,
-            },
-            props: {
-                nextPage: query.trx
-            }
-        }
-    }
-    return {}
+export const getServerSideProps = async ({ req }) => {
+    const { Auth } = withSSRContext({ req })
+
+    // try {
+    //     await Auth.currentSession()
+    //     return
+    // } catch (e) {
+    //     console.log(e)
+    //     return {
+    //         redirect: {
+    //             statusCode: 302,
+    //             location: `https://doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth`
+    //         }
+    //     }
+    // }
+    return { props: {}}
 }
 
 export default Home;
