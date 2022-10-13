@@ -17,7 +17,7 @@ const config = {
         endpoints: [
             {
                 name: "doc-store-api",
-                endpoint: "http://localhost:3000/restapis/v4yxehtasl/test/_user_request_/"
+                endpoint: "http://localhost:3000/restapis/msmkrayxmv/test/_user_request_/"
             },
         ],
     },

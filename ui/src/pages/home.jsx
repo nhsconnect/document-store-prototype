@@ -3,6 +3,7 @@ import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import BackButton from "../components/BackButton";
 import { withSSRContext } from "aws-amplify";
 import { useRouter } from "next/router";
+import config from "../config"
 
 const Home = () => {
     const downloadRef = useRef(null)
@@ -52,21 +53,29 @@ const Home = () => {
 };
 
 export const getServerSideProps = async ({ req }) => {
-    const { Auth } = withSSRContext({ req })
-
-    // try {
-    //     await Auth.currentSession()
-    //     return
-    // } catch (e) {
-    //     console.log(e)
-    //     return {
-    //         redirect: {
-    //             statusCode: 302,
-    //             location: `https://doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth`
-    //         }
-    //     }
-    // }
-    return { props: {}}
+    
+    try {
+        await Auth.currentSession()
+        return
+    } catch (e) {
+        console.log(e)
+        const { 
+            domain,  
+            redirectSignIn, 
+            responseType } = config.Auth.oauth;
+        
+        const clientId = config.Auth.userPoolWebClientId;
+        // The url of the Cognito Hosted UI
+        const url = 'https://' + domain + '/login?redirect_uri=' + redirectSignIn + '&response_type=' + responseType + '&client_id=' + clientId;
+    
+        return {
+            redirect: {
+                statusCode: 302,
+                destination: url
+            }
+        }
+    }
+    return { props: {} }
 }
 
 export default Home;
