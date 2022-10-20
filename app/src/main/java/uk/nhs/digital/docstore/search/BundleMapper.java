@@ -13,7 +13,7 @@ import static org.hl7.fhir.r4.model.Bundle.BundleType.SEARCHSET;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
-class BundleMapper {
+public class BundleMapper {
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
 
