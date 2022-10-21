@@ -13,13 +13,12 @@ describe("upload and search transaction", () => {
             cy.contains("Start now").click();
             // log into the website
             cy.cis2Login(Cypress.env("username"), Cypress.env("password"));
-            cy.wait(3000);
         } else {
             // log into the website
             cy.login(Cypress.env("username"), Cypress.env("password"));
         }
 
-        cy.get("#upload").click();
+        cy.get("#upload", { timeout: 10000 }).click();
         cy.get('[type="submit"]').click();
 
         cy.url().should(
@@ -71,16 +70,18 @@ describe("upload and search transaction", () => {
         cy.contains("Next", { timeout: 30000 }).click();
         cy.url().should("eq", Cypress.config("baseUrl") + "/search/results");
 
+        //mock window.open() to check if the link opens in new page
+        cy.window().then((win) => {
+            cy.stub(win, 'open', () => null).as("popup")
+        });
+
         // wait for lambda to return results
         cy.get('a[data-testid="document-title"]', { timeout: 30000 })
             .first()
-            .should("have.text", documentTitle);
+            .should("have.text", documentTitle)
+            .click();
 
-        cy.get('a[data-testid="document-title"]').should(
-            "have.attr",
-            "target",
-            "_blank"
-        );
+        cy.get('@popup', { timeout: 15000 }).should("be.called");
 
         cy.contains("Log Out").click();
 
