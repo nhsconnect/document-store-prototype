@@ -102,6 +102,24 @@ class ApiClient {
               }))
             : [];
     }
+
+  async getPresignedUrl(id) {
+    const data = await this.api.get("doc-store-api", "/PresignedUrl", {
+      headers: {
+        Accept: "application/fhir+json",
+        Authorization: `Bearer ${(await this.auth.currentSession())
+          .getIdToken()
+          .getJwtToken()}`,
+      },
+      queryStringParameters: {
+        "id": id,
+      },
+    });
+
+    return data.total > 0 && data.entry[0].resource.docStatus === "final"
+      ? data.entry[0].resource.content[0].attachment.url
+      : null;
+  }
 }
 
 export default ApiClient;

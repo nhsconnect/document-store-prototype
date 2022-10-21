@@ -232,3 +232,57 @@ describe("tests the getPatientDetails method", () => {
         expect(returnedPatientBundle).toStrictEqual(expectedPatientBundle);
     });
 });
+
+describe("test the getPresignedUrl method", () => {
+  test("returns a presigned url associated with the document id ", async () => {
+    const token = "token";
+    const auth = {
+      currentSession: async () => {
+        return {
+          getIdToken: () => {
+            return {
+              getJwtToken: () => {
+                return token;
+              },
+            };
+          },
+        };
+      },
+    };
+    const getMock = jest.fn(() => {
+      return responseBody;
+    });
+    const api = { get: getMock };
+    const apiClient = new ApiClient(api, auth);
+    const id = 12345;
+    const requestHeaders = {
+      Accept: "application/fhir+json",
+      Authorization: `Bearer ${(await auth.currentSession())
+        .getIdToken()
+        .getJwtToken()}`,
+    };
+    const queryStringParametersMock = {
+      "id": id,
+    };
+    const retrieveUrl = "retrieve-url";
+    const resourceObject = {
+      docStatus: "final",
+      content: [{ attachment: { url: retrieveUrl }}],
+    };
+    const responseBody = {
+      total: 1,
+      entry: [{ resource: resourceObject }],
+    };
+    const returnedPresignedUrl = await apiClient.getPresignedUrl(id);
+
+    expect(getMock).toHaveBeenCalledWith(
+      "doc-store-api",
+      "/PresignedUrl",
+      expect.objectContaining({
+        headers: requestHeaders,
+        queryStringParameters: queryStringParametersMock,
+      })
+    );
+    expect(returnedPresignedUrl).toStrictEqual(retrieveUrl);
+  });
+});
