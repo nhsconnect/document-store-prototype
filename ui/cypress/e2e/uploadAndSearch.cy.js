@@ -81,6 +81,8 @@ describe("upload and search transaction", () => {
 
         cy.get('@popup', { timeout: 15000 }).should("be.called");
 
+        cy.visit("/");
+
         cy.contains("Log Out").click();
 
         cy.url().should(
