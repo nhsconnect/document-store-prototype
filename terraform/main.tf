@@ -150,11 +150,15 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_rest_api.lambda_api.body,
       module.doc_ref_endpoint,
       module.patient_details_endpoint,
+      module.presigned_url_endpoint,
       aws_api_gateway_method.create_doc_ref_method,
+      aws_api_gateway_method.presigned_url_method,
       aws_api_gateway_resource.doc_ref_resource,
       aws_api_gateway_resource.patient_details_resource,
+      aws_api_gateway_resource.presigned_url_resource,
       aws_api_gateway_integration.create_doc_ref_integration,
       aws_api_gateway_integration.search_patient_details_integration,
+      aws_api_gateway_integration.presigned_url_integration,
       aws_api_gateway_method.doc_ref_search_method,
       aws_api_gateway_method.search_patient_details_method,
       aws_api_gateway_integration.doc_ref_search_integration,
@@ -163,6 +167,8 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_method.create_and_search_doc_preflight_method,
       aws_api_gateway_integration.patient_details_preflight_integration,
       aws_api_gateway_method.patient_details_preflight_method,
+      aws_api_gateway_method.presigned_url_preflight_method,
+      aws_api_gateway_integration.presigned_url_preflight_integration,
     ]))
   }
 }
