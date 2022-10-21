@@ -35,14 +35,12 @@ describe("test the findByNhsNumber method", () => {
         };
         const snomedCode = "185361000000102";
         const typeObject = { coding: [{ code: snomedCode }] };
-        const retrieveUrl = "retrieve-url";
-        const contentObject = [{ attachment: { url: retrieveUrl } }];
         const resourceObject = {
+            id: "123",
             description: "description",
             docStatus: "final",
             indexed: "2022-08-10T10:34:41.515050Z",
             type: typeObject,
-            content: contentObject,
         };
         const responseBody = {
             total: 1,
@@ -50,9 +48,9 @@ describe("test the findByNhsNumber method", () => {
         };
         const expectedReturnedDocumentList = [
             {
+                id: resourceObject.id,
                 description: resourceObject.description,
                 type: snomedCode,
-                url: retrieveUrl,
                 indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
             },
         ];

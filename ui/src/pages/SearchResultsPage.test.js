@@ -4,6 +4,7 @@ import { Factory } from "fishery";
 import ApiClient from "../apiClients/apiClient";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import SearchResultsPage from "./SearchResultsPage";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("../apiClients/apiClient");
 jest.mock("../providers/NhsNumberProvider", () => ({
@@ -14,12 +15,14 @@ jest.mock("react-router", () => ({
     useNavigate: () => mockNavigate,
 }));
 
-const searchResultFactory = Factory.define(({ sequence }) => ({
+const searchResultFactory = Factory.define(() => ({
+    id: "some-id",
     description: "Some description",
     type: "some type",
-    url: `https://some.${sequence}.url`,
     indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
 }));
+
+const presignedUrl = "https://some-url";
 
 describe("Search page", () => {
     describe("when there is an NHS number", () => {
@@ -74,10 +77,6 @@ describe("Search page", () => {
                 searchResult.description
             );
             expect(documentDescriptionElement).toBeInTheDocument();
-            expect(documentDescriptionElement).toHaveAttribute(
-                "href",
-                searchResult.url
-            );
             expect(screen.getByText(searchResult.type)).toBeInTheDocument();
             expect(
                 screen.getByText(searchResult.indexed.toLocaleString())
@@ -117,6 +116,26 @@ describe("Search page", () => {
             expect(resultRows[2].innerHTML).toContain("oldest");
         });
 
+        it("call apiclient to get presigned url when user clicks on document description link", async () => {
+            const apiClientMock = new ApiClient();
+            const searchResult = searchResultFactory.build();
+            apiClientMock.findByNhsNumber = jest.fn(() => {
+                return [searchResult];
+            });
+            apiClientMock.getPresignedUrl = jest.fn(() => {
+                return presignedUrl;
+            });
+            render(<SearchResultsPage client={apiClientMock} />);
+
+            await waitFor(() => {
+                expect(screen.getByText(searchResult.description)).toBeInTheDocument();
+            });
+
+            userEvent.click(screen.getByText(searchResult.description));
+
+            expect(apiClientMock.getPresignedUrl).toHaveBeenCalledWith(searchResult.id);
+        });
+
         it("displays a message when a document search returns no results", async () => {
             const apiClientMock = new ApiClient();
             apiClientMock.findByNhsNumber = jest.fn(() => {
@@ -151,21 +170,21 @@ describe("Search page", () => {
             apiClientMock.findByNhsNumber = jest.fn(() => {
                 return [searchResult];
             });
+            apiClientMock.getPresignedUrl = jest.fn(() => {
+                return presignedUrl;
+            });
             window.open = jest.fn();
             render(<SearchResultsPage client={apiClientMock} />);
 
             await waitFor(() => {
                 expect(screen.getByText("Documents")).toBeInTheDocument();
             });
-            const documentDescriptionElement = screen.getByText(
-                searchResult.description
-            );
-            expect(documentDescriptionElement.getAttribute("href")).toBe(
-                searchResult.url
-            );
-            expect(documentDescriptionElement.getAttribute("target")).toBe(
-                "_blank"
-            );
+
+            userEvent.click(screen.getByText(searchResult.description));
+
+            await waitFor(() => {
+            expect(window.open).toHaveBeenCalledWith(presignedUrl);
+            });
         });
     });
 

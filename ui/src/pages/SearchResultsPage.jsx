@@ -40,6 +40,13 @@ const SearchResultsPage = ({ client }) => {
         void search();
     }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
+    async function handleClick(id) {
+        if (id) {
+            const url = await client.getPresignedUrl(id);
+            url && window.open(url);
+        }
+    }
+
     return (
         <>
             <BackButton />
@@ -83,8 +90,8 @@ const SearchResultsPage = ({ client }) => {
                                     <Table.Row key={result.url}>
                                         <Table.Cell>
                                             <a
-                                                href={result.url}
-                                                target="_blank"
+                                                href={"#"}
+                                                onClick={() => handleClick(result.id)}
                                                 data-testid="document-title"
                                             >
                                                 {result.description}

@@ -22,16 +22,11 @@ class ApiClient {
 
         return data.total > 0
             ? data.entry.map(({ resource }) => ({
+                  id: resource.id,
                   description: resource.description,
                   type: resource.type.coding
                       .map((coding) => coding.code)
                       .join(", "),
-                  url:
-                      resource.docStatus === "final"
-                          ? setUrlHostToLocalHost(
-                                resource.content[0].attachment.url
-                            )
-                          : "",
                   indexed: new Date(resource.indexed),
               }))
             : [];
@@ -117,7 +112,7 @@ class ApiClient {
     });
 
     return data.total > 0 && data.entry[0].resource.docStatus === "final"
-      ? data.entry[0].resource.content[0].attachment.url
+      ? setUrlHostToLocalHost(data.entry[0].resource.content[0].attachment.url)
       : null;
   }
 }
