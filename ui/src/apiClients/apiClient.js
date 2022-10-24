@@ -99,20 +99,17 @@ class ApiClient {
     }
 
   async getPresignedUrl(id) {
-    const data = await this.api.get("doc-store-api", "/PresignedUrl", {
+    const data = await this.api.get("doc-store-api", "/DocumentReference/"+id, {
       headers: {
         Accept: "application/fhir+json",
         Authorization: `Bearer ${(await this.auth.currentSession())
           .getIdToken()
           .getJwtToken()}`,
       },
-      queryStringParameters: {
-        "id": id,
-      },
     });
 
-    return data.total > 0 && data.entry[0].resource.docStatus === "final"
-      ? setUrlHostToLocalHost(data.entry[0].resource.content[0].attachment.url)
+    return data?.docStatus === "final"
+      ? setUrlHostToLocalHost(data.content[0].attachment.url)
       : null;
   }
 }

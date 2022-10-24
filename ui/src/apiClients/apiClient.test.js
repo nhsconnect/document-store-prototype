@@ -259,26 +259,18 @@ describe("test the getPresignedUrl method", () => {
         .getIdToken()
         .getJwtToken()}`,
     };
-    const queryStringParametersMock = {
-      "id": id,
-    };
     const retrieveUrl = "retrieve-url";
-    const resourceObject = {
+    const responseBody = {
       docStatus: "final",
       content: [{ attachment: { url: retrieveUrl }}],
-    };
-    const responseBody = {
-      total: 1,
-      entry: [{ resource: resourceObject }],
     };
     const returnedPresignedUrl = await apiClient.getPresignedUrl(id);
 
     expect(getMock).toHaveBeenCalledWith(
       "doc-store-api",
-      "/PresignedUrl",
+      "/DocumentReference/"+id,
       expect.objectContaining({
         headers: requestHeaders,
-        queryStringParameters: queryStringParametersMock,
       })
     );
     expect(returnedPresignedUrl).toStrictEqual(retrieveUrl);
