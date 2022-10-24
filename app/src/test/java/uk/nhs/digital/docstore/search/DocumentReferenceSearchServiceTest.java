@@ -12,37 +12,30 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
-import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.nhs.digital.docstore.DocumentMetadataBuilder.theMetadata;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentReferenceSearchServiceTest {
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String SUBJECT_ID_PARAM_NAME = "subject:identifier";
-    private static final URL NO_PRE_SIGNED_URL = null;
 
     private DocumentReferenceSearchService searchService;
 
     @Mock
     private DocumentMetadataStore metadataStore;
-    @Mock
-    private DocumentStore documentStore;
     @Mock
     private Consumer<String> logger;
 
@@ -52,7 +45,7 @@ class DocumentReferenceSearchServiceTest {
 
     @BeforeEach
     void setUp() {
-        searchService = new DocumentReferenceSearchService(metadataStore, documentStore);
+        searchService = new DocumentReferenceSearchService(metadataStore);
     }
 
     @ParameterizedTest
@@ -60,15 +53,13 @@ class DocumentReferenceSearchServiceTest {
             NHS_NUMBER_SYSTEM_ID + "|1234567890",
             "1234567890",
     })
-    void supportsDifferentIdentifierSyntaxes(String identifier) throws MalformedURLException {
+    void supportsDifferentIdentifierSyntaxes(String identifier) {
         String nhsNumber = "1234567890";
         var metadataTemplate = theMetadata()
                 .withNhsNumber(nhsNumber)
                 .withDocumentUploaded(true);
         when(metadataStore.findByNhsNumber(nhsNumber))
                 .thenReturn(List.of(metadataTemplate.build()));
-        when(documentStore.generatePreSignedUrl(any()))
-                .thenReturn(new URL("https://example.org/"));
 
         List<Document> documents = searchService.findByParameters(
                 Map.of(SUBJECT_ID_PARAM_NAME, identifier),
@@ -76,8 +67,7 @@ class DocumentReferenceSearchServiceTest {
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(new Document(metadataTemplate.build(),
-                        new URL("https://example.org/")));
+                .containsExactly(new Document(metadataTemplate.build()));
     }
 
     @ParameterizedTest
@@ -85,15 +75,13 @@ class DocumentReferenceSearchServiceTest {
             SUBJECT_ID_PARAM_NAME,
             "subject.identifier",
     })
-    void supportsDifferentSearchSyntaxes(String parameterName) throws MalformedURLException {
+    void supportsDifferentSearchSyntaxes(String parameterName) {
         String nhsNumber = "9000000009";
         var metadataTemplate = theMetadata()
                 .withNhsNumber(nhsNumber)
                 .withDocumentUploaded(true);
         when(metadataStore.findByNhsNumber(nhsNumber))
                 .thenReturn(List.of(metadataTemplate.build()));
-        when(documentStore.generatePreSignedUrl(any()))
-                .thenReturn(new URL("https://example.org/"));
 
         List<Document> documents = searchService.findByParameters(
                 Map.of(parameterName, asQualifiedIdentifier(nhsNumber)),
@@ -101,8 +89,7 @@ class DocumentReferenceSearchServiceTest {
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(new Document(metadataTemplate.build(),
-                        new URL("https://example.org/")));
+                .containsExactly(new Document(metadataTemplate.build()));
     }
 
     @Test
@@ -121,10 +108,7 @@ class DocumentReferenceSearchServiceTest {
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
                 .containsExactly(new Document(
-                        metadataTemplate.build(),
-                        NO_PRE_SIGNED_URL));
-        verify(documentStore, never())
-                .generatePreSignedUrl(any());
+                        metadataTemplate.build()));
     }
 
     @ParameterizedTest

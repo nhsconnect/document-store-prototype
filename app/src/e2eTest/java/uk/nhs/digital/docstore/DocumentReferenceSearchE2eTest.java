@@ -7,17 +7,14 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.auth0.jwt.JWT;
-import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +43,7 @@ public class DocumentReferenceSearchE2eTest {
     }
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         var baseUri = String.format(BASE_URI_TEMPLATE, getHost(), DEFAULT_PORT);
         var awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
 
@@ -111,20 +108,11 @@ public class DocumentReferenceSearchE2eTest {
         assertThat(searchResponse.statusCode()).isEqualTo(200);
         assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(searchResponse.body())
-                .whenIgnoringPaths("$.meta", "$.entry[*].resource.content[*].attachment.url", "$.entry[*].resource.meta", "$.entry[*].resource.indexed")
+                .whenIgnoringPaths("$.meta", "$.entry[*].resource.meta", "$.entry[*].resource.indexed")
                 .isEqualTo(expectedSearchResponse);
         assertThatJson(searchResponse.body())
                 .inPath("$.entry[0].resource.indexed")
                 .isString();
-
-        String preSignedUrl = JsonPath.<String>read(searchResponse.body(), "$.entry[0].resource.content[0].attachment.url")
-                .replace(INTERNAL_DOCKER_HOST, getHost());
-        var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
-                .GET()
-                .timeout(Duration.ofSeconds(2))
-                .build();
-        var documentResponse = newHttpClient().send(documentRequest, BodyHandlers.ofString(UTF_8));
-        assertThat(documentResponse.body()).isEqualTo(S3_VALUE);
     }
 
     @Test

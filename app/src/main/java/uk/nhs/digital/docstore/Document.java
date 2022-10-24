@@ -1,15 +1,12 @@
 package uk.nhs.digital.docstore;
 
-import java.net.URL;
 import java.util.List;
 
 public class Document {
     private final DocumentMetadata metadata;
-    private final URL preSignedUrl;
 
-    public Document(DocumentMetadata metadata, URL preSignedUrl) {
+    public Document(DocumentMetadata metadata) {
         this.metadata = metadata;
-        this.preSignedUrl = preSignedUrl;
     }
 
     public String getReferenceId() {
@@ -18,10 +15,6 @@ public class Document {
 
     public String getNhsNumber() {
         return metadata.getNhsNumber();
-    }
-
-    public URL getPreSignedUrl() {
-        return preSignedUrl;
     }
 
     public String getContentType() {
@@ -52,7 +45,6 @@ public class Document {
     public String toString() {
         return "Document{" +
                 "metadata=" + metadata +
-                ", preSignedUrl=" + preSignedUrl +
                 '}';
     }
 }

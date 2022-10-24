@@ -1,8 +1,14 @@
 package uk.nhs.digital.docstore.search;
 
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.DocumentReference;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.InstantType;
+import org.hl7.fhir.r4.model.Reference;
 import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.NHSDocumentReference;
 
@@ -35,13 +41,6 @@ class BundleMapper {
     }
 
     private DocumentReference toDocumentReference(Document document) {
-        DocumentReferenceContentComponent contentComponent = null;
-        if (document.isUploaded()) {
-            contentComponent = new DocumentReferenceContentComponent()
-                    .setAttachment(new Attachment()
-                            .setContentType(document.getContentType())
-                            .setUrl(document.getPreSignedUrl().toExternalForm()));
-        }
 
         var type = new CodeableConcept()
                 .setCoding(document.getType()
@@ -58,7 +57,6 @@ class BundleMapper {
                         .setIdentifier(new Identifier()
                                 .setSystem(NHS_NUMBER_SYSTEM_ID)
                                 .setValue(document.getNhsNumber())))
-                .addContent(contentComponent)
                 .setType(type)
                 .setDocStatus(document.isUploaded() ? FINAL : PRELIMINARY)
                 .setDescription(document.getDescription())

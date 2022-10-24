@@ -14,7 +14,6 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
-import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.config.Tracer;
 
@@ -39,8 +38,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         this.fhirContext.setPerformanceOptions(DEFERRED_MODEL_SCANNING);
 
         DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-        DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
-        this.searchService = new DocumentReferenceSearchService(metadataStore, documentStore);
+        this.searchService = new DocumentReferenceSearchService(metadataStore);
     }
 
     @Override
