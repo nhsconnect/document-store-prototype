@@ -94,7 +94,7 @@ const LogOut = () => {
   }
 
   if (isAuthenticated) {
-    return <ButtonLink onClick={signOut}>Log Out</ButtonLink>;
+    return <ButtonLink secondary onClick={signOut}>Log Out</ButtonLink>;
   }
   return null;
 
