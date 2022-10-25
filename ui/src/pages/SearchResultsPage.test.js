@@ -141,6 +141,25 @@ describe("Search page", () => {
       });
     });
 
+    it("Download button is disabled while waiting for the api response", async () => {
+      const apiClientMock = new ApiClient();
+      const searchResult = searchResultFactory.build();
+      apiClientMock.findByNhsNumber = jest.fn(() => {
+        return [searchResult];
+      });
+      apiClientMock.getPresignedUrl = jest.fn(() => {
+        return presignedUrl;
+      });
+      window.open = jest.fn();
+      render(<SearchResultsPage client={apiClientMock}/>);
+
+      await waitFor(() => {
+        expect(screen.getByText("Documents")).toBeInTheDocument();
+      });
+      userEvent.click(screen.getByRole("button", {name: "Download"}))
+      expect(screen.getByRole("button", {name: "Downloading..."})).toBeDisabled();
+    });
+
     it("does not open document in new tab when user clicks on download button if url is null", async () => {
       const apiClientMock = new ApiClient();
       const searchResult = searchResultFactory.build();
