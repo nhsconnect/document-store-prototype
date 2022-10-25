@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import {Fieldset, Input, Table} from "nhsuk-react-components";
+import {ButtonLink, Fieldset, Input, Table} from "nhsuk-react-components";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
@@ -82,25 +82,23 @@ const SearchResultsPage = ({ client }) => {
                                     <Table.Cell>Description</Table.Cell>
                                     <Table.Cell>Type</Table.Cell>
                                     <Table.Cell>Uploaded At</Table.Cell>
+                                    <Table.Cell>View And Download</Table.Cell>
                                 </Table.Row>
                             </Table.Head>
 
                             <Table.Body>
                                 {searchResults.map((result) => (
-                                    <Table.Row key={result.url}>
+                                    <Table.Row key={result.id}>
                                         <Table.Cell>
-                                            <a
-                                                href={"#"}
-                                                onClick={() => handleClick(result.id)}
-                                                data-testid="document-title"
-                                            >
                                                 {result.description}
-                                            </a>
                                         </Table.Cell>
                                         <Table.Cell>{result.type}</Table.Cell>
                                         <Table.Cell>
                                             {result.indexed.toLocaleString()}
                                         </Table.Cell>
+                                      <Table.Cell>
+                                        <ButtonLink secondary onClick={() => handleClick(result.id)}>Download</ButtonLink>
+                                      </Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>

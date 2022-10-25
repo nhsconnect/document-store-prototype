@@ -73,11 +73,7 @@ describe("upload and search transaction", () => {
         //mock window.open() to check if the link opens in new page
         // cy.window().then((win) => { cy.stub(win, 'open').as("popup")});
 
-        // wait for lambda to return results
-        cy.get('a[data-testid="document-title"]', { timeout: 30000 })
-            .first()
-            .should("have.text", documentTitle);
-            // .click();
+
 
         // cy.get('@popup', { timeout: 15000 }).should("be.called");
         //
