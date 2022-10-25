@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {useForm} from "react-hook-form";
-import {Button, Fieldset, Input, Table} from "nhsuk-react-components";
+import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-components";
 import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
 import {useNavigate} from "react-router";
 import BackButton from "../components/BackButton";
@@ -16,7 +16,7 @@ const SearchResultsPage = ({client}) => {
   const {register} = useForm();
   const {ref: nhsNumberRef, ...nhsNumberProps} = register("nhsNumber");
   const [searchResults, setSearchResults] = useState([]);
-  const [disabled, setDisabled] = useState(false);
+  const [downloadState, setDownloadState] = useState(states.INITIAL);
   const [submissionState, setSubmissionState] = useState(states.INITIAL);
   const [nhsNumber] = useNhsNumberProviderContext();
   const navigate = useNavigate();
@@ -43,11 +43,16 @@ const SearchResultsPage = ({client}) => {
 
   async function handleClick(id) {
     if (id) {
-      setDisabled(true);
-      const url = await client.getPresignedUrl(id);
-      setDisabled(false);
-      url && window.open(url);
+      try {
+        setDownloadState(states.SEARCHING);
+        const url = await client.getPresignedUrl(id);
+        setDownloadState(states.SUCCEEDED)
+        window.open(url);
+      } catch (e) {
+        setDownloadState(states.FAILED)
+      }
     }
+
   }
 
   return (
@@ -78,6 +83,7 @@ const SearchResultsPage = ({client}) => {
       )}
       {submissionState === states.SUCCEEDED && (
         <>
+          {downloadState === states.FAILED && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
           {searchResults.length > 0 && (
             <Table caption="Documents">
               <Table.Head>
@@ -101,9 +107,9 @@ const SearchResultsPage = ({client}) => {
                     </Table.Cell>
                     <Table.Cell>
                       <Button secondary
-                                  disabled={disabled}
-                                  onClick={() => handleClick(result.id)}>
-                        {disabled ? "Downloading..." : "Download" }
+                              disabled={downloadState === states.SEARCHING}
+                              onClick={() => handleClick(result.id)}>
+                        {(downloadState === states.SEARCHING) ? "Downloading..." : "Download"}
                       </Button>
                     </Table.Cell>
                   </Table.Row>

@@ -160,14 +160,14 @@ describe("Search page", () => {
       expect(screen.getByRole("button", {name: "Downloading..."})).toBeDisabled();
     });
 
-    it("does not open document in new tab when user clicks on download button if url is null", async () => {
+    it("should display error message and not open document in new tab when user clicks on download button if api returns error", async () => {
       const apiClientMock = new ApiClient();
       const searchResult = searchResultFactory.build();
       apiClientMock.findByNhsNumber = jest.fn(() => {
         return [searchResult];
       });
       apiClientMock.getPresignedUrl = jest.fn(() => {
-        return null;
+         throw new Error("No url received");
       });
       window.open = jest.fn();
 
@@ -178,8 +178,12 @@ describe("Search page", () => {
       });
       userEvent.click(screen.getByRole("button", {name: "Download"}));
 
+
       expect(apiClientMock.getPresignedUrl).toHaveBeenCalledWith(searchResult.id);
       expect(window.open).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(screen.getByText("Failed to download, please retry.")).toBeInTheDocument();
+      });
     });
 
     it("displays a message when a document search returns no results", async () => {
