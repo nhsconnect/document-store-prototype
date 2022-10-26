@@ -1,5 +1,6 @@
 import ApiClient from "./apiClient";
 import uploadDocumentWithStorageClient from "./storageClient";
+
 jest.mock("./storageClient");
 
 describe("test the findByNhsNumber method", () => {
@@ -273,6 +274,6 @@ describe("test the getPresignedUrl method", () => {
         headers: requestHeaders,
       })
     );
-    expect(returnedPresignedUrl).toStrictEqual(retrieveUrl);
+    expect(returnedPresignedUrl).toStrictEqual(responseBody.content[0].attachment);
   });
 });

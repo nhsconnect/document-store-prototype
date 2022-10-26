@@ -1,128 +1,147 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-components";
 import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
 import {useNavigate} from "react-router";
 import BackButton from "../components/BackButton";
+import {setUrlHostToLocalHost} from "../utils/utils";
 
 const states = {
-  INITIAL: "initial",
-  SEARCHING: "searching",
-  SUCCEEDED: "succeeded",
-  FAILED: "failed",
+    INITIAL: "initial",
+    SEARCHING: "searching",
+    SUCCEEDED: "succeeded",
+    FAILED: "failed",
 };
 
+function Document({client, documentData, downloadError}) {
+    const [disabled, setDisabled] = useState(false);
+
+    async function handleClick(id, fileName) {
+        if (id) {
+            try {
+                downloadError(false);
+                setDisabled(true);
+                const attachment = await client.getPresignedUrl(id);
+                fetch(setUrlHostToLocalHost(attachment.url))
+                    .then(res => res.blob())
+                    .then(res => {
+                        const aElement = document.createElement('a');
+                        aElement.setAttribute('download', fileName);
+                        const href = URL.createObjectURL(res);
+                        aElement.href = href;
+                        aElement.click();
+                        URL.revokeObjectURL(href);
+                    });
+            } catch (e) {
+                downloadError(true);
+            }
+            setDisabled(false);
+        }
+    }
+
+    return (
+        <Table.Row>
+            <Table.Cell>
+                {documentData.description}
+            </Table.Cell>
+            <Table.Cell>{documentData.type}</Table.Cell>
+            <Table.Cell>
+                {documentData.indexed.toLocaleString()}
+            </Table.Cell>
+            <Table.Cell>
+                <Button secondary
+                        disabled={disabled}
+                        onClick={() => handleClick(documentData.id, documentData.description)}>
+                    {disabled ? "Downloading..." : "Download"}
+                </Button>
+            </Table.Cell>
+        </Table.Row>
+    );
+}
+
 const SearchResultsPage = ({client}) => {
-  const {register} = useForm();
-  const {ref: nhsNumberRef, ...nhsNumberProps} = register("nhsNumber");
-  const [searchResults, setSearchResults] = useState([]);
-  const [downloadState, setDownloadState] = useState(states.INITIAL);
-  const [submissionState, setSubmissionState] = useState(states.INITIAL);
-  const [nhsNumber] = useNhsNumberProviderContext();
-  const navigate = useNavigate();
+    const {register} = useForm();
+    const {ref: nhsNumberRef, ...nhsNumberProps} = register("nhsNumber");
+    const [searchResults, setSearchResults] = useState([]);
+    const [downloadError, setDownloadError] = useState(false);
+    const [submissionState, setSubmissionState] = useState(states.INITIAL);
+    const [nhsNumber] = useNhsNumberProviderContext();
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!nhsNumber) {
-      navigate("/search/patient-trace");
-      return;
-    }
-    const search = async () => {
-      setSubmissionState(states.SEARCHING);
-      setSearchResults([]);
-      try {
-        const results = await client.findByNhsNumber(nhsNumber);
-        results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
-        setSearchResults(results);
-        setSubmissionState(states.SUCCEEDED);
-      } catch (error) {
-        setSubmissionState(states.FAILED);
-      }
-    };
-    void search();
-  }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
+    useEffect(() => {
+        if (!nhsNumber) {
+            navigate("/search/patient-trace");
+            return;
+        }
+        const search = async () => {
+            setSubmissionState(states.SEARCHING);
+            setSearchResults([]);
+            try {
+                const results = await client.findByNhsNumber(nhsNumber);
+                results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
+                setSearchResults(results);
+                setSubmissionState(states.SUCCEEDED);
+            } catch (error) {
+                setSubmissionState(states.FAILED);
+            }
+        };
+        void search();
+    }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
-  async function handleClick(id) {
-    if (id) {
-      try {
-        setDownloadState(states.SEARCHING);
-        const url = await client.getPresignedUrl(id);
-        setDownloadState(states.SUCCEEDED)
-        window.open(url);
-      } catch (e) {
-        setDownloadState(states.FAILED)
-      }
-    }
-
-  }
-
-  return (
-    <>
-      <BackButton/>
-      <Fieldset>
-        <Fieldset.Legend headingLevel={'h1'} isPageHeading>Download and view a stored document</Fieldset.Legend>
-        <Input
-          id={"nhs-number-input"}
-          name="nhsNumber"
-          label="Find by NHS number"
-          {...nhsNumberProps}
-          inputRef={nhsNumberRef}
-          value={nhsNumber}
-          readOnly
-        />
-        {submissionState === states.SEARCHING && (
-          <p>
-            <progress aria-label={"Loading..."}></progress>
-          </p>
-        )}
-      </Fieldset>
-      {submissionState === states.FAILED && (
-        <p>
-          Sorry, the search failed due to an internal error. Please
-          try again.
-        </p>
-      )}
-      {submissionState === states.SUCCEEDED && (
+    return (
         <>
-          {downloadState === states.FAILED && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
-          {searchResults.length > 0 && (
-            <Table caption="Documents">
-              <Table.Head>
-                <Table.Row>
-                  <Table.Cell>Description</Table.Cell>
-                  <Table.Cell>Type</Table.Cell>
-                  <Table.Cell>Uploaded At</Table.Cell>
-                  <Table.Cell>View And Download</Table.Cell>
-                </Table.Row>
-              </Table.Head>
+            <BackButton/>
+            <Fieldset>
+                <Fieldset.Legend headingLevel={'h1'} isPageHeading>Download and view a stored document</Fieldset.Legend>
+                <Input
+                    id={"nhs-number-input"}
+                    name="nhsNumber"
+                    label="Find by NHS number"
+                    {...nhsNumberProps}
+                    inputRef={nhsNumberRef}
+                    value={nhsNumber}
+                    readOnly
+                />
+                {submissionState === states.SEARCHING && (
+                    <p>
+                        <progress aria-label={"Loading..."}></progress>
+                    </p>
+                )}
+            </Fieldset>
+            {submissionState === states.FAILED && (
+                <p>
+                    Sorry, the search failed due to an internal error. Please
+                    try again.
+                </p>
+            )}
+            {submissionState === states.SUCCEEDED && (
+                <>
+                    {downloadError && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
+                    {searchResults.length > 0 && (
+                        <Table caption="Documents">
+                            <Table.Head>
+                                <Table.Row>
+                                    <Table.Cell>Description</Table.Cell>
+                                    <Table.Cell>Type</Table.Cell>
+                                    <Table.Cell>Uploaded At</Table.Cell>
+                                    <Table.Cell>Download</Table.Cell>
+                                </Table.Row>
+                            </Table.Head>
 
-              <Table.Body>
-                {searchResults.map((result) => (
-                  <Table.Row key={result.id}>
-                    <Table.Cell>
-                      {result.description}
-                    </Table.Cell>
-                    <Table.Cell>{result.type}</Table.Cell>
-                    <Table.Cell>
-                      {result.indexed.toLocaleString()}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Button secondary
-                              disabled={downloadState === states.SEARCHING}
-                              onClick={() => handleClick(result.id)}>
-                        {(downloadState === states.SEARCHING) ? "Downloading..." : "Download"}
-                      </Button>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
-          )}
+                            <Table.Body>
+                                {searchResults.map((result) => (
+                                    <Document key={result.id} client={client} documentData={result}
+                                              downloadError={(error) => setDownloadError(error)}/>
+                                ))}
+                            </Table.Body>
+                        </Table>
+                    )}
 
-          {searchResults.length === 0 && <p>No record found</p>}
+                    {searchResults.length === 0 && <p>No record found</p>}
+                </>
+            )}
         </>
-      )}
-    </>
-  );
+    );
 };
 
 export default SearchResultsPage;

@@ -22,7 +22,10 @@ const searchResultFactory = Factory.define(() => ({
   indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
 }));
 
-const presignedUrl = "https://some-url";
+const attachment = {
+  url: "https://some-url",
+  contentType: "text/plain"
+}
 
 describe("Search page", () => {
   describe("when there is an NHS number", () => {
@@ -125,9 +128,17 @@ describe("Search page", () => {
         return [searchResult];
       });
       apiClientMock.getPresignedUrl = jest.fn(() => {
-        return presignedUrl;
+        return attachment;
       });
-      window.open = jest.fn();
+      global.fetch = jest.fn(() =>
+          Promise.resolve({
+            blob: () => Promise.resolve(null),
+          })
+      );
+
+      global.URL.createObjectURL = jest.fn();
+      global.URL.revokeObjectURL = jest.fn();
+
       render(<SearchResultsPage client={apiClientMock}/>);
 
       await waitFor(() => {
@@ -137,7 +148,9 @@ describe("Search page", () => {
 
       expect(apiClientMock.getPresignedUrl).toHaveBeenCalledWith(searchResult.id);
       await waitFor(() => {
-        expect(window.open).toHaveBeenCalledWith(presignedUrl);
+        expect(fetch).toHaveBeenCalledWith(attachment.url);
+        expect(URL.createObjectURL).toHaveBeenCalled();
+        expect(URL.revokeObjectURL).toHaveBeenCalled();
       });
     });
 
@@ -148,9 +161,16 @@ describe("Search page", () => {
         return [searchResult];
       });
       apiClientMock.getPresignedUrl = jest.fn(() => {
-        return presignedUrl;
+        return attachment;
       });
-      window.open = jest.fn();
+      global.fetch = jest.fn(() =>
+          Promise.resolve({
+            blob: () => Promise.resolve(null),
+          })
+      );
+
+      global.URL.createObjectURL = jest.fn();
+      global.URL.revokeObjectURL = jest.fn();
       render(<SearchResultsPage client={apiClientMock}/>);
 
       await waitFor(() => {

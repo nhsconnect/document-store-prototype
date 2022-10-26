@@ -52,7 +52,7 @@ class ApiClient {
       content: [
         {
           attachment: {
-            contentType: "text/plain",
+            contentType: document.type,
           },
         },
       ],
@@ -109,7 +109,7 @@ class ApiClient {
     });
 
     if (data?.docStatus === "final") {
-      return setUrlHostToLocalHost(data.content[0].attachment.url);
+      return data.content[0].attachment;
     }
     throw new Error("No url received");
   }
