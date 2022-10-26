@@ -1,18 +1,32 @@
 format_version: 4
 common:
-  build_backend: &build_backend
-    artifacts:
-      - build:
-          source: app/build/libs
-          destination: jars
-      - test:
-          source: app/build/test-results
-          destination: test-reports
-    tasks:
-      - exec:
-          command: dojo
-          arguments:
-            - "./gradlew app:build"
+  build: &build_backend
+    jobs:
+      backend: &build_backend
+        artifacts:
+          - build:
+              source: app/build/libs
+              destination: jars
+          - test:
+              source: app/build/test-results
+              destination: test-reports
+        tasks:
+          - exec:
+              command: dojo
+              arguments:
+                - "./gradlew app:build"
+      frontend: &build_frontend
+        artifacts:
+          - build:
+              source: ui/node_modules
+              destination: node_modules
+        tasks:
+          - exec:
+              command: dojo
+              arguments:
+                - -c
+                - Dojofile-node
+                - ./tasks install-ui-dependencies
   plan_terraform: &plan_terraform
     artifacts:
       - build:
@@ -20,8 +34,8 @@ common:
           destination: terraform/
     tasks:
       - fetch:
-          stage: build_backend
-          job: build
+          stage: build
+          job: backend
           source: jars
       - exec:
           command: dojo
@@ -51,8 +65,8 @@ common:
           destination: terraform/
           is_file: yes
       - fetch:
-          stage: build_backend
-          job: build
+          stage: build
+          job: backend
           source: jars
       - exec:
           command: dojo
@@ -90,6 +104,10 @@ common:
           source: ui/ui.tgz
           destination: tars
     tasks:
+      - fetch:
+          stage: build
+          job: frontend
+          source: node_modules
       - exec:
           command: dojo
           arguments:
@@ -130,6 +148,10 @@ common:
             - ./tasks deploy-ui
   e2e_test: &e2e_test
     tasks:
+      - fetch:
+          stage: build
+          job: frontend
+          source: node_modules
       - exec:
           command: dojo
           arguments:
@@ -162,10 +184,11 @@ pipelines:
           - documentation/**/*.*
           - gradle/**/*.*
     stages:
-      - build_backend:
+      - build:
           clean_workspace: true
           jobs:
-            build: *build_backend
+            backend: *build_backend
+            frontend: *build_frontend
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: dev
