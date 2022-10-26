@@ -163,7 +163,8 @@ start-localstack)
   dojo -c Dojofile-integration
   ;;
 deploy-to-localstack)
-  ./tasks start-localstack
+  export TERRAFORM_CONTAINER=$(docker ps -a | grep hashicorp/terraform | head -1 | cut -f 1 -d ' ')
+  docker start --attach $TERRAFORM_CONTAINER
   ;;
 tf_plan)
   assume_ci_role
