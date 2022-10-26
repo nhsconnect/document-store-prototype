@@ -13,7 +13,8 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
 
   environment {
     variables = {
-      AMPLIFY_BASE_URL = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
+      PDS_ADAPTOR_BASE_URL = var.pds_adaptor_base_url
+      AMPLIFY_BASE_URL     = local.amplify_base_url
     }
   }
 }
@@ -53,10 +54,10 @@ resource "aws_api_gateway_method" "patient_details_preflight_method" {
 }
 
 resource "aws_api_gateway_method_response" "patient_details_preflight_method_response" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_resource.patient_details_resource.id
-  http_method = aws_api_gateway_method.patient_details_preflight_method.http_method
-  status_code = "200"
+  rest_api_id     = aws_api_gateway_rest_api.lambda_api.id
+  resource_id     = aws_api_gateway_resource.patient_details_resource.id
+  http_method     = aws_api_gateway_method.patient_details_preflight_method.http_method
+  status_code     = "200"
   response_models = {
     "application/json" = "Empty"
   }
@@ -69,11 +70,11 @@ resource "aws_api_gateway_method_response" "patient_details_preflight_method_res
 }
 
 resource "aws_api_gateway_integration" "patient_details_preflight_integration" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_resource.patient_details_resource.id
-  http_method = aws_api_gateway_method.patient_details_preflight_method.http_method
-  type        = "MOCK"
-  depends_on  = [aws_api_gateway_method.patient_details_preflight_method]
+  rest_api_id       = aws_api_gateway_rest_api.lambda_api.id
+  resource_id       = aws_api_gateway_resource.patient_details_resource.id
+  http_method       = aws_api_gateway_method.patient_details_preflight_method.http_method
+  type              = "MOCK"
+  depends_on        = [aws_api_gateway_method.patient_details_preflight_method]
   request_templates = {
     "application/json" = <<EOF
 {
@@ -84,10 +85,10 @@ EOF
 }
 
 resource "aws_api_gateway_integration_response" "patient_details_preflight_integration_response" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_resource.patient_details_resource.id
-  http_method = aws_api_gateway_method.patient_details_preflight_method.http_method
-  status_code = aws_api_gateway_method_response.patient_details_preflight_method_response.status_code
+  rest_api_id         = aws_api_gateway_rest_api.lambda_api.id
+  resource_id         = aws_api_gateway_resource.patient_details_resource.id
+  http_method         = aws_api_gateway_method.patient_details_preflight_method.http_method
+  status_code         = aws_api_gateway_method_response.patient_details_preflight_method_response.status_code
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST'",

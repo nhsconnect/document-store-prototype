@@ -2,9 +2,9 @@ package uk.nhs.digital.docstore;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.exceptions.*;
 
 import java.io.File;
@@ -16,12 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ErrorResponseGeneratorTest {
     private static final FhirContext fhirContext = FhirContext.forR4();
+    public static final String AMPLIFY_BASE_URL = "http://deployed-url-for-cors-origin";
     private ErrorResponseGenerator errorResponseGenerator;
     private IParser jsonParser;
 
     @BeforeEach
     void setUp() {
-        this.errorResponseGenerator = new ErrorResponseGenerator();
+        this.errorResponseGenerator = new ErrorResponseGenerator(new StubbedApiConfig(AMPLIFY_BASE_URL));
         jsonParser = fhirContext.newJsonParser();
     }
 
@@ -31,12 +32,13 @@ public class ErrorResponseGeneratorTest {
 
         TestException exception = new TestException();
         var response = errorResponseGenerator.errorResponse(exception, jsonParser);
+        var headers = response.getHeaders();
 
-        assertThat(response.getStatusCode())
-                .isEqualTo(400);
-        assertResponseHasExpectedHeaders(response);
-        assertThatJson(response.getBody())
-                .isEqualTo(expectedErrorResponse);
+        assertThat(response.getStatusCode()).isEqualTo(400);
+        assertThat(headers.get("Content-Type")).isEqualTo("application/fhir+json");
+        assertThat(headers.get("Access-Control-Allow-Origin")).isEqualTo(AMPLIFY_BASE_URL);
+        assertThat(headers.get("Access-Control-Allow-Methods")).isEqualTo("GET, OPTIONS, POST");
+        assertThatJson(response.getBody()).isEqualTo(expectedErrorResponse);
     }
 
     @Test
@@ -44,12 +46,13 @@ public class ErrorResponseGeneratorTest {
         String expectedErrorResponse = getContentFromResource("internal-server-error-response.json");
 
         var response = errorResponseGenerator.errorResponse(new Exception(), jsonParser);
+        var headers = response.getHeaders();
 
-        assertThat(response.getStatusCode())
-                .isEqualTo(500);
-        assertResponseHasExpectedHeaders(response);
-        assertThatJson(response.getBody())
-                .isEqualTo(expectedErrorResponse);
+        assertThat(response.getStatusCode()).isEqualTo(500);
+        assertThat(headers.get("Content-Type")).isEqualTo("application/fhir+json");
+        assertThat(headers.get("Access-Control-Allow-Origin")).isEqualTo(AMPLIFY_BASE_URL);
+        assertThat(headers.get("Access-Control-Allow-Methods")).isEqualTo("GET, OPTIONS, POST");
+        assertThatJson(response.getBody()).isEqualTo(expectedErrorResponse);
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
@@ -58,12 +61,4 @@ public class ErrorResponseGeneratorTest {
         return new String(Files.readAllBytes(file.toPath()));
     }
 
-    private void assertResponseHasExpectedHeaders(APIGatewayProxyResponseEvent searchResponse) {
-        assertThat(searchResponse.getHeaders().get("Content-Type"))
-                .isEqualTo("application/fhir+json");
-        assertThat(searchResponse.getHeaders().get("Access-Control-Allow-Origin"))
-                .isEqualTo("http://localhost:4566");
-        assertThat(searchResponse.getHeaders().get("Access-Control-Allow-Methods"))
-                .isEqualTo("GET, OPTIONS, POST");
-    }
 }

@@ -1,5 +1,5 @@
 variable "environment" {
-  type    = string
+  type = string
 }
 
 variable "region" {
@@ -43,9 +43,13 @@ variable "s3_endpoint" {
 }
 
 variable "s3_use_path_style" {
-  type    = bool
+  type        = bool
   description = "Needed to drive path-style presigned URLs that are simpler for localstack to use in testing"
-  default = false
+  default     = false
+}
+variable "pds_adaptor_base_url" {
+  type    = string
+  default = "https://pds-adaptor.prod.non-prod.patient-deductions.nhs.uk"
 }
 
 variable "cognito_cis2_provider_name" {
@@ -89,11 +93,11 @@ variable "cognito_cis2_provider_jwks_uri" {
 }
 
 variable "cognito_cis2_client_callback_urls" {
-  type = list(string)
+  type    = list(string)
   default = [""]
 }
 
 variable "cognito_cis2_client_signout_urls" {
-  type = list(string)
+  type    = list(string)
   default = [""]
 }

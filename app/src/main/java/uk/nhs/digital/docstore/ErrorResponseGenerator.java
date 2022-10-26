@@ -1,5 +1,7 @@
 package uk.nhs.digital.docstore;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.PerformanceOptionsEnum;
 import ca.uhn.fhir.parser.IParser;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -7,17 +9,27 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.exceptions.*;
 
 import java.util.Map;
 
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.EXCEPTION;
-import static uk.nhs.digital.docstore.config.ApiConfig.getAmplifyBaseUrl;
 
 public class ErrorResponseGenerator {
     private static final Logger logger
             = LoggerFactory.getLogger(ErrorResponseGenerator.class);
+
+    private final ApiConfig apiConfig;
+
+    public ErrorResponseGenerator() {
+        this(new ApiConfig());
+    }
+
+    public ErrorResponseGenerator(ApiConfig apiConfig) {
+        this.apiConfig = apiConfig;
+    }
 
     public APIGatewayProxyResponseEvent errorResponse(Exception e, IParser jsonParser) {
         int statusCode;
@@ -42,7 +54,7 @@ public class ErrorResponseGenerator {
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(statusCode)
                 .withHeaders(Map.of("Content-Type", "application/fhir+json",
-                        "Access-Control-Allow-Origin", getAmplifyBaseUrl(),
+                        "Access-Control-Allow-Origin", apiConfig.getAmplifyBaseUrl(),
                         "Access-Control-Allow-Methods", "GET, OPTIONS, POST"))
                 .withBody(jsonParser.encodeResourceToString(new OperationOutcome()
                         .addIssue(operationOutcomeIssueComponent)));

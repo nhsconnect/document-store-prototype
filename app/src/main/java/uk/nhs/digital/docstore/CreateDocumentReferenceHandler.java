@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptorAndURL;
+import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.create.CreateDocumentReferenceRequestValidator;
 
@@ -18,7 +19,6 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
-import static uk.nhs.digital.docstore.config.ApiConfig.getAmplifyBaseUrl;
 
 @SuppressWarnings("unused")
 public class CreateDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -32,8 +32,14 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final FhirContext fhirContext;
     private final CreateDocumentReferenceRequestValidator requestValidator = new CreateDocumentReferenceRequestValidator();
+    private final ApiConfig apiConfig;
 
     public CreateDocumentReferenceHandler() {
+        this(new ApiConfig());
+    }
+
+    public CreateDocumentReferenceHandler(ApiConfig apiConfig) {
+        this.apiConfig = apiConfig;
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
     }
@@ -90,7 +96,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                 .withStatusCode(201)
                 .withHeaders(Map.of(
                         "Content-Type", "application/fhir+json",
-                        "Access-Control-Allow-Origin", getAmplifyBaseUrl(),
+                        "Access-Control-Allow-Origin", apiConfig.getAmplifyBaseUrl(),
                         "Access-Control-Allow-Methods", "POST",
                         "Location", "DocumentReference/" + savedDocumentMetadata.getId()))
                 .withBody(resourceAsJson);

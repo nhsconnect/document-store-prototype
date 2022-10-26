@@ -21,7 +21,6 @@ import java.util.Map;
 
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static uk.nhs.digital.docstore.config.ApiConfig.getAmplifyBaseUrl;
 
 
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
@@ -31,22 +30,24 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     private final FhirContext fhirContext;
     private final PatientDetailsMapper patientDetailsMapper;
     private final PatientSearchConfig patientSearchConfig;
+    private final ApiConfig apiConfig;
 
     public SearchPatientDetailsHandler()
     {
-        this(new PatientSearchConfig());
+        this(new PatientSearchConfig(), new ApiConfig());
     }
 
-    public SearchPatientDetailsHandler(PatientSearchConfig patientSearchConfig)
+    public SearchPatientDetailsHandler(PatientSearchConfig patientSearchConfig, ApiConfig apiConfig)
     {
-        this(FhirContext.forR4(), new PatientDetailsMapper(), patientSearchConfig);
+        this(FhirContext.forR4(), new PatientDetailsMapper(), patientSearchConfig, apiConfig);
     }
 
-    public SearchPatientDetailsHandler(FhirContext fhirContext, PatientDetailsMapper patientDetailsMapper, PatientSearchConfig patientSearchConfig)
+    public SearchPatientDetailsHandler(FhirContext fhirContext, PatientDetailsMapper patientDetailsMapper, PatientSearchConfig patientSearchConfig, ApiConfig apiConfig)
     {
         this.fhirContext = fhirContext;
         this.patientDetailsMapper = patientDetailsMapper;
         this.patientSearchConfig = patientSearchConfig;
+        this.apiConfig = apiConfig;
     }
 
 
@@ -96,7 +97,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
                     .withStatusCode(200)
                     .withHeaders(Map.of(
                             "Content-Type", "application/fhir+json",
-                            "Access-Control-Allow-Origin", getAmplifyBaseUrl(),
+                            "Access-Control-Allow-Origin", apiConfig.getAmplifyBaseUrl(),
                             "Access-Control-Allow-Methods", "GET"))
                     .withBody(jsonParser.encodeResourceToString(bundle));
         } catch (Exception e) {

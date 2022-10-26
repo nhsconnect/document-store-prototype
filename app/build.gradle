@@ -9,9 +9,20 @@ repositories {
 }
 
 sourceSets {
+    integration {
+        compileClasspath += sourceSets.main.output
+        compileClasspath += sourceSets.test.output
+        runtimeClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.test.output
+    }
+}
+
+sourceSets {
     e2eTest {
         compileClasspath += sourceSets.main.output
+        compileClasspath += sourceSets.test.output
         runtimeClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.test.output
         java {
             srcDirs 'src/e2eTest'
         }

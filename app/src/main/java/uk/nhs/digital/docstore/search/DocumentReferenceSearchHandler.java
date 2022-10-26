@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.search;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.PerformanceOptionsEnum;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -15,13 +16,13 @@ import org.slf4j.MarkerFactory;
 import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
+import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 
 import java.util.List;
 import java.util.Map;
 
 import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
-import static uk.nhs.digital.docstore.config.ApiConfig.getAmplifyBaseUrl;
 
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -33,8 +34,14 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     private final BundleMapper bundleMapper = new BundleMapper();
     private final DocumentReferenceSearchService searchService;
     private final FhirContext fhirContext;
+    private final ApiConfig apiConfig;
 
     public DocumentReferenceSearchHandler() {
+        this(new ApiConfig());
+    }
+
+    public DocumentReferenceSearchHandler(ApiConfig apiConfig) {
+        this.apiConfig = apiConfig;
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(DEFERRED_MODEL_SCANNING);
 
@@ -71,7 +78,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
                 .withStatusCode(200)
                 .withHeaders(Map.of(
                         "Content-Type", "application/fhir+json",
-                        "Access-Control-Allow-Origin", getAmplifyBaseUrl(),
+                        "Access-Control-Allow-Origin", apiConfig.getAmplifyBaseUrl(),
                         "Access-Control-Allow-Methods", "GET"
                 ))
                 .withBody(jsonParser.encodeResourceToString(bundle));

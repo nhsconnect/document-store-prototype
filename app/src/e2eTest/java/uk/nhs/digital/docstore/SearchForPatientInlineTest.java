@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 import uk.nhs.digital.docstore.patientdetails.SearchPatientDetailsHandler;
 
@@ -34,7 +35,7 @@ public class SearchForPatientInlineTest {
 
     @BeforeEach
     public void setUp() {
-        handler = new SearchPatientDetailsHandler(new StubbedPatientSearchConfig());
+        handler = new SearchPatientDetailsHandler(new StubbedPatientSearchConfig(), new StubbedApiConfig("http://ui-url"));
         requestBuilder = new RequestEventBuilder();
     }
 

@@ -6,3 +6,4 @@ aws_endpoint = "http://localstack:4566"
 dynamodb_endpoint = "http://localstack:4566"
 s3_endpoint = "http://localstack:4566"
 s3_use_path_style = true
+pds_adaptor_base_url = "http://pds-adaptor:8080/"

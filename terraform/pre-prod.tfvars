@@ -1,4 +1,5 @@
 environment                          = "pre-prod"
+pds_adaptor_base_url                 = "https://pds-adaptor.pre-prod.non-prod.patient-deductions.nhs.uk"
 cognito_cis2_provider_name           = "cis2devoidc"
 cognito_cis2_provider_oidc_issuer    = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc"
 cognito_cis2_provider_authorize_url  = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/authorize"
