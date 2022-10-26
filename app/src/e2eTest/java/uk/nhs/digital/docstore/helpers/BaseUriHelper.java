@@ -5,20 +5,22 @@ import com.amazonaws.services.apigateway.AmazonApiGateway;
 import com.amazonaws.services.apigateway.AmazonApiGatewayClientBuilder;
 import com.amazonaws.services.apigateway.model.*;
 
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.List;
 
 public class BaseUriHelper {
     private static final String AWS_REGION = "eu-west-2";
-    private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 4566;
 
     @SuppressWarnings("HttpUrlsUsage")
     public static final String BASE_URI_TEMPLATE = "http://%s:%d";
     public static final String BASE_PATH_TEMPLATE = "/restapis/%s/%s/_user_request_/";
+    public static final String PRESIGNED_URL_REFERENCE_HOST = "localstack";
 
     public static URI getBaseUri() {
-        var baseUri = String.format(BASE_URI_TEMPLATE, getHost(), DEFAULT_PORT);
+        var baseUri = String.format(BASE_URI_TEMPLATE, getAwsHost(), DEFAULT_PORT);
 
         AmazonApiGateway amazonApiGatewayClient = AmazonApiGatewayClientBuilder.standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION))
@@ -53,8 +55,16 @@ public class BaseUriHelper {
         return URI.create(documentStoreBaseUri);
     }
 
-    private static String getHost() {
-        String host = System.getenv("DS_TEST_HOST");
-        return (host != null) ? host : DEFAULT_HOST;
+    public static String getAwsHost() {
+        return resolveContainerHost("localstack");
+    }
+
+    public static String resolveContainerHost(String containerName) {
+        try {
+            InetAddress.getByName(containerName);
+            return containerName;
+        } catch (UnknownHostException e) {
+            return "localhost";
+        }
     }
 }

@@ -18,6 +18,7 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
+import static uk.nhs.digital.docstore.config.ApiConfig.getAmplifyBaseUrl;
 
 @SuppressWarnings("unused")
 public class CreateDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -89,7 +90,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                 .withStatusCode(201)
                 .withHeaders(Map.of(
                         "Content-Type", "application/fhir+json",
-                        "Access-Control-Allow-Origin", System.getenv("AMPLIFY_BASE_URL"),
+                        "Access-Control-Allow-Origin", getAmplifyBaseUrl(),
                         "Access-Control-Allow-Methods", "POST",
                         "Location", "DocumentReference/" + savedDocumentMetadata.getId()))
                 .withBody(resourceAsJson);

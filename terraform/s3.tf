@@ -18,6 +18,7 @@ resource "aws_s3_bucket" "document_store" {
       cors_rule
     ]
   }
+
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {

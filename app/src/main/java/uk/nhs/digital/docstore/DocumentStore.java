@@ -23,9 +23,11 @@ public class DocumentStore {
     public DocumentStore(String bucketName) {
         var clientBuilder = AmazonS3ClientBuilder.standard();
         var s3Endpoint = System.getenv("S3_ENDPOINT");
+        boolean s3_use_path_style = "true".equals(System.getenv("S3_USE_PATH_STYLE"));
         if (!s3Endpoint.equals(DEFAULT_ENDPOINT)) {
-            clientBuilder = clientBuilder.withEndpointConfiguration(new AwsClientBuilder
-                    .EndpointConfiguration(s3Endpoint, AWS_REGION));
+            clientBuilder = clientBuilder
+                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(s3Endpoint, AWS_REGION))
+                    .withPathStyleAccessEnabled(s3_use_path_style);
         }
         client = clientBuilder.build();
         this.bucketName = bucketName;

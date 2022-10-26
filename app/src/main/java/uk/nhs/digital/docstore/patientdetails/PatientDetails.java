@@ -1,5 +1,8 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class PatientDetails {
@@ -9,7 +12,11 @@ public class PatientDetails {
     private final String postalCode;
     private final String nhsNumber;
 
-    public PatientDetails(List<String> givenName, String familyName, String birthdate, String postalCode, String nhsNumber) {
+    public PatientDetails(@JsonProperty("givenName") List<String> givenName,
+                          @JsonProperty("familyName") String familyName,
+                          @JsonProperty("birthDate") String birthdate,
+                          @JsonProperty("postalCode") String postalCode,
+                          @JsonProperty("nhsNumber") String nhsNumber) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.birthdate = birthdate;

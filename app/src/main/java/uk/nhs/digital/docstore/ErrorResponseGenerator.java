@@ -13,6 +13,7 @@ import java.util.Map;
 
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.EXCEPTION;
+import static uk.nhs.digital.docstore.config.ApiConfig.getAmplifyBaseUrl;
 
 public class ErrorResponseGenerator {
     private static final Logger logger
@@ -41,7 +42,7 @@ public class ErrorResponseGenerator {
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(statusCode)
                 .withHeaders(Map.of("Content-Type", "application/fhir+json",
-                        "Access-Control-Allow-Origin", System.getenv("AMPLIFY_BASE_URL"),
+                        "Access-Control-Allow-Origin", getAmplifyBaseUrl(),
                         "Access-Control-Allow-Methods", "GET, OPTIONS, POST"))
                 .withBody(jsonParser.encodeResourceToString(new OperationOutcome()
                         .addIssue(operationOutcomeIssueComponent)));

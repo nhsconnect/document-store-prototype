@@ -14,75 +14,10 @@ tasks.register('attachPolicyToCIRole', Exec) {
     args = ['iam', 'put-role-policy', '--role-name=ci-agent', '--policy-name=ci-role-policy', '--policy-document=file://ci-role-policy.json']
 }
 
-tasks.register('initializeTerraform', Exec) {
-    def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
-
-    group 'localstack'
-    description 'Initialize Terraform plugins.'
-
-    executable = 'terraform'
-    args = ['init', '-backend-config=local.s3.tfbackend']
-    environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
-    environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
-    environment('AWS_SECRET_ACCESS_KEY', "test")
-    environment('AWS_ACCESS_KEY_ID', "test")
-    workingDir = '../terraform'
-
-    onlyIf {
-        !file('../terraform/.terraform').exists()
-    }
-}
-
-tasks.register('deployToLocalStack', Exec) {
-    def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
-
-    group 'localstack'
-    description 'Apply Terraform definitions to LocalStack.'
-    dependsOn jar, initializeTerraform
-
-    executable = 'terraform'
-    args = ['apply', '-var-file=local.tfvars', "-var=aws_endpoint=http://${dockerHostname}:4566",
-            '-var=dynamodb_endpoint=http://172.17.0.2:4566', '-var=s3_endpoint=http://172.17.0.2:4566', '-auto-approve']
-    environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
-    environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
-    environment('AWS_SECRET_ACCESS_KEY', "test")
-    environment('AWS_ACCESS_KEY_ID', "test")
-    workingDir = '../terraform'
-}
-
-tasks.register('getDocumentStoreBucketName') {
-    def dockerHostname = System.getenv('DS_TEST_HOST') ?: 'localhost'
-
-    group 'localstack'
-    description 'Get the name of the document store file bucket'
-
-    new ByteArrayOutputStream().withStream { os ->
-        exec {
-            executable = 'terraform'
-            args = ['output', '-raw', 'document-store-bucket']
-            environment('AWS_S3_ENDPOINT', "http://${dockerHostname}:4566")
-            environment('AWS_STS_ENDPOINT', "http://${dockerHostname}:4566")
-            environment('AWS_SECRET_ACCESS_KEY', "test")
-            environment('AWS_ACCESS_KEY_ID', "test")
-            workingDir = '../terraform'
-
-            standardOutput = os
-        }
-        ext.documentStoreBucketName = os.toString()
-    }
-}
-
 tasks.register('e2eTest', Test) {
     group 'verification'
     description 'Run all end-to-end tests against LocalStack.'
-    dependsOn jar, deployToLocalStack, getDocumentStoreBucketName
-
-    useJUnitPlatform()
 
     testClassesDirs = sourceSets.e2eTest.output.classesDirs
     classpath = sourceSets.e2eTest.runtimeClasspath
-
-    environment('AWS_SECRET_ACCESS_KEY', 'test')
-    environment('AWS_ACCESS_KEY_ID', 'test')
-    environment('DOCUMENT_STORE_BUCKET_NAME', getDocumentStoreBucketName.documentStoreBucketName)
 }

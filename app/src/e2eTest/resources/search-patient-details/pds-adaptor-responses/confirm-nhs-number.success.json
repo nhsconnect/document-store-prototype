@@ -1,0 +1,7 @@
+{
+  "nhsNumber": "9000000009",
+  "givenName": ["Foo", "Bar"],
+  "familyName": "Baz",
+  "postalCode": "LS1 4DX",
+  "birthdate": "1980-10-14"
+}

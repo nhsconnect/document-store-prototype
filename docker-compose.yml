@@ -1,0 +1,26 @@
+version: "2.2"
+services:
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,lambda,dynamodb,iam,apigateway,logs,sts
+      - DEFAULT_REGION=eu-west-2
+      - HOSTNAME_EXTERNAL=localhost
+      - LAMBDA_CONTAINER_REGISTRY=mlupin/docker-lambda
+      - LAMBDA_EXECUTOR=docker-reuse
+      - DEBUG=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  pds-adaptor:
+    image: wiremock/wiremock
+    command: --verbose
+    ports:
+      - "8080:8080"

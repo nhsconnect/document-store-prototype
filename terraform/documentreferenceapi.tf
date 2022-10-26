@@ -1,3 +1,11 @@
+locals {
+  aws_overrides = {
+    DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
+    S3_ENDPOINT                = var.s3_endpoint
+    S3_USE_PATH_STYLE          = var.s3_use_path_style
+  }
+}
+
 resource "aws_lambda_function" "get_doc_ref_lambda" {
   handler       = "uk.nhs.digital.docstore.RetrieveDocumentReferenceHandler::handleRequest"
   function_name = "RetrieveDocumentReferenceHandler"
@@ -12,11 +20,9 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
   environment {
-    variables = {
+    variables = merge({
       DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
-      DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
-      S3_ENDPOINT                = var.s3_endpoint
-    }
+    }, local.aws_overrides)
   }
 }
 
@@ -38,6 +44,7 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
       DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
       DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
       S3_ENDPOINT                = var.s3_endpoint
+      S3_USE_PATH_STYLE          = var.s3_use_path_style
       AMPLIFY_BASE_URL           = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
     }
   }
@@ -61,6 +68,7 @@ resource "aws_lambda_function" "doc_ref_search_lambda" {
       DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
       DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
       S3_ENDPOINT                = var.s3_endpoint
+      S3_USE_PATH_STYLE          = var.s3_use_path_style
       AMPLIFY_BASE_URL           = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
     }
   }

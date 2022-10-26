@@ -152,6 +152,18 @@ build-ui)
   cd build
   tar -czf ../ui.tgz *
   ;;
+_build-api-jars)
+  gradle assemble
+  ;;
+build-api-jars)
+  dojo './tasks _build-api-jars'
+  ;;
+start-localstack)
+  dojo -c Dojofile-integration
+  ;;
+deploy-to-localstack)
+  docker-compose up terraform
+  ;;
 tf_plan)
   assume_ci_role
   tf_init

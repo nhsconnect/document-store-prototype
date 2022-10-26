@@ -1,0 +1,4 @@
+DOJO_DOCKER_IMAGE="nhsdev/openjdk-dojo:d186138d2093aeb801dcf7a331b5fda82082584d"
+DOJO_DRIVER=docker-compose
+DOJO_DOCKER_COMPOSE_FILE=docker-compose.dojo-integration.yaml
+DOJO_EXIT_BEHAVIOR="ignore"

@@ -1,0 +1,9 @@
+bucket            = "prs-local-terraform-state"
+dynamodb_table    = "prs-local-terraform-state-locking"
+region            = "eu-west-2"
+key               = "prs/terraform.tfstate"
+encrypt           = true
+force_path_style  = true
+endpoint          = "http://localstack:4566"
+dynamodb_endpoint = "http://localstack:4566"
+skip_credentials_validation = true

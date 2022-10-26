@@ -42,6 +42,12 @@ variable "s3_endpoint" {
   default = ""
 }
 
+variable "s3_use_path_style" {
+  type    = bool
+  description = "Needed to drive path-style presigned URLs that are simpler for localstack to use in testing"
+  default = false
+}
+
 variable "cognito_cis2_provider_name" {
   type    = string
   default = "example"

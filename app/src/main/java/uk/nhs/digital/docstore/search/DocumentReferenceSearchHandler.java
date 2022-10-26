@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
+import static uk.nhs.digital.docstore.config.ApiConfig.getAmplifyBaseUrl;
 
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -70,7 +71,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
                 .withStatusCode(200)
                 .withHeaders(Map.of(
                         "Content-Type", "application/fhir+json",
-                        "Access-Control-Allow-Origin", System.getenv("AMPLIFY_BASE_URL"),
+                        "Access-Control-Allow-Origin", getAmplifyBaseUrl(),
                         "Access-Control-Allow-Methods", "GET"
                 ))
                 .withBody(jsonParser.encodeResourceToString(bundle));

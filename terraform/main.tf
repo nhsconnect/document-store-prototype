@@ -46,6 +46,7 @@ resource "aws_lambda_function" "document_uploaded_lambda" {
       DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
       DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
       S3_ENDPOINT                = var.s3_endpoint
+      S3_USE_PATH_STYLE          = var.s3_use_path_style
     }
   }
 }

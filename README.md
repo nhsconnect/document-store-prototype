@@ -4,61 +4,55 @@ Proof of concept implementation for an interoperable service capable of storing 
 
 ## Pre-requisites
 
-- Java 11
-- [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-- [LocalStack](https://github.com/localstack/localstack)
 - [Dojo](https://github.com/kudulab/dojo#installation)
 - Git
-- [AWS CLI](https://aws.amazon.com/cli/)
-- [Docker](https://www.docker.com/products/docker-desktop)
+- Docker
 
 For the UI, this also includes:
 
 - Node v14.17.x
 - [npm v6.14.x](https://docs.npmjs.com/cli/v6/configuring-npm/install)
 
-### LocalStack
-
-LocalStack can be installed within a virtual environment using the following commands:
-
-```bash
-python3 -m venv ./venv
-source ./venv/bin/activate
-pip3 install localstack
-```
-
 ## Running services locally
 
-It is possible to run the Document Store backend locally (minus Cognito or CIS2). Authentication through the UI will still require either Cognito to be set up in AWS, or CIS2 to be configured (depending on the value of the `CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED` feature toggle on the frontend).   
-
-To make the Localstack running on Local environment compatible with Apple Silicon set the following environment variable:
-
-```bash
-export LAMBDA_CONTAINER_REGISTRY=mlupin/docker-lambda
-```
+It is possible to run the Document Store backend locally (minus Cognito or CIS2). Authentication through the UI will still require either Cognito to be set up in AWS, or CIS2 to be configured (depending on the value of the `CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED` feature toggle on the frontend).
 
 ### Starting the Document Store
 
 1. Start LocalStack:
 
-```bash
-source ./venv/bin/activate
-./start-localstack
+This will also now bootstrap and apply the terraform.
+
+NB: This will deploy your API lambdas if their jars are already built.
+
+```
+./tasks start-localstack
 ```
 
-2. Bootstrap terraform for the localstack environment:
+2. Build your API lambda jars:
+
+To build or re-build these into your `app/build/libs` directory, using `dojo`:
 
 ```bash
-./bootstrap-terraform.sh local
-cd terraform
-rm -rf .terraform
-terraform init -backend-config local.s3.tfbackend
+./tasks build-api-jars
 ```
 
-3. Deploy the application backend:
+Or for quicker turnaround, without download dependencies each time you can keep dojo running:
+
+```
+dojo
+```
+
+And then to rebuild them in dojo:
+
+```
+./tasks _build-api-jars
+```
+
+3. Deploy or re-deploy the API:
 
 ```bash
-./gradlew deployToLocalStack   # or ./gradlew dTLS
+./tasks deploy-to-localstack
 ```
 
 The Terraform output from the deployment will include two important values:
@@ -72,8 +66,12 @@ These can be used to construct requests with `curl` or Postman, and also to cons
 http://HOST:4566/restapis/API-ID/STAGE/_user_request_/PATH
 ```
 
-where `HOST` is the hostname or IP of the Docker container for LocalStack, `API-ID` is the value from
-`api_gateway_rest_api_id`, `STAGE` is the value from `api_gateway_rest_api_stage`, and `PATH` is the remainder of the
+where 
+- `HOST` is the hostname or IP of the Docker container for LocalStack.  Within the 'docker-compose' containers
+  this is `localstack`, from outside in your host laptop this is `localhost` because localstack is exposed on the local
+  4566 port.
+- `API-ID` is the value from
+- `api_gateway_rest_api_id`, `STAGE` is the value from `api_gateway_rest_api_stage`, and `PATH` is the remainder of the
 endpoint path. For example, to request the metadata for a document with ID `1234`, the URL might look like:
 
 ```
@@ -145,14 +143,12 @@ Machine, may need to target other IP addresses.
 
 | Variable name  | Description                                                                                   |
 |----------------|-----------------------------------------------------------------------------------------------|
-| DS_TEST_HOST   | Overrides the host that Terraform and tests connect to instead of AWS (default: `localhost`). |
 | EDGE_HOST_NAME | Overrides the host that LocalStack binds its edge service to (default: `127.0.0.1`).          |
 
 To use this with Docker Machine, one might add the following to the Bash profile (or a utility
 like [direnv](https://direnv.net/)):
 
 ```bash
-export DS_TEST_HOST="$(docker-machine ip)"
 export EDGE_HOST_NAME=0.0.0.0
 ```
 

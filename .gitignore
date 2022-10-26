@@ -150,9 +150,9 @@ terraform.rc
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-# Python virtual env directory
-venv/
-
 app/bin
 
 .idea/
+
+# Temporary dojo docker compose files
+*.dojo

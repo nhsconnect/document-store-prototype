@@ -1,0 +1,73 @@
+version: "2.2"
+services:
+  default:
+    environment:
+      - AWS_ACCESS_KEY_ID=bob
+      - AWS_SECRET_ACCESS_KEY=cheese
+      - AWS_REGION=eu-west-2
+      - AWS_ENDPOINT=http://localstack:4566
+    links:
+      - localstack:localstack
+      - pds-adaptor:pds-adaptor
+      - terraform:terraform
+    depends_on:
+      terraform:
+        condition: service_completed_successfully
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,lambda,dynamodb,iam,apigateway,logs,sts
+      - DEFAULT_REGION=eu-west-2
+      - HOSTNAME_EXTERNAL=localhost
+      - LAMBDA_CONTAINER_REGISTRY=mlupin/docker-lambda
+      - LAMBDA_EXECUTOR=docker-reuse
+      - DEBUG=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  pds-adaptor:
+    image: wiremock/wiremock
+    command: --verbose
+    ports:
+      - "8080:8080"
+  bootstrap-terraform:
+    image: "amazon/aws-cli"
+    working_dir: /work
+    entrypoint: "/bin/bash -c 'echo Y | ./bootstrap-terraform.sh'"
+    environment:
+      - AWS_ACCESS_KEY_ID=bob
+      - AWS_SECRET_ACCESS_KEY=cheese
+      - AWS_REGION=eu-west-2
+      - AWS_ENDPOINT=http://localstack:4566
+    links:
+      - localstack:localstack
+    depends_on:
+      localstack:
+        condition: service_healthy
+    volumes:
+      - .:/work
+  terraform:
+    image: "hashicorp/terraform:1.0.11"
+    working_dir: /work
+    entrypoint: ./deploy-to-localstack.sh
+    environment:
+      - AWS_ACCESS_KEY_ID=bob
+      - AWS_SECRET_ACCESS_KEY=cheese
+      - AWS_S3_ENDPOINT=http://localstack:4566
+      - AWS_STS_ENDPOINT=http://localstack:4566
+      - AWS_DYNAMODB_ENDPOINT=http://localstack:4566
+      - AWS_REGION=eu-west-2
+    links:
+      - localstack:localstack
+    depends_on:
+      bootstrap-terraform:
+        condition: service_completed_successfully
+    volumes:
+      - .:/work
