@@ -25,7 +25,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.nhs.digital.docstore.json.JsonMapper.toJson;
 
-@WireMockTest(httpPort = SearchForPatientInlineTest.StubbedPatientSearchConfig.PDS_ADAPTOR_PORT)
+@WireMockTest(httpPort = SearchForPatientInlineTest.LocalhostPdsAdaptorNoStubbingPatientSearchConfig.PDS_ADAPTOR_PORT)
 @ExtendWith(MockitoExtension.class)
 public class SearchForPatientInlineTest {
 
@@ -36,9 +36,23 @@ public class SearchForPatientInlineTest {
 
     @BeforeEach
     public void setUp() {
-        var patientSearchConfig = new StubbedPatientSearchConfig();
+        var patientSearchConfig = new LocalhostPdsAdaptorNoStubbingPatientSearchConfig();
         handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsAdaptorClient(patientSearchConfig));
         requestBuilder = new RequestEventBuilder();
+    }
+
+    @Test
+    void returnsUsableResponseWhenDefaultToStubbedResponses() {
+        var defaultConfigWithStubbingOn = new PatientSearchConfig();
+        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsAdaptorClient(defaultConfigWithStubbingOn));
+
+        var reasonableRequest = requestBuilder
+                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009")
+                .build();
+
+        var responseEvent = handler.handleRequest(reasonableRequest, context);
+
+        assertThat(responseEvent.getStatusCode()).isEqualTo(200);
     }
 
     @Test
@@ -136,12 +150,17 @@ public class SearchForPatientInlineTest {
         return new String(Files.readAllBytes(file.toPath()));
     }
 
-    public static class StubbedPatientSearchConfig extends PatientSearchConfig {
+    public static class LocalhostPdsAdaptorNoStubbingPatientSearchConfig extends PatientSearchConfig {
         public static final int PDS_ADAPTOR_PORT = 8081;
 
         @Override
         public String pdsAdaptorRootUri() {
             return String.format("http://localhost:%d/", PDS_ADAPTOR_PORT);
+        }
+
+        @Override
+        public boolean pdsAdaptorIsStubbed() {
+            return false;
         }
     }
 

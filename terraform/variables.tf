@@ -47,9 +47,15 @@ variable "s3_use_path_style" {
   description = "Needed to drive path-style presigned URLs that are simpler for localstack to use in testing"
   default     = false
 }
+
 variable "pds_adaptor_base_url" {
   type    = string
   default = "https://pds-adaptor.prod.non-prod.patient-deductions.nhs.uk"
+}
+
+variable "pds_adaptor_is_stubbed" {
+  type    = string
+  default = "true"
 }
 
 variable "cognito_cis2_provider_name" {

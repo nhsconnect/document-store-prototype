@@ -72,9 +72,6 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             }
             logger.debug("Generating response");
 
-
-            logger.debug("Generating response");
-
             BundleMapper bundleMapper = new BundleMapper();
             Bundle bundle = bundleMapper.toBundle(List.of(patientDetails));
             logger.debug("Processing finished - about to return the response");
