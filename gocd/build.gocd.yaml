@@ -113,7 +113,7 @@ common:
           command: /bin/bash
           arguments:
             - -c
-            - 'ls -la ui/'
+            - 'ls -la ui/node_modules'
       - exec:
           command: dojo
           arguments:
