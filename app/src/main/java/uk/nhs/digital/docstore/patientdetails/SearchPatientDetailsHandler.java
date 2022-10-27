@@ -13,41 +13,34 @@ import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
-import static java.net.http.HttpClient.newHttpClient;
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
-    private static final Logger logger
-            = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
 
     private final FhirContext fhirContext;
-    private final PatientDetailsMapper patientDetailsMapper;
-    private final PatientSearchConfig patientSearchConfig;
     private final ApiConfig apiConfig;
+    private final PdsAdaptorClient pdsAdaptorClient;
 
     public SearchPatientDetailsHandler()
     {
-        this(new PatientSearchConfig(), new ApiConfig());
+        this(new ApiConfig(), new PdsAdaptorClient());
     }
 
-    public SearchPatientDetailsHandler(PatientSearchConfig patientSearchConfig, ApiConfig apiConfig)
+    public SearchPatientDetailsHandler(ApiConfig apiConfig, PdsAdaptorClient pdsAdaptorClient)
     {
-        this(FhirContext.forR4(), new PatientDetailsMapper(), patientSearchConfig, apiConfig);
+        this(FhirContext.forR4(), apiConfig, pdsAdaptorClient);
     }
 
-    public SearchPatientDetailsHandler(FhirContext fhirContext, PatientDetailsMapper patientDetailsMapper, PatientSearchConfig patientSearchConfig, ApiConfig apiConfig)
+    public SearchPatientDetailsHandler(FhirContext fhirContext,
+                                       ApiConfig apiConfig,
+                                       PdsAdaptorClient pdsAdaptorClient)
     {
         this.fhirContext = fhirContext;
-        this.patientDetailsMapper = patientDetailsMapper;
-        this.patientSearchConfig = patientSearchConfig;
         this.apiConfig = apiConfig;
+        this.pdsAdaptorClient = pdsAdaptorClient;
     }
 
 
@@ -72,21 +65,13 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             return errorResponseGenerator.errorResponse(e, jsonParser);
         }
 
-        logger.debug("Confirming NHS number with PDS adaptor");
-        var confirmNHSNumberRequest = HttpRequest.newBuilder(
-                URI.create(patientSearchConfig.pdsAdaptorRootUri() +
-                        "patient-trace-information/" + nhsNumber))
-                .GET()
-                .build();
-
         try {
-            var confirmNHSNumberResponse = newHttpClient().send(confirmNHSNumberRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
-            if (confirmNHSNumberResponse.statusCode() == 404) {
+            var patientDetails = pdsAdaptorClient.fetchPatientDetails(nhsNumber);
+            if (patientDetails == null) {
                 return emptyBundleResponse();
             }
             logger.debug("Generating response");
 
-            var patientDetails = patientDetailsMapper.fromPatientDetailsResponseBody(confirmNHSNumberResponse.body());
 
             logger.debug("Generating response");
 

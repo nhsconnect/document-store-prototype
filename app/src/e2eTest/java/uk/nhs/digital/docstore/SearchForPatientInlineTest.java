@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
+import uk.nhs.digital.docstore.patientdetails.PdsAdaptorClient;
 import uk.nhs.digital.docstore.patientdetails.SearchPatientDetailsHandler;
 
 import java.io.File;
@@ -35,7 +36,8 @@ public class SearchForPatientInlineTest {
 
     @BeforeEach
     public void setUp() {
-        handler = new SearchPatientDetailsHandler(new StubbedPatientSearchConfig(), new StubbedApiConfig("http://ui-url"));
+        var patientSearchConfig = new StubbedPatientSearchConfig();
+        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsAdaptorClient(patientSearchConfig));
         requestBuilder = new RequestEventBuilder();
     }
 
@@ -64,6 +66,68 @@ public class SearchForPatientInlineTest {
         assertThatJson(responseEvent.getBody())
                 .whenIgnoringPaths("$.meta", "$.entry[*].resource.meta")
                 .isEqualTo(getContentFromResource("search-patient-details/patient-details-response.json"));
+    }
+
+    @Test
+    void returnsMissingPatientResponseWhenPatientNotFound() throws IOException, InterruptedException {
+
+        stubFor(get(urlEqualTo("/patient-trace-information/9111231130"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{}")));
+
+        var request = requestBuilder
+                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9111231130")
+                .build();
+
+        var responseEvent = handler.handleRequest(request, context);
+
+        assertThat(responseEvent.getStatusCode()).isEqualTo(200);
+        assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
+        assertThatJson(responseEvent.getBody())
+                .whenIgnoringPaths("$.meta")
+                .isEqualTo(getContentFromResource("search-patient-details/missing-patient-response.json"));
+    }
+
+    @Test
+    void returnsErrorResponseWhenAnUnrecognisedSubjectIdentifierSystemIsInput() throws IOException {
+        var request = requestBuilder
+                .addQueryParameter("subject:identifier", "unrecognised-subject-identifier-system|9000000009")
+                .build();
+
+        var responseEvent = handler.handleRequest(request, context);
+
+        assertThat(responseEvent.getStatusCode()).isEqualTo(400);
+        assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
+        assertThatJson(responseEvent.getBody())
+                .isEqualTo(getContentFromResource("errors/unrecognised-subject-identifier-system.json"));
+    }
+
+    @Test
+    void returnsErrorResponseWhenAnInvalidSubjectIdentifierIsInput() throws IOException {
+        var request = requestBuilder
+                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number%7Cinvalid-subject-identifier")
+                .build();
+
+        var responseEvent = handler.handleRequest(request, context);
+
+        assertThat(responseEvent.getStatusCode()).isEqualTo(400);
+        assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
+        assertThatJson(responseEvent.getBody())
+                .isEqualTo(getContentFromResource("errors/invalid-subject-identifier.json"));
+    }
+
+    @Test
+    void returnsErrorResponseWhenSearchParametersAreMissing() throws IOException, InterruptedException {
+        var parameterlessRequest = requestBuilder.build();
+
+        var responseEvent = handler.handleRequest(parameterlessRequest, context);
+
+        assertThat(responseEvent.getStatusCode()).isEqualTo(400);
+        assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
+        assertThatJson(responseEvent.getBody())
+                .isEqualTo(getContentFromResource("errors/missing-search-parameters.json"));
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
