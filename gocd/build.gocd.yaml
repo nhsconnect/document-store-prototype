@@ -108,7 +108,7 @@ common:
           stage: build
           job: frontend
           source: ui/node_modules
-          destination: ui/node_modules
+          destination: ui
       - exec:
           command: /bin/bash
           arguments:
@@ -158,7 +158,7 @@ common:
           stage: build
           job: frontend
           source: ui/node_modules
-          destination: ui/node_modules
+          destination: ui
       - exec:
           command: dojo
           arguments:
