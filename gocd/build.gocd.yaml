@@ -19,7 +19,7 @@ common:
         artifacts:
           - build:
               source: ui/node_modules
-              destination: node_modules
+              destination: ui
         tasks:
           - exec:
               command: dojo
@@ -107,7 +107,7 @@ common:
       - fetch:
           stage: build
           job: frontend
-          source: node_modules
+          source: ui/node_modules
           destination: ui/node_modules
       - exec:
           command: /bin/bash
@@ -157,7 +157,7 @@ common:
       - fetch:
           stage: build
           job: frontend
-          source: node_modules
+          source: ui/node_modules
           destination: ui/node_modules
       - exec:
           command: dojo
