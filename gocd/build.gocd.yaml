@@ -108,6 +108,12 @@ common:
           stage: build
           job: frontend
           source: node_modules
+          destination: ui/node_modules
+      - exec:
+          command: /bin/bash
+          arguments:
+            - -c
+            - 'ls -la ui/'
       - exec:
           command: dojo
           arguments:
@@ -152,6 +158,7 @@ common:
           stage: build
           job: frontend
           source: node_modules
+          destination: ui/node_modules
       - exec:
           command: dojo
           arguments:
@@ -240,18 +247,17 @@ pipelines:
         pipeline: paperless-record-service.dev
         stage: e2e_tests
     stages:
-      - build_backend:
+      - build:
           clean_workspace: true
           jobs:
-            build: *build_backend
-
+            backend: *build_backend
+            frontend: *build_frontend
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: pre-prod
           clean_workspace: true
           jobs:
             plan: *plan_terraform
-
       - deploy_terraform:
           environment_variables:
             ENVIRONMENT: pre-prod
@@ -292,10 +298,11 @@ pipelines:
         pipeline: paperless-record-service.pre-prod
         stage: e2e_tests
     stages:
-      - build_backend:
+      - build:
           clean_workspace: true
           jobs:
-            build: *build_backend
+            backend: *build_backend
+            frontend: *build_frontend
 
       - plan_terraform:
           environment_variables:
@@ -321,6 +328,7 @@ pipelines:
           jobs:
             build: *build_ui
             unit-test-ui: *unit_test_ui
+
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: prod
