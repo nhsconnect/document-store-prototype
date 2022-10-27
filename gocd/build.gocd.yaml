@@ -118,6 +118,12 @@ common:
           command: dojo
           arguments:
             - -c
+            - Dojofile-node
+            - ./tasks install-ui-dependencies
+      - exec:
+          command: dojo
+          arguments:
+            - -c
             - Dojofile-infra
             - ./tasks configure-ui
       - exec:
@@ -164,7 +170,7 @@ common:
           arguments:
             - -c
             - Dojofile-node
-            - ./tasks run-e2e-tests
+            - ./tasks install-ui-dependencies && ./tasks run-e2e-tests
     artifacts:
       - test:
           source: ui/cypress/screenshots
