@@ -25,7 +25,7 @@ services:
       - LAMBDA_EXECUTOR=docker-reuse
       - DEBUG=1
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4566"]
+      test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
       interval: 5s
       timeout: 5s
       retries: 5
