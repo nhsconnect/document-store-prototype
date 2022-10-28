@@ -66,62 +66,56 @@ resource "aws_lambda_function" "doc_ref_search_lambda" {
   }
 }
 
-module "doc_ref_endpoint" {
+resource "aws_api_gateway_resource" "doc_ref_collection_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
+  path_part   = "DocumentReference"
+}
+
+resource "aws_api_gateway_resource" "doc_ref_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_resource.doc_ref_collection_resource.id
+  path_part   = "{id}"
+}
+
+module "get_doc_ref_endpoint" {
   source             = "./modules/api_gateway_endpoint"
   api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
-  parent_resource_id = aws_api_gateway_resource.doc_ref_resource.id
+  resource_id = aws_api_gateway_resource.doc_ref_resource.id
   lambda_arn         = aws_lambda_function.get_doc_ref_lambda.invoke_arn
-  path_part          = "{id}"
   http_method        = "GET"
-}
-
-resource "aws_api_gateway_method" "create_doc_ref_method" {
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  resource_id   = aws_api_gateway_resource.doc_ref_resource.id
-  http_method   = "POST"
-  authorization = "COGNITO_USER_POOLS"
   authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
-resource "aws_api_gateway_integration" "create_doc_ref_integration" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_method.create_doc_ref_method.resource_id
-  http_method = aws_api_gateway_method.create_doc_ref_method.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.create_doc_ref_lambda.invoke_arn
-}
-
-resource "aws_api_gateway_method" "doc_ref_search_method" {
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  resource_id   = aws_api_gateway_resource.doc_ref_resource.id
-  http_method   = "GET"
-  authorization = "COGNITO_USER_POOLS"
+module "create_doc_ref_endpoint" {
+  source             = "./modules/api_gateway_endpoint"
+  api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_resource.doc_ref_collection_resource.id
+  lambda_arn         = aws_lambda_function.create_doc_ref_lambda.invoke_arn
+  http_method        = "POST"
   authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
-resource "aws_api_gateway_integration" "doc_ref_search_integration" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_method.doc_ref_search_method.resource_id
-  http_method = aws_api_gateway_method.doc_ref_search_method.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.doc_ref_search_lambda.invoke_arn
+module "search_doc_ref_endpoint" {
+  source             = "./modules/api_gateway_endpoint"
+  api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_resource.doc_ref_collection_resource.id
+  lambda_arn         = aws_lambda_function.doc_ref_search_lambda.invoke_arn
+  http_method        = "GET"
+  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
-resource "aws_api_gateway_method" "create_and_search_doc_preflight_method" {
+resource "aws_api_gateway_method" "doc_ref_collection_preflight_method" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  resource_id   = aws_api_gateway_resource.doc_ref_resource.id
+  resource_id   = aws_api_gateway_resource.doc_ref_collection_resource.id
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_method_response" "create_and_search_doc_preflight_method_response" {
+resource "aws_api_gateway_method_response" "doc_ref_collection_preflight_method_response" {
   rest_api_id     = aws_api_gateway_rest_api.lambda_api.id
-  resource_id     = aws_api_gateway_resource.doc_ref_resource.id
-  http_method     = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
+  resource_id     = aws_api_gateway_resource.doc_ref_collection_resource.id
+  http_method     = aws_api_gateway_method.doc_ref_collection_preflight_method.http_method
   status_code     = "200"
   response_models = {
     "application/json" = "Empty"
@@ -131,15 +125,15 @@ resource "aws_api_gateway_method_response" "create_and_search_doc_preflight_meth
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
-  depends_on = [aws_api_gateway_method.create_and_search_doc_preflight_method]
+  depends_on = [aws_api_gateway_method.doc_ref_collection_preflight_method]
 }
 
-resource "aws_api_gateway_integration" "create_and_search_doc_preflight_integration" {
+resource "aws_api_gateway_integration" "doc_ref_collection_preflight_integration" {
   rest_api_id       = aws_api_gateway_rest_api.lambda_api.id
-  resource_id       = aws_api_gateway_resource.doc_ref_resource.id
-  http_method       = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
+  resource_id       = aws_api_gateway_resource.doc_ref_collection_resource.id
+  http_method       = aws_api_gateway_method.doc_ref_collection_preflight_method.http_method
   type              = "MOCK"
-  depends_on        = [aws_api_gateway_method.create_and_search_doc_preflight_method]
+  depends_on        = [aws_api_gateway_method.doc_ref_collection_preflight_method]
   request_templates = {
     "application/json" = <<EOF
 {
@@ -149,23 +143,17 @@ EOF
   }
 }
 
-resource "aws_api_gateway_integration_response" "create_and_search_doc_preflight_integration_response" {
+resource "aws_api_gateway_integration_response" "doc_ref_collection_preflight_integration_response" {
   rest_api_id         = aws_api_gateway_rest_api.lambda_api.id
-  resource_id         = aws_api_gateway_resource.doc_ref_resource.id
-  http_method         = aws_api_gateway_method.create_and_search_doc_preflight_method.http_method
-  status_code         = aws_api_gateway_method_response.create_and_search_doc_preflight_method_response.status_code
+  resource_id         = aws_api_gateway_resource.doc_ref_collection_resource.id
+  http_method         = aws_api_gateway_method.doc_ref_collection_preflight_method.http_method
+  status_code         = aws_api_gateway_method_response.doc_ref_collection_preflight_method_response.status_code
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST'",
     "method.response.header.Access-Control-Allow-Origin"  = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
   }
-  depends_on = [aws_api_gateway_method_response.create_and_search_doc_preflight_method_response]
-}
-
-resource "aws_api_gateway_resource" "doc_ref_resource" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
-  path_part   = "DocumentReference"
+  depends_on = [aws_api_gateway_method_response.doc_ref_collection_preflight_method_response]
 }
 
 resource "aws_lambda_permission" "api_gateway_permission_for_get_doc_ref" {
