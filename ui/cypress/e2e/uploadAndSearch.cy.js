@@ -70,14 +70,17 @@ describe("upload and search transaction", () => {
         cy.contains("Next", { timeout: 30000 }).click();
         cy.url().should("eq", Cypress.config("baseUrl") + "/search/results");
 
-        //mock window.open() to check if the link opens in new page
-        // cy.window().then((win) => { cy.stub(win, 'open').as("popup")});
+        cy.intercept(/https:\/\/hlmfnil69j.execute-api.eu-west-2.amazonaws.com\/prod\/DocumentReference\/.*/, {
+            statusCode: 201,
+            body: {
+                docStatus: "final",
+                content: [{ attachment: { url: "" }}],
+            },
+        })
 
+        cy.get('button[type="submit"]', { timeout: 20000 }).first().click();
 
-
-        // cy.get('@popup', { timeout: 15000 }).should("be.called");
-        //
-        // cy.visit("/");
+        cy.get('span[role="alert"]').should('not.exist');
 
         cy.contains("Log Out").click();
 
