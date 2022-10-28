@@ -72,7 +72,7 @@ resource "aws_api_gateway_resource" "doc_ref_collection_resource" {
   path_part   = "DocumentReference"
 }
 
-resource "aws_api_gateway_resource" "doc_ref_resource" {
+resource "aws_api_gateway_resource" "get_doc_ref_resource" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   parent_id   = aws_api_gateway_resource.doc_ref_collection_resource.id
   path_part   = "{id}"
@@ -81,7 +81,7 @@ resource "aws_api_gateway_resource" "doc_ref_resource" {
 module "get_doc_ref_endpoint" {
   source             = "./modules/api_gateway_endpoint"
   api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_resource.doc_ref_resource.id
+  resource_id = aws_api_gateway_resource.get_doc_ref_resource.id
   lambda_arn         = aws_lambda_function.get_doc_ref_lambda.invoke_arn
   http_method        = "GET"
   authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
