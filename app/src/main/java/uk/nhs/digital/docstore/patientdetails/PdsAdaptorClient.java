@@ -28,11 +28,13 @@ public class PdsAdaptorClient {
 
     public PatientDetails fetchPatientDetails(String nhsNumber) {
         if (patientSearchConfig.pdsAdaptorIsStubbed()) {
+            logger.info("Returning stub PDS adaptor response");
             return new PatientDetails(List.of("bob"), "gibbons", "1980-10-14", "M1ME", nhsNumber);
         }
-        logger.debug("Confirming NHS number with PDS adaptor");
+
 
         String path = "patient-trace-information/" + nhsNumber;
+        logger.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsAdaptorRootUri());
         var response = httpClient.get(patientSearchConfig.pdsAdaptorRootUri(), path);
 
         PatientDetails patientDetails = null;

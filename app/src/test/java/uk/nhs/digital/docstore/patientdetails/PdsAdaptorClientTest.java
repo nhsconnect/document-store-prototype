@@ -1,10 +1,12 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.OngoingStubbing;
+import uk.nhs.digital.docstore.utils.TestLogAppender;
 
 import javax.net.ssl.SSLSession;
 import java.net.URI;
@@ -27,6 +29,8 @@ class PdsAdaptorClientTest {
 
     @Test
     public void shouldReturnStubbedPatientWithoutOutboundHttpCallByDefault() {
+        var testLogAppender = TestLogAppender.addTestLogAppender();
+
         var defaultPatientSearchConfig = new PatientSearchConfig();
 
         var pdsAdaptorClient = new PdsAdaptorClient(defaultPatientSearchConfig, httpClient);
@@ -38,11 +42,16 @@ class PdsAdaptorClientTest {
         verify(httpClient, never()).get(any(), any());
 
         assertThat(patientDetails.getNhsNumber()).isEqualTo(nhsNumber);
+
+        assertThat(testLogAppender.findLoggedEvent("stub")).isNotNull();
     }
 
     @Test
     public void shouldMakeOutboundCallAndReturnPatientDetailsIfPatientSearchConfigStubbingToggledOff() {
-        var pdsAdaptorClient = new PdsAdaptorClient(new StubbingOffPatientSearchConfig(), httpClient);
+        var testLogappender = TestLogAppender.addTestLogAppender();
+
+        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
+        var pdsAdaptorClient = new PdsAdaptorClient(stubbingOffPatientSearchConfig, httpClient);
 
         when(httpClient.get(any(), any())).thenReturn(new Stub404HttpResponse());
 
@@ -51,6 +60,7 @@ class PdsAdaptorClientTest {
         pdsAdaptorClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient).get(any(), contains(nhsNumber));
+        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsAdaptorRootUri())).isNotNull();
     }
 
     private static class Stub404HttpResponse implements HttpResponse<String> {
