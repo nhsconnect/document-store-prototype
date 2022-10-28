@@ -11,24 +11,26 @@ const config = {
             redirectSignOut: "%cognito-redirect-signout%",
             responseType: "token",
         },
-            endpoints: [
-                {
-                    name: "doc-store-api",
-                    endpoint: "%api-endpoint%",
-                },
-            ],
+    },
+    API: {
+        endpoints: [
+            {
+                name: "doc-store-api",
+                endpoint: "%api-endpoint%",
+            },
+        ],
+    },
+    features: {
+        local: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
         },
-        features: {
-            local: {
-                CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-            },
-            dev: {
-                CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-            },
-            "pre-prod": {
-                CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
-            },
+        dev: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
         },
-    };
+        "pre-prod": {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
+        },
+    },
+};
 
-    export default config;
+export default config;
