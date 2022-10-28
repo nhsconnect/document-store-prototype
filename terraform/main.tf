@@ -148,13 +148,12 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       module.create_doc_ref_endpoint,
       module.search_doc_ref_endpoint,
       module.patient_details_endpoint,
+      module.patient_details_collection_preflight,
+      module.doc_ref_collection_preflight,
+      module.get_doc_ref_preflight,
       aws_api_gateway_resource.doc_ref_collection_resource,
       aws_api_gateway_resource.patient_details_collection_resource,
       aws_api_gateway_authorizer.cognito_authorizer,
-      aws_api_gateway_integration.doc_ref_collection_preflight_integration,
-      aws_api_gateway_method.doc_ref_collection_preflight_method,
-      aws_api_gateway_integration.patient_details_preflight_integration,
-      aws_api_gateway_method.patient_details_preflight_method,
     ]))
   }
 }
