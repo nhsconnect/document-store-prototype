@@ -1,36 +1,34 @@
 const config = {
     Auth: {
-        region: "eu-west-2",
-        userPoolId: "eu-west-2_Y8etyk9V6",
-        userPoolWebClientId: "7mm2u6re8jsptrgallf74g2c6c",
-        providerId: "COGNITO",
+        region: "%region%",
+        userPoolId: "%pool-id%",
+        userPoolWebClientId: "%client-id%",
+        providerId: "cis2devoidc",
         oauth: {
-            domain: "doc-store-user-pool.auth.eu-west-2.amazoncognito.com",
+            domain: "%cognito-domain%",
             scope: ["openid"],
-            redirectSignIn: "https://main.d1p55zjnm05qd2.amplifyapp.com/cis2-auth-callback",
+            redirectSignIn: "%cognito-redirect-signin%",
             redirectSignOut: "%cognito-redirect-signout%",
             responseType: "token",
         },
-    },
-    API: {
-        endpoints: [
-            {
-                name: "doc-store-api",
-                endpoint: process.env.REACT_APP_DOCUMENT_STORE_BASE_URI
+            endpoints: [
+                {
+                    name: "doc-store-api",
+                    endpoint: "%api-endpoint%",
+                },
+            ],
+        },
+        features: {
+            local: {
+                CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
             },
-        ],
-    },
-    features: {
-        local: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
+            dev: {
+                CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
+            },
+            "pre-prod": {
+                CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
+            },
         },
-        development: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
-        },
-        production: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-        },
-    },
-};
+    };
 
-export default config;
+    export default config;
