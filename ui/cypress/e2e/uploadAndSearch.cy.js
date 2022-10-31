@@ -72,6 +72,7 @@ describe("upload and search transaction", () => {
 
         cy.get('button[type="submit"]', { timeout: 20000 }).first().click();
 
+        cy.get('button[type="submit"]', { timeout: 30000 }).first().contains(/^Download$/);
         cy.get('span[role="alert"]').should('not.exist');
 
         cy.contains("Log Out").click();
