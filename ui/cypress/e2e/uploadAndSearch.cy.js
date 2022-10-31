@@ -2,6 +2,7 @@ import config from "../../src/config";
 
 describe("upload and search transaction", () => {
     it("allows the user to upload a document and search for a document", () => {
+        const timeout = 30000;
         const nhsNumber = "9000000009";
         const documentTitle = "Jane Doe - Patient Record";
         cy.visit("/");
@@ -18,7 +19,7 @@ describe("upload and search transaction", () => {
             cy.login(Cypress.env("username"), Cypress.env("password"));
         }
 
-        cy.get("#upload", { timeout: 10000 }).click();
+        cy.get("#upload", { timeout }).click();
         cy.get('[type="submit"]').click();
 
         cy.url().should(
@@ -27,7 +28,7 @@ describe("upload and search transaction", () => {
         );
         cy.get('input[name="nhsNumber"]').type(nhsNumber);
         cy.contains("Search").click();
-        cy.contains("Next", { timeout: 30000 }).click();
+        cy.contains("Next", { timeout }).click();
         cy.url().should("eq", Cypress.config("baseUrl") + "/upload/submit");
 
         // fill out fields on upload document page
@@ -38,7 +39,7 @@ describe("upload and search transaction", () => {
         cy.get('button[type="submit"]').click();
 
         // upload success page
-        cy.url({ timeout: 30000 }).should(
+        cy.url({ timeout }).should(
             "eq",
             Cypress.config("baseUrl") + "/upload/success"
         );
@@ -67,12 +68,12 @@ describe("upload and search transaction", () => {
         );
         cy.get('input[name="nhsNumber"]').type(nhsNumber);
         cy.contains("Search").click();
-        cy.contains("Next", { timeout: 30000 }).click();
+        cy.contains("Next", { timeout }).click();
         cy.url().should("eq", Cypress.config("baseUrl") + "/search/results");
 
-        cy.get('button[type="submit"]', { timeout: 20000 }).first().click();
+        cy.get('button[type="submit"]', { timeout }).first().click();
 
-        cy.get('button[type="submit"]', { timeout: 30000 }).first().contains(/^Download$/);
+        cy.get('button[type="submit"]').first().contains(/^Download$/, { timeout });
         cy.get('span[role="alert"]').should('not.exist');
 
         cy.contains("Log Out").click();
