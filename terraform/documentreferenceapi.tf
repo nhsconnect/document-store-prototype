@@ -118,7 +118,7 @@ module "get_doc_ref_preflight" {
   api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
   resource_id = aws_api_gateway_resource.get_doc_ref_resource.id
   origin = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
-  methods = "'GET,OPTIONS'"
+  methods = "'GET,OPTIONS,POST'"
 }
 
 resource "aws_lambda_permission" "api_gateway_permission_for_get_doc_ref" {
