@@ -22,7 +22,9 @@ resource "aws_lambda_function" "get_doc_ref_lambda" {
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
   environment {
-    variables = local.common_environment_variables
+    variables = merge({
+      AMPLIFY_BASE_URL = local.amplify_base_url
+    }, local.common_environment_variables)
   }
 }
 
