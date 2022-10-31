@@ -1,7 +1,10 @@
 package uk.nhs.digital.docstore.config;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 
 public class ApiConfig {
     private static final Logger logger = LoggerFactory.getLogger(ApiConfig.class);
@@ -14,5 +17,21 @@ public class ApiConfig {
             return "__unset__AMPLIFY_BASE_URL";
         }
         return url;
+    }
+
+    public APIGatewayProxyResponseEvent getApiGatewayResponse(int statusCode, String body, String methods, String location) {
+        var headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/fhir+json");
+        headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
+        headers.put("Access-Control-Allow-Methods", methods);
+
+        if (location != null) {
+            headers.put("Location", location);
+        }
+
+        return new APIGatewayProxyResponseEvent()
+                .withStatusCode(statusCode)
+                .withHeaders(headers)
+                .withBody(body);
     }
 }

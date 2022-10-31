@@ -1,7 +1,6 @@
 package uk.nhs.digital.docstore.search;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.PerformanceOptionsEnum;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -74,14 +73,8 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         }
 
         logger.debug("Processing finished - about to return the response");
-        return new APIGatewayProxyResponseEvent()
-                .withStatusCode(200)
-                .withHeaders(Map.of(
-                        "Content-Type", "application/fhir+json",
-                        "Access-Control-Allow-Origin", apiConfig.getAmplifyBaseUrl(),
-                        "Access-Control-Allow-Methods", "GET"
-                ))
-                .withBody(jsonParser.encodeResourceToString(bundle));
+        var body = jsonParser.encodeResourceToString(bundle);
+        return apiConfig.getApiGatewayResponse(200, body, "GET", null);
     }
 
     private String getEmail(APIGatewayProxyRequestEvent requestEvent) {

@@ -6,15 +6,22 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Attachment;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.InstantType;
+import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
+import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 
 import java.net.URL;
-import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
@@ -28,13 +35,19 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
     private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
     private final FhirContext fhirContext;
+    private final ApiConfig apiConfig;
 
     private static final Logger logger
             = LoggerFactory.getLogger(RetrieveDocumentReferenceHandler.class);
 
     public RetrieveDocumentReferenceHandler() {
+        this(new ApiConfig());
+    }
+
+    public RetrieveDocumentReferenceHandler(ApiConfig apiConfig) {
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
+        this.apiConfig = apiConfig;
     }
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
@@ -49,18 +62,16 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         logger.debug("API Gateway event received - processing starts");
 
         if (metadata == null) {
-            return new APIGatewayProxyResponseEvent()
-                    .withStatusCode(404)
-                    .withHeaders(Map.of("Content-Type", "application/fhir+json"))
-                    .withBody(jsonParser.encodeResourceToString(new OperationOutcome()
-                            .addIssue(new OperationOutcome.OperationOutcomeIssueComponent()
-                                    .setSeverity(ERROR)
-                                    .setCode(NOTFOUND)
-                                    .setDetails(new CodeableConcept()
-                                            .addCoding(new Coding()
-                                                    .setSystem("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1")
-                                                    .setCode("NO_RECORD_FOUND")
-                                                    .setDisplay("No record found"))))));
+            var body = jsonParser.encodeResourceToString(new OperationOutcome()
+                    .addIssue(new OperationOutcome.OperationOutcomeIssueComponent()
+                            .setSeverity(ERROR)
+                            .setCode(NOTFOUND)
+                            .setDetails(new CodeableConcept()
+                                    .addCoding(new Coding()
+                                            .setSystem("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1")
+                                            .setCode("NO_RECORD_FOUND")
+                                            .setDisplay("No record found")))));
+            return apiConfig.getApiGatewayResponse(404, body,"GET", null);
         }
 
         DocumentReferenceContentComponent contentComponent = null;
@@ -96,13 +107,10 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
                 .setDocStatus(metadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
                 .setDescription(metadata.getDescription())
                 .setId(metadata.getId());
-        //var resourceAsJson = new SimpleJsonEncoder().encodeDocumentReferenceToString(metadata, preSignedUrl);
+
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
 
         logger.debug("Processing finished - about to return the response");
-        return new APIGatewayProxyResponseEvent()
-                .withStatusCode(200)
-                .withHeaders(Map.of("Content-Type", "application/fhir+json"))
-                .withBody(resourceAsJson);
+        return apiConfig.getApiGatewayResponse(200, resourceAsJson, "GET", null);
     }
 }

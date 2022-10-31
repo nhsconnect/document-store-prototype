@@ -6,15 +6,18 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Attachment;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptorAndURL;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.create.CreateDocumentReferenceRequestValidator;
-
-import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
@@ -92,13 +95,6 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
 
         logger.debug("Processing finished - about to return the response");
-        return new APIGatewayProxyResponseEvent()
-                .withStatusCode(201)
-                .withHeaders(Map.of(
-                        "Content-Type", "application/fhir+json",
-                        "Access-Control-Allow-Origin", apiConfig.getAmplifyBaseUrl(),
-                        "Access-Control-Allow-Methods", "POST",
-                        "Location", "DocumentReference/" + savedDocumentMetadata.getId()))
-                .withBody(resourceAsJson);
+        return apiConfig.getApiGatewayResponse(201, resourceAsJson, "POST", "DocumentReference/" + savedDocumentMetadata.getId());
     }
 }

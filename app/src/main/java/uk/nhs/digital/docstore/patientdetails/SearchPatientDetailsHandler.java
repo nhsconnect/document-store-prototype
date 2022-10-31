@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
@@ -57,7 +57,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var body = toJson(fhirBundleOf(patientDetails));
 
             logger.debug("Processing finished - about to return the response");
-            return fhirResponse(200).withBody(body);
+            return apiConfig.getApiGatewayResponse(200, body, "GET", null);
         }
         catch (Exception e) {
             return errorResponseGenerator.errorResponse(e, fhirContext.newJsonParser());
@@ -65,26 +65,18 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     }
 
     private APIGatewayProxyResponseEvent emptyBundleResponse() {
-        return fhirResponse(200).withBody("{\n" +
+        var body = "{\n" +
                 "  \"resourceType\": \"Bundle\",\n" +
                 "  \"type\": \"searchset\",\n" +
                 "  \"total\": 0\n" +
-                "}");
+                "}";
+        return apiConfig.getApiGatewayResponse(200, body, "GET", null);
     }
 
     private static Map<String, String> queryParametersFrom(APIGatewayProxyRequestEvent requestEvent) {
         return requestEvent.getQueryStringParameters() == null
                 ? Map.of()
                 : requestEvent.getQueryStringParameters();
-    }
-
-    private APIGatewayProxyResponseEvent fhirResponse(int statusCode) {
-        return new APIGatewayProxyResponseEvent()
-                .withStatusCode(statusCode)
-                .withHeaders(Map.of(
-                        "Content-Type", "application/fhir+json",
-                        "Access-Control-Allow-Origin", apiConfig.getAmplifyBaseUrl(),
-                        "Access-Control-Allow-Methods", "GET"));
     }
 
     private static Bundle fhirBundleOf(PatientDetails patientDetails) {
