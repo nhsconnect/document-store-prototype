@@ -13,6 +13,10 @@ const states = {
     FAILED: "failed",
 };
 
+const alignMiddle = {
+    verticalAlign: 'middle'
+}
+
 function Document({client, documentData, downloadError}) {
     const [disabled, setDisabled] = useState(false);
 
@@ -41,15 +45,16 @@ function Document({client, documentData, downloadError}) {
 
     return (
         <Table.Row>
-            <Table.Cell>
+            <Table.Cell style={alignMiddle}>
                 {documentData.description}
             </Table.Cell>
-            <Table.Cell>{documentData.type}</Table.Cell>
-            <Table.Cell>
+            <Table.Cell style={alignMiddle}>{documentData.type}</Table.Cell>
+            <Table.Cell style={alignMiddle}>
                 {documentData.indexed.toLocaleString()}
             </Table.Cell>
-            <Table.Cell>
-                <Button secondary
+            <Table.Cell style={{...alignMiddle, width: 200}}>
+                <Button style={{marginBottom:0}}
+                        secondary
                         disabled={disabled}
                         onClick={() => handleClick(documentData.id, documentData.description)}>
                     {disabled ? "Downloading..." : "Download"}
