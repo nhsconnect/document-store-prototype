@@ -30,8 +30,6 @@ describe("UploadDocumentPage", () => {
             expect(nhsNumberField()).toBeInTheDocument();
             expect(nhsNumberField()).toHaveValue(nhsNumber);
             expect(nhsNumberField()).toHaveAttribute("readonly");
-            expect(documentTitleField()).toBeInTheDocument();
-            expect(clinicalCodeSelector()).toBeInTheDocument();
             expect(
                 screen.getByLabelText("Choose document")
             ).toBeInTheDocument();
@@ -46,8 +44,6 @@ describe("UploadDocumentPage", () => {
             });
             render(<UploadDocumentPage client={apiClientMock} />);
 
-            selectClinicalCode("22151000087106");
-            enterTitle("Jane Doe - Patient Record");
             chooseDocument(document);
             uploadDocument();
 
@@ -58,8 +54,6 @@ describe("UploadDocumentPage", () => {
 
         it("displays an error message when the document fails to upload", async () => {
             const apiClientMock = new ApiClient();
-            const documentTitle = "Jane Doe - Patient Record";
-            const snomedCode = "22151000087106";
             apiClientMock.uploadDocument = jest.fn(() => {
                 throw new Error();
             });
@@ -68,17 +62,13 @@ describe("UploadDocumentPage", () => {
             });
             render(<UploadDocumentPage client={apiClientMock} />);
 
-            enterTitle(documentTitle);
-            selectClinicalCode(snomedCode);
             chooseDocument(document);
             uploadDocument();
 
             await waitFor(() => {
                 expect(apiClientMock.uploadDocument).toHaveBeenCalledWith(
                     document,
-                    nhsNumber,
-                    documentTitle,
-                    snomedCode
+                    nhsNumber
                 );
             });
             expect(
@@ -88,15 +78,12 @@ describe("UploadDocumentPage", () => {
 
         it("displays a loading spinner and disables the upload button when the document is being uploaded", async () => {
             const apiClientMock = new ApiClient();
-            const documentTitle = "Jane Doe - Patient Record";
-            const snomedCode = "22151000087106";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
             render(<UploadDocumentPage client={apiClientMock} />);
 
-            enterTitle(documentTitle);
-            selectClinicalCode(snomedCode);
+
             chooseDocument(document);
             uploadDocument();
 
@@ -108,8 +95,6 @@ describe("UploadDocumentPage", () => {
 
         it("does not upload documents of size greater than 5GB and displays an error", async () => {
             const apiClientMock = new ApiClient();
-            const documentTitle = "Jane Doe - Patient Record";
-            const snomedCode = "22151000087106";
             const document = new File(["hello"], "hello.txt", {
                 type: "text/plain",
             });
@@ -118,8 +103,6 @@ describe("UploadDocumentPage", () => {
             });
             render(<UploadDocumentPage client={apiClientMock} />);
 
-            enterTitle(documentTitle);
-            selectClinicalCode(snomedCode);
             chooseDocument(document);
             uploadDocument();
 
@@ -135,16 +118,11 @@ describe("UploadDocumentPage", () => {
 
         it("displays an error message when the form is submitted if the required fields are missing", async () => {
             const apiClientMock = new ApiClient();
-            const snomedCode = "22151000087106";
             render(<UploadDocumentPage client={apiClientMock} />);
 
-            selectClinicalCode(snomedCode);
             uploadDocument();
 
             await waitFor(() => {
-                expect(
-                    screen.getByText("Please enter document title")
-                ).toBeInTheDocument();
                 expect(
                     screen.getByText("Please attach a file")
                 ).toBeInTheDocument();
@@ -169,21 +147,12 @@ function chooseDocument(document) {
     userEvent.upload(screen.getByLabelText("Choose document"), document);
 }
 
-function selectClinicalCode(snomedCode) {
-    userEvent.selectOptions(clinicalCodeSelector(), snomedCode);
-}
 
-function enterTitle(documentTitle) {
-    userEvent.type(documentTitleField(), documentTitle);
-}
 
 function uploadDocument() {
     userEvent.click(uploadButton());
 }
 
-function clinicalCodeSelector() {
-    return screen.getByLabelText("Select Clinical Code");
-}
 
 function progressBar() {
     return screen.getByRole("progressbar");
@@ -193,9 +162,6 @@ function uploadButton() {
     return screen.getByText("Upload");
 }
 
-function documentTitleField() {
-    return screen.getByLabelText("Enter Document Title");
-}
 
 function nhsNumberField() {
     return screen.getByLabelText("NHS number");

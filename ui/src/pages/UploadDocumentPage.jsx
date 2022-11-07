@@ -1,4 +1,4 @@
-import { Button, Fieldset, Input, Select } from "nhsuk-react-components";
+import { Button, Fieldset, Input } from "nhsuk-react-components";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -26,12 +26,6 @@ const UploadDocumentPage = ({ client }) => {
         }
     );
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
-    const { ref: documentTitleRef, ...documentTitleProps } = register(
-        "documentTitle",
-        { required: "Please enter document title" }
-    );
-    const { ref: clinicalCodeRef, ...clinicalCodeProps } =
-        register("clinicalCode");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
@@ -47,9 +41,7 @@ const UploadDocumentPage = ({ client }) => {
             setSubmissionState(states.UPLOADING);
             await client.uploadDocument(
                 data.document[0],
-                data.nhsNumber,
-                data.documentTitle,
-                data.clinicalCode
+                data.nhsNumber
             );
             navigate("/upload/success");
         } catch (e) {
@@ -76,26 +68,6 @@ const UploadDocumentPage = ({ client }) => {
                         value={nhsNumber}
                         readOnly
                     />
-                    <Input
-                        id={"document-title-input"}
-                        label="Enter Document Title"
-                        type="text"
-                        name="documentTitle"
-                        placeholder="Document Title"
-                        error={formState.errors.documentTitle?.message}
-                        {...documentTitleProps}
-                        inputRef={documentTitleRef}
-                    />
-                    <Select
-                        name="clinicalCode"
-                        label="Select Clinical Code"
-                        {...clinicalCodeProps}
-                        selectRef={clinicalCodeRef}
-                    >
-                        <Select.Option value="22151000087106" defaultValue>
-                            Paper Report (Record Artifact)
-                        </Select.Option>
-                    </Select>
                     <Input
                         id={"document-input"}
                         label="Choose document"
