@@ -48,6 +48,36 @@ public class CreateDocumentReferenceRequestValidatorTest {
     }
 
     @Test
+    void throwsAnExceptionIfACodingCodeInTheDocumentReferenceRequestIsNull() throws IOException {
+        String validRequestJson = testHelpers.getContentFromResource(
+                "create/valid-create-document-reference-request.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        var type = new CodeableConcept()
+                .setCoding(List.of(new Coding().setCode(null).setSystem("http://snomed.info/sct")));
+        inputDocumentReference.setType(type);
+
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(MissingRequiredValueException.class);
+    }
+
+    @Test
+    void throwsAnExceptionIfACodingSystemInTheDocumentReferenceRequestIsNull() throws IOException {
+        String validRequestJson = testHelpers.getContentFromResource(
+                "create/valid-create-document-reference-request.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        var type = new CodeableConcept()
+                .setCoding(List.of(new Coding().setCode("1234").setSystem(null)));
+        inputDocumentReference.setType(type);
+
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(MissingRequiredValueException.class);
+    }
+
+    @Test
     void throwsAnExceptionIfTheDescriptionInTheDocumentReferenceRequestIsMissing() throws IOException {
         String validRequestJson = testHelpers.getContentFromResource(
                 "create/valid-create-document-reference-request.json");

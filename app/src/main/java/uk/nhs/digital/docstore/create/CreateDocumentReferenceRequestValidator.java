@@ -15,14 +15,32 @@ public class CreateDocumentReferenceRequestValidator {
 
     public void validate(NHSDocumentReference documentReference) {
         CodeableConcept documentType = documentReference.getType();
+        var typeCodingIndex = 0;
         for (Coding coding : documentType.getCoding()) {
+            if (coding.getSystem() == null) {
+                throw new MissingRequiredValueException(
+                    String.format("DocumentReference.type.coding[%s].system", typeCodingIndex),
+                    "system"
+                );
+            }
+
+            if (coding.getCode() == null) {
+                throw new MissingRequiredValueException(
+                    String.format("DocumentReference.type.coding[%s].code", typeCodingIndex),
+                    "code"
+                );
+            }
+
             if (!DOCUMENT_TYPE_CODING_SYSTEM.equals(coding.getSystem())) {
                 throw new UnrecognisedCodingSystemException(coding.getSystem());
             }
-            if (!VALID_CODING_CODES.contains(coding.getCode())) {
+            if (coding.getCode() == null || !VALID_CODING_CODES.contains(coding.getCode())) {
                 throw new InvalidCodingCodeException("path", coding.getCode());
             }
+
+            typeCodingIndex++;
         }
+
         String description = documentReference.getDescription();
         if (description == null) {
             throw new MissingRequiredValueException("DocumentReference.description", "description");
