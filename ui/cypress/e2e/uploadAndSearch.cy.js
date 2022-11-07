@@ -4,7 +4,6 @@ describe("upload and search transaction", () => {
     it("allows the user to upload a document and search for a document", () => {
         const timeout = 30000;
         const nhsNumber = "9000000009";
-        const documentTitle = "Jane Doe - Patient Record";
         cy.visit("/");
 
         if (
@@ -32,7 +31,6 @@ describe("upload and search transaction", () => {
         cy.url().should("eq", Cypress.config("baseUrl") + "/upload/submit");
 
         // fill out fields on upload document page
-        cy.get('input[name="documentTitle"]').type(documentTitle);
         cy.get('input[name="document"]').selectFile(
             "cypress/fixtures/test_patient_record.pdf"
         );

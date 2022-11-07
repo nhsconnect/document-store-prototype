@@ -103,12 +103,12 @@ describe("test the uploadDocument method", () => {
         };
         const api = { post: postMock };
         const apiClient = new ApiClient(api, auth);
-        const document = new File(["hello"], "hello.txt", {
+        const fileName = "hello.txt";
+        const document = new File(["hello"], fileName, {
             type: "text/plain",
         });
         const nhsNumber = "0987654321";
-        const snomedCode = "22151000087106";
-        const documentTitle = "Jane Doe - Patient Record";
+
         const requestBody = {
             resourceType: "DocumentReference",
             subject: {
@@ -121,7 +121,7 @@ describe("test the uploadDocument method", () => {
                 coding: [
                     {
                         system: "http://snomed.info/sct",
-                        code: snomedCode,
+                        code: "22151000087106",
                     },
                 ],
             },
@@ -132,15 +132,13 @@ describe("test the uploadDocument method", () => {
                     },
                 },
             ],
-            description: documentTitle,
+            description: document.name,
             created: "2021-07-11T16:57:30+01:00",
         };
 
         await apiClient.uploadDocument(
             document,
             nhsNumber,
-            documentTitle,
-            snomedCode
         );
 
         expect(postMock).toHaveBeenCalledWith(

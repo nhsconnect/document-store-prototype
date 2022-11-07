@@ -32,7 +32,7 @@ class ApiClient {
       : [];
   }
 
-  async uploadDocument(document, nhsNumber, documentTitle, snomedCode) {
+  async uploadDocument(document, nhsNumber) {
     const requestBody = {
       resourceType: "DocumentReference",
       subject: {
@@ -45,7 +45,7 @@ class ApiClient {
         coding: [
           {
             system: "http://snomed.info/sct",
-            code: snomedCode,
+            code: "22151000087106",
           },
         ],
       },
@@ -56,7 +56,7 @@ class ApiClient {
           },
         },
       ],
-      description: documentTitle,
+      description: document.name,
       created: "2021-07-11T16:57:30+01:00",
     };
     const token = (await this.auth.currentSession())
