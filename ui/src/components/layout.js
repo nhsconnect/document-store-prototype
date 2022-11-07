@@ -11,7 +11,7 @@ const Layout = ({ children }) => {
             <Header />
             <PhaseBanner tag={"ALPHA"}>
                 {
-                    "This is a new site. Content and structure are subject to change."
+                    "This site is under construction. Content and structure are subject to change."
                 }
             </PhaseBanner>
             <div

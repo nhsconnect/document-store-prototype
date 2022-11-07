@@ -166,6 +166,18 @@ deploy-to-localstack)
   export TERRAFORM_CONTAINER=$(docker ps -a | grep hashicorp/terraform | head -1 | cut -f 1 -d ' ')
   docker start --attach $TERRAFORM_CONTAINER
   ;;
+view-terraform-logs)
+  export TERRAFORM_CONTAINER=$(docker ps -a | grep hashicorp/terraform | head -1 | cut -f 1 -d ' ')
+  docker logs $TERRAFORM_CONTAINER --follow
+  ;;
+view-localstack-logs)
+  export LOCALSTACK_CONTAINER=$(docker ps -a | grep localstack/localstack | head -1 | cut -f 1 -d ' ')
+  docker logs $LOCALSTACK_CONTAINER --follow
+  ;;
+view-wiremock-logs)
+  export WIREMOCK_CONTAINER=$(docker ps -a | grep wiremock/wiremock  | head -1 | cut -f 1 -d ' ')
+  docker logs $WIREMOCK_CONTAINER --follow
+  ;;
 tf_plan)
   assume_ci_role
   tf_init
