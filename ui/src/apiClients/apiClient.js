@@ -24,9 +24,6 @@ class ApiClient {
       ? data.entry.map(({resource}) => ({
         id: resource.id,
         description: resource.description,
-        type: resource.type.coding
-          .map((coding) => coding.code)
-          .join(", "),
         indexed: new Date(resource.indexed),
       }))
       : [];

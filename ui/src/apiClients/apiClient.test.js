@@ -34,14 +34,11 @@ describe("test the findByNhsNumber method", () => {
         const queryStringParametersMock = {
             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
         };
-        const snomedCode = "185361000000102";
-        const typeObject = { coding: [{ code: snomedCode }] };
         const resourceObject = {
             id: "123",
             description: "description",
             docStatus: "final",
             indexed: "2022-08-10T10:34:41.515050Z",
-            type: typeObject,
         };
         const responseBody = {
             total: 1,
@@ -51,7 +48,6 @@ describe("test the findByNhsNumber method", () => {
             {
                 id: resourceObject.id,
                 description: resourceObject.description,
-                type: snomedCode,
                 indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
             },
         ];

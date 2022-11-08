@@ -48,7 +48,6 @@ function Document({client, documentData, downloadError}) {
             <Table.Cell style={alignMiddle}>
                 {documentData.description}
             </Table.Cell>
-            <Table.Cell style={alignMiddle}>{documentData.type}</Table.Cell>
             <Table.Cell style={alignMiddle}>
                 {documentData.indexed.toLocaleString()}
             </Table.Cell>
@@ -127,7 +126,6 @@ const SearchResultsPage = ({client}) => {
                             <Table.Head>
                                 <Table.Row>
                                     <Table.Cell>Description</Table.Cell>
-                                    <Table.Cell>Type</Table.Cell>
                                     <Table.Cell>Uploaded At</Table.Cell>
                                     <Table.Cell>Download</Table.Cell>
                                 </Table.Row>

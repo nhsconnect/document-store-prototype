@@ -80,7 +80,6 @@ describe("Search page", () => {
         searchResult.description
       );
       expect(documentDescriptionElement).toBeInTheDocument();
-      expect(screen.getByText(searchResult.type)).toBeInTheDocument();
       expect(
         screen.getByText(searchResult.indexed.toLocaleString())
       ).toBeInTheDocument();
