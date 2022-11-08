@@ -125,7 +125,7 @@ const SearchResultsPage = ({client}) => {
                         <Table caption="Documents">
                             <Table.Head>
                                 <Table.Row>
-                                    <Table.Cell>Description</Table.Cell>
+                                    <Table.Cell>Filename</Table.Cell>
                                     <Table.Cell>Uploaded At</Table.Cell>
                                     <Table.Cell>Download</Table.Cell>
                                 </Table.Row>
