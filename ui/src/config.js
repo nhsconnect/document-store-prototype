@@ -30,6 +30,9 @@ const config = {
         "pre-prod": {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
         },
+        prod: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false
+        }
     },
 };
 
