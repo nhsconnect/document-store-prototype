@@ -9,6 +9,9 @@ resource "aws_amplify_app" "doc-store-ui" {
     target = "/index.html"
   }
 
+  enable_basic_auth      = var.enable_basic_auth
+  basic_auth_credentials = base64encode("${var.environment}:${var.basic_auth_password}")
+
   count = var.cloud_only_service_instances
 }
 

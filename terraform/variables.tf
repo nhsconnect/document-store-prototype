@@ -12,6 +12,16 @@ variable "cloud_only_service_instances" {
   default = 1
 }
 
+variable "enable_basic_auth" {
+  type    = bool
+  default = true
+}
+
+variable "basic_auth_password" {
+  type    = string
+  default = ""
+}
+
 variable "lambda_jar_filename" {
   type    = string
   default = "../app/build/libs/app.jar"
