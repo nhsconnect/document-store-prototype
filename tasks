@@ -80,10 +80,14 @@ function create_cypress_config_file() {
   cp ui/cypress.env.json.example ui/cypress.env.json
   username=$(get_ssm_parameter /prs/${ENVIRONMENT}/user-input/cypress-username)
   password=$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/cypress-password)
+  basic_auth_username=$ENVIRONMENT
+  basic_auth_password=$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/basic-auth-password)
 
   sed -i "s/%environment%/${ENVIRONMENT}/" ui/cypress.env.json
   sed -i "s/%username%/${username}/" ui/cypress.env.json
   sed -i "s~%password%~${password}~" ui/cypress.env.json
+  sed -i "s~%basic_auth_username%~${basic_auth_username}~" ui/cypress.env.json
+  sed -i "s~%basic_auth_password%~${basic_auth_password}~" ui/cypress.env.json
 }
 
 function export_cypress_base_url() {
@@ -174,7 +178,7 @@ tf_plan)
   terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" \
     -var cognito_cis2_provider_client_id=$(get_ssm_parameter /development/cis2/client_id) \
     -var cognito_cis2_provider_client_secret=$(get_ssm_parameter /development/cis2/client_secret) \
-    -var basic_auth_password=$(get_encrypted_ssm_parameter /prs/dev/user-input/basic-auth-password) \
+    -var basic_auth_password=$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/basic-auth-password) \
     -var lambda_jar_filename=../jars/libs/app.jar \
     -out=tfplan
   ;;
