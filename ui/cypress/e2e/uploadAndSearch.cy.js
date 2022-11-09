@@ -69,9 +69,9 @@ describe("upload and search transaction", () => {
         cy.contains("Next", { timeout }).click();
         cy.url().should("eq", Cypress.config("baseUrl") + "/search/results");
 
-        cy.get('button[type="submit"]', { timeout }).first().click();
+        cy.get('button[type="submit"]', { timeout }).contains(/^Download$/, { timeout }).click();
 
-        cy.get('button[type="submit"]').first().contains(/^Download$/, { timeout });
+        cy.get('button[type="submit"]').contains(/^Download$/, { timeout });
         cy.get('span[role="alert"]').should('not.exist');
 
         cy.contains("Log Out").click();
