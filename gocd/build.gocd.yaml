@@ -176,9 +176,6 @@ common:
           source: ui/cypress/screenshots
       - test:
           source: ui/cypress/videos
-#  Remove this, it will contain secrets!
-      - test:
-          source: ui/cypress.env.json
 
 
 pipelines:
