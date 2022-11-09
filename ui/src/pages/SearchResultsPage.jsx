@@ -120,24 +120,27 @@ const SearchResultsPage = ({client}) => {
             )}
             {submissionState === states.SUCCEEDED && (
                 <>
-                    {downloadError && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
                     {searchResults.length > 0 && (
-                        <Table caption="Documents">
-                            <Table.Head>
-                                <Table.Row>
-                                    <Table.Cell>Filename</Table.Cell>
-                                    <Table.Cell>Uploaded At</Table.Cell>
-                                    <Table.Cell>Download</Table.Cell>
-                                </Table.Row>
-                            </Table.Head>
+                        <>
+                            <Button>Download All</Button>
+                            {downloadError && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
+                            <Table caption="Documents">
+                                <Table.Head>
+                                    <Table.Row>
+                                        <Table.Cell>Filename</Table.Cell>
+                                        <Table.Cell>Uploaded At</Table.Cell>
+                                        <Table.Cell>Download</Table.Cell>
+                                    </Table.Row>
+                                </Table.Head>
 
-                            <Table.Body>
-                                {searchResults.map((result) => (
-                                    <Document key={result.id} client={client} documentData={result}
-                                              downloadError={(error) => setDownloadError(error)}/>
-                                ))}
-                            </Table.Body>
-                        </Table>
+                                <Table.Body>
+                                    {searchResults.map((result) => (
+                                        <Document key={result.id} client={client} documentData={result}
+                                                  downloadError={(error) => setDownloadError(error)}/>
+                                    ))}
+                                </Table.Body>
+                            </Table>
+                        </>
                     )}
 
                     {searchResults.length === 0 && <p>No record found</p>}

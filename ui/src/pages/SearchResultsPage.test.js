@@ -84,6 +84,7 @@ describe("Search page", () => {
         screen.getByText(searchResult.indexed.toLocaleString())
       ).toBeInTheDocument();
       expect(screen.getByRole("button", {name: "Download"})).toBeInTheDocument();
+      expect(screen.getByRole("button", {name: "Download All"})).toBeInTheDocument();
       expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 
     });
@@ -93,14 +94,17 @@ describe("Search page", () => {
       apiClientMock.findByNhsNumber = jest.fn(() => {
         return [
           searchResultFactory.build({
+            id:"some-id1",
             description: "oldest",
             indexed: new Date(Date.UTC(2022, 7, 9, 10)),
           }),
           searchResultFactory.build({
+            id:"some-id2",
             description: "latest",
             indexed: new Date(Date.UTC(2022, 7, 11, 10)),
           }),
           searchResultFactory.build({
+            id:"some-id3",
             description: "middle",
             indexed: new Date(Date.UTC(2022, 7, 10, 10)),
           }),
@@ -215,6 +219,7 @@ describe("Search page", () => {
       await waitFor(() => {
         expect(screen.getByText("No record found")).toBeInTheDocument();
       });
+      expect(screen.queryByRole("button", {name: "Download All"})).not.toBeInTheDocument();
     });
 
     it("displays a message when a document search fails", async () => {
