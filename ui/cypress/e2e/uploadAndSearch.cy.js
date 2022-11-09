@@ -4,12 +4,7 @@ describe("upload and search transaction", () => {
     it("allows the user to upload a document and search for a document", () => {
         const timeout = 30000;
         const nhsNumber = "9000000009";
-        cy.visit("/", {
-            auth: {
-                username: Cypress.env("basic_auth_username"),
-                password: Cypress.env("basic_auth_password")
-            }
-        });
+        cy.visit("/");
 
         if (
             config.features[Cypress.env("REACT_APP_ENV")]
@@ -54,12 +49,7 @@ describe("upload and search transaction", () => {
             cy.url().should("eq", Cypress.config("baseUrl") + "/home");
 
             // return to the home page
-            cy.visit("/", {
-                auth: {
-                    username: Cypress.env("basic_auth_username"),
-                    password: Cypress.env("basic_auth_password")
-                }
-            });
+            cy.visit("/");
 
             cy.contains("Start now").click();
         } else {
