@@ -34,6 +34,10 @@ Cypress.Commands.add("cis2Login", (username, password) => {
     cy.get('[placeholder="User Name"]').type(username);
     cy.get('[placeholder="Password"]').type(password);
     cy.contains("Continue").click();
+    cy.url().should(
+        "eq",
+        Cypress.config("baseUrl") + "/home"
+    );
 });
 
 Cypress.Commands.overwrite('visit', (originalFn, url, options) => {
