@@ -107,6 +107,14 @@ In order to deploy to AWS from the pipeline, a GoCD agent must have a role and p
     ./gradlew attachPolicyToCIRole
     ```
 
+### Basic Auth
+By default, basic auth is enabled in all environments, to disable the basic auth `enable_basic_auth` terraform variable can be set to false
+
+1. Basic auth username will be same the environment name. eg dev, pre-prod
+2. To get the password for the basic auth in the environment 
+```bash
+   aws ssm get-parameter --name /prs/{ENVIRONMENT}/user-input/basic-auth-password --with-decryption
+```
 ## Testing
 
 The `test` source set contains unit tests. These don't have any dependencies on infrastructure or external services.
