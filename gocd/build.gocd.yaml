@@ -199,12 +199,14 @@ pipelines:
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: dev
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             plan: *plan_terraform
       - deploy_terraform:
           environment_variables:
             ENVIRONMENT: dev
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             apply: *deploy_terraform
@@ -212,6 +214,7 @@ pipelines:
       - build_ui:
           environment_variables:
             ENVIRONMENT: dev
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             build: *build_ui
@@ -220,6 +223,7 @@ pipelines:
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: dev
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
@@ -227,6 +231,7 @@ pipelines:
       - e2e_tests:
           environment_variables:
             ENVIRONMENT: dev
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             e2e-tests: *e2e_test
@@ -255,18 +260,21 @@ pipelines:
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: pre-prod
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             plan: *plan_terraform
       - deploy_terraform:
           environment_variables:
             ENVIRONMENT: pre-prod
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             apply: *deploy_terraform
       - build_ui:
           environment_variables:
             ENVIRONMENT: pre-prod
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             build: *build_ui
@@ -274,12 +282,14 @@ pipelines:
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: pre-prod
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
       - e2e_tests:
           environment_variables:
             ENVIRONMENT: pre-prod
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             e2e-tests: *e2e_test
@@ -307,6 +317,7 @@ pipelines:
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: prod
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             plan: *plan_terraform
@@ -317,6 +328,7 @@ pipelines:
             allow_only_on_success: true
           environment_variables:
             ENVIRONMENT: prod
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             apply: *deploy_terraform
@@ -324,6 +336,7 @@ pipelines:
       - build_ui:
           environment_variables:
             ENVIRONMENT: prod
+            NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
             build: *build_ui
