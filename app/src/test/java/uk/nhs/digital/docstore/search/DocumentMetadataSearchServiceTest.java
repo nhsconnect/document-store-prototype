@@ -10,8 +10,9 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.Document;
+import uk.nhs.digital.docstore.DocumentMetadata;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
+import uk.nhs.digital.docstore.common.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
@@ -28,11 +29,11 @@ import static org.mockito.Mockito.when;
 import static uk.nhs.digital.docstore.DocumentMetadataBuilder.theMetadata;
 
 @ExtendWith(MockitoExtension.class)
-class DocumentReferenceSearchServiceTest {
+class DocumentMetadataSearchServiceTest {
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String SUBJECT_ID_PARAM_NAME = "subject:identifier";
 
-    private DocumentReferenceSearchService searchService;
+    private DocumentMetadataSearchService searchService;
 
     @Mock
     private DocumentMetadataStore metadataStore;
@@ -45,7 +46,7 @@ class DocumentReferenceSearchServiceTest {
 
     @BeforeEach
     void setUp() {
-        searchService = new DocumentReferenceSearchService(metadataStore);
+        searchService = new DocumentMetadataSearchService(metadataStore);
     }
 
     @ParameterizedTest
@@ -61,13 +62,13 @@ class DocumentReferenceSearchServiceTest {
         when(metadataStore.findByNhsNumber(nhsNumber))
                 .thenReturn(List.of(metadataTemplate.build()));
 
-        List<Document> documents = searchService.findByParameters(
+        List<DocumentMetadata> documents = searchService.findByNhsNumberFromParameters(
                 Map.of(SUBJECT_ID_PARAM_NAME, identifier),
                 logger);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(new Document(metadataTemplate.build()));
+                .containsExactly(metadataTemplate.build());
     }
 
     @ParameterizedTest
@@ -83,13 +84,13 @@ class DocumentReferenceSearchServiceTest {
         when(metadataStore.findByNhsNumber(nhsNumber))
                 .thenReturn(List.of(metadataTemplate.build()));
 
-        List<Document> documents = searchService.findByParameters(
+        List<DocumentMetadata> documents = searchService.findByNhsNumberFromParameters(
                 Map.of(parameterName, asQualifiedIdentifier(nhsNumber)),
                 logger);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(new Document(metadataTemplate.build()));
+                .containsExactly(metadataTemplate.build());
     }
 
     @Test
@@ -101,14 +102,13 @@ class DocumentReferenceSearchServiceTest {
         when(metadataStore.findByNhsNumber(nhsNumber))
                 .thenReturn(List.of(metadataTemplate.build()));
 
-        List<Document> documents = searchService.findByParameters(
+        List<DocumentMetadata> documents = searchService.findByNhsNumberFromParameters(
                 Map.of(SUBJECT_ID_PARAM_NAME, asQualifiedIdentifier(nhsNumber)),
                 logger);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(new Document(
-                        metadataTemplate.build()));
+                .containsExactly(metadataTemplate.build());
     }
 
     @ParameterizedTest
@@ -120,7 +120,7 @@ class DocumentReferenceSearchServiceTest {
             parameters.put(parameterName, "value");
         }
 
-        assertThatThrownBy(() -> searchService.findByParameters(parameters, logger))
+        assertThatThrownBy(() -> searchService.findByNhsNumberFromParameters(parameters, logger))
                 .isInstanceOf(MissingSearchParametersException.class);
     }
 
@@ -131,7 +131,7 @@ class DocumentReferenceSearchServiceTest {
     })
     void raisesAnExceptionIfTheSubjectIdentifierSystemCannotBeUnderstood(String subjectIdentifier, String systemIdentifier) {
         assertThatThrownBy(
-                () -> searchService.findByParameters(
+                () -> searchService.findByNhsNumberFromParameters(
                         Map.of(SUBJECT_ID_PARAM_NAME, subjectIdentifier),
                         logger))
                 .isInstanceOf(UnrecognisedSubjectIdentifierSystemException.class)
@@ -143,7 +143,7 @@ class DocumentReferenceSearchServiceTest {
     @EmptySource
     void raisesAnExceptionIfTheSubjectIdentifierIsInvalid(String subjectIdentifier) {
         assertThatThrownBy(
-                () -> searchService.findByParameters(
+                () -> searchService.findByNhsNumberFromParameters(
                         Map.of(SUBJECT_ID_PARAM_NAME, subjectIdentifier),
                         logger))
                 .isInstanceOf(InvalidSubjectIdentifierException.class)
@@ -156,7 +156,7 @@ class DocumentReferenceSearchServiceTest {
         when(metadataStore.findByNhsNumber(nhsNumber))
                 .thenReturn(List.of());
 
-        searchService.findByParameters(
+        searchService.findByNhsNumberFromParameters(
                 Map.of(SUBJECT_ID_PARAM_NAME, nhsNumber),
                 logger);
 

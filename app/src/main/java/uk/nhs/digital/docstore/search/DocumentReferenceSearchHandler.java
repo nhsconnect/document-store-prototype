@@ -15,13 +15,14 @@ import org.slf4j.MarkerFactory;
 import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
+import uk.nhs.digital.docstore.common.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 
-import java.util.List;
 import java.util.Map;
 
 import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
+import static java.util.stream.Collectors.toList;
 
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -31,7 +32,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final BundleMapper bundleMapper = new BundleMapper();
-    private final DocumentReferenceSearchService searchService;
+    private final DocumentMetadataSearchService searchService;
     private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
 
@@ -45,7 +46,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         this.fhirContext.setPerformanceOptions(DEFERRED_MODEL_SCANNING);
 
         DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-        this.searchService = new DocumentReferenceSearchService(metadataStore);
+        this.searchService = new DocumentMetadataSearchService(metadataStore);
     }
 
     @Override
@@ -63,9 +64,11 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
             Map<String, String> searchParameters = (requestEvent.getQueryStringParameters() == null
                     ? Map.of()
                     : requestEvent.getQueryStringParameters());
-            List<Document> documents = searchService.findByParameters(
-                    searchParameters,
+            var documentMetadata = searchService.findByNhsNumberFromParameters(searchParameters,
                     message -> logger.info(AUDIT, "{} searched for {}", userEmail, message));
+
+            var documents = documentMetadata.stream().map(metadata -> new Document(metadata)).collect(toList());
+
             logger.debug("Generating response contents");
             bundle = bundleMapper.toBundle(documents);
         } catch (Exception e) {

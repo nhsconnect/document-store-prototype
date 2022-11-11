@@ -4,6 +4,7 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
 import java.net.URI;
 import java.net.URL;
@@ -43,6 +44,9 @@ public class DocumentStore {
         return new DocumentDescriptorAndURL(new DocumentDescriptor(bucketName, key), url);
     }
 
+    public S3ObjectInputStream getObjectFromS3(DocumentMetadata metadata) {
+        return client.getObject(bucketName, DocumentDescriptor.from(metadata).getPath()).getObjectContent();
+    }
 
     private Date getExpirationDate() {
         var now = Instant.now();
@@ -61,6 +65,10 @@ public class DocumentStore {
 
         public String toLocation() {
             return "s3://" + bucket + "/" + path;
+        }
+
+        public String getPath() {
+            return path;
         }
 
         public static DocumentDescriptor from(DocumentMetadata metadata) {
