@@ -5,8 +5,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +16,6 @@ import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.common.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
-
-import java.util.Map;
 
 import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
 import static java.util.stream.Collectors.toList;
@@ -58,14 +54,10 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         var jsonParser = fhirContext.newJsonParser();
 
         logger.debug("Querying DynamoDB");
-        String userEmail = getEmail(requestEvent);
         Bundle bundle;
         try {
-            Map<String, String> searchParameters = (requestEvent.getQueryStringParameters() == null
-                    ? Map.of()
-                    : requestEvent.getQueryStringParameters());
-            var documentMetadata = searchService.findByNhsNumberFromParameters(searchParameters,
-                    message -> logger.info(AUDIT, "{} searched for {}", userEmail, message));
+            var documentMetadata = searchService.findByNhsNumberFromParameters(
+                    requestEvent.getQueryStringParameters(), requestEvent.getHeaders());
 
             var documents = documentMetadata.stream().map(metadata -> new Document(metadata)).collect(toList());
 
@@ -78,19 +70,5 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         logger.debug("Processing finished - about to return the response");
         var body = jsonParser.encodeResourceToString(bundle);
         return apiConfig.getApiGatewayResponse(200, body, "GET", null);
-    }
-
-    private String getEmail(APIGatewayProxyRequestEvent requestEvent) {
-        Map<String, String> headers = requestEvent.getHeaders();
-        String authorizationHeader = headers.getOrDefault(
-                "Authorization",
-                headers.get("authorization"));
-        if (authorizationHeader.isEmpty()) {
-            logger.warn("Empty authorization header");
-            return "[unknown]";
-        }
-        String token = authorizationHeader.replaceFirst("^[Bb]earer\\s+", "");
-        DecodedJWT jwt = JWT.decode(token);
-        return jwt.getClaim("email").asString();
     }
 }

@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.search;
+package uk.nhs.digital.docstore.common;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,19 +12,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.DocumentMetadata;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
-import uk.nhs.digital.docstore.common.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
+import uk.nhs.digital.docstore.utils.TestLogAppender;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.nhs.digital.docstore.DocumentMetadataBuilder.theMetadata;
 
@@ -32,13 +30,14 @@ import static uk.nhs.digital.docstore.DocumentMetadataBuilder.theMetadata;
 class DocumentMetadataSearchServiceTest {
     private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String SUBJECT_ID_PARAM_NAME = "subject:identifier";
+    private static final String JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuYXV0aDAuY29tLyIsImF1ZCI6Imh0dHBzOi8vYXBpLmV4YW1wbGUuY29tL2NhbGFuZGFyL3YxLyIsInN1YiI6InVzcl8xMjMiLCJpYXQiOjE0NTg3ODU3OTYsImV4cCI6MTQ1ODg3MjE5Nn0.CA7eaHjIHz5NxeIJoFK9krqaeZrPLwmMmgI_XiQiIkQ";
 
     private DocumentMetadataSearchService searchService;
 
     @Mock
     private DocumentMetadataStore metadataStore;
-    @Mock
-    private Consumer<String> logger;
+
+    private Map<String, String> headers = Map.of("Authorization", "Bearer " + JWT);
 
     private static String asQualifiedIdentifier(String nhsNumber) {
         return String.format("%s|%s", NHS_NUMBER_SYSTEM_ID, nhsNumber);
@@ -64,7 +63,7 @@ class DocumentMetadataSearchServiceTest {
 
         List<DocumentMetadata> documents = searchService.findByNhsNumberFromParameters(
                 Map.of(SUBJECT_ID_PARAM_NAME, identifier),
-                logger);
+                headers);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -86,7 +85,7 @@ class DocumentMetadataSearchServiceTest {
 
         List<DocumentMetadata> documents = searchService.findByNhsNumberFromParameters(
                 Map.of(parameterName, asQualifiedIdentifier(nhsNumber)),
-                logger);
+                headers);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -104,7 +103,7 @@ class DocumentMetadataSearchServiceTest {
 
         List<DocumentMetadata> documents = searchService.findByNhsNumberFromParameters(
                 Map.of(SUBJECT_ID_PARAM_NAME, asQualifiedIdentifier(nhsNumber)),
-                logger);
+                headers);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -120,7 +119,7 @@ class DocumentMetadataSearchServiceTest {
             parameters.put(parameterName, "value");
         }
 
-        assertThatThrownBy(() -> searchService.findByNhsNumberFromParameters(parameters, logger))
+        assertThatThrownBy(() -> searchService.findByNhsNumberFromParameters(parameters, headers))
                 .isInstanceOf(MissingSearchParametersException.class);
     }
 
@@ -133,7 +132,7 @@ class DocumentMetadataSearchServiceTest {
         assertThatThrownBy(
                 () -> searchService.findByNhsNumberFromParameters(
                         Map.of(SUBJECT_ID_PARAM_NAME, subjectIdentifier),
-                        logger))
+                        headers))
                 .isInstanceOf(UnrecognisedSubjectIdentifierSystemException.class)
                 .hasMessageContaining(systemIdentifier);
     }
@@ -145,21 +144,22 @@ class DocumentMetadataSearchServiceTest {
         assertThatThrownBy(
                 () -> searchService.findByNhsNumberFromParameters(
                         Map.of(SUBJECT_ID_PARAM_NAME, subjectIdentifier),
-                        logger))
+                        headers))
                 .isInstanceOf(InvalidSubjectIdentifierException.class)
                 .hasMessageContaining(subjectIdentifier);
     }
 
     @Test
     void logsTheSearchActionObfuscatingPii() {
+        var testLogAppender = TestLogAppender.addTestLogAppender();
         String nhsNumber = "1234567890";
         when(metadataStore.findByNhsNumber(nhsNumber))
                 .thenReturn(List.of());
 
         searchService.findByNhsNumberFromParameters(
                 Map.of(SUBJECT_ID_PARAM_NAME, nhsNumber),
-                logger);
+                headers);
 
-        verify(logger).accept("documents with NHS number ending 7890");
+        assertThat(testLogAppender.findLoggedEvent("documents with NHS number ending 7890")).isNotNull();
     }
 }

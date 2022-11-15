@@ -4,8 +4,10 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
@@ -48,6 +50,10 @@ public class DocumentStore {
         return client.getObject(bucketName, DocumentDescriptor.from(metadata).getPath()).getObjectContent();
     }
 
+    public void addDocument(String documentKey, InputStream documentValue) {
+        client.putObject(bucketName, documentKey, documentValue, new ObjectMetadata());
+    }
+
     private Date getExpirationDate() {
         var now = Instant.now();
         var expirationDate = now.plus(PRE_SIGNED_URL_DURATION);
@@ -58,7 +64,7 @@ public class DocumentStore {
         private final String bucket;
         private final String path;
 
-        private DocumentDescriptor(String bucket, String path) {
+        public DocumentDescriptor(String bucket, String path) {
             this.bucket = bucket;
             this.path = path;
         }
