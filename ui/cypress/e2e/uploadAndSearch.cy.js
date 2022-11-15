@@ -31,8 +31,8 @@ describe("upload and search transaction", () => {
         cy.url().should("eq", Cypress.config("baseUrl") + "/upload/submit");
 
         // fill out fields on upload document page
-        cy.get('input[name="document"]').selectFile(
-            "cypress/fixtures/test_patient_record.pdf"
+        cy.get('input[name="documents"]').selectFile(
+            ["cypress/fixtures/test_patient_record.pdf", "cypress/fixtures/test_patient_record_two.pdf"]
         );
         cy.get('button[type="submit"]').click();
 

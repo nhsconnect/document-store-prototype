@@ -153,6 +153,8 @@ hs_err_pid*
 app/bin
 
 .idea/
+.vscode
+**/.vscode
 
 # Temporary dojo docker compose files
 *.dojo

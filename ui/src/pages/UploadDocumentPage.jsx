@@ -13,20 +13,26 @@ const states = {
 
 const UploadDocumentPage = ({ client }) => {
     const { register, handleSubmit, formState } = useForm();
-    const { ref: documentInputRef, ...documentInputProps } = register(
-        "document",
+    const { ref: documentsInputRef, ...documentsInputProps } = register(
+        "documents",
         {
             validate: {
-                isFile: (value) =>
-                    value[0] instanceof File || "Please attach a file",
-                isLessThan5GB: (value) =>
-                    value[0]?.size <= 5 * 107374184 ||
-                    "File size greater than 5GB - upload a smaller file",
+                isFile: (value) =>{
+                    return value.length > 0 || "Please attach a file"
+                },
+                isLessThan5GB: (value) =>{
+                    for(let i=0;i<value.length;i++){
+                        if(value.item(i).size > 5 * 107374184){
+                            return "One or more documents have a size greater than 5GB - please upload a smaller file"
+                        }
+                    }
+                }
             },
         }
     );
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const [submissionState, setSubmissionState] = useState(states.IDLE);
+    const [failedUploads, setFailedUploads] = useState([]);
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
@@ -37,16 +43,28 @@ const UploadDocumentPage = ({ client }) => {
     }, [nhsNumber, navigate]);
 
     const doSubmit = async (data) => {
+        setSubmissionState(states.UPLOADING);
+        setFailedUploads([]);
+        const uploadPromises = []
+        
+        for (let i = 0; i < data.documents.length; i++) {
+            uploadPromises.push(
+                client.uploadDocument(
+                    data.documents.item(i),
+                    data.nhsNumber
+                ).catch((e) => {
+                    setFailedUploads(current => [...current, data.documents.item(i)])
+                    console.error(e);
+                    throw e
+                })
+            )
+        };
+
         try {
-            setSubmissionState(states.UPLOADING);
-            await client.uploadDocument(
-                data.document[0],
-                data.nhsNumber
-            );
+            await Promise.all(uploadPromises)
             navigate("/upload/success");
         } catch (e) {
-            console.error(e);
-            setSubmissionState(states.FAILED);
+            setSubmissionState(states.FAILED)
         }
     };
 
@@ -69,14 +87,14 @@ const UploadDocumentPage = ({ client }) => {
                         readOnly
                     />
                     <Input
-                        id={"document-input"}
-                        label="Choose document"
+                        id={"documents-input"}
+                        label="Choose documents"
                         type="file"
-                        multiple={false}
-                        name="document"
-                        error={formState.errors.document?.message}
-                        {...documentInputProps}
-                        inputRef={documentInputRef}
+                        multiple={true}
+                        name="documents"
+                        error={formState.errors.documents?.message}
+                        {...documentsInputProps}
+                        inputRef={documentsInputRef}
                     />
                 </Fieldset>
                 <Button
@@ -91,9 +109,16 @@ const UploadDocumentPage = ({ client }) => {
                     </p>
                 )}
                 {submissionState === states.FAILED && (
-                    <p data-testid="failure-message">
-                        File upload failed - please retry
-                    </p>
+                    <>
+                        <p data-testid="failure-message">
+                            Some of your documents failed to upload
+                        </p>
+                        <ul>{failedUploads.map(failedUpload => <li key={failedUpload.name}>
+                            Upload of {failedUpload.name} failed - please retry
+                            </li>)
+                        }</ul>
+
+                    </>
                 )}
             </form>
         </>
