@@ -23,7 +23,8 @@ import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.nhs.digital.docstore.helpers.BaseUriHelper.*;
+import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getAwsHost;
+import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
 
 public class DocumentReferenceSearchE2eTest {
     private static final String BASE_URI_TEMPLATE = "http://%s:%d";
@@ -35,7 +36,7 @@ public class DocumentReferenceSearchE2eTest {
 
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         var baseUri = String.format(BASE_URI_TEMPLATE, getAwsHost(), DEFAULT_PORT);
         var awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
 
@@ -74,7 +75,7 @@ public class DocumentReferenceSearchE2eTest {
         String expectedEmptySearchResponse = getContentFromResource("search/empty-nhs-number-response.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9111231130"))
                 .GET()
-                .header("x-localstack-authorization", createBearerToken())
+                .header("Authorization", createBearerToken())
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
@@ -91,7 +92,7 @@ public class DocumentReferenceSearchE2eTest {
         String expectedSearchResponse = getContentFromResource("search/nhs-number-response.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9000000009"))
                 .GET()
-                .header("x-localstack-authorization", createBearerToken())
+                .header("Authorization", createBearerToken())
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
@@ -111,7 +112,7 @@ public class DocumentReferenceSearchE2eTest {
         String expectedErrorResponse = getContentFromResource("errors/unrecognised-subject-identifier-system.json");
         var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference?subject.identifier=unknown-system%7C9000000009"))
                 .GET()
-                .header("x-localstack-authorization", createBearerToken())
+                .header("Authorization", createBearerToken())
                 .build();
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));

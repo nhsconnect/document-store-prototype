@@ -29,7 +29,7 @@ public class PdsAdaptorClient {
     public PatientDetails fetchPatientDetails(String nhsNumber) {
         if (patientSearchConfig.pdsAdaptorIsStubbed()) {
             logger.info("Returning stub PDS adaptor response");
-            return new PatientDetails(List.of("bob"), "gibbons", "1980-10-14", "M1ME", nhsNumber);
+            return new PatientDetails(List.of("Jane"), "Doe", "1998-07-11", "LS1 6AE", nhsNumber);
         }
 
 
