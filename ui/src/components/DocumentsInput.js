@@ -5,7 +5,7 @@ import {formatSize} from "../utils/utils";
 
 
 const DocumentsInput = ({control}) => {
-    const {field: {ref, onChange, onBlur, name, value}, fieldState, formState} = useController({
+    const {field: {ref, onChange, onBlur, name, value}, fieldState} = useController({
         name: "documents",
         control,
         rules: {
@@ -15,7 +15,7 @@ const DocumentsInput = ({control}) => {
                 },
                 isLessThan5GB: (value) =>{
                     for(let i = 0; i < value.length; i++){
-                        if(value.item(i).size > 5 * Math.pow(1024, 3)) {
+                        if(value[i].size > 5 * Math.pow(1024, 3)) {
                             return "Please ensure that all files are less than 5GB in size"
                         }
                     }
@@ -23,8 +23,16 @@ const DocumentsInput = ({control}) => {
             }
         },
     });
+
+    const onRemove = (index) => {
+        onChange([
+        ...value.slice(0, index),
+        ...value.slice(index + 1)
+        ])
+    }
     return(
         <>
+            {/* override the width attribute because the value of the file input is read-only, so when we remove a file it doesn't update */}
             <Input
                 id={"documents-input"}
                 label="Choose documents"
@@ -32,9 +40,10 @@ const DocumentsInput = ({control}) => {
                 multiple={true}
                 name={name}
                 error={fieldState.error?.message}
-                onChange={e => { onChange(e.target.files) }}
+                onChange={e => { onChange(Array.from(e.target.files)) }}
                 onBlur={onBlur}
                 inputRef={ref}
+                style={{ width: 133 }}
             />
             {value && value.length > 0 && <Table caption="Documents">
                 <Table.Head>
@@ -46,7 +55,7 @@ const DocumentsInput = ({control}) => {
                 </Table.Head>
 
                 <Table.Body>
-                    {Array.from(value).map((document) => (
+                    {value.map((document, index) => (
                         <Table.Row key = {document.name}>
                             <Table.Cell>
                                 {document.name}
@@ -55,8 +64,8 @@ const DocumentsInput = ({control}) => {
                                 {formatSize(document.size)}
                             </Table.Cell>
                             <Table.Cell>
-
-                            </Table.Cell>a
+                                <Button onClick={() => onRemove(index)}>Remove</Button>
+                            </Table.Cell>
                         </Table.Row>
                     ))}
                 </Table.Body>

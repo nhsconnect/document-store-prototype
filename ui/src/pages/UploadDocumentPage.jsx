@@ -48,19 +48,19 @@ const UploadDocumentPage = ({ client }) => {
         setSubmissionState(states.UPLOADING);
         setFailedUploads([]);
         const uploadPromises = []
-        
-        for (let i = 0; i < data.documents.length; i++) {
+
+        data.documents.forEach((document) => {
             uploadPromises.push(
                 client.uploadDocument(
-                    data.documents.item(i),
+                    document,
                     data.nhsNumber
                 ).catch((e) => {
-                    setFailedUploads(current => [...current, data.documents.item(i)])
+                    setFailedUploads(current => [...current, document])
                     console.error(e);
                     throw e
                 })
             )
-        };
+        })
 
         try {
             await Promise.all(uploadPromises)

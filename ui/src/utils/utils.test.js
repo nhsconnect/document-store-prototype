@@ -53,6 +53,7 @@ describe("Formatting file size",
         test("it should throw an error if the size is less than zero", () => {
             expect(() => formatSize(-1)).toThrow()
         })
+
         test("it should throw an error if file size is greater than a terabyte", () => {
             expect(() => formatSize(10000000000000)).toThrow()
         })

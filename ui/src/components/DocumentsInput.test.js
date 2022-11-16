@@ -1,4 +1,4 @@
-import {render, screen} from "@testing-library/react";
+import {render, screen, waitFor} from "@testing-library/react";
 import DocumentsInput from "./DocumentsInput";
 import {useForm} from "react-hook-form";
 import userEvent from "@testing-library/user-event";
@@ -70,5 +70,18 @@ describe("DocumentsInput", () => {
 
         expect(await screen.findByText("Please ensure that all files are less than 5GB in size"))
     })
+    it("should be able to remove selected file", async () =>{
+        render(<FormWrapper />)
+        const documentOne = new File(["three"], "three.txt", {
+            type: "text/plain",
+        });
+        userEvent.upload(screen.getByLabelText("Choose documents"), [documentOne]);
+
+        expect(screen.getByText(documentOne.name)).toBeInTheDocument();
+        userEvent.click( screen.getByRole("button", {name:"Remove"}))
+        await waitFor(() => expect(screen.queryByText(documentOne.name)).not.toBeInTheDocument())
+
+        }
+    )
 
 });
