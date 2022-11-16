@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.utils;
+package uk.nhs.digital.docstore.logs;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.filter.ThresholdFilter;

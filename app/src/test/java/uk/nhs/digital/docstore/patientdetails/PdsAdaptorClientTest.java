@@ -1,12 +1,10 @@
 package uk.nhs.digital.docstore.patientdetails;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
-import uk.nhs.digital.docstore.utils.TestLogAppender;
+import uk.nhs.digital.docstore.logs.TestLogAppender;
 
 import javax.net.ssl.SSLSession;
 import java.net.URI;

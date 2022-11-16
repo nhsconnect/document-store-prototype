@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentMetadata;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
-import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.documentmanifest.CreateDocumentManifestByNhsNumberHandler;
-import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 
 import java.util.List;
 import java.util.Map;
@@ -22,19 +20,10 @@ public class DocumentMetadataSearchService {
         this.metadataStore = metadataStore;
     }
 
-    public List<DocumentMetadata> findByNhsNumberFromParameters(Map<String, String> parameters, Map<String, String> requestHeaders) {
-        var nhsNumber = getNhsNumberFrom(parameters);
+    public List<DocumentMetadata> findMetadataByNhsNumber(String nhsNumber, Map<String, String> requestHeaders) {
         var userEmail = getEmail(requestHeaders);
         logger.info(userEmail + "searched for documents with NHS number ending " + obfuscate(nhsNumber));
         return metadataStore.findByNhsNumber(nhsNumber);
-    }
-
-    private String getNhsNumberFrom(Map<String, String> queryParameters) {
-        if (queryParameters == null) {
-            throw new MissingSearchParametersException("subject:identifier");
-        }
-        NHSNumberSearchParameterForm nhsNumberSearchParameterForm = new NHSNumberSearchParameterForm(queryParameters);
-        return nhsNumberSearchParameterForm.getNhsNumber();
     }
 
     private String obfuscate(String string) {

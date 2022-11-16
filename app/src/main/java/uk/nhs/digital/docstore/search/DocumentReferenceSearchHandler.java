@@ -16,6 +16,7 @@ import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.common.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
+import uk.nhs.digital.docstore.utils.CommonUtils;
 
 import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
 import static java.util.stream.Collectors.toList;
@@ -31,6 +32,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     private final DocumentMetadataSearchService searchService;
     private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
+    private final CommonUtils utils = new CommonUtils();
 
     public DocumentReferenceSearchHandler() {
         this(new ApiConfig());
@@ -56,8 +58,8 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         logger.debug("Querying DynamoDB");
         Bundle bundle;
         try {
-            var documentMetadata = searchService.findByNhsNumberFromParameters(
-                    requestEvent.getQueryStringParameters(), requestEvent.getHeaders());
+            var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
+            var documentMetadata = searchService.findMetadataByNhsNumber(nhsNumber, requestEvent.getHeaders());
 
             var documents = documentMetadata.stream().map(metadata -> new Document(metadata)).collect(toList());
 

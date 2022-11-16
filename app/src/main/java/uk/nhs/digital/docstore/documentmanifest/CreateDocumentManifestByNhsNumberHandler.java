@@ -19,6 +19,7 @@ import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.common.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
+import uk.nhs.digital.docstore.utils.CommonUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
     private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
     private final DocumentMetadataSearchService searchService = new DocumentMetadataSearchService(metadataStore);
+    private final CommonUtils utils = new CommonUtils();
 
     public CreateDocumentManifestByNhsNumberHandler() {
         this(new ApiConfig());
@@ -57,8 +59,9 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
         logger.debug("API Gateway event received - processing starts");
 
         try {
-            var documentMetadataList = searchService.findByNhsNumberFromParameters(
-                    requestEvent.getQueryStringParameters(), requestEvent.getHeaders());
+
+            var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
+            var documentMetadataList = searchService.findMetadataByNhsNumber(nhsNumber, requestEvent.getHeaders());
 
             var zipInputStream = getPatientRecordAsZip(documentMetadataList);
             var documentName = "patient-record-"+UUID.randomUUID()+".zip";
