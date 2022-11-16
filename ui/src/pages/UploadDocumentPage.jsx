@@ -10,6 +10,7 @@ const states = {
     UPLOADING: "uploading",
     FAILED: "failed",
 };
+const oneGigaByte = 107374184;
 
 const UploadDocumentPage = ({ client }) => {
     const { register, handleSubmit, formState, control} = useForm();
@@ -22,7 +23,7 @@ const UploadDocumentPage = ({ client }) => {
                 },
                 isLessThan5GB: (value) =>{
                     for(let i=0;i<value.length;i++){
-                        if(value.item(i).size > 5 * 107374184){
+                        if(value.item(i).size > 5 * oneGigaByte){
                             return "One or more documents have a size greater than 5GB - please upload a smaller file"
                         }
                     }

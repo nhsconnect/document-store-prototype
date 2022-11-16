@@ -1,6 +1,7 @@
 import {Button, Input, Table} from "nhsuk-react-components";
 import React from "react";
 import {useController} from "react-hook-form";
+import {formatSize} from "../utils/utils";
 
 
 const DocumentsInput = ({control}) => {
@@ -26,8 +27,8 @@ const DocumentsInput = ({control}) => {
                 <Table.Head>
                     <Table.Row>
                         <Table.Cell>Filename</Table.Cell>
-                        <Table.Cell>Uploaded At</Table.Cell>
-                        <Table.Cell>Download</Table.Cell>
+                        <Table.Cell>Size</Table.Cell>
+                        <Table.Cell>Remove</Table.Cell>
                     </Table.Row>
                 </Table.Head>
 
@@ -37,9 +38,9 @@ const DocumentsInput = ({control}) => {
                             <Table.Cell>
                                 {document.name}
                             </Table.Cell>
-                            {/*<Table.Cell style={alignMiddle}>*/}
-                            {/*    {document.size}*/}
-                            {/*</Table.Cell>*/}
+                            <Table.Cell>
+                                {formatSize(document.size)}
+                            </Table.Cell>
                             {/*<Table.Cell style={alignMiddle}>*/}
 
                             {/*</Table.Cell>*/}

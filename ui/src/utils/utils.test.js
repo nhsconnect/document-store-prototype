@@ -1,4 +1,5 @@
 import * as utils from "./utils";
+import {formatSize} from "./utils";
 
 describe("setUrlHostToLocalHost utility", () => {
   let env = "";
@@ -21,3 +22,34 @@ describe("setUrlHostToLocalHost utility", () => {
     expect(updatedUrl).toBe("http://host:1234/test");
   });
 });
+describe("Formatting file size",
+    () => {
+        test("should convert the size into appropriate storage unit upto GB",
+            () => {
+                const testCases = [
+                    {
+                        bytes: 1023456,
+                        expected: "999 KB"
+                    },
+                    {
+                        bytes: 1023456000,
+                        expected: "976 MB"
+                    },
+                    {
+                        bytes: 1000000000000,
+                        expected: "931 GB"
+                    }
+                ]
+
+                testCases.forEach(testCase => {
+                    expect(formatSize(testCase.bytes)).toEqual(testCase.expected)
+                })
+            });
+
+        test("it should throw an error if the size is less than zero", () => {
+            expect(() => formatSize(-1)).toThrow()
+        })
+        test("it should throw an error if file size is greater than a terabyte", () => {
+            expect(() => formatSize(10000000000000)).toThrow()
+        })
+    });
