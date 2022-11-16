@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import BackButton from "../components/BackButton";
+import DocumentsInput from "../components/DocumentsInput";
 
 const states = {
     IDLE: "idle",
@@ -87,16 +88,7 @@ const UploadDocumentPage = ({ client }) => {
                         value={nhsNumber}
                         readOnly
                     />
-                    <Input
-                        id={"documents-input"}
-                        label="Choose documents"
-                        type="file"
-                        multiple={true}
-                        name="documents"
-                        error={formState.errors.documents?.message}
-                        {...documentsInputProps}
-                        inputRef={documentsInputRef}
-                    />
+                    <DocumentsInput control = {control}/>
                 </Fieldset>
                 <Button
                     type="submit"

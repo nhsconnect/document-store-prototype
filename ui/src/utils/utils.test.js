@@ -38,6 +38,10 @@ describe("Formatting file size",
                     {
                         bytes: 1000000000000,
                         expected: "931 GB"
+                    },
+                    {
+                        bytes: 0,
+                        expected: "0 bytes"
                     }
                 ]
 

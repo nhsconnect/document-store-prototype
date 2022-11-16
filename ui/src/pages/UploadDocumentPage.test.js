@@ -137,49 +137,6 @@ describe("UploadDocumentPage", () => {
             });
         });
 
-        it("does not upload documents of size greater than 5GB and displays an error", async () => {
-            const apiClientMock = new ApiClient();
-            const documentOne = new File(["hello"], "one.txt", {
-                type: "text/plain",
-            });
-            const documentTwo = new File(["hello"], "two.txt", {
-                type: "text/plain",
-            });
-            Object.defineProperty(documentOne, "size", {
-                value: 5 * 107374184 + 1,
-            });
-            Object.defineProperty(documentTwo, "size", {
-                value: 5 * 107374184 + 1,
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
-
-            chooseDocuments([documentOne, documentTwo]);
-            uploadDocument();
-
-            await waitFor(() => {
-                expect(
-                    screen.getByText(
-                        "One or more documents have a size greater than 5GB - please upload a smaller file"
-                    )
-                ).toBeInTheDocument();
-            });
-            expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
-        });
-
-        it("displays an error message when the form is submitted if the required fields are missing", async () => {
-            const apiClientMock = new ApiClient();
-            render(<UploadDocumentPage client={apiClientMock} />);
-
-            uploadDocument();
-
-            await waitFor(() => {
-                expect(
-                    screen.getByText("Please attach a file")
-                ).toBeInTheDocument();
-            });
-            expect(apiClientMock.uploadDocument).not.toHaveBeenCalled();
-        });
-
         it("clears existing error messages when the form is submitted again", async () => {
             const apiClientMock = new ApiClient();
             apiClientMock.uploadDocument = jest.fn(async () => {

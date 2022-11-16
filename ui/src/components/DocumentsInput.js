@@ -54,9 +54,9 @@ const DocumentsInput = ({control}) => {
                             <Table.Cell>
                                 {formatSize(document.size)}
                             </Table.Cell>
-                            {/*<Table.Cell style={alignMiddle}>*/}
+                            <Table.Cell>
 
-                            {/*</Table.Cell>*/}
+                            </Table.Cell>a
                         </Table.Row>
                     ))}
                 </Table.Body>
