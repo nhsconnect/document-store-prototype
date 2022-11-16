@@ -12,7 +12,7 @@ const states = {
 };
 
 const UploadDocumentPage = ({ client }) => {
-    const { register, handleSubmit, formState } = useForm();
+    const { register, handleSubmit, formState, control} = useForm();
     const { ref: documentsInputRef, ...documentsInputProps } = register(
         "documents",
         {
