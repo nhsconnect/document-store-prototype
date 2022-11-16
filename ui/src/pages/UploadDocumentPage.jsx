@@ -13,7 +13,7 @@ const states = {
 const oneGigaByte = 107374184;
 
 const UploadDocumentPage = ({ client }) => {
-    const { register, handleSubmit, formState, control} = useForm();
+    const { register, handleSubmit, formState, control } = useForm();
     const { ref: documentsInputRef, ...documentsInputProps } = register(
         "documents",
         {

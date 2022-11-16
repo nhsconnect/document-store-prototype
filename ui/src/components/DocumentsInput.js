@@ -5,10 +5,23 @@ import {formatSize} from "../utils/utils";
 
 
 const DocumentsInput = ({control}) => {
-    const {field: {ref, onChange, onBlur, name, value}, fieldState} = useController({
-        name:"documents",
+    const {field: {ref, onChange, onBlur, name, value}, fieldState, formState} = useController({
+        name: "documents",
         control,
-        rules: { required: true },
+        rules: {
+            validate: {
+                isFile: (value) => {
+                    return (value && value.length > 0) || "Please select a file"
+                },
+                isLessThan5GB: (value) =>{
+                    for(let i = 0; i < value.length; i++){
+                        if(value.item(i).size > 5 * Math.pow(1024, 3)) {
+                            return "Please ensure that all files are less than 5GB in size"
+                        }
+                    }
+                }
+            }
+        },
     });
     return(
         <>
@@ -18,7 +31,7 @@ const DocumentsInput = ({control}) => {
                 type="file"
                 multiple={true}
                 name={name}
-                // error={fieldState.error?.message}
+                error={fieldState.error?.message}
                 onChange={e => { onChange(e.target.files) }}
                 onBlur={onBlur}
                 inputRef={ref}
