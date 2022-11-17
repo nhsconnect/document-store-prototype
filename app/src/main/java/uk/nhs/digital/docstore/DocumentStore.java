@@ -4,7 +4,9 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
 import java.io.InputStream;
@@ -38,6 +40,13 @@ public class DocumentStore {
 
     public URL generatePreSignedUrl(DocumentDescriptor descriptor) {
         return client.generatePresignedUrl(descriptor.bucket, descriptor.path, getExpirationDate());
+    }
+
+    public URL generatePreSignedUrlForZip(DocumentDescriptor descriptor, String filename) {
+        var generatePresignedUrlRequest = new GeneratePresignedUrlRequest(descriptor.bucket, descriptor.path)
+                .withExpiration(getExpirationDate())
+                .withResponseHeaders(new ResponseHeaderOverrides().withContentDisposition("attachment; filename="+filename));
+        return client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
     public DocumentDescriptorAndURL generateDocumentDescriptorAndURL() {

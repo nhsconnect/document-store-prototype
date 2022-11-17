@@ -96,14 +96,15 @@ public class CreateDocumentManifestE2eTest {
 
     @Test
     void shouldGetDocumentsByNhsNumberAndUploadZipToS3() throws IOException, InterruptedException {
-        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentManifest?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9000000009"))
+        var nhsNumber = "9000000009";
+        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentManifest?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C"+nhsNumber))
                 .GET()
                 .header("Authorization", createBearerToken())
                 .build();
         var searchResponse = newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString());
 
         assertThat(searchResponse.statusCode()).isEqualTo(200);
-        assertThat(searchResponse.body()).contains(aws.getDocumentStoreBucketName()+"/patient-record-");
+        assertThat(searchResponse.body()).contains(nhsNumber);
     }
 
     @Test
@@ -117,9 +118,6 @@ public class CreateDocumentManifestE2eTest {
         var scan = dynamoDbClient.scan(getScanRequest());
 
         assertThat(searchResponse.statusCode()).isEqualTo(200);
-        for (Map<String, AttributeValue> item: scan.getItems()){
-            System.out.println(item);
-        }
         assertThat(scan.getItems().size()).isEqualTo(1);
     }
 
