@@ -1,8 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { act } from "react-dom/test-utils";
 
-import ApiClient from "../apiClients/apiClient";
+import ApiClient, { documentUploadStates } from "../apiClients/apiClient";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import { formatSize } from "../utils/utils";
 import UploadDocumentPage from "./UploadDocumentPage";
 
 jest.mock("../apiClients/apiClient");
@@ -19,9 +21,13 @@ beforeEach(() => {
 })
 
 describe("UploadDocumentPage", () => {
+
+    
+
     describe("when there is an NHS number", () => {
         const nhsNumber = "1112223334";
         beforeEach(() => {
+            jest.resetAllMocks()
             useNhsNumberProviderContext.mockReturnValue([nhsNumber, jest.fn()]);
         });
 
@@ -41,132 +47,113 @@ describe("UploadDocumentPage", () => {
             expect(mockNavigate).not.toHaveBeenCalled();
         });
 
-        it('can upload multiple documents', async () => {
+        it("uploads documents and displays the progress", async () => {
             const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise((resolve) => {
-                    resolve(null);
-                })
-            });
-            const documentOne = new File(["one"], "one.txt", {
-                type: "text/plain",
-            });
-            const documentTwo = new File(["two"], "two.txt", {
-                type: "text/plain",
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
 
-            chooseDocuments([documentOne, documentTwo]);
-            uploadDocument();
-
-            await waitFor(() => {
-                expect(mockNavigate).toHaveBeenCalledWith("/upload/success");
-            });
-
-            expect(apiClientMock.uploadDocument).toHaveBeenCalledTimes(2)
-        })
-
-        it("navigates to a success page when a document is successfully uploaded", async () => {
-            const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise((resolve) => {
-                    resolve(null);
-                })
-            });
-            const document = new File(["hello"], "hello.txt", {
-                type: "text/plain",
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
-
-            chooseDocuments(document);
-            uploadDocument();
-
-            await waitFor(() => {
-                expect(mockNavigate).toHaveBeenCalledWith("/upload/success");
-            });
-        });
-
-        it("displays an error message for each document that fails to upload", async () => {
-            const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise ((resolve, reject) => {
-                    setTimeout(() => {reject('Something went wrong')}, 10)
-                })
-            });
-            const documentOne = new File(["one"], "one.txt", {
-                type: "text/plain",
-            });
-            const documentTwo = new File(["two"], "two.txt", {
-                type: "text/plain",
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
-
-            chooseDocuments([documentOne, documentTwo]);
-            uploadDocument();
-
-            expect(
-                await screen.findByText(`Upload of ${documentOne.name} failed - please retry`)
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText(`Upload of ${documentTwo.name} failed - please retry`)
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText("Some of your documents failed to upload")
-            ).toBeInTheDocument()
-        });
-
-        it("displays a loading spinner and disables the upload button when the document is being uploaded", async () => {
-            const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise((resolve) => {
-                    resolve(null);
-                })
-            });
+            const uploadStateChangeTriggers = {};
+            const resolvers = {}
             
-            const document = new File(["hello"], "hello.txt", {
-                type: "text/plain",
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
+            apiClientMock.uploadDocument = async (document, nhsNumber, onUploadStateChange) => {
+                uploadStateChangeTriggers[document.name] = onUploadStateChange
 
-            chooseDocuments(document);
-            uploadDocument();
-
-            await waitFor(() => {
-                expect(uploadButton()).toBeDisabled();
-                expect(progressBar()).toBeInTheDocument();
-            });
-        });
-
-        it("clears existing error messages when the form is submitted again", async () => {
-            const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise ((resolve, reject) => {
-                    setTimeout(() => {reject('Something went wrong')}, 10)
+                return new Promise((resolve) => {
+                    resolvers[document.name] = resolve
                 })
-            });
-            const documentOne = new File(["one"], "one.txt", {
-                type: "text/plain",
-            });
+            };
+
             render(<UploadDocumentPage client={apiClientMock} />);
 
-            chooseDocuments(documentOne);
-            uploadDocument();
+            const documentOne = makeTextFile("one", 100);
+            const documentTwo = makeTextFile("two", 200);
 
-            expect(
-                await screen.findByText(`Upload of ${documentOne.name} failed - please retry`)
-            ).toBeInTheDocument();
+            const triggerUploadStateChange = (document, state, progress) => {
+                act(() => {
+                    uploadStateChangeTriggers[document.name](state, progress)
+                })
+            }
 
+            const resolveDocumentUploadPromise = (document) => {
+                act(() => {
+                    resolvers[document.name]()
+                })
+            }
+
+            chooseDocuments([documentOne, documentTwo]);
             uploadDocument();
 
             await waitFor(() => {
-                expect(uploadButton()).toBeDisabled()
+                expect(uploadForm()).not.toBeInTheDocument();
+            });
+
+            triggerUploadStateChange(documentOne, documentUploadStates.WAITING, 0)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(0)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("Waiting")
             })
 
-            expect(screen.queryByText(`Upload of ${documentOne.name} failed - please retry`)).toBeNull()
+            triggerUploadStateChange(documentTwo, documentUploadStates.WAITING, 0);
 
-            expect(
-                await screen.findByText(`Upload of ${documentOne.name} failed - please retry`)
-            ).toBeInTheDocument();
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(0)
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("Waiting")
+            })
+
+            triggerUploadStateChange(documentTwo, documentUploadStates.STORING_METADATA, 0);
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(0)
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("metadata")
+            })
+
+            triggerUploadStateChange(documentOne, documentUploadStates.STORING_METADATA, 0)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(0)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("metadata")
+            })
+
+            triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 10)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(10)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("Uploading")
+            })
+
+            triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 70)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(70)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("Uploading")
+            })
+
+            triggerUploadStateChange(documentTwo, documentUploadStates.UPLOADING, 20)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(20)
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("Uploading")
+            })
+
+            triggerUploadStateChange(documentTwo, documentUploadStates.SUCCEEDED, 100)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(100)
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("successful")
+            })
+
+            triggerUploadStateChange(documentOne, documentUploadStates.FAILED, 0)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(0)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("failed")
+            })
+
+            resolveDocumentUploadPromise(documentOne)
+            resolveDocumentUploadPromise(documentTwo)
+
+            await waitFor(() => {
+                expect(screen.getByText("Upload Summary")).toBeInTheDocument();
+            }); 
         })
     });
 
@@ -182,6 +169,18 @@ describe("UploadDocumentPage", () => {
     });
 });
 
+function makeTextFile(name, size) {
+    const file = new File(["test"], `${name}.txt`, {
+        type: "text/plain",
+    });
+    if (size) {
+        Object.defineProperty(file, "size", {
+            value: size,
+        })
+    }
+    return file;
+}
+
 function chooseDocuments(documents) {
     userEvent.upload(screen.getByLabelText("Choose documents"), documents);
 }
@@ -192,9 +191,8 @@ function uploadDocument() {
     userEvent.click(uploadButton());
 }
 
-
-function progressBar() {
-    return screen.getByRole("progressbar");
+function uploadForm() {
+    return screen.queryByTestId("upload-document-form")
 }
 
 function uploadButton() {
@@ -205,3 +203,7 @@ function uploadButton() {
 function nhsNumberField() {
     return screen.getByLabelText("NHS number");
 }
+
+const getProgressBar = (document) => screen.getByRole("progressbar", { name: `Uploading ${document.name}` })
+const getProgressBarMessage = (document) => screen.getByRole("status", { name: `${document.name} upload status` })
+const getProgressBarValue = (document) => parseInt(getProgressBar(document).value);

@@ -1,5 +1,13 @@
-import storageClient from "./storageClient";
 import {setUrlHostToLocalHost} from "../utils/utils";
+import axios from "axios";
+
+export const documentUploadStates = {
+  WAITING: "waiting",
+  STORING_METADATA: "storing_metadata",
+  UPLOADING: "uploading",
+  SUCCEEDED: "succeeded",
+  FAILED: "failed",
+}
 
 class ApiClient {
   constructor(api, auth) {
@@ -29,7 +37,7 @@ class ApiClient {
       : [];
   }
 
-  async uploadDocument(document, nhsNumber) {
+  async uploadDocument(document, nhsNumber, onUploadStateChange) {
     const requestBody = {
       resourceType: "DocumentReference",
       subject: {
@@ -63,15 +71,37 @@ class ApiClient {
       Accept: "application/fhir+json",
       Authorization: `Bearer ${token}`,
     };
-    const response = await this.api.post(
-      "doc-store-api",
-      "/DocumentReference",
-      {body: requestBody, headers: requestHeaders}
-    );
-    const url = response.content[0].attachment.url;
-    let s3Url = setUrlHostToLocalHost(url);
-    await storageClient(s3Url, document);
-    console.log("document uploaded");
+    onUploadStateChange(documentUploadStates.WAITING, 0)
+
+    try {
+      const response = await this.api.post(
+        "doc-store-api",
+        "/DocumentReference",
+        {
+          body: requestBody,
+          headers: requestHeaders,
+          onUploadProgress: () => {
+            onUploadStateChange(documentUploadStates.STORING_METADATA, 0)
+          }
+        }
+      );
+
+      const url = response.content[0].attachment.url;
+      let s3Url = setUrlHostToLocalHost(url);
+
+      await axios.put(
+        s3Url,
+        document,
+        {
+          onUploadProgress: (({ total, loaded }) => {
+            onUploadStateChange(documentUploadStates.UPLOADING, (loaded/total)*100)
+          })
+        }
+      )
+      onUploadStateChange(documentUploadStates.SUCCEEDED, 100)
+    } catch (e) {
+      onUploadStateChange(documentUploadStates.FAILED, 0)
+    }
   }
 
   async getPatientDetails(nhsNumber) {
