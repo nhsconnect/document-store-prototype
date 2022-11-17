@@ -45,6 +45,7 @@ const DocumentsInput = ({control}) => {
                 inputRef={ref}
                 style={{ width: 133 }}
             />
+            <div role="region" aria-live="polite">
             {value && value.length > 0 && <Table caption="Documents">
                 <Table.Head>
                     <Table.Row>
@@ -64,12 +65,13 @@ const DocumentsInput = ({control}) => {
                                 {formatSize(document.size)}
                             </Table.Cell>
                             <Table.Cell>
-                                <Button onClick={() => onRemove(index)}>Remove</Button>
+                                <Button className="nhsuk-u-padding-2 nhsuk-u-margin-0" secondary aria-label={`Remove ${document.name} from selection`} onClick={() => onRemove(index)}>Remove</Button>
                             </Table.Cell>
                         </Table.Row>
                     ))}
                 </Table.Body>
             </Table>}
+            </div>
         </>
 
     )

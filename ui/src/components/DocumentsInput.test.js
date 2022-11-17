@@ -72,14 +72,14 @@ describe("DocumentsInput", () => {
     })
     it("should be able to remove selected file", async () =>{
         render(<FormWrapper />)
-        const documentOne = new File(["three"], "three.txt", {
+        const document = new File(["test"], "test.txt", {
             type: "text/plain",
         });
-        userEvent.upload(screen.getByLabelText("Choose documents"), [documentOne]);
+        userEvent.upload(screen.getByLabelText("Choose documents"), [document]);
 
-        expect(screen.getByText(documentOne.name)).toBeInTheDocument();
-        userEvent.click( screen.getByRole("button", {name:"Remove"}))
-        await waitFor(() => expect(screen.queryByText(documentOne.name)).not.toBeInTheDocument())
+        expect(screen.getByText(document.name)).toBeInTheDocument();
+        userEvent.click( screen.getByRole("button", {name:`Remove ${document.name} from selection`}))
+        await waitFor(() => expect(screen.queryByText(document.name)).not.toBeInTheDocument())
 
         }
     )
