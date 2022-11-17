@@ -237,6 +237,27 @@ describe("Search page", () => {
         ).toBeInTheDocument();
       });
     });
+
+    it("calls api client when user clicks on download all button", async () => {
+      const apiClientMock = new ApiClient();
+      const searchResult = searchResultFactory.build();
+      apiClientMock.findByNhsNumber = jest.fn(() => {
+        return [searchResult];
+      });
+      apiClientMock.getPresignedUrlForZip = jest.fn(() => {
+        return null;
+      });
+
+      render(<SearchResultsPage client={apiClientMock}/>);
+
+      await waitFor(() => {
+        expect(screen.getByText("Documents")).toBeInTheDocument();
+      });
+
+      userEvent.click(screen.getByRole("button", {name: "Download All"}));
+
+      expect(apiClientMock.getPresignedUrlForZip).toHaveBeenCalled();
+    });
   });
 
   describe("when there is NOT an NHS number", () => {

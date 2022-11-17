@@ -110,6 +110,26 @@ class ApiClient {
     }
     throw new Error("No url received");
   }
+
+  async getPresignedUrlForZip(nhsNumber) {
+    const data = await this.api.get("doc-store-api", "/DocumentManifest", {
+      headers: {
+        Accept: "application/fhir+json",
+        Authorization: `Bearer ${(await this.auth.currentSession())
+            .getIdToken()
+            .getJwtToken()}`,
+      },
+      queryStringParameters: {
+        "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+      },
+    });
+
+    if (data) {
+      return setUrlHostToLocalHost(data);
+    }
+
+    throw new Error("No url received");
+  }
 }
 
 export default ApiClient;

@@ -271,3 +271,50 @@ describe("test the getPresignedUrl method", () => {
     expect(returnedPresignedUrl).toStrictEqual(responseBody.content[0].attachment);
   });
 });
+
+describe("test the getPresignedUrlForZip method", () => {
+    test("returns a presigned url associated with zip of all documents related to an nhs number ", async () => {
+        const token = "token";
+        const auth = {
+            currentSession: async () => {
+                return {
+                    getIdToken: () => {
+                        return {
+                            getJwtToken: () => {
+                                return token;
+                            },
+                        };
+                    },
+                };
+            },
+        };
+        const getMock = jest.fn(() => {
+            return responseUrl;
+        });
+        const api = { get: getMock };
+        const apiClient = new ApiClient(api, auth);
+        const nhsNumber = "1234567890";
+        const requestHeaders = {
+            Accept: "application/fhir+json",
+            Authorization: `Bearer ${(await auth.currentSession())
+                .getIdToken()
+                .getJwtToken()}`,
+        };
+        const responseUrl = "presigned-url";
+        const queryStringParametersMock = {
+            "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+        };
+
+        const returnedPresignedUrl = await apiClient.getPresignedUrlForZip(nhsNumber);
+
+        expect(getMock).toHaveBeenCalledWith(
+            "doc-store-api",
+            "/DocumentManifest",
+            expect.objectContaining({
+                headers: requestHeaders,
+                queryStringParameters: queryStringParametersMock,
+            })
+        );
+        expect(returnedPresignedUrl).toStrictEqual(responseUrl);
+    });
+});

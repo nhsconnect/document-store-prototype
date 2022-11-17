@@ -92,6 +92,11 @@ const SearchResultsPage = ({client}) => {
         void search();
     }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
+    const downloadAll = async() => {
+        const uri = await client.getPresignedUrlForZip(nhsNumber);
+        console.log(uri);
+    }
+
     return (
         <>
             <BackButton/>
@@ -122,7 +127,7 @@ const SearchResultsPage = ({client}) => {
                 <>
                     {searchResults.length > 0 && (
                         <>
-                            <Button>Download All</Button>
+                            <Button onClick={downloadAll}>Download All</Button>
                             {downloadError && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
                             <Table caption="Documents">
                                 <Table.Head>
