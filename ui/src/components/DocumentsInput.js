@@ -1,6 +1,7 @@
 import {Button, Input, Table} from "nhsuk-react-components";
 import React from "react";
 import {useController} from "react-hook-form";
+import { fileSizes } from "../enums/fileSizes";
 import {formatSize} from "../utils/utils";
 
 
@@ -15,7 +16,7 @@ const DocumentsInput = ({control}) => {
                 },
                 isLessThan5GB: (value) =>{
                     for(let i = 0; i < value.length; i++){
-                        if(value[i].size > 5 * Math.pow(1024, 3)) {
+                        if(value[i].size > fileSizes.FIVE_GIGA_BYTES) {
                             return "Please ensure that all files are less than 5GB in size"
                         }
                     }
