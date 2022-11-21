@@ -2,7 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 
-import ApiClient, { documentUploadStates } from "../apiClients/apiClient";
+import ApiClient from "../apiClients/apiClient";
+import { documentUploadStates } from "../enums/documentUploads";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import { formatSize } from "../utils/utils";
 import UploadDocumentPage from "./UploadDocumentPage";
@@ -65,6 +66,7 @@ describe("UploadDocumentPage", () => {
 
             const documentOne = makeTextFile("one", 100);
             const documentTwo = makeTextFile("two", 200);
+            const documentThree = makeTextFile("three", 100);
 
             const triggerUploadStateChange = (document, state, progress) => {
                 act(() => {
@@ -78,14 +80,18 @@ describe("UploadDocumentPage", () => {
                 })
             }
 
-            chooseDocuments([documentOne, documentTwo]);
+            chooseDocuments([documentOne, documentTwo, documentThree]);
             uploadDocument();
+
+            await waitFor(() => {
+                expect(uploadButton()).toBeDisabled()
+            })
+
+            triggerUploadStateChange(documentOne, documentUploadStates.WAITING, 0)
 
             await waitFor(() => {
                 expect(uploadForm()).not.toBeInTheDocument();
             });
-
-            triggerUploadStateChange(documentOne, documentUploadStates.WAITING, 0)
 
             await waitFor(() => {
                 expect(getProgressBarValue(documentOne)).toEqual(0)
@@ -141,6 +147,8 @@ describe("UploadDocumentPage", () => {
                 expect(getProgressBarMessage(documentTwo).textContent).toContain("successful")
             })
 
+            // Make sure document three is waiting, otherwise the "upload step" will move to complete once one and two have succeeded and failed
+            triggerUploadStateChange(documentThree, documentUploadStates.WAITING, 0)
             triggerUploadStateChange(documentOne, documentUploadStates.FAILED, 0)
 
             await waitFor(() => {
@@ -148,8 +156,12 @@ describe("UploadDocumentPage", () => {
                 expect(getProgressBarMessage(documentOne).textContent).toContain("failed")
             })
 
+            // Now we want to complete document three to move to the "complete" upload step
+            triggerUploadStateChange(documentThree, documentUploadStates.SUCCEEDED, 100)
+
             resolveDocumentUploadPromise(documentOne)
             resolveDocumentUploadPromise(documentTwo)
+            resolveDocumentUploadPromise(documentThree)
 
             await waitFor(() => {
                 expect(screen.getByText("Upload Summary")).toBeInTheDocument();

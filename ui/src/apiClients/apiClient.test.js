@@ -1,4 +1,5 @@
-import ApiClient, { documentUploadStates } from "./apiClient";
+import ApiClient from "./apiClient";
+import { documentUploadStates } from "../enums/documentUploads";
 import axios from "axios";
 
 jest.mock("axios");

@@ -1,13 +1,6 @@
 import {setUrlHostToLocalHost} from "../utils/utils";
 import axios from "axios";
-
-export const documentUploadStates = {
-  WAITING: "waiting",
-  STORING_METADATA: "storing_metadata",
-  UPLOADING: "uploading",
-  SUCCEEDED: "succeeded",
-  FAILED: "failed",
-}
+import { documentUploadStates } from "../enums/documentUploads"
 
 class ApiClient {
   constructor(api, auth) {
@@ -64,6 +57,9 @@ class ApiClient {
       description: document.name,
       created: "2021-07-11T16:57:30+01:00",
     };
+
+    onUploadStateChange(documentUploadStates.WAITING, 0)
+
     const token = (await this.auth.currentSession())
       .getIdToken()
       .getJwtToken();
@@ -71,8 +67,7 @@ class ApiClient {
       Accept: "application/fhir+json",
       Authorization: `Bearer ${token}`,
     };
-    onUploadStateChange(documentUploadStates.WAITING, 0)
-
+    
     try {
       const response = await this.api.post(
         "doc-store-api",

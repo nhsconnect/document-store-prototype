@@ -1,19 +1,13 @@
 import { Button, Fieldset, Input, Table } from "nhsuk-react-components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import BackButton from "../components/BackButton";
 import DocumentsInput from "../components/DocumentsInput";
-import { produce } from "immer"
 import { formatSize } from "../utils/utils";
-import { documentUploadStates as stateNames } from "../apiClients/apiClient";
-
-const submissionStates = {
-    IDLE: "idle",
-    UPLOADING: "uploading",
-    COMPLETE: "complete",
-};
+import { documentUploadStates as stateNames, documentUploadSteps } from "../enums/documentUploads";
+import useDocumentUploadState from "../hooks/useDocumentUploadState";
 
 const uploadStateMessages = {
     [stateNames.WAITING]: "Waiting...",
@@ -24,9 +18,8 @@ const uploadStateMessages = {
 }
 
 const UploadDocumentPage = ({ client }) => {
-    const { handleSubmit, control, getValues } = useForm();
-    const [submissionState, setSubmissionState] = useState(submissionStates.IDLE);
-    const [documentUploadStates, setDocumentUploadStates] = useState([]);
+    const { handleSubmit, control, getValues, formState } = useForm();
+    const { documentUploadStates, uploadStep, onUploadStateChange } = useDocumentUploadState();
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
@@ -37,33 +30,23 @@ const UploadDocumentPage = ({ client }) => {
     }, [nhsNumber, navigate]);
 
     const doSubmit = async (data) => {
-        setSubmissionState(submissionStates.UPLOADING);
-
         const doUpload = async (document, index) => {
             await client.uploadDocument(
                 document,
                 nhsNumber,
                 (state, progress) => {
-                    setDocumentUploadStates(current => {
-                        return produce(current, draft => {
-                            draft[index] = {
-                                state,
-                                progress
-                            }
-                        })
-                    })
+                    onUploadStateChange(index, state, progress)
                 }
             )
         }
 
-        await Promise.all(data.documents.map((document, index) => doUpload(document, index)))
-        setSubmissionState(submissionStates.COMPLETE)
+        await Promise.all(data.documents.map(doUpload))
     };
 
     return (
         <>
             <BackButton />
-            {submissionState === submissionStates.IDLE && <form onSubmit={handleSubmit(doSubmit)} noValidate data-testid="upload-document-form">
+            {uploadStep === documentUploadSteps.SELECTING_FILES && <form onSubmit={handleSubmit(doSubmit)} noValidate data-testid="upload-document-form">
                 <Fieldset>
                     <Fieldset.Legend headingLevel={"h1"} isPageHeading>
                         Upload a document
@@ -80,14 +63,14 @@ const UploadDocumentPage = ({ client }) => {
                 </Fieldset>
                 <Button
                     type="submit"
-                    disabled={submissionState === submissionStates.UPLOADING}
+                    disabled={formState.isSubmitting}
                 >
                     Upload
                 </Button>
 
             </form>
             }
-            {submissionState === submissionStates.UPLOADING && (
+            {uploadStep === documentUploadSteps.UPLOADING && (
                 <Table responsive caption="Document upload progress.">
                     <Table.Head role="rowgroup">
                         <Table.Row>
@@ -117,7 +100,7 @@ const UploadDocumentPage = ({ client }) => {
                     </Table.Body>
                 </Table>
             )}
-            {submissionState === submissionStates.COMPLETE && (
+            {uploadStep === documentUploadSteps.COMPLETE && (
                 <h2>Upload Summary</h2>
             )}
         </>
