@@ -8,12 +8,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DocumentManifest;
-import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -30,12 +24,9 @@ import uk.nhs.digital.docstore.utils.CommonUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import static java.util.stream.Collectors.toList;
 
 
 @SuppressWarnings("unused")
@@ -86,8 +77,9 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
             metadataStore.save(getDocumentMetadata(nhsNumber, fileName, descriptor.toLocation()));
 
             var preSignedUrl = documentStore.generatePreSignedUrlForZip(descriptor, fileName);
+            var body = getJsonBody(preSignedUrl.toString());
 
-            return apiConfig.getApiGatewayResponse(200, preSignedUrl.toString(), "GET", null);
+            return apiConfig.getApiGatewayResponse(200, body, "GET", null);
         } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e, fhirContext.newJsonParser());
         }
@@ -124,26 +116,12 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
         return documentMetadata;
     }
 
-    private DocumentManifest getDocumentManifest(DocumentMetadata documentMetadata, String presignedUrl) {
-        var type = new CodeableConcept()
-                .setCoding(documentMetadata.getType()
-                        .stream()
-                        .map(code -> new Coding()
-                                .setCode(code)
-                                .setSystem(DOCUMENT_TYPE_CODING_SYSTEM))
-                        .collect(toList()));
-
-        var documentManifest = new DocumentManifest()
-                .setCreated(new Date(documentMetadata.getCreated()))
-                .setSubject(new Reference()
-                        .setIdentifier(new Identifier()
-                                .setSystem(SUBJECT_ID_CODING_SYSTEM)
-                                .setValue(documentMetadata.getNhsNumber())))
-                .setSource(presignedUrl)
-                .setType(type)
-                .setStatus(Enumerations.DocumentReferenceStatus.CURRENT)
-                .setDescription(documentMetadata.getDescription());
-
-        return documentManifest;
+    private String getJsonBody(String contents) {
+        var body = "{\n" +
+                "  \"result\":{ \n" +
+                "  \"url\":" + contents + "\n" +
+                "}\n" +
+                "}";
+        return body;
     }
 }
