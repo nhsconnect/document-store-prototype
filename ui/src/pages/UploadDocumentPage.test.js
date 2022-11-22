@@ -165,7 +165,16 @@ describe("UploadDocumentPage", () => {
 
             await waitFor(() => {
                 expect(screen.getByText("Upload Summary")).toBeInTheDocument();
-            }); 
+            });
+
+            expect(screen.getByText(`Summary of uploaded documents for patient number ${nhsNumber}`))
+
+            userEvent.click(screen.getByText("Successfully uploaded documents"))
+
+            expect(await screen.findByText(documentTwo.name)).toBeInTheDocument()
+            expect(screen.getByText(documentThree.name)).toBeInTheDocument()
+
+            expect(screen.getByText("Some of your documents could not be uploaded")).toBeInTheDocument()
         })
     });
 

@@ -88,6 +88,9 @@ class ApiClient {
         s3Url,
         document,
         {
+          headers: {
+            "Content-Type": document.type,
+          },
           onUploadProgress: (({ total, loaded }) => {
             onUploadStateChange(documentUploadStates.UPLOADING, (loaded/total)*100)
           })
