@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor,within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 
@@ -175,6 +175,8 @@ describe("UploadDocumentPage", () => {
             expect(screen.getByText(documentThree.name)).toBeInTheDocument()
 
             expect(screen.getByText("Some of your documents could not be uploaded")).toBeInTheDocument()
+            expect(within(screen.getByRole("alert")).getByText(documentOne.name)).toBeInTheDocument()
+
         })
     });
 
