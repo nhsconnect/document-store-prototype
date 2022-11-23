@@ -50,7 +50,7 @@ const UploadDocumentPage = ({ client, nextPagePath }) => {
             {uploadStep === documentUploadSteps.SELECTING_FILES && <form onSubmit={handleSubmit(doSubmit)} noValidate data-testid="upload-document-form">
                 <Fieldset>
                     <Fieldset.Legend headingLevel={"h1"} isPageHeading>
-                        Upload a document
+                        Upload documents
                     </Fieldset.Legend>
                     <Input
                         id={"nhs-number-input"}
@@ -72,7 +72,7 @@ const UploadDocumentPage = ({ client, nextPagePath }) => {
             </form>
             }
             {uploadStep === documentUploadSteps.UPLOADING && (
-                <Table responsive caption="Document upload progress.">
+                <Table responsive caption="Your documents are uploading">
                     <Table.Head role="rowgroup">
                         <Table.Row>
                             <Table.Cell>File Name</Table.Cell>

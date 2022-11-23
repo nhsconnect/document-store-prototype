@@ -16,7 +16,7 @@ describe("DocumentsInput", () => {
     it("renders the choose file input", () => {
         render(<FormWrapper/>);
         expect(
-            screen.getByLabelText("Choose documents")
+            screen.getByLabelText("Select files")
         ).toBeInTheDocument();
     });
 
@@ -30,7 +30,7 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Choose documents"), [documentOne, documentTwo]);
+        userEvent.upload(screen.getByLabelText("Select files"), [documentOne, documentTwo]);
 
         expect(await screen.findByText(documentOne.name)).toBeInTheDocument()
         expect(screen.getByText(documentTwo.name)).toBeInTheDocument()
@@ -64,7 +64,7 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Choose documents"), [documentOne, documentTwo, documentThree]);
+        userEvent.upload(screen.getByLabelText("Select files"), [documentOne, documentTwo, documentThree]);
 
         userEvent.click(screen.getByText("Submit"))
 
@@ -75,7 +75,7 @@ describe("DocumentsInput", () => {
         const document = new File(["test"], "test.txt", {
             type: "text/plain",
         });
-        userEvent.upload(screen.getByLabelText("Choose documents"), [document]);
+        userEvent.upload(screen.getByLabelText("Select files"), [document]);
 
         expect(screen.getByText(document.name)).toBeInTheDocument();
         userEvent.click( screen.getByRole("button", {name:`Remove ${document.name} from selection`}))

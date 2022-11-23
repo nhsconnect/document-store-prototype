@@ -15,6 +15,7 @@ const UploadSummary = ({nhsNumber, documents, documentUploadStates}) => {
         <section>
             <h2>Upload Summary</h2>
             <p>Summary of uploaded documents for patient number {nhsNumber}</p>
+            <p>Please delete files that were uploaded successfully from your system.</p>
             {successfulUploads.length > 0 && <Details>
                 <Details.Summary>Successfully uploaded documents</Details.Summary>
                 <Details.Text>

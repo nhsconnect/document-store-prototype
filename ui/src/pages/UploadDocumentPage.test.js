@@ -35,13 +35,13 @@ describe("UploadDocumentPage", () => {
             render(<UploadDocumentPage nextPagePath={nextPagePath} />);
 
             expect(
-                screen.getByRole("heading", { name: "Upload a document" })
+                screen.getByRole("heading", { name: "Upload documents" })
             ).toBeInTheDocument();
             expect(nhsNumberField()).toBeInTheDocument();
             expect(nhsNumberField()).toHaveValue(nhsNumber);
             expect(nhsNumberField()).toHaveAttribute("readonly");
             expect(
-                screen.getByLabelText("Choose documents")
+                screen.getByLabelText("Select files")
             ).toBeInTheDocument();
             expect(uploadButton()).toBeInTheDocument();
             expect(mockNavigate).not.toHaveBeenCalled();
@@ -208,7 +208,7 @@ function makeTextFile(name, size) {
 }
 
 function chooseDocuments(documents) {
-    userEvent.upload(screen.getByLabelText("Choose documents"), documents);
+    userEvent.upload(screen.getByLabelText("Select files"), documents);
 }
 
 

@@ -36,7 +36,8 @@ const DocumentsInput = ({control}) => {
             {/* override the width attribute because the value of the file input is read-only, so when we remove a file it doesn't update */}
             <Input
                 id={"documents-input"}
-                label="Choose documents"
+                label="Select files"
+                hint="You may select multiple files"
                 type="file"
                 multiple={true}
                 name={name}
@@ -47,7 +48,7 @@ const DocumentsInput = ({control}) => {
                 style={{ width: 133 }}
             />
             <div role="region" aria-live="polite">
-            {value && value.length > 0 && <Table caption="Documents">
+            {value && value.length > 0 && <Table caption="Selected documents">
                 <Table.Head>
                     <Table.Row>
                         <Table.Cell>Filename</Table.Cell>
