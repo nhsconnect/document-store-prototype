@@ -1,7 +1,8 @@
 import ApiClient from "./apiClient";
-import uploadDocumentWithStorageClient from "./storageClient";
+import { documentUploadStates } from "../enums/documentUploads";
+import axios from "axios";
 
-jest.mock("./storageClient");
+jest.mock("axios");
 
 describe("test the findByNhsNumber method", () => {
     test("returns a list of documents associated with an NHS number", async () => {
@@ -69,8 +70,8 @@ describe("test the findByNhsNumber method", () => {
 });
 
 describe("test the uploadDocument method", () => {
-    test("makes the request to create a DocumentReference and upload document", async () => {
-        const responseBody = {
+    test("makes the request to create a DocumentReference and upload document, providing progress updates", async () => {
+        const metadataResponseBody = {
             content: [
                 {
                     attachment: {
@@ -80,8 +81,16 @@ describe("test the uploadDocument method", () => {
                 },
             ],
         };
-        const postMock = jest.fn(() => {
-            return responseBody;
+        const postMock = jest.fn(async (baseUrl, path, { onUploadProgress }) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    onUploadProgress()
+                }, 1)
+
+                setTimeout(() => {
+                    resolve(metadataResponseBody)
+                }, 2)
+            })
         });
         const token = "token";
         const auth = {
@@ -132,21 +141,139 @@ describe("test the uploadDocument method", () => {
             created: "2021-07-11T16:57:30+01:00",
         };
 
+
+        axios.put = jest.fn((async (s3url, document, { onUploadProgress }) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    onUploadProgress({ total: 10, loaded: 5 })
+                }, 1)
+
+                setTimeout(() => {
+                    resolve()
+                }, 2)
+            })
+        }))
+
+        const onUploadStateChangeMock = jest.fn()
         await apiClient.uploadDocument(
             document,
             nhsNumber,
+            onUploadStateChangeMock,
         );
 
         expect(postMock).toHaveBeenCalledWith(
             "doc-store-api",
             "/DocumentReference",
-            expect.objectContaining({ body: requestBody })
+            expect.objectContaining({
+                headers: {
+                    Accept: "application/fhir+json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: requestBody
+            })
         );
-        expect(uploadDocumentWithStorageClient).toHaveBeenCalledWith(
-            responseBody.content[0].attachment.url,
-            document
+        expect(axios.put).toHaveBeenCalledWith(
+            metadataResponseBody.content[0].attachment.url,
+            document,
+            expect.anything()
         );
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.WAITING, 0)
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.STORING_METADATA, 0)
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.UPLOADING, 50)
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.SUCCEEDED, 100)
     });
+
+    test("reports the upload as failed if the store metadata request fails", async () => {
+        const postMock = jest.fn(() => {
+            throw new Error("Request failed")
+        });
+
+        const api = { post: postMock };
+        const token = "token";
+        const auth = {
+            currentSession: async () => {
+                return {
+                    getIdToken: () => {
+                        return {
+                            getJwtToken: () => {
+                                return token;
+                            },
+                        };
+                    },
+                };
+            },
+        };
+        const apiClient = new ApiClient(api, auth);
+        const fileName = "hello.txt";
+        const document = new File(["hello"], fileName, {
+            type: "text/plain",
+        });
+        const nhsNumber = "0987654321";
+
+        const onUploadStateChangeMock = jest.fn()
+        await apiClient.uploadDocument(
+            document,
+            nhsNumber,
+            onUploadStateChangeMock,
+        );
+
+        expect(postMock).toHaveBeenCalled()
+
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0)
+    })
+
+    test("reports the upload as failed if the S3 upload request fails", async () => {
+        const metadataResponseBody = {
+            content: [
+                {
+                    attachment: {
+                        contentType: "text/plain",
+                        url: "pre-signed-url-mock",
+                    },
+                },
+            ],
+        };
+        const postMock = jest.fn(() => {
+            return metadataResponseBody
+        });
+
+        const api = { post: postMock };
+        const token = "token";
+        const auth = {
+            currentSession: async () => {
+                return {
+                    getIdToken: () => {
+                        return {
+                            getJwtToken: () => {
+                                return token;
+                            },
+                        };
+                    },
+                };
+            },
+        };
+        const apiClient = new ApiClient(api, auth);
+        const fileName = "hello.txt";
+        const document = new File(["hello"], fileName, {
+            type: "text/plain",
+        });
+        const nhsNumber = "0987654321";
+
+        axios.put = jest.fn((async () => {
+            throw new Error("S3 upload failed")
+        }))
+
+        const onUploadStateChangeMock = jest.fn()
+        await apiClient.uploadDocument(
+            document,
+            nhsNumber,
+            onUploadStateChangeMock,
+        );
+
+        expect(postMock).toHaveBeenCalled()
+
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0)
+    })
 });
 
 describe("tests the getPatientDetails method", () => {
@@ -227,49 +354,49 @@ describe("tests the getPatientDetails method", () => {
 });
 
 describe("test the getPresignedUrl method", () => {
-  test("returns a presigned url associated with the document id ", async () => {
-    const token = "token";
-    const auth = {
-      currentSession: async () => {
-        return {
-          getIdToken: () => {
-            return {
-              getJwtToken: () => {
-                return token;
-              },
-            };
-          },
+    test("returns a presigned url associated with the document id ", async () => {
+        const token = "token";
+        const auth = {
+            currentSession: async () => {
+                return {
+                    getIdToken: () => {
+                        return {
+                            getJwtToken: () => {
+                                return token;
+                            },
+                        };
+                    },
+                };
+            },
         };
-      },
-    };
-    const getMock = jest.fn(() => {
-      return responseBody;
-    });
-    const api = { get: getMock };
-    const apiClient = new ApiClient(api, auth);
-    const id = 12345;
-    const requestHeaders = {
-      Accept: "application/fhir+json",
-      Authorization: `Bearer ${(await auth.currentSession())
-        .getIdToken()
-        .getJwtToken()}`,
-    };
-    const retrieveUrl = "retrieve-url";
-    const responseBody = {
-      docStatus: "final",
-      content: [{ attachment: { url: retrieveUrl }}],
-    };
-    const returnedPresignedUrl = await apiClient.getPresignedUrl(id);
+        const getMock = jest.fn(() => {
+            return responseBody;
+        });
+        const api = { get: getMock };
+        const apiClient = new ApiClient(api, auth);
+        const id = 12345;
+        const requestHeaders = {
+            Accept: "application/fhir+json",
+            Authorization: `Bearer ${(await auth.currentSession())
+                .getIdToken()
+                .getJwtToken()}`,
+        };
+        const retrieveUrl = "retrieve-url";
+        const responseBody = {
+            docStatus: "final",
+            content: [{ attachment: { url: retrieveUrl } }],
+        };
+        const returnedPresignedUrl = await apiClient.getPresignedUrl(id);
 
-    expect(getMock).toHaveBeenCalledWith(
-      "doc-store-api",
-      "/DocumentReference/"+id,
-      expect.objectContaining({
-        headers: requestHeaders,
-      })
-    );
-    expect(returnedPresignedUrl).toStrictEqual(responseBody.content[0].attachment);
-  });
+        expect(getMock).toHaveBeenCalledWith(
+            "doc-store-api",
+            "/DocumentReference/" + id,
+            expect.objectContaining({
+                headers: requestHeaders,
+            })
+        );
+        expect(returnedPresignedUrl).toStrictEqual(responseBody.content[0].attachment);
+    });
 });
 
 describe("test the getPresignedUrlForZip method", () => {

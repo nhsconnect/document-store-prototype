@@ -1,5 +1,6 @@
-import storageClient from "./storageClient";
 import {setUrlHostToLocalHost} from "../utils/utils";
+import axios from "axios";
+import { documentUploadStates } from "../enums/documentUploads"
 
 class ApiClient {
   constructor(api, auth) {
@@ -29,7 +30,7 @@ class ApiClient {
       : [];
   }
 
-  async uploadDocument(document, nhsNumber) {
+  async uploadDocument(document, nhsNumber, onUploadStateChange) {
     const requestBody = {
       resourceType: "DocumentReference",
       subject: {
@@ -56,6 +57,9 @@ class ApiClient {
       description: document.name,
       created: "2021-07-11T16:57:30+01:00",
     };
+
+    onUploadStateChange(documentUploadStates.WAITING, 0)
+
     const token = (await this.auth.currentSession())
       .getIdToken()
       .getJwtToken();
@@ -63,15 +67,39 @@ class ApiClient {
       Accept: "application/fhir+json",
       Authorization: `Bearer ${token}`,
     };
-    const response = await this.api.post(
-      "doc-store-api",
-      "/DocumentReference",
-      {body: requestBody, headers: requestHeaders}
-    );
-    const url = response.content[0].attachment.url;
-    let s3Url = setUrlHostToLocalHost(url);
-    await storageClient(s3Url, document);
-    console.log("document uploaded");
+    
+    try {
+      const response = await this.api.post(
+        "doc-store-api",
+        "/DocumentReference",
+        {
+          body: requestBody,
+          headers: requestHeaders,
+          onUploadProgress: () => {
+            onUploadStateChange(documentUploadStates.STORING_METADATA, 0)
+          }
+        }
+      );
+
+      const url = response.content[0].attachment.url;
+      let s3Url = setUrlHostToLocalHost(url);
+
+      await axios.put(
+        s3Url,
+        document,
+        {
+          headers: {
+            "Content-Type": document.type,
+          },
+          onUploadProgress: (({ total, loaded }) => {
+            onUploadStateChange(documentUploadStates.UPLOADING, (loaded/total)*100)
+          })
+        }
+      )
+      onUploadStateChange(documentUploadStates.SUCCEEDED, 100)
+    } catch (e) {
+      onUploadStateChange(documentUploadStates.FAILED, 0)
+    }
   }
 
   async getPatientDetails(nhsNumber) {

@@ -1,7 +1,9 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor,within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { act } from "react-dom/test-utils";
 
 import ApiClient from "../apiClients/apiClient";
+import { documentUploadStates } from "../enums/documentUploads";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import UploadDocumentPage from "./UploadDocumentPage";
 
@@ -19,14 +21,18 @@ beforeEach(() => {
 })
 
 describe("UploadDocumentPage", () => {
+    const nextPagePath = "/next"
+    
+
     describe("when there is an NHS number", () => {
         const nhsNumber = "1112223334";
         beforeEach(() => {
+            jest.resetAllMocks()
             useNhsNumberProviderContext.mockReturnValue([nhsNumber, jest.fn()]);
         });
 
         it("renders the page", () => {
-            render(<UploadDocumentPage />);
+            render(<UploadDocumentPage nextPagePath={nextPagePath} />);
 
             expect(
                 screen.getByRole("heading", { name: "Upload a document" })
@@ -41,132 +47,139 @@ describe("UploadDocumentPage", () => {
             expect(mockNavigate).not.toHaveBeenCalled();
         });
 
-        it('can upload multiple documents', async () => {
+        it("uploads documents and displays the progress", async () => {
             const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise((resolve) => {
-                    resolve(null);
-                })
-            });
-            const documentOne = new File(["one"], "one.txt", {
-                type: "text/plain",
-            });
-            const documentTwo = new File(["two"], "two.txt", {
-                type: "text/plain",
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
 
-            chooseDocuments([documentOne, documentTwo]);
-            uploadDocument();
-
-            await waitFor(() => {
-                expect(mockNavigate).toHaveBeenCalledWith("/upload/success");
-            });
-
-            expect(apiClientMock.uploadDocument).toHaveBeenCalledTimes(2)
-        })
-
-        it("navigates to a success page when a document is successfully uploaded", async () => {
-            const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise((resolve) => {
-                    resolve(null);
-                })
-            });
-            const document = new File(["hello"], "hello.txt", {
-                type: "text/plain",
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
-
-            chooseDocuments(document);
-            uploadDocument();
-
-            await waitFor(() => {
-                expect(mockNavigate).toHaveBeenCalledWith("/upload/success");
-            });
-        });
-
-        it("displays an error message for each document that fails to upload", async () => {
-            const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise ((resolve, reject) => {
-                    setTimeout(() => {reject('Something went wrong')}, 10)
-                })
-            });
-            const documentOne = new File(["one"], "one.txt", {
-                type: "text/plain",
-            });
-            const documentTwo = new File(["two"], "two.txt", {
-                type: "text/plain",
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
-
-            chooseDocuments([documentOne, documentTwo]);
-            uploadDocument();
-
-            expect(
-                await screen.findByText(`Upload of ${documentOne.name} failed - please retry`)
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText(`Upload of ${documentTwo.name} failed - please retry`)
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText("Some of your documents failed to upload")
-            ).toBeInTheDocument()
-        });
-
-        it("displays a loading spinner and disables the upload button when the document is being uploaded", async () => {
-            const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise((resolve) => {
-                    resolve(null);
-                })
-            });
+            const uploadStateChangeTriggers = {};
+            const resolvers = {}
             
-            const document = new File(["hello"], "hello.txt", {
-                type: "text/plain",
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
+            apiClientMock.uploadDocument = async (document, nhsNumber, onUploadStateChange) => {
+                uploadStateChangeTriggers[document.name] = onUploadStateChange
 
-            chooseDocuments(document);
-            uploadDocument();
-
-            await waitFor(() => {
-                expect(uploadButton()).toBeDisabled();
-                expect(progressBar()).toBeInTheDocument();
-            });
-        });
-
-        it("clears existing error messages when the form is submitted again", async () => {
-            const apiClientMock = new ApiClient();
-            apiClientMock.uploadDocument = jest.fn(async () => {
-                return new Promise ((resolve, reject) => {
-                    setTimeout(() => {reject('Something went wrong')}, 10)
+                return new Promise((resolve) => {
+                    resolvers[document.name] = resolve
                 })
-            });
-            const documentOne = new File(["one"], "one.txt", {
-                type: "text/plain",
-            });
-            render(<UploadDocumentPage client={apiClientMock} />);
+            };
 
-            chooseDocuments(documentOne);
-            uploadDocument();
+            render(<UploadDocumentPage client={apiClientMock} nextPagePath={nextPagePath} />);
 
-            expect(
-                await screen.findByText(`Upload of ${documentOne.name} failed - please retry`)
-            ).toBeInTheDocument();
+            const documentOne = makeTextFile("one", 100);
+            const documentTwo = makeTextFile("two", 200);
+            const documentThree = makeTextFile("three", 100);
 
+            const triggerUploadStateChange = (document, state, progress) => {
+                act(() => {
+                    uploadStateChangeTriggers[document.name](state, progress)
+                })
+            }
+
+            const resolveDocumentUploadPromise = (document) => {
+                act(() => {
+                    resolvers[document.name]()
+                })
+            }
+
+            chooseDocuments([documentOne, documentTwo, documentThree]);
             uploadDocument();
 
             await waitFor(() => {
                 expect(uploadButton()).toBeDisabled()
             })
 
-            expect(screen.queryByText(`Upload of ${documentOne.name} failed - please retry`)).toBeNull()
+            triggerUploadStateChange(documentOne, documentUploadStates.WAITING, 0)
 
-            expect(
-                await screen.findByText(`Upload of ${documentOne.name} failed - please retry`)
-            ).toBeInTheDocument();
+            await waitFor(() => {
+                expect(uploadForm()).not.toBeInTheDocument();
+            });
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(0)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("Waiting")
+            })
+
+            triggerUploadStateChange(documentTwo, documentUploadStates.WAITING, 0);
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(0)
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("Waiting")
+            })
+
+            triggerUploadStateChange(documentTwo, documentUploadStates.STORING_METADATA, 0);
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(0)
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("metadata")
+            })
+
+            triggerUploadStateChange(documentOne, documentUploadStates.STORING_METADATA, 0)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(0)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("metadata")
+            })
+
+            triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 10)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(10)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("Uploading")
+            })
+
+            triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 70)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(70)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("Uploading")
+            })
+
+            triggerUploadStateChange(documentTwo, documentUploadStates.UPLOADING, 20)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(20)
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("Uploading")
+            })
+
+            triggerUploadStateChange(documentTwo, documentUploadStates.SUCCEEDED, 100)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(100)
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("successful")
+            })
+
+            // Make sure document three is waiting, otherwise the "upload step" will move to complete once one and two have succeeded and failed
+            triggerUploadStateChange(documentThree, documentUploadStates.WAITING, 0)
+            triggerUploadStateChange(documentOne, documentUploadStates.FAILED, 0)
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(0)
+                expect(getProgressBarMessage(documentOne).textContent).toContain("failed")
+            })
+
+            // Now we want to complete document three to move to the "complete" upload step
+            triggerUploadStateChange(documentThree, documentUploadStates.SUCCEEDED, 100)
+
+            resolveDocumentUploadPromise(documentOne)
+            resolveDocumentUploadPromise(documentTwo)
+            resolveDocumentUploadPromise(documentThree)
+
+            await waitFor(() => {
+                expect(screen.getByText("Upload Summary")).toBeInTheDocument();
+            });
+
+            expect(screen.getByText(`Summary of uploaded documents for patient number ${nhsNumber}`))
+
+            userEvent.click(screen.getByText("Successfully uploaded documents"))
+
+            expect(await screen.findByText(documentTwo.name)).toBeInTheDocument()
+            expect(screen.getByText(documentThree.name)).toBeInTheDocument()
+
+            expect(screen.getByText("Some of your documents could not be uploaded")).toBeInTheDocument()
+            expect(within(screen.getByRole("alert")).getByText(documentOne.name)).toBeInTheDocument()
+
+            userEvent.click(screen.getByRole("button", { name: "Finish" }))
+
+            expect(mockNavigate).toHaveBeenCalledWith(nextPagePath)
+
         })
     });
 
@@ -182,6 +195,18 @@ describe("UploadDocumentPage", () => {
     });
 });
 
+function makeTextFile(name, size) {
+    const file = new File(["test"], `${name}.txt`, {
+        type: "text/plain",
+    });
+    if (size) {
+        Object.defineProperty(file, "size", {
+            value: size,
+        })
+    }
+    return file;
+}
+
 function chooseDocuments(documents) {
     userEvent.upload(screen.getByLabelText("Choose documents"), documents);
 }
@@ -192,9 +217,8 @@ function uploadDocument() {
     userEvent.click(uploadButton());
 }
 
-
-function progressBar() {
-    return screen.getByRole("progressbar");
+function uploadForm() {
+    return screen.queryByTestId("upload-document-form")
 }
 
 function uploadButton() {
@@ -205,3 +229,7 @@ function uploadButton() {
 function nhsNumberField() {
     return screen.getByLabelText("NHS number");
 }
+
+const getProgressBar = (document) => screen.getByRole("progressbar", { name: `Uploading ${document.name}` })
+const getProgressBarMessage = (document) => screen.getByRole("status", { name: `${document.name} upload status` })
+const getProgressBarValue = (document) => parseInt(getProgressBar(document).value);
