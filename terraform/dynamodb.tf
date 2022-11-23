@@ -31,3 +31,21 @@ resource "aws_dynamodb_table" "doc_ref_store" {
     projection_type = "ALL"
   }
 }
+
+resource "aws_dynamodb_table" "doc_zip_trace_store" {
+  name           = "DocumentZipTrace"
+  hash_key       = "ID"
+  billing_mode   = "PAY_PER_REQUEST"
+  stream_enabled = false
+
+  attribute {
+    name = "ID"
+    type = "S"
+  }
+
+  ttl {
+    attribute_name = "ExpiryDate"
+    enabled        = true
+  }
+}
+

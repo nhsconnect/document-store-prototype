@@ -83,7 +83,10 @@ resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
         ],
-        "Resource" : aws_dynamodb_table.doc_ref_store.arn
+        "Resource" : [
+          aws_dynamodb_table.doc_ref_store.arn,
+          aws_dynamodb_table.doc_zip_trace_store.arn,
+          ]
       }
     ]
   })
@@ -101,14 +104,20 @@ resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
         "Action" : [
           "dynamodb:Query",
         ],
-        "Resource" : "${aws_dynamodb_table.doc_ref_store.arn}/index/LocationsIndex"
+        "Resource" : [
+          "${aws_dynamodb_table.doc_ref_store.arn}/index/LocationsIndex",
+          "${aws_dynamodb_table.doc_zip_trace_store.arn}/index/LocationsIndex",
+          ]
       },
       {
         "Effect" : "Allow",
         "Action" : [
           "dynamodb:Query",
         ],
-        "Resource" : "${aws_dynamodb_table.doc_ref_store.arn}/index/NhsNumberIndex"
+        "Resource" : [
+          "${aws_dynamodb_table.doc_ref_store.arn}/index/NhsNumberIndex",
+          "${aws_dynamodb_table.doc_zip_trace_store.arn}/index/NhsNumberIndex",
+          ]
       }
     ]
   })
