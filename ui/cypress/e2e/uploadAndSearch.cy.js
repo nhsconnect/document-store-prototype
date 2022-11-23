@@ -2,6 +2,7 @@ import config from "../../src/config";
 
 describe("upload and search transaction", () => {
     it("allows the user to upload a document and search for a document", () => {
+        // set a timeout that allows lambda cold starts
         const timeout = 30000;
         const nhsNumber = "9000000009";
         cy.visit("/");
@@ -35,8 +36,8 @@ describe("upload and search transaction", () => {
             ["cypress/fixtures/test_patient_record.pdf", "cypress/fixtures/test_patient_record_two.pdf"]
         );
         cy.get('button[type="submit"]').click();
-
-        cy.contains("Successfully uploaded documents")
+        cy.get("progress").should("have.length", 2);
+        cy.contains("Successfully uploaded documents", {timeout})
 
         cy.contains("Finish").click();
         if (
