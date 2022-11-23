@@ -66,7 +66,7 @@ const DocumentsInput = ({control}) => {
                                 {formatSize(document.size)}
                             </Table.Cell>
                             <Table.Cell>
-                                <Button className="nhsuk-u-padding-2 nhsuk-u-margin-0" secondary aria-label={`Remove ${document.name} from selection`} onClick={() => onRemove(index)}>Remove</Button>
+                                <Button type="button" className="nhsuk-u-padding-2 nhsuk-u-margin-0" secondary aria-label={`Remove ${document.name} from selection`} onClick={() => onRemove(index)}>Remove</Button>
                             </Table.Cell>
                         </Table.Row>
                     ))}

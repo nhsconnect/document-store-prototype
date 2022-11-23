@@ -93,7 +93,7 @@ const AppRoutes = () => {
                     />
                     <Route
                         path="/upload/submit"
-                        element={<UploadDocumentPage client={client} />}
+                        element={<UploadDocumentPage client={client} nextPagePath={homePagePath} />}
                     />
                 </Route>
             </Route>

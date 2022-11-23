@@ -36,12 +36,9 @@ describe("upload and search transaction", () => {
         );
         cy.get('button[type="submit"]').click();
 
-        // upload success page
-        cy.url({ timeout }).should(
-            "eq",
-            Cypress.config("baseUrl") + "/upload/success"
-        );
-        cy.contains("Done").click();
+        cy.contains("Successfully uploaded documents")
+
+        cy.contains("Finish").click();
         if (
             config.features[Cypress.env("REACT_APP_ENV")]
                 .CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED
