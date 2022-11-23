@@ -5,7 +5,6 @@ import { act } from "react-dom/test-utils";
 import ApiClient from "../apiClients/apiClient";
 import { documentUploadStates } from "../enums/documentUploads";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
-import { formatSize } from "../utils/utils";
 import UploadDocumentPage from "./UploadDocumentPage";
 
 jest.mock("../apiClients/apiClient");
@@ -22,7 +21,7 @@ beforeEach(() => {
 })
 
 describe("UploadDocumentPage", () => {
-
+    const nextPagePath = "/next"
     
 
     describe("when there is an NHS number", () => {
@@ -33,7 +32,7 @@ describe("UploadDocumentPage", () => {
         });
 
         it("renders the page", () => {
-            render(<UploadDocumentPage />);
+            render(<UploadDocumentPage nextPagePath={nextPagePath} />);
 
             expect(
                 screen.getByRole("heading", { name: "Upload a document" })
@@ -62,7 +61,7 @@ describe("UploadDocumentPage", () => {
                 })
             };
 
-            render(<UploadDocumentPage client={apiClientMock} />);
+            render(<UploadDocumentPage client={apiClientMock} nextPagePath={nextPagePath} />);
 
             const documentOne = makeTextFile("one", 100);
             const documentTwo = makeTextFile("two", 200);
@@ -176,6 +175,10 @@ describe("UploadDocumentPage", () => {
 
             expect(screen.getByText("Some of your documents could not be uploaded")).toBeInTheDocument()
             expect(within(screen.getByRole("alert")).getByText(documentOne.name)).toBeInTheDocument()
+
+            userEvent.click(screen.getByRole("button", { name: "Finish" }))
+
+            expect(mockNavigate).toHaveBeenCalledWith(nextPagePath)
 
         })
     });

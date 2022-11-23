@@ -18,7 +18,7 @@ const uploadStateMessages = {
     [stateNames.FAILED]: "Upload failed"
 }
 
-const UploadDocumentPage = ({ client }) => {
+const UploadDocumentPage = ({ client, nextPagePath }) => {
     const { handleSubmit, control, getValues, formState } = useForm();
     const { documentUploadStates, uploadStep, onUploadStateChange } = useDocumentUploadState();
     const [nhsNumber] = useNhsNumberProviderContext();
@@ -102,7 +102,10 @@ const UploadDocumentPage = ({ client }) => {
                 </Table>
             )}
             {uploadStep === documentUploadSteps.COMPLETE && (
-                <UploadSummary documents={getValues("documents")} documentUploadStates={documentUploadStates} nhsNumber={nhsNumber}></UploadSummary>
+                <>
+                    <UploadSummary documents={getValues("documents")} documentUploadStates={documentUploadStates} nhsNumber={nhsNumber}></UploadSummary>
+                    <Button onClick={() => { navigate(nextPagePath) }}>Finish</Button>
+                </>
             )}
         </>
     );

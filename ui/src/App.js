@@ -21,7 +21,6 @@ import UploadDocumentPage from "./pages/UploadDocumentPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import StartPage from "./pages/StartPage";
 import CIS2AuthenticationResultNavigator from "./components/Authenticator/CIS2AuthenticationResultNavigator";
-import UploadSuccessPage from "./pages/UploadSuccessPage";
 
 Amplify.configure(awsConfig);
 
@@ -95,12 +94,6 @@ const AppRoutes = () => {
                     <Route
                         path="/upload/submit"
                         element={<UploadDocumentPage client={client} />}
-                    />
-                    <Route
-                        path="/upload/success"
-                        element={
-                            <UploadSuccessPage nextPagePath={homePagePath} />
-                        }
                     />
                 </Route>
             </Route>
