@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.common;
+package uk.nhs.digital.docstore.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;

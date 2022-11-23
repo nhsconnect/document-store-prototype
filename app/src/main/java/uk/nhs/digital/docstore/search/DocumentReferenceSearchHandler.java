@@ -13,10 +13,10 @@ import org.slf4j.MarkerFactory;
 import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.DocumentMetadataStore;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
-import uk.nhs.digital.docstore.common.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.utils.CommonUtils;
+import uk.nhs.digital.docstore.utils.DocumentMetadataSearchService;
 
 import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
 import static java.util.stream.Collectors.toList;
