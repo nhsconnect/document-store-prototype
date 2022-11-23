@@ -8,6 +8,7 @@ import DocumentsInput from "../components/DocumentsInput";
 import { formatSize } from "../utils/utils";
 import { documentUploadStates as stateNames, documentUploadSteps } from "../enums/documentUploads";
 import useDocumentUploadState from "../hooks/useDocumentUploadState";
+import UploadSummary from "../components/UploadSummary";
 
 const uploadStateMessages = {
     [stateNames.WAITING]: "Waiting...",
@@ -101,52 +102,8 @@ const UploadDocumentPage = ({ client }) => {
                 </Table>
             )}
             {uploadStep === documentUploadSteps.COMPLETE && (
-                <>
-                    <h2>Upload Summary</h2>
-                    <p>Summary of uploaded documents for patient number {nhsNumber}</p>
-                    <Details>
-                        <Details.Summary>Successfully uploaded documents</Details.Summary>
-                        <Details.Text>
-                            <Table responsive caption="Documents uploaded Successfully">
-                                <Table.Head role="rowgroup">
-                                    <Table.Row>
-                                        <Table.Cell>File Name</Table.Cell>
-                                        <Table.Cell>File Size</Table.Cell>
-                                    </Table.Row>
-                                </Table.Head>
-                                <Table.Body>
-                                {getValues("documents").filter((document, index) => {
-                                    return documentUploadStates[index].state === stateNames.SUCCEEDED
-                                }).map((document, index) => {
-                                       return( <Table.Row key={document.name}>
-                                            <Table.Cell>{document.name}</Table.Cell>
-                                            <Table.Cell>{formatSize(document.size)}</Table.Cell>
-                                        </Table.Row>
-                                    )})
-                                    }
-                                </Table.Body>
-                            </Table>
-                        </Details.Text>
-                    </Details>
-                    <ErrorSummary aria-labelledby="failed-documents-upload-summary-title" role="alert" tabIndex={-1}>
-                        <ErrorSummary.Title id="failed-documents-summary-title">Some of your documents could not be uploaded</ErrorSummary.Title>
-                        <ErrorSummary.Body>
-                            <p>You can try to upload the documents again if you wish and/or make a note of the failures for future reference</p>
-                            <ErrorSummary.List>
-                                {getValues("documents").filter((document, index) => {
-                                    return documentUploadStates[index].state === stateNames.FAILED
-                                }).map((document, index) => {
-                                    return(
-                                        <li key={document.name} className="nhsuk-error-message">
-                                            {document.name}
-                                        </li>
-                                    )})
-                                }
-                            </ErrorSummary.List>
-                        </ErrorSummary.Body>
-                    </ErrorSummary>
-                </>
-                )}
+                <UploadSummary documents={getValues("documents")} documentUploadStates={documentUploadStates} nhsNumber={nhsNumber}></UploadSummary>
+            )}
         </>
     );
 };
