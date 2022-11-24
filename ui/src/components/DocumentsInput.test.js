@@ -116,6 +116,10 @@ describe("DocumentsInput", () => {
         userEvent.upload(screen.getByLabelText("Select files"), [document, duplicateDocument]);
 
         await waitFor(() => expect(screen.queryByText("There are two or more documents with the same name.")).toBeInTheDocument())
+
+        userEvent.click( screen.getAllByRole("button", {name:`Remove ${duplicateDocument.name} from selection`})[1])
+
+        await waitFor(() => expect(screen.queryByText("There are two or more documents with the same name.")).not.toBeInTheDocument())
     })
 
 });

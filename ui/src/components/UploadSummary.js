@@ -1,14 +1,14 @@
 import { Details, ErrorSummary, Table } from "nhsuk-react-components"
-import { documentUploadStates as stateNames } from "../enums/documentUploads"
+import { documentUploadStates} from "../enums/documentUploads"
 import { formatSize } from "../utils/utils"
 
-const UploadSummary = ({nhsNumber, documents, documentUploadStates}) => {
-    const successfulUploads = documents.filter((_, index) => {
-        return documentUploadStates[index].state === stateNames.SUCCEEDED
+const UploadSummary = ({nhsNumber, documents}) => {
+    const successfulUploads = documents.filter((document) => {
+        return document.state === documentUploadStates.SUCCEEDED
     })
 
-    const failedUploads = documents.filter((_, index) => {
-        return documentUploadStates[index].state === stateNames.FAILED
+    const failedUploads = documents.filter((document) => {
+        return document.state === documentUploadStates.FAILED
     })
 
     return (
@@ -27,10 +27,10 @@ const UploadSummary = ({nhsNumber, documents, documentUploadStates}) => {
                             </Table.Row>
                         </Table.Head>
                         <Table.Body>
-                            {successfulUploads.map((document, index) => {
-                                return (<Table.Row key={document.name}>
-                                    <Table.Cell>{document.name}</Table.Cell>
-                                    <Table.Cell>{formatSize(document.size)}</Table.Cell>
+                            {successfulUploads.map((document) => {
+                                return (<Table.Row key={document.id}>
+                                    <Table.Cell>{document.file.name}</Table.Cell>
+                                    <Table.Cell>{formatSize(document.file.size)}</Table.Cell>
                                 </Table.Row>
                                 )
                             })
@@ -44,10 +44,10 @@ const UploadSummary = ({nhsNumber, documents, documentUploadStates}) => {
                 <ErrorSummary.Body>
                     <p>You can try to upload the documents again if you wish and/or make a note of the failures for future reference</p>
                     <ErrorSummary.List>
-                        {failedUploads.map((document, index) => {
+                        {failedUploads.map((document) => {
                             return(
-                                <li key={document.name} className="nhsuk-error-message">
-                                    {document.name}
+                                <li key={document.id} className="nhsuk-error-message">
+                                    {document.file.name}
                                 </li>
                             )})
                         }

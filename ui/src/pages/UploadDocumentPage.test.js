@@ -1,5 +1,6 @@
 import { render, screen, waitFor,within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { nanoid } from "nanoid/non-secure";
 import { act } from "react-dom/test-utils";
 
 import ApiClient from "../apiClients/apiClient";
@@ -54,10 +55,10 @@ describe("UploadDocumentPage", () => {
             const resolvers = {}
             
             apiClientMock.uploadDocument = async (document, nhsNumber, onUploadStateChange) => {
-                uploadStateChangeTriggers[document.name] = onUploadStateChange
+                uploadStateChangeTriggers[document.file.name] = onUploadStateChange
 
                 return new Promise((resolve) => {
-                    resolvers[document.name] = resolve
+                    resolvers[document.file.name] = resolve
                 })
             };
 
@@ -204,7 +205,7 @@ function makeTextFile(name, size) {
             value: size,
         })
     }
-    return file;
+    return file
 }
 
 function chooseDocuments(documents) {

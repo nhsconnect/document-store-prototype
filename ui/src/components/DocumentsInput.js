@@ -1,6 +1,8 @@
+import { nanoid } from "nanoid/non-secure";
 import {Button, Input, Table, WarningCallout} from "nhsuk-react-components";
 import React from "react";
 import {useController} from "react-hook-form";
+import { documentUploadStates } from "../enums/documentUploads";
 import { fileSizes } from "../enums/fileSizes";
 import {formatSize} from "../utils/utils";
 
@@ -16,7 +18,7 @@ const DocumentsInput = ({control}) => {
                 },
                 isLessThan5GB: (value) =>{
                     for(let i = 0; i < value.length; i++){
-                        if(value[i].size > fileSizes.FIVE_GIGA_BYTES) {
+                        if(value[i].file.size > fileSizes.FIVE_GIGA_BYTES) {
                             return "Please ensure that all files are less than 5GB in size"
                         }
                     }
@@ -33,8 +35,19 @@ const DocumentsInput = ({control}) => {
     }
 
     const hasDuplicateFiles = value && value.some(document => {
-        return value.some(comparison => document.name === comparison.name)
+        return value.some(comparison => document.file.name === comparison.file.name && document.id !== comparison.id)
     })
+
+    const changeHandler = (e) => {
+        const newFiles = Array.from(e.target.files)
+        const newDocumentObjects = newFiles.map(file => ({
+            id: nanoid(),
+            file,
+            state: documentUploadStates.SELECTED,
+            progress: 0,
+        }))
+        onChange(value ? value.concat(newDocumentObjects) : newDocumentObjects)
+    }
 
     return(
         <>
@@ -47,10 +60,7 @@ const DocumentsInput = ({control}) => {
                 multiple={true}
                 name={name}
                 error={fieldState.error?.message}
-                onChange={e => {
-                    const newFiles = Array.from(e.target.files)
-                    onChange(value ? value.concat(newFiles) : newFiles)
-                }}
+                onChange={changeHandler}
                 onBlur={onBlur}
                 inputRef={ref}
                 style={{ width: 133 }}
@@ -67,15 +77,15 @@ const DocumentsInput = ({control}) => {
 
                 <Table.Body>
                     {value.map((document, index) => (
-                        <Table.Row key={`${document.name}-${index}`}>
+                        <Table.Row key={document.id}>
                             <Table.Cell>
-                                {document.name}
+                                {document.file.name}
                             </Table.Cell>
                             <Table.Cell>
-                                {formatSize(document.size)}
+                                {formatSize(document.file.size)}
                             </Table.Cell>
                             <Table.Cell>
-                                <Button type="button" className="nhsuk-u-padding-2 nhsuk-u-margin-0" secondary aria-label={`Remove ${document.name} from selection`} onClick={() => onRemove(index)}>Remove</Button>
+                                <Button type="button" className="nhsuk-u-padding-2 nhsuk-u-margin-0" secondary aria-label={`Remove ${document.file.name} from selection`} onClick={() => onRemove(index)}>Remove</Button>
                             </Table.Cell>
                         </Table.Row>
                     ))}
