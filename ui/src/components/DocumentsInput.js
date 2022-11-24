@@ -1,4 +1,4 @@
-import {Button, Input, Table} from "nhsuk-react-components";
+import {Button, Input, Table, WarningCallout} from "nhsuk-react-components";
 import React from "react";
 import {useController} from "react-hook-form";
 import { fileSizes } from "../enums/fileSizes";
@@ -31,6 +31,11 @@ const DocumentsInput = ({control}) => {
         ...value.slice(index + 1)
         ])
     }
+
+    const hasDuplicateFiles = value && value.some(document => {
+        return value.some(comparison => document.name === comparison.name)
+    })
+
     return(
         <>
             {/* override the width attribute because the value of the file input is read-only, so when we remove a file it doesn't update */}
@@ -62,7 +67,7 @@ const DocumentsInput = ({control}) => {
 
                 <Table.Body>
                     {value.map((document, index) => (
-                        <Table.Row key={document.name}>
+                        <Table.Row key={`${document.name}-${index}`}>
                             <Table.Cell>
                                 {document.name}
                             </Table.Cell>
@@ -76,6 +81,11 @@ const DocumentsInput = ({control}) => {
                     ))}
                 </Table.Body>
             </Table>}
+                {hasDuplicateFiles && <WarningCallout>
+                    <WarningCallout.Label>Possible duplicate file</WarningCallout.Label>
+                    <p>There are two or more documents with the same name.</p>
+                    <p>Are you sure you want to proceed?</p>
+                </WarningCallout>}
             </div>
         </>
 

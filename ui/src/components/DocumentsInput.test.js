@@ -105,4 +105,17 @@ describe("DocumentsInput", () => {
         expect(await screen.findByText(documentTwo.name)).toBeInTheDocument()
     })
 
+    it("warns the user if they have added the same file twice", async () => {
+        render(<FormWrapper />)
+        const document = new File(["test"], "test.txt", {
+            type: "text/plain",
+        });
+        const duplicateDocument = new File(["test"], "test.txt", {
+            type: "text/plain",
+        });
+        userEvent.upload(screen.getByLabelText("Select files"), [document, duplicateDocument]);
+
+        await waitFor(() => expect(screen.queryByText("There are two or more documents with the same name.")).toBeInTheDocument())
+    })
+
 });
