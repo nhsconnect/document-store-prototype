@@ -11,6 +11,10 @@ public class Tracer {
         MDC.put(CORRELATION_ID_LOG_VAR_NAME, context.getAwsRequestId());
     }
 
+    public static String getCorrelationId() {
+        return MDC.get(CORRELATION_ID_LOG_VAR_NAME);
+    }
+
     private static void clearMDCContext() {
         MDC.remove(CORRELATION_ID_LOG_VAR_NAME);
     }

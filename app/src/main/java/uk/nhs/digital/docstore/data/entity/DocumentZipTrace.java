@@ -5,11 +5,12 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 @DynamoDBTable(tableName = "DocumentZipTrace")
-public class DocumentTrace {
+public class DocumentZipTrace {
     private String id;
     private String correlationId;
+    private String createdAt;
     private String location;
-    private Integer expiryDate;
+    private Long expiryDate;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -29,6 +30,15 @@ public class DocumentTrace {
         this.correlationId = correlationId;
     }
 
+    @DynamoDBAttribute(attributeName = "CreatedAt")
+    public String getCreatedAtd() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @DynamoDBAttribute(attributeName = "Location")
     public String getLocation() {
         return location;
@@ -39,11 +49,11 @@ public class DocumentTrace {
     }
 
     @DynamoDBAttribute(attributeName = "ExpiryDate")
-    public Integer getExpiryDate() {
+    public Long getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Integer expiryDate) {
+    public void setExpiryDate(Long expiryDate) {
         this.expiryDate = expiryDate;
     }
 }

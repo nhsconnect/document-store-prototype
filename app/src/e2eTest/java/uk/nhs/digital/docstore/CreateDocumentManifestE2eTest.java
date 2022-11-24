@@ -126,19 +126,23 @@ public class CreateDocumentManifestE2eTest {
         assertThat(fileNames.get(0)).isEqualTo(document1.get("description"));
         assertThat(fileNames.get(1)).isEqualTo(document3.get("description"));
 
-        var scan = dynamoDbClient.scan(checkZipMetadataExists());
+        var s3Location = "s3://" + responseUrl.substring(responseUrl.indexOf('d'), responseUrl.indexOf('?'));
+        var scan = dynamoDbClient.scan(checkZipTraceExists(s3Location));
 
         assertThat(scan.getItems().size()).isEqualTo(1);
     }
 
-    private ScanRequest checkZipMetadataExists() {
+    private ScanRequest checkZipTraceExists(String location) {
+        var expressionAttributeNames = new HashMap<String, String>();
+        expressionAttributeNames.put("#location", "Location");
+
         var expressionAttributeValues = new HashMap<String, AttributeValue>();
-        expressionAttributeValues.put(":nhsNumber", new AttributeValue("9000000009"));
-        expressionAttributeValues.put(":contentType", new AttributeValue("application/zip"));
+        expressionAttributeValues.put(":location", new AttributeValue(location));
 
         return new ScanRequest()
-                .withTableName("DocumentReferenceMetadata")
-                .withFilterExpression("NhsNumber = :nhsNumber and ContentType = :contentType")
+                .withTableName("DocumentZipTrace")
+                .withFilterExpression("#location = :location")
+                .withExpressionAttributeNames(expressionAttributeNames)
                 .withExpressionAttributeValues(expressionAttributeValues);
     }
 

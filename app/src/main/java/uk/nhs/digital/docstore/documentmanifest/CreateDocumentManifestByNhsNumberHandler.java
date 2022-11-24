@@ -14,14 +14,15 @@ import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.data.entity.DocumentZipTrace;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 import uk.nhs.digital.docstore.utils.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.utils.ZipService;
 
 import java.time.Instant;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
 
 
 @SuppressWarnings("unused")
@@ -33,6 +34,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
 
     private final String bucketName = System.getenv("DOCUMENT_STORE_BUCKET_NAME");
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
+    private final DocumentZipTraceStore zipTraceStore = new DocumentZipTraceStore();
     private final DocumentStore documentStore = new DocumentStore(bucketName);
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final FhirContext fhirContext;
@@ -70,7 +72,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
 
             var descriptor = new DocumentStore.DocumentDescriptor(bucketName, documentPath);
 
-            metadataStore.save(getDocumentMetadata(nhsNumber, fileName, descriptor.toLocation()));
+            zipTraceStore.save(getDocumentZipTrace(descriptor.toLocation()));
 
             var preSignedUrl = documentStore.generatePreSignedUrlForZip(descriptor, fileName);
             var body = getJsonBody(preSignedUrl.toString());
@@ -81,17 +83,14 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
         }
     }
 
-    private DocumentMetadata getDocumentMetadata(String nhsNumber, String documentName, String presignedUrl) {
-        var documentMetadata = new DocumentMetadata();
-        documentMetadata.setNhsNumber(nhsNumber);
-        documentMetadata.setContentType("application/zip");
-        documentMetadata.setLocation(presignedUrl);
-        documentMetadata.setDocumentUploaded(true);
-        documentMetadata.setDescription(documentName);
-        documentMetadata.setCreated(Instant.now().toString());
-        documentMetadata.setType(List.of("22151000087106"));
-        documentMetadata.setIndexed(Instant.now().toString());
-        return documentMetadata;
+    private DocumentZipTrace getDocumentZipTrace(String location) {
+        var expDate = Instant.now().plus(90, ChronoUnit.DAYS);
+        var documentZipTrace = new DocumentZipTrace();
+        documentZipTrace.setCorrelationId(Tracer.getCorrelationId());
+        documentZipTrace.setCreatedAt(Instant.now().toString());
+        documentZipTrace.setLocation(location);
+        documentZipTrace.setExpiryDate(expDate.getEpochSecond());
+        return documentZipTrace;
     }
 
     private String getJsonBody(String contents) {
