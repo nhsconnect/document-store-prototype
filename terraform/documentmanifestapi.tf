@@ -13,7 +13,8 @@ resource "aws_lambda_function" "document_manifest_lambda" {
 
   environment {
     variables = merge({
-      AMPLIFY_BASE_URL = local.amplify_base_url
+      AMPLIFY_BASE_URL = local.amplify_base_url,
+      DOCUMENT_ZIP_TRACE_TTL_IN_DAYS = var.document_zip_trace_ttl_in_days,
     }, local.common_environment_variables)
   }
 }

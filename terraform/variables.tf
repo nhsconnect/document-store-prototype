@@ -117,3 +117,7 @@ variable "cognito_cis2_client_signout_urls" {
   type    = list(string)
   default = [""]
 }
+variable "document_zip_trace_ttl_in_days" {
+  type    = number
+  default = 90
+}
