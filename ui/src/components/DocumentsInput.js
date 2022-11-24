@@ -42,7 +42,10 @@ const DocumentsInput = ({control}) => {
                 multiple={true}
                 name={name}
                 error={fieldState.error?.message}
-                onChange={e => { onChange(Array.from(e.target.files)) }}
+                onChange={e => {
+                    const newFiles = Array.from(e.target.files)
+                    onChange(value ? value.concat(newFiles) : newFiles)
+                }}
                 onBlur={onBlur}
                 inputRef={ref}
                 style={{ width: 133 }}
@@ -59,7 +62,7 @@ const DocumentsInput = ({control}) => {
 
                 <Table.Body>
                     {value.map((document, index) => (
-                        <Table.Row key = {document.name}>
+                        <Table.Row key={document.name}>
                             <Table.Cell>
                                 {document.name}
                             </Table.Cell>

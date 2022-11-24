@@ -35,7 +35,7 @@ describe("DocumentsInput", () => {
         expect(await screen.findByText(documentOne.name)).toBeInTheDocument()
         expect(screen.getByText(documentTwo.name)).toBeInTheDocument()
         expect(screen.getByText(formatSize(documentOne.size))).toBeInTheDocument()
-        expect(screen.getByText(formatSize(documentOne.size))).toBeInTheDocument()
+        expect(screen.getByText(formatSize(documentTwo.size))).toBeInTheDocument()
     })
 
     it("validates that a file has been selected", async () => {
@@ -83,5 +83,26 @@ describe("DocumentsInput", () => {
 
         }
     )
+
+    it("adds new file selections to the existing selection", async () => {
+        render(<FormWrapper/>)
+
+        const documentOne = new File(["one"], "one.txt", {
+            type: "text/plain",
+        });
+        const documentTwo = new File(["document two"], "two.txt", {
+            type: "text/plain",
+        });
+
+        userEvent.upload(screen.getByLabelText("Select files"), [documentOne]);
+
+        expect(await screen.findByText(documentOne.name)).toBeInTheDocument()
+
+        userEvent.upload(screen.getByLabelText("Select files"), [documentTwo]);
+
+        expect(screen.getByText(documentOne.name)).toBeInTheDocument()
+
+        expect(await screen.findByText(documentTwo.name)).toBeInTheDocument()
+    })
 
 });
