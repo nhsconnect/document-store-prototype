@@ -95,9 +95,9 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
 
     private String getJsonBody(String contents) {
         return "{\n" +
-                "\"result\":{\n" +
-                "\"url\":" + contents + "\n" +
-                "}\n" +
+                "   \"result\": {\n" +
+                "       \"url\": \"" + contents + "\"\n" +
+                "   }\n" +
                 "}";
     }
 }

@@ -93,8 +93,12 @@ const SearchResultsPage = ({client}) => {
     }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
     const downloadAll = async() => {
-        const uri = await client.getPresignedUrlForZip(nhsNumber);
-        console.log(uri);
+        try {
+            const uri = await client.getPresignedUrlForZip(nhsNumber);
+            console.log(uri);
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     return (

@@ -1,6 +1,6 @@
 import {setUrlHostToLocalHost} from "../utils/utils";
 import axios from "axios";
-import { documentUploadStates } from "../enums/documentUploads"
+import {documentUploadStates} from "../enums/documentUploads"
 
 class ApiClient {
   constructor(api, auth) {
@@ -152,8 +152,8 @@ class ApiClient {
       },
     });
 
-    if (data) {
-      return setUrlHostToLocalHost(data);
+    if (data.result?.url) {
+      return setUrlHostToLocalHost(data.result.url);
     }
 
     throw new Error("No url received");
