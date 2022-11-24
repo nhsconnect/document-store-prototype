@@ -8,6 +8,8 @@ import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotificatio
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.config.Tracer;
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 
 import java.time.Instant;
 import java.util.List;

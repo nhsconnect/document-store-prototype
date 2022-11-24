@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.DocumentMetadata;
-import uk.nhs.digital.docstore.DocumentMetadataStore;
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.nhs.digital.docstore.DocumentMetadataBuilder.theMetadata;
+import static uk.nhs.digital.docstore.data.DocumentMetadataBuilder.theMetadata;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentMetadataSearchServiceTest {

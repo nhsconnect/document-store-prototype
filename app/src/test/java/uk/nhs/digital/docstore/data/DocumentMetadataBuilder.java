@@ -1,4 +1,6 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.data;
+
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;

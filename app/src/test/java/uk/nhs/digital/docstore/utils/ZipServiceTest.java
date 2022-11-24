@@ -7,8 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.DocumentMetadata;
 import uk.nhs.digital.docstore.DocumentStore;
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

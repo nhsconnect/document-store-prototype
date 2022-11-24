@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import uk.nhs.digital.docstore.Document;
-import uk.nhs.digital.docstore.DocumentMetadataStore;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
+import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 import uk.nhs.digital.docstore.utils.DocumentMetadataSearchService;
 

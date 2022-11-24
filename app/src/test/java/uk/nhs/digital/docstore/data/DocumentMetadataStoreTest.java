@@ -1,8 +1,9 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.data;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

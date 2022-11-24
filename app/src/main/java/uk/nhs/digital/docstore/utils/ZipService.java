@@ -2,8 +2,8 @@ package uk.nhs.digital.docstore.utils;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import uk.nhs.digital.docstore.DocumentMetadata;
 import uk.nhs.digital.docstore.DocumentStore;
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

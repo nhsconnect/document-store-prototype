@@ -1,5 +1,7 @@
 package uk.nhs.digital.docstore;
 
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+
 import java.util.List;
 
 public class Document {

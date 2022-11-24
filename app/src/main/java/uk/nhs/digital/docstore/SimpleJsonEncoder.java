@@ -1,11 +1,12 @@
 package uk.nhs.digital.docstore;
 
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-import static java.lang.ClassLoader.getSystemResourceAsStream;
 import static java.util.Objects.requireNonNull;
 
 public class SimpleJsonEncoder {
