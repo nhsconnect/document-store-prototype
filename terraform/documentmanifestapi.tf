@@ -44,7 +44,7 @@ module "document_manifest_preflight" {
 resource "aws_lambda_permission" "api_gateway_permission_for_document_manifest" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.document_uploaded_lambda.arn
+  function_name = aws_lambda_function.document_manifest_lambda.arn
   principal     = "apigateway.amazonaws.com"
 
   # The "/*/*" portion grants access from any method on any resource

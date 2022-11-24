@@ -416,7 +416,7 @@ describe("test the getPresignedUrlForZip method", () => {
             },
         };
         const getMock = jest.fn(() => {
-            return responseUrl;
+            return expectedResponse;
         });
         const api = { get: getMock };
         const apiClient = new ApiClient(api, auth);
@@ -428,6 +428,11 @@ describe("test the getPresignedUrlForZip method", () => {
                 .getJwtToken()}`,
         };
         const responseUrl = "presigned-url";
+        const expectedResponse = {
+            result:{
+                url:responseUrl
+            }
+        };
         const queryStringParametersMock = {
             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
         };
