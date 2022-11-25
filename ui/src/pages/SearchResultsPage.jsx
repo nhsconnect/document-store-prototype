@@ -8,7 +8,7 @@ import {setUrlHostToLocalHost} from "../utils/utils";
 
 const states = {
     INITIAL: "initial",
-    SEARCHING: "searching",
+    PENDING: "pending",
     SUCCEEDED: "succeeded",
     FAILED: "failed",
 };
@@ -69,6 +69,7 @@ const SearchResultsPage = ({client}) => {
     const [searchResults, setSearchResults] = useState([]);
     const [downloadError, setDownloadError] = useState(false);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
+    const[downloadState, setDownloadState] = useState(states.INITIAL);
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
@@ -78,7 +79,7 @@ const SearchResultsPage = ({client}) => {
             return;
         }
         const search = async () => {
-            setSubmissionState(states.SEARCHING);
+            setSubmissionState(states.PENDING);
             setSearchResults([]);
             try {
                 const results = await client.findByNhsNumber(nhsNumber);
@@ -93,10 +94,13 @@ const SearchResultsPage = ({client}) => {
     }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
     const downloadAll = async() => {
+        setDownloadState(states.PENDING);
         try {
             const uri = await client.getPresignedUrlForZip(nhsNumber);
+            setDownloadState(states.SUCCEEDED);
             console.log(uri);
         } catch (e) {
+            setDownloadState(states.FAILED);
             console.error(e);
         }
     }
@@ -115,7 +119,7 @@ const SearchResultsPage = ({client}) => {
                     value={nhsNumber}
                     readOnly
                 />
-                {submissionState === states.SEARCHING && (
+                {submissionState === states.PENDING && (
                     <p>
                         <progress aria-label={"Loading..."}></progress>
                     </p>
@@ -131,7 +135,11 @@ const SearchResultsPage = ({client}) => {
                 <>
                     {searchResults.length > 0 && (
                         <>
-                            <Button onClick={downloadAll}>Download All</Button>
+                            <Button
+                                onClick={downloadAll}
+                                disabled={downloadState === states.PENDING} >
+                                Download All
+                            </Button>
                             {downloadError && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
                             <Table caption="Documents">
                                 <Table.Head>

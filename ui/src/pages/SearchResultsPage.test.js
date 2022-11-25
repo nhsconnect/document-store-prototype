@@ -238,7 +238,7 @@ describe("Search page", () => {
       });
     });
 
-    it("calls api client when user clicks on download all button", async () => {
+    it("calls api client and should download the zip file when user clicks on download all button", async () => {
       const apiClientMock = new ApiClient();
       const searchResult = searchResultFactory.build();
       apiClientMock.findByNhsNumber = jest.fn(() => {
@@ -256,8 +256,26 @@ describe("Search page", () => {
 
       userEvent.click(screen.getByRole("button", {name: "Download All"}));
 
+
       expect(apiClientMock.getPresignedUrlForZip).toHaveBeenCalled();
+      expect(screen.queryByText("Failed to download, please retry.")).not.toBeInTheDocument();
     });
+    it("should disable the download all button while waiting to download the zip file", async ()=>{
+      const apiClientMock = new ApiClient();
+      const searchResult = searchResultFactory.build();
+      apiClientMock.findByNhsNumber = jest.fn(() => {
+        return [searchResult];
+      });
+      apiClientMock.getPresignedUrlForZip = jest.fn(() => {
+        return null;
+      });
+      render(<SearchResultsPage client={apiClientMock}/>);
+      await waitFor(() => {
+        expect(screen.getByText("Documents")).toBeInTheDocument();
+      });
+      userEvent.click(screen.getByRole("button", {name: "Download All"}));
+      expect(screen.getByRole("button", {name:"Download All"})).toBeDisabled();
+    })
   });
 
   describe("when there is NOT an NHS number", () => {
