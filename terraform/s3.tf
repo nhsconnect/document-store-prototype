@@ -32,7 +32,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "document_store_lifecycle" {
     }
 
     expiration {
-      date = "2022-11-25T10:40:00Z"
+      days = 1
     }
 
     noncurrent_version_expiration {
