@@ -55,10 +55,10 @@ describe("UploadDocumentPage", () => {
             const resolvers = {}
             
             apiClientMock.uploadDocument = async (document, nhsNumber, onUploadStateChange) => {
-                uploadStateChangeTriggers[document.file.name] = onUploadStateChange
+                uploadStateChangeTriggers[document.name] = onUploadStateChange
 
                 return new Promise((resolve) => {
-                    resolvers[document.file.name] = resolve
+                    resolvers[document.name] = resolve
                 })
             };
 

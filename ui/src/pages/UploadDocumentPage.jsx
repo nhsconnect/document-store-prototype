@@ -34,7 +34,7 @@ const UploadDocumentPage = ({ client, nextPagePath }) => {
     const doSubmit = async (data) => {
         const doUpload = async (document) => {
             await client.uploadDocument(
-                document,
+                document.file,
                 nhsNumber,
                 (state, progress) => {
                     setValue("documents", produce(getValues("documents"), (draft) => {
