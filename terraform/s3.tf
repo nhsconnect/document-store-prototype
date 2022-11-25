@@ -21,6 +21,42 @@ resource "aws_s3_bucket" "document_store" {
 
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "document_store_lifecycle" {
+  bucket = aws_s3_bucket.document_store.id
+
+  rule {
+    id = "rule-1"
+
+    filter {
+      prefix = "tmp/"
+    }
+
+    expiration {
+      days = 1
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 1
+    }
+
+    status = "Enabled"
+  }
+
+  rule {
+    id = "rule-2"
+
+    filter {
+      prefix = "tmp/"
+    }
+
+    expiration {
+      expired_object_delete_marker = true
+    }
+
+    status = "Enabled"
+  }
+}
+
 resource "aws_s3_bucket_notification" "bucket_notification" {
   bucket = aws_s3_bucket.document_store.id
 

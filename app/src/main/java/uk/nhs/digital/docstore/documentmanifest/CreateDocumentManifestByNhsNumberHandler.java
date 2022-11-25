@@ -65,7 +65,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
 
             var zipInputStream = zipService.zipDocuments(documentMetadataList);
 
-            var documentPath = CommonUtils.generateRandomUUIDString();
+            var documentPath = "tmp/" + CommonUtils.generateRandomUUIDString();
             var fileName = "patient-record-" + nhsNumber + ".zip";
 
             documentStore.addDocument(documentPath, zipInputStream);
