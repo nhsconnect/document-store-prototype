@@ -48,7 +48,14 @@ describe("Search page", () => {
       expect(nhsNumberField()).toHaveAttribute("readonly");
       expect(searchButton()).not.toBeInTheDocument();
       expect(mockNavigate).not.toHaveBeenCalled();
+      expect(startAgainButton()).toBeInTheDocument();
     });
+
+    it("should go to home page when user clicks on start again button", () =>{
+      render(<SearchResultsPage/>);
+      userEvent.click(startAgainButton());
+      expect(mockNavigate).toHaveBeenCalledWith("/home");
+    })
 
     it("displays a loading spinner when a document search is in progress", async () => {
       const apiClientMock = new ApiClient();
@@ -327,4 +334,7 @@ function nhsNumberField() {
 
 function searchButton() {
   return screen.queryByRole("button", {name: "Search"});
+}
+function startAgainButton(){
+  return screen.queryByRole("button", {name:"Start Again"});
 }

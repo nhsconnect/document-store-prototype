@@ -107,6 +107,10 @@ const SearchResultsPage = ({client}) => {
         }
     }
 
+    function goToHome() {
+        navigate("/home");
+    }
+
     return (
         <>
             <BackButton/>
@@ -137,7 +141,9 @@ const SearchResultsPage = ({client}) => {
                 <>
                     {searchResults.length > 0 && (
                         <>
+                            <p>You can choose to download all files for this patient</p>
                             <Button
+                                secondary
                                 onClick={downloadAll}
                                 disabled={downloadState === states.PENDING} >
                                 Download All
@@ -165,6 +171,7 @@ const SearchResultsPage = ({client}) => {
                     {searchResults.length === 0 && <p>No record found</p>}
                 </>
             )}
+            <Button onClick={goToHome}>Start Again</Button>
         </>
     );
 };
