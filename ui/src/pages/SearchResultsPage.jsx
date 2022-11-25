@@ -97,8 +97,10 @@ const SearchResultsPage = ({client}) => {
         setDownloadState(states.PENDING);
         try {
             const uri = await client.getPresignedUrlForZip(nhsNumber);
+            const aElement = document.createElement('a');
+            aElement.href = uri;
+            aElement.click();
             setDownloadState(states.SUCCEEDED);
-            console.log(uri);
         } catch (e) {
             setDownloadState(states.FAILED);
             console.error(e);
@@ -140,7 +142,7 @@ const SearchResultsPage = ({client}) => {
                                 disabled={downloadState === states.PENDING} >
                                 Download All
                             </Button>
-                            {downloadError && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
+                            {(downloadError || downloadState === states.FAILED) && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
                             <Table caption="Documents">
                                 <Table.Head>
                                     <Table.Row>

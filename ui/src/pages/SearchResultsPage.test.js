@@ -245,7 +245,7 @@ describe("Search page", () => {
         return [searchResult];
       });
       apiClientMock.getPresignedUrlForZip = jest.fn(() => {
-        return null;
+        return 'some-url';
       });
 
       render(<SearchResultsPage client={apiClientMock}/>);
@@ -258,8 +258,14 @@ describe("Search page", () => {
 
 
       expect(apiClientMock.getPresignedUrlForZip).toHaveBeenCalled();
+
+      await waitFor(() => {
+        expect(screen.getByRole("button", {name:"Download All"})).not.toBeDisabled();
+      });
+
       expect(screen.queryByText("Failed to download, please retry.")).not.toBeInTheDocument();
     });
+
     it("should disable the download all button while waiting to download the zip file", async ()=>{
       const apiClientMock = new ApiClient();
       const searchResult = searchResultFactory.build();
@@ -267,7 +273,7 @@ describe("Search page", () => {
         return [searchResult];
       });
       apiClientMock.getPresignedUrlForZip = jest.fn(() => {
-        return null;
+        return 'some-url';
       });
       render(<SearchResultsPage client={apiClientMock}/>);
       await waitFor(() => {
@@ -275,7 +281,31 @@ describe("Search page", () => {
       });
       userEvent.click(screen.getByRole("button", {name: "Download All"}));
       expect(screen.getByRole("button", {name:"Download All"})).toBeDisabled();
-    })
+    });
+
+    it("should display error message when download fails after clicking download all button", async () => {
+      const apiClientMock = new ApiClient();
+      const searchResult = searchResultFactory.build();
+      apiClientMock.findByNhsNumber = jest.fn(() => {
+        return [searchResult];
+      });
+      apiClientMock.getPresignedUrlForZip = jest.fn(() => {
+        throw new Error("No url received");
+      });
+
+      render(<SearchResultsPage client={apiClientMock}/>);
+
+      await waitFor(() => {
+        expect(screen.getByRole("button", {name: "Download All"})).toBeInTheDocument();
+      });
+      userEvent.click(screen.getByRole("button", {name: "Download All"}));
+
+
+      expect(apiClientMock.getPresignedUrlForZip).toHaveBeenCalled();
+      await waitFor(() => {
+        expect(screen.getByText("Failed to download, please retry.")).toBeInTheDocument();
+      });
+    });
   });
 
   describe("when there is NOT an NHS number", () => {
