@@ -4,7 +4,6 @@ import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-componen
 import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
 import {useNavigate} from "react-router";
 import BackButton from "../components/BackButton";
-import {setUrlHostToLocalHost} from "../utils/utils";
 
 const states = {
     INITIAL: "initial",
@@ -18,31 +17,6 @@ const alignMiddle = {
 }
 
 function Document({client, documentData, downloadError}) {
-    const [disabled, setDisabled] = useState(false);
-
-    async function handleClick(id, fileName) {
-        if (id) {
-            try {
-                downloadError(false);
-                setDisabled(true);
-                const attachment = await client.getPresignedUrl(id);
-                fetch(setUrlHostToLocalHost(attachment.url))
-                    .then(res => res.blob())
-                    .then(res => {
-                        const aElement = document.createElement('a');
-                        aElement.setAttribute('download', fileName);
-                        const href = URL.createObjectURL(res);
-                        aElement.href = href;
-                        aElement.click();
-                        URL.revokeObjectURL(href);
-                    });
-            } catch (e) {
-                downloadError(true);
-            }
-            setDisabled(false);
-        }
-    }
-
     return (
         <Table.Row>
             <Table.Cell style={alignMiddle}>
@@ -50,14 +24,6 @@ function Document({client, documentData, downloadError}) {
             </Table.Cell>
             <Table.Cell style={alignMiddle}>
                 {documentData.indexed.toLocaleString()}
-            </Table.Cell>
-            <Table.Cell style={{...alignMiddle, width: 200}}>
-                <Button style={{marginBottom:0}}
-                        secondary
-                        disabled={disabled}
-                        onClick={() => handleClick(documentData.id, documentData.description)}>
-                    {disabled ? "Downloading..." : "Download"}
-                </Button>
             </Table.Cell>
         </Table.Row>
     );
@@ -149,12 +115,11 @@ const SearchResultsPage = ({client}) => {
                                 Download All
                             </Button>
                             {(downloadError || downloadState === states.FAILED) && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
-                            <Table caption="Documents">
+                            <Table caption="List of documents available to download">
                                 <Table.Head>
                                     <Table.Row>
                                         <Table.Cell>Filename</Table.Cell>
                                         <Table.Cell>Uploaded At</Table.Cell>
-                                        <Table.Cell>Download</Table.Cell>
                                     </Table.Row>
                                 </Table.Head>
 

@@ -82,7 +82,7 @@ describe("Search page", () => {
           nhsNumber
         );
       });
-      expect(screen.getByText("Documents")).toBeInTheDocument();
+      expect(screen.getByText("List of documents available to download")).toBeInTheDocument();
       const documentDescriptionElement = screen.getByText(
         searchResult.description
       );
@@ -90,7 +90,6 @@ describe("Search page", () => {
       expect(
         screen.getByText(searchResult.indexed.toLocaleString())
       ).toBeInTheDocument();
-      expect(screen.getByRole("button", {name: "Download"})).toBeInTheDocument();
       expect(screen.getByRole("button", {name: "Download All"})).toBeInTheDocument();
       expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 
@@ -120,7 +119,7 @@ describe("Search page", () => {
       render(<SearchResultsPage client={apiClientMock}/>);
 
       await waitFor(() => {
-        expect(screen.getByText("Documents")).toBeInTheDocument();
+        expect(screen.getByText("List of documents available to download")).toBeInTheDocument();
       });
 
       const tableBody = document.querySelector("tbody");
@@ -129,91 +128,6 @@ describe("Search page", () => {
       expect(resultRows[0].innerHTML).toContain("latest");
       expect(resultRows[1].innerHTML).toContain("middle");
       expect(resultRows[2].innerHTML).toContain("oldest");
-    });
-
-    it("open document in new tab when user clicks on download button", async () => {
-      const apiClientMock = new ApiClient();
-      const searchResult = searchResultFactory.build();
-      apiClientMock.findByNhsNumber = jest.fn(() => {
-        return [searchResult];
-      });
-      apiClientMock.getPresignedUrl = jest.fn(() => {
-        return attachment;
-      });
-      global.fetch = jest.fn(() =>
-          Promise.resolve({
-            blob: () => Promise.resolve(null),
-          })
-      );
-
-      global.URL.createObjectURL = jest.fn();
-      global.URL.revokeObjectURL = jest.fn();
-
-      render(<SearchResultsPage client={apiClientMock}/>);
-
-      await waitFor(() => {
-        expect(screen.getByText("Documents")).toBeInTheDocument();
-      });
-      userEvent.click(screen.getByRole("button", {name: "Download"}));
-
-      expect(apiClientMock.getPresignedUrl).toHaveBeenCalledWith(searchResult.id);
-      await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(attachment.url);
-        expect(URL.createObjectURL).toHaveBeenCalled();
-        expect(URL.revokeObjectURL).toHaveBeenCalled();
-      });
-    });
-
-    it("Download button is disabled while waiting for the api response", async () => {
-      const apiClientMock = new ApiClient();
-      const searchResult = searchResultFactory.build();
-      apiClientMock.findByNhsNumber = jest.fn(() => {
-        return [searchResult];
-      });
-      apiClientMock.getPresignedUrl = jest.fn(() => {
-        return attachment;
-      });
-      global.fetch = jest.fn(() =>
-          Promise.resolve({
-            blob: () => Promise.resolve(null),
-          })
-      );
-
-      global.URL.createObjectURL = jest.fn();
-      global.URL.revokeObjectURL = jest.fn();
-      render(<SearchResultsPage client={apiClientMock}/>);
-
-      await waitFor(() => {
-        expect(screen.getByText("Documents")).toBeInTheDocument();
-      });
-      userEvent.click(screen.getByRole("button", {name: "Download"}))
-      expect(screen.getByRole("button", {name: "Downloading..."})).toBeDisabled();
-    });
-
-    it("should display error message and not open document in new tab when user clicks on download button if api returns error", async () => {
-      const apiClientMock = new ApiClient();
-      const searchResult = searchResultFactory.build();
-      apiClientMock.findByNhsNumber = jest.fn(() => {
-        return [searchResult];
-      });
-      apiClientMock.getPresignedUrl = jest.fn(() => {
-         throw new Error("No url received");
-      });
-      window.open = jest.fn();
-
-      render(<SearchResultsPage client={apiClientMock}/>);
-
-      await waitFor(() => {
-        expect(screen.getByRole("button", {name: "Download"})).toBeInTheDocument();
-      });
-      userEvent.click(screen.getByRole("button", {name: "Download"}));
-
-
-      expect(apiClientMock.getPresignedUrl).toHaveBeenCalledWith(searchResult.id);
-      expect(window.open).not.toHaveBeenCalled();
-      await waitFor(() => {
-        expect(screen.getByText("Failed to download, please retry.")).toBeInTheDocument();
-      });
     });
 
     it("displays a message when a document search returns no results", async () => {
@@ -258,7 +172,7 @@ describe("Search page", () => {
       render(<SearchResultsPage client={apiClientMock}/>);
 
       await waitFor(() => {
-        expect(screen.getByText("Documents")).toBeInTheDocument();
+        expect(screen.getByText("List of documents available to download")).toBeInTheDocument();
       });
 
       userEvent.click(screen.getByRole("button", {name: "Download All"}));
@@ -284,7 +198,7 @@ describe("Search page", () => {
       });
       render(<SearchResultsPage client={apiClientMock}/>);
       await waitFor(() => {
-        expect(screen.getByText("Documents")).toBeInTheDocument();
+        expect(screen.getByText("List of documents available to download")).toBeInTheDocument();
       });
       userEvent.click(screen.getByRole("button", {name: "Download All"}));
       expect(screen.getByRole("button", {name:"Download All"})).toBeDisabled();
