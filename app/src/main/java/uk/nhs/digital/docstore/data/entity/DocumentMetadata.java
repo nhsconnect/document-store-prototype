@@ -106,11 +106,11 @@ public class DocumentMetadata {
         this.type = type;
     }
 
-    public static DocumentMetadata from(NHSDocumentReference reference, DocumentStore.DocumentDescriptor documentDescriptor) {
+    public static DocumentMetadata from(NHSDocumentReference reference, String documentLocation) {
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setNhsNumber(reference.getSubject().getIdentifier().getValue());
         documentMetadata.setContentType(reference.getContent().get(0).getAttachment().getContentType());
-        documentMetadata.setLocation(documentDescriptor.toLocation());
+        documentMetadata.setLocation(documentLocation);
         documentMetadata.setDocumentUploaded(false);
         documentMetadata.setDescription(reference.getDescription());
         documentMetadata.setCreated(reference.getCreated().asStringValue());
