@@ -80,8 +80,8 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
             logger.debug("Saving DocumentReference to DynamoDB");
 
             String s3ObjectKey = CommonUtils.generateRandomUUIDString();
-            var requestFactory = new GeneratePresignedUrlRequestFactory(System.getenv("DOCUMENT_STORE_BUCKET_NAME"), s3ObjectKey);
-            var uploadRequest = requestFactory.makeDocumentUploadRequest();
+            var requestFactory = new GeneratePresignedUrlRequestFactory(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
+            var uploadRequest = requestFactory.makeDocumentUploadRequest(s3ObjectKey);
             presignedS3Url = s3client.generatePresignedUrl(uploadRequest);
             savedDocumentMetadata = documentReferenceService.save(inputDocumentReference, s3ObjectKey);
         } catch (Exception e) {

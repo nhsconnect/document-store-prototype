@@ -15,13 +15,13 @@ public class GeneratePresignedUrlRequestFactory {
 
     private final GeneratePresignedUrlRequest request;
 
-    public GeneratePresignedUrlRequestFactory(String bucket, String key) {
-        this(key, bucket, Instant.now());
+    public GeneratePresignedUrlRequestFactory(String bucket) {
+        this(bucket, Instant.now());
     }
 
-    public GeneratePresignedUrlRequestFactory(String bucket, String key, Instant now) {
+    public GeneratePresignedUrlRequestFactory(String bucket, Instant now) {
         this.now = now;
-        this.request = new GeneratePresignedUrlRequest(bucket, key);
+        this.request = new GeneratePresignedUrlRequest(bucket, null);
     }
 
     public GeneratePresignedUrlRequestFactory withFileNameOverride(String fileName) {
@@ -29,14 +29,16 @@ public class GeneratePresignedUrlRequestFactory {
         return this;
     }
 
-    public GeneratePresignedUrlRequest makeDocumentUploadRequest() {
+    public GeneratePresignedUrlRequest makeDocumentUploadRequest(String key) {
         return request
+                .withKey(key)
                 .withExpiration(Date.from(now.plusSeconds(30 * ONE_MINUTE)))
                 .withMethod(HttpMethod.PUT);
     }
 
-    public GeneratePresignedUrlRequest makeDocumentDownloadRequest() {
+    public GeneratePresignedUrlRequest makeDocumentDownloadRequest(String key) {
         return request
+                .withKey(key)
                 .withExpiration(Date.from(now.plusSeconds(ONE_MINUTE)))
                 .withMethod(HttpMethod.GET);
     }
