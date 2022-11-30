@@ -63,7 +63,7 @@ The Terraform output from the deployment will include two important values:
 These can be used to construct requests with `curl` or Postman, and also to construct the API endpoint in `ui/src/config.js`. The URLs will have the following form:
 
 ```
-http://HOST:4566/restapis/API-ID/STAGE/_user_request_/PATH
+http://HOST:3000/restapis/API-ID/STAGE/_user_request_/PATH
 ```
 
 where 
@@ -75,7 +75,7 @@ where
 endpoint path. For example, to request the metadata for a document with ID `1234`, the URL might look like:
 
 ```
-http://localhost:4566/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234
+http://localhost:3000/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234
 ```
 
 ### Starting the UI
