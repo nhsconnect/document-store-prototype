@@ -10,12 +10,15 @@ class EnvironmentTest {
 
     @Test
     void provideEnvironmentVariableValueIfEnvironmentVariableExists() {
-        var alwaysExistentEnvVar = "USER";
-        var valueFromEnvironment = System.getenv(alwaysExistentEnvVar);
+        var env = System.getenv();
+        var firstKey = env.keySet().stream().findFirst();
+        if (firstKey.isEmpty()) {
+            throw new RuntimeException("No env vars set");
+        }
 
-        String returnedValue = environment.getEnvVar(alwaysExistentEnvVar, "a default");
+        String returnedValue = environment.getEnvVar(firstKey.get(), "a default");
 
-        assertThat(returnedValue).isEqualTo(valueFromEnvironment);
+        assertThat(returnedValue).isEqualTo(env.get(firstKey.get()));
     }
 
     @Test
