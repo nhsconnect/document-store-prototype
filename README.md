@@ -2,18 +2,20 @@
 
 Proof of concept implementation for an interoperable service capable of storing patient and clinical documents.
 
-## Pre-requisites
+## Prerequisites
 
+- [Git](https://git-scm.com/)
 - [Dojo](https://github.com/kudulab/dojo#installation)
-- Git
-- Docker
+- [colima](https://formulae.brew.sh/formula/colima)
+- [docker](https://formulae.brew.sh/formula/docker)
+- [docker-compose](https://formulae.brew.sh/formula/docker-compose) 
+- [git-mob](https://www.npmjs.com/package/git-mob)
+- [Node](https://nodejs.org/en/download/): `v14.17.x`
+- [npm](https://docs.npmjs.com/cli/v6/commands/npm-install): `v6.14.x`
 
-For the UI, this also includes:
+_Note: It is recommended to use [Homebrew](https://brew.sh/) to install most of these._
 
-- Node v14.17.x
-- [npm v6.14.x](https://docs.npmjs.com/cli/v6/configuring-npm/install)
-
-## Running services locally
+## Running Services Locally
 
 It is possible to run the Document Store backend locally (minus Cognito or CIS2). Authentication through the UI will still require either Cognito to be set up in AWS, or CIS2 to be configured (depending on the value of the `CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED` feature toggle on the frontend).
 
