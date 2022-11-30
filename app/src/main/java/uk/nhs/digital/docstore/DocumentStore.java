@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore;
 
-import com.amazonaws.HttpMethod;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -16,7 +15,6 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import java.util.UUID;
 
 public class DocumentStore {
     private static final Duration PRE_SIGNED_URL_DURATION = Duration.ofSeconds(60);
@@ -46,14 +44,8 @@ public class DocumentStore {
     public URL generatePreSignedUrlForZip(DocumentDescriptor descriptor, String filename) {
         var generatePresignedUrlRequest = new GeneratePresignedUrlRequest(descriptor.bucket, descriptor.path)
                 .withExpiration(getExpirationDate())
-                .withResponseHeaders(new ResponseHeaderOverrides().withContentDisposition("attachment; filename="+filename));
+                .withResponseHeaders(new ResponseHeaderOverrides().withContentDisposition("attachment; filename=" + filename));
         return client.generatePresignedUrl(generatePresignedUrlRequest);
-    }
-
-    public DocumentDescriptorAndURL generateDocumentDescriptorAndURL() {
-        String key = UUID.randomUUID().toString();
-        URL url = client.generatePresignedUrl(bucketName, key, getExpirationDate(), HttpMethod.PUT);
-        return new DocumentDescriptorAndURL(new DocumentDescriptor(bucketName, key), url);
     }
 
     public S3ObjectInputStream getObjectFromS3(DocumentMetadata metadata) {
@@ -90,24 +82,6 @@ public class DocumentStore {
         public static DocumentDescriptor from(DocumentMetadata metadata) {
             URI location = URI.create(metadata.getLocation());
             return new DocumentDescriptor(location.getHost(), location.getPath().substring(1));
-        }
-    }
-
-    public static class DocumentDescriptorAndURL {
-        private final DocumentDescriptor documentDescriptor;
-        private final URL documentUrl;
-
-        public DocumentDescriptorAndURL(DocumentDescriptor documentDescriptor, URL documentUrl) {
-            this.documentDescriptor = documentDescriptor;
-            this.documentUrl = documentUrl;
-        }
-
-        public String getDocumentUrl() {
-            return documentUrl.toString();
-        }
-
-        public DocumentDescriptor getDocumentDescriptor() {
-            return documentDescriptor;
         }
     }
 }
