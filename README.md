@@ -958,3 +958,11 @@ No matches found:
   "total": 0
 }
 ```
+
+## Troubleshooting
+
+### LocalStack Timeout On Start
+
+If you are experiencing timeouts when running `./tasks start-localstack`. It is likely due to the Lima VM not having
+enough resources allocated to it. You can add more resources to the Lima VM by running `colima start --edit` and
+increasing the number of CPUs allocated and memory usage. 
