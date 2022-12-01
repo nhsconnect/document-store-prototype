@@ -4,6 +4,11 @@ import {useForm} from "react-hook-form";
 import userEvent from "@testing-library/user-event";
 import {formatSize} from "../utils/utils";
 
+jest.mock("../utils/utils", () => ({
+    ...jest.requireActual("../utils/utils"),
+    toFileList: () => [],
+}))
+
 const FormWrapper = () =>{
     const {control, handleSubmit} = useForm();
     return <form onSubmit={handleSubmit()}>
@@ -120,6 +125,22 @@ describe("DocumentsInput", () => {
         userEvent.click( screen.getAllByRole("button", {name:`Remove ${duplicateDocument.name} from selection`})[1])
 
         await waitFor(() => expect(screen.queryByText("There are two or more documents with the same name.")).not.toBeInTheDocument())
+    })
+
+    it("allows the user to add the same file again if they remove it", async () => {
+        render(<FormWrapper />)
+        const document = new File(["test"], "test.txt", {
+            type: "text/plain",
+        });
+
+        userEvent.upload(screen.getByLabelText("Select files"), document);
+        expect(await screen.findByText(document.name)).toBeInTheDocument()
+
+        userEvent.click( screen.getByRole("button", {name:`Remove ${document.name} from selection`}))
+        await waitFor(() => expect(screen.queryByText(document.name)).not.toBeInTheDocument())
+
+        userEvent.upload(screen.getByLabelText("Select files"), document);
+        expect(await screen.findByText(document.name)).toBeInTheDocument()
     })
 
 });

@@ -23,3 +23,11 @@ export const formatSize = (bytes) =>{
   return `${Math.round(bytes/divisor)} ${units[exponent]}`;
 
 }
+
+export const toFileList = (files) => {
+  const updatedFileList = new DataTransfer();
+  files.forEach(file => {
+      updatedFileList.items.add(file)
+  })
+  return updatedFileList.files
+}

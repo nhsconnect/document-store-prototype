@@ -1,13 +1,14 @@
 import { nanoid } from "nanoid/non-secure";
 import {Button, Input, Table, WarningCallout} from "nhsuk-react-components";
-import React from "react";
+import React, { useRef } from "react";
 import {useController} from "react-hook-form";
 import { documentUploadStates } from "../enums/documentUploads";
 import { fileSizes } from "../enums/fileSizes";
-import {formatSize} from "../utils/utils";
+import {formatSize, toFileList} from "../utils/utils";
 
 
 const DocumentsInput = ({control}) => {
+    const inputRef = useRef(null);
     const {field: {ref, onChange, onBlur, name, value}, fieldState} = useController({
         name: "documents",
         control,
@@ -28,10 +29,15 @@ const DocumentsInput = ({control}) => {
     });
 
     const onRemove = (index) => {
-        onChange([
-        ...value.slice(0, index),
-        ...value.slice(index + 1)
-        ])
+        const updatedValues = [
+            ...value.slice(0, index),
+            ...value.slice(index + 1)
+            ]
+        onChange(updatedValues)
+
+        // Horrible hack to update input value so that it removes the file from its selection
+        // Otherwise, we cannot add a file, remove it and then add it again, as the input doesn't know its value has changed
+        inputRef.current.files = toFileList(updatedValues.map(value => value.file))
     }
 
     const hasDuplicateFiles = value && value.some(document => {
@@ -39,7 +45,7 @@ const DocumentsInput = ({control}) => {
     })
 
     const changeHandler = (e) => {
-        const newFiles = Array.from(e.target.files)
+        const newFiles = e.target.files instanceof Array ? e.target.files : Array.from(e.target.files)
         const newDocumentObjects = newFiles.map(file => ({
             id: nanoid(),
             file,
@@ -47,6 +53,11 @@ const DocumentsInput = ({control}) => {
             progress: 0,
         }))
         onChange(value ? value.concat(newDocumentObjects) : newDocumentObjects)
+    }
+
+    const mergedRefs = (value) => {
+        inputRef.current = value;
+        ref(value)
     }
 
     return(
@@ -62,7 +73,7 @@ const DocumentsInput = ({control}) => {
                 error={fieldState.error?.message}
                 onChange={changeHandler}
                 onBlur={onBlur}
-                inputRef={ref}
+                inputRef={mergedRefs}
                 style={{ width: 133 }}
             />
             <div role="region" aria-live="polite">
