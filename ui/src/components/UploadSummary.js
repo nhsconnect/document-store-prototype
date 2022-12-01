@@ -17,7 +17,7 @@ const UploadSummary = ({nhsNumber, documents}) => {
             <p>Summary of uploaded documents for patient number {nhsNumber}</p>
             <p>Please delete files that were uploaded successfully from your system.</p>
             {successfulUploads.length > 0 && <Details>
-                <Details.Summary>Successfully uploaded documents</Details.Summary>
+                <Details.Summary aria-label="Show successfully uploaded documents">Successfully uploaded documents</Details.Summary>
                 <Details.Text>
                     <Table responsive caption="Successfully uploaded documents" captionProps={{ className: "nhsuk-u-visually-hidden" }}>
                         <Table.Head role="rowgroup">

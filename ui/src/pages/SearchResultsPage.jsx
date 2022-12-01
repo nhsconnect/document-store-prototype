@@ -109,9 +109,10 @@ const SearchResultsPage = ({client}) => {
                         <>
                             <p>You can choose to download all files for this patient</p>
                             <Button
+                                type="button"
                                 secondary
                                 onClick={downloadAll}
-                                disabled={downloadState === states.PENDING} >
+                                disabled={downloadState === states.PENDING}>
                                 Download All
                             </Button>
                             {(downloadError || downloadState === states.FAILED) && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}

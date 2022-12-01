@@ -169,7 +169,7 @@ describe("UploadDocumentPage", () => {
 
             expect(screen.getByText(`Summary of uploaded documents for patient number ${nhsNumber}`))
 
-            userEvent.click(screen.getByText("Successfully uploaded documents"))
+            userEvent.click(screen.getByLabelText("Show successfully uploaded documents"))
 
             expect(await screen.findByText(documentTwo.name)).toBeInTheDocument()
             expect(screen.getByText(documentThree.name)).toBeInTheDocument()

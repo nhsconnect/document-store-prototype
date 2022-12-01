@@ -89,7 +89,7 @@ describe("The upload summary component", () => {
 })
 
 const toggleSuccessfulUploads = () => {
-    userEvent.click(screen.getByText("Successfully uploaded documents"))
+    userEvent.click(screen.getByLabelText("Show successfully uploaded documents"))
 }
 
 const makeDocument = (file, uploadStatus) => {
