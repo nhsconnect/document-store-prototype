@@ -16,31 +16,29 @@ Proof of concept implementation for an interoperable service capable of storing 
 
 _Note: It is recommended to use [Homebrew](https://brew.sh/) to install most of these._
 
-## Running Services Locally
+## Running Locally
 
 It is possible to run the Document Store backend locally (minus Cognito or CIS2). Authentication through the UI will
 still require either Cognito to be set up in AWS, or CIS2 to be configured (depending on the value of
 the `CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED` feature toggle on the frontend).
 
-### Starting the Document Store
+### Running The Document Store
 
-1. Start LocalStack:
+#### 1. Start LocalStack
 
-This will also now bootstrap and apply the terraform.
+To start LocalStack (incl. bootstrap and applying to Terraform), run:
 
-NB: This will deploy your API lambdas if their jars are already built.
-
-```
+```bash
 ./tasks start-localstack
 ```
 
-(If it complains about docker daemon not running, try `colima start`. If you're on an M1 Mac, you may wish to run `colima start --edit` the first time and make sure it's using 4 CPUs and 8GB of memory.)
+**Warning: Do not close this window! You will need this when running other services.**
 
-Don't close this session - you'll need to run the rest of this in a new terminal.
+_Note: This will deploy your API Lambdas if their JARs are already built._
 
-2. Build your API lambda jars:
+#### 2. Build API Lambda JARs
 
-To build or re-build these into your `app/build/libs` directory, using `dojo`:
+To build/re-build these into your `app/build/libs` dir, run in a non-dojo terminal window:
 
 ```bash
 ./tasks build-api-jars
@@ -956,8 +954,13 @@ No matches found:
 
 ## Troubleshooting
 
+### Docker Daemon Is Not Running
+
+If you see a log saying that the docker daemon is not running when running `./tasks start-localstack`, it is likely due
+to colima not being started. You can fix this by running `colima start`.
+
 ### LocalStack Timeout On Start
 
-If you are experiencing timeouts when running `./tasks start-localstack`. It is likely due to the Lima VM not having
+If you are experiencing timeouts when running `./tasks start-localstack`, it is likely due to the Lima VM not having
 enough resources allocated to it. You can add more resources to the Lima VM by running `colima start --edit` and
 increasing the number of CPUs allocated and memory usage. 
