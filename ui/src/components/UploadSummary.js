@@ -1,4 +1,4 @@
-import { Details, ErrorSummary, Table } from "nhsuk-react-components"
+import { Details, ErrorSummary, Table, Button } from "nhsuk-react-components"
 import { documentUploadStates} from "../enums/documentUploads"
 import { formatSize } from "../utils/utils"
 
@@ -19,7 +19,7 @@ const UploadSummary = ({nhsNumber, documents}) => {
             {successfulUploads.length > 0 && <Details>
                 <Details.Summary>Successfully uploaded documents</Details.Summary>
                 <Details.Text>
-                    <Table responsive caption="Documents uploaded Successfully">
+                    <Table responsive caption="Successfully uploaded documents" captionProps={{ className: "nhsuk-u-visually-hidden" }}>
                         <Table.Head role="rowgroup">
                             <Table.Row>
                                 <Table.Cell>File Name</Table.Cell>
