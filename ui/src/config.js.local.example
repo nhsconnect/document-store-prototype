@@ -1,4 +1,3 @@
-
 const config = {
     Auth: {
         region: "eu-west-2",
@@ -8,7 +7,7 @@ const config = {
         oauth: {
             domain: "doc-store-user-pool.auth.eu-west-2.amazoncognito.com",
             scope: ["openid"],
-            redirectSignIn: "https://main.d1p55zjnm05qd2.amplifyapp.com/cis2-auth-callback",
+            redirectSignIn: "http://localhost:3000/cis2-auth-callback",
             redirectSignOut: "%cognito-redirect-signout%",
             responseType: "token",
         },
@@ -25,11 +24,14 @@ const config = {
         local: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
         },
-        development: {
+        dev: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
+        },
+        "pre-prod": {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
         },
-        production: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
+        prod: {
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
         },
     },
 };

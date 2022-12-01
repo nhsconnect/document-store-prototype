@@ -17,12 +17,12 @@ During deployment, the `ui/src/config.js` is modified to include values necessar
 file needs to be modified to connect to a Cognito pool and the API Gateway. There are four placeholders to replace, with
 names like `%region%`. See `ui/src/config.js.local.example` for guidance / template for running vs localstack.
 
-| Placeholder      | Terraform output                                                                                                                                      |
-|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `%region%`       | None. The value should be: `eu-west-2`                                                                                                                |
-| `%pool-id%`      | `cognito_user_pool_ids`                                                                                                                               |
-| `%client-id%`    | `cognito_client_ids`                                                                                                                                  |
-| `%api-endpoint%` | `api_gateway_url` or something like `http://localhost:3000/restapis/3sqfccx8m1/test/_user_request_/` with your specific API gateway id vs localstack. |
+| Placeholder      | Terraform output                                                                                                                                     |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `%region%`       | None. The value should be: `eu-west-2`                                                                                                               |
+| `%pool-id%`      | `cognito_user_pool_ids`                                                                                                                              |
+| `%client-id%`    | `cognito_client_ids`                                                                                                                                 |
+| `%api-endpoint%` | `api_gateway_url` or something like `http://localhost:3000/restapis/3sqfccx8m1/test/_user_request_` with your specific API gateway id vs localstack. |
 
 Be careful not to commit these values along with other changes.
 
@@ -32,6 +32,8 @@ Once the `config.js` has been edited, the UI can be started from the `ui` subdir
 npm run start
 ```
 
+Don't close this while looking at the UI or running the cypress tests - you'll need to run the rest of this in a new terminal.
+
 ## Testing the UI
 
 ### Unit Tests
@@ -40,7 +42,6 @@ Unit tests are run using Jest test runner. To run all units tests:
 ```bash
 npm test
 ```
-
 
 ### E2E Tests
 

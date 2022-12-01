@@ -12,6 +12,7 @@ Proof of concept implementation for an interoperable service capable of storing 
 - [git-mob](https://www.npmjs.com/package/git-mob)
 - [Node](https://nodejs.org/en/download/): `v14.17.x`
 - [npm](https://docs.npmjs.com/cli/v6/commands/npm-install): `v6.14.x`
+- [AWS CLI](https://aws.amazon.com/cli/)
 
 _Note: It is recommended to use [Homebrew](https://brew.sh/) to install most of these._
 
@@ -33,24 +34,16 @@ NB: This will deploy your API lambdas if their jars are already built.
 ./tasks start-localstack
 ```
 
+(If it complains about docker daemon not running, try `colima start`. If you're on an M1 Mac, you may wish to run `colima start --edit` the first time and make sure it's using 4 CPUs and 8GB of memory.)
+
+Don't close this session - you'll need to run the rest of this in a new terminal.
+
 2. Build your API lambda jars:
 
 To build or re-build these into your `app/build/libs` directory, using `dojo`:
 
 ```bash
 ./tasks build-api-jars
-```
-
-Or for quicker turnaround, without download dependencies each time you can keep dojo running:
-
-```
-dojo
-```
-
-And then to rebuild them in dojo:
-
-```
-./tasks _build-api-jars
 ```
 
 3. Deploy or re-deploy the API:
@@ -83,6 +76,8 @@ where
 ```
 http://localhost:3000/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234
 ```
+
+(TODO - set this up as an ENV variable automatically?)
 
 ### Starting the UI
 
