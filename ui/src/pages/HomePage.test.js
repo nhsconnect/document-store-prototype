@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 import HomePage from "./HomePage";
-import { useFeatureToggle } from "../providers/FeatureToggleProvider";
 import { BrowserRouter } from "react-router-dom";
 
 jest.mock("../providers/FeatureToggleProvider");
