@@ -1,8 +1,9 @@
-# UI 
+# UI
 
 ## Pre-requisites
 
-Before starting the UI, install dependencies using: 
+Before starting the UI, install dependencies using:
+
 ```bash
 npm ci
 ```
@@ -32,26 +33,35 @@ Once the `config.js` has been edited, the UI can be started from the `ui` subdir
 npm run start
 ```
 
-Don't close this while looking at the UI or running the cypress tests - you'll need to run the rest of this in a new terminal.
+Don't close this while looking at the UI or running the cypress tests - you'll need to run the rest of this in a new
+terminal.
 
 ## Testing the UI
 
 ### Unit Tests
 
 Unit tests are run using Jest test runner. To run all units tests:
+
 ```bash
 npm test
 ```
 
 ### E2E Tests
 
-E2E tests are run using Cypress. Before running the tests, you must set valid AWS Cognito credentials. Copy the `cypress.env.json.example` file and rename the file to `cypress.env.json`. Replace the empty strings with a valid AWS Cognito username and password. Ensure the `config.js` file has been configured as explained above, and that localstack is running.
+E2E tests are run using Cypress. Before running the tests, you must set valid AWS Cognito credentials. Copy
+the `cypress.env.json.example` file and rename the file to `cypress.env.json`. Replace the empty strings with a valid
+AWS Cognito username and password. Ensure the `config.js` file has been configured as explained above, and that
+localstack is running.
 
 To start Cypress:
+
 ```bash
 npx cypress open
 ```
 
 ## Feature Toggles
 
-We have implemented a rudimentary feature toggle system using the `config.js` file. Feature activation is determined at build time depending on the `NODE_ENV` environment variable. There is a feature toggle React [context provider](ui/src/providers/FeatureToggleProvider.jsx) and custom hook for checking the value of the toggle.
+We have implemented a rudimentary feature toggle system using the `config.js` file. Feature activation is determined at
+build time depending on the `NODE_ENV` environment variable. There is a feature toggle
+React [context provider](ui/src/providers/FeatureToggleProvider.jsx) and custom hook for checking the value of the
+toggle.
