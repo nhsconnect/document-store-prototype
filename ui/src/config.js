@@ -1,14 +1,14 @@
 const config = {
     Auth: {
-        region: "eu-west-2",
-        userPoolId: "eu-west-2_Y8etyk9V6",
-        userPoolWebClientId: "7mm2u6re8jsptrgallf74g2c6c",
-        providerId: "COGNITO",
+        region: "%region%",
+        userPoolId: "%pool-id%",
+        userPoolWebClientId: "%client-id%",
+        providerId: "cis2devoidc",
         oauth: {
-            domain: "doc-store-user-pool.auth.eu-west-2.amazoncognito.com",
+            domain: "%cognito-domain%",
             scope: ["openid"],
-            redirectSignIn: "http://localhost:3000/cis2-auth-callback",
-            redirectSignOut: "http://localhost:3000",
+            redirectSignIn: "%cognito-redirect-signin%",
+            redirectSignOut: "%cognito-redirect-signout%",
             responseType: "token",
         },
     },
@@ -16,13 +16,13 @@ const config = {
         endpoints: [
             {
                 name: "doc-store-api",
-                endpoint: "http://localhost:3000/restapis/1d3tbej036/test/_user_request_",
+                endpoint: "%api-endpoint%",
             },
         ],
     },
     features: {
         local: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
+            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
         },
         dev: {
             CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
