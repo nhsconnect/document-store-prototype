@@ -6,6 +6,7 @@ describe("upload and search transaction", () => {
         const timeout = 30000;
         const nhsNumber = "9000000009";
         cy.visit("/");
+        cy.title().should('eq', 'Document Store');
 
         if (
             config.features[Cypress.env("REACT_APP_ENV")]
