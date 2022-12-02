@@ -125,6 +125,37 @@ function tf_init {
     -backend-config ${ENVIRONMENT}.s3.tfbackend
 }
 
+function confirm_current_role {
+  aws sts get-caller-identity
+  if [[ $? -eq 254 ]]
+  then
+    exit
+  fi
+
+  read -p "Is this the intended role (y/n)? " -n 1 -r
+  echo
+  if ! [[ $REPLY =~ ^[Yy]$ ]]
+  then
+     exit
+  fi
+}
+
+function get_user_pool_id {
+  echo "$(aws cognito-idp list-user-pools --region ${aws_region} --query 'UserPools[?Name==`doc-store-user-pool`].Id' --max-results 1 | jq -r '.[0]')"
+}
+
+function create_cognito_user {
+  aws cognito-idp admin-create-user --user-pool-id $(get_user_pool_id) --username "$1" --temporary-password "$2"
+}
+
+function delete_cognito_user {
+  aws cognito-idp admin-delete-user --user-pool-id $(get_user_pool_id) --username "$1"
+  if [[ $? -eq 0 ]]
+  then
+    echo "User deleted"
+  fi
+}
+
 readonly command="$1"
 case "${command}" in
 install-ui-dependencies)
@@ -219,5 +250,16 @@ run-e2e-tests)
   echo $CYPRESS_BASE_URL
   rm cypress.sh
   CYPRESS_BASE_URL=${CYPRESS_BASE_URL} ./node_modules/.bin/cypress run
+  ;;
+create-cognito-user)
+  username=$2
+  password=$3
+  confirm_current_role
+  create_cognito_user ${username} ${password}
+  ;;
+delete-cognito-user)
+  username=$2
+  confirm_current_role
+  delete_cognito_user ${username}
   ;;
 esac

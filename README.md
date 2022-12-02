@@ -122,6 +122,14 @@ can be set to false
    aws ssm get-parameter --name /prs/{ENVIRONMENT}/user-input/basic-auth-password --with-decryption
 ```
 
+### Managing Cognito Users
+
+There are commands available for creating and deleting Cognito users. You will need to assume a role with permission to
+create and delete users in the relevant AWS account before running them.
+
+`./tasks create-cognito-user ${username} ${password}`
+`./tasks delete-cognito-user ${username}`
+
 ## Testing
 
 The `test` source set contains unit tests. These don't have any dependencies on infrastructure or external services.
