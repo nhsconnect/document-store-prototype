@@ -74,7 +74,6 @@ const DocumentsInput = ({control}) => {
                 onChange={changeHandler}
                 onBlur={onBlur}
                 inputRef={mergedRefs}
-                style={{ width: 133 }}
             />
             <div role="region" aria-live="polite">
             {value && value.length > 0 && <Table caption="Selected documents">
