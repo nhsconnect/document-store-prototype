@@ -1,6 +1,6 @@
 format_version: 4
 common:
-  build: &build_backend
+  build:
     jobs:
       backend: &build_backend
         artifacts:
@@ -265,6 +265,9 @@ pipelines:
           jobs:
             plan: *plan_terraform
       - deploy_terraform:
+          approval:
+            type: manual
+            allow_only_on_success: true
           environment_variables:
             ENVIRONMENT: pre-prod
             NHS_CIS2_ENVIRONMENT: development
