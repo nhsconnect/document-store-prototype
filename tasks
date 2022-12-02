@@ -4,6 +4,8 @@ set -e
 
 readonly aws_region=eu-west-2
 
+export AWS_CLI_AUTO_PROMPT=off
+
 function assume_ci_role() {
   role_arn="$(aws ssm get-parameters --region ${aws_region} --names /document-store/${ENVIRONMENT}/user-input/ci-role --query Parameters[0].Value --output text)"
   session_name="document-store-session"
@@ -126,12 +128,14 @@ function tf_init {
 }
 
 function confirm_current_role {
-  aws sts get-caller-identity
+  sts=$(aws sts get-caller-identity)
   if [[ $? -eq 254 ]]
   then
-    exit
+    echo ${sts}
+    return 1
   fi
 
+  echo ${sts}
   read -p "Is this the intended role (y/n)? " -n 1 -r
   echo
   if ! [[ $REPLY =~ ^[Yy]$ ]]
