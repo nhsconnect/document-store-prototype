@@ -1,6 +1,5 @@
 import {render, screen, waitFor, within} from "@testing-library/react";
 import {Factory} from "fishery";
-
 import ApiClient from "../apiClients/apiClient";
 import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
 import SearchResultsPage from "./SearchResultsPage";
@@ -21,11 +20,6 @@ const searchResultFactory = Factory.define(() => ({
   type: "some type",
   indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
 }));
-
-const attachment = {
-  url: "https://some-url",
-  contentType: "text/plain"
-}
 
 describe("Search page", () => {
   describe("when there is an NHS number", () => {
@@ -54,7 +48,7 @@ describe("Search page", () => {
     it("should go to home page when user clicks on start again button", () =>{
       render(<SearchResultsPage/>);
       userEvent.click(startAgainButton());
-      expect(mockNavigate).toHaveBeenCalledWith("/home");
+      expect(mockNavigate).toHaveBeenCalled();
     })
 
     it("displays a loading spinner when a document search is in progress", async () => {

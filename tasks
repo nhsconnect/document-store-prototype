@@ -4,6 +4,8 @@ set -e
 
 readonly aws_region=eu-west-2
 
+export AWS_CLI_AUTO_PROMPT=off
+
 function assume_ci_role() {
   role_arn="$(aws ssm get-parameters --region ${aws_region} --names /document-store/${ENVIRONMENT}/user-input/ci-role --query Parameters[0].Value --output text)"
   session_name="document-store-session"
@@ -126,12 +128,14 @@ function tf_init {
 }
 
 function confirm_current_role {
-  aws sts get-caller-identity
+  sts=$(aws sts get-caller-identity)
   if [[ $? -eq 254 ]]
   then
-    exit
+    echo ${sts}
+    return 1
   fi
 
+  echo ${sts}
   read -p "Is this the intended role (y/n)? " -n 1 -r
   echo
   if ! [[ $REPLY =~ ^[Yy]$ ]]
@@ -254,10 +258,19 @@ run-e2e-tests)
 create-cognito-user)
   username=$2
   password=$3
+  dojo -c Dojofile-infra "./tasks _create-cognito-user ${username} ${password}"
+  ;;
+_create-cognito-user)
+  username=$2
+  password=$3
   confirm_current_role
   create_cognito_user ${username} ${password}
   ;;
 delete-cognito-user)
+  username=$2
+  dojo -c Dojofile-infra "./tasks _delete-cognito-user ${username}"
+  ;;
+_delete-cognito-user)
   username=$2
   confirm_current_role
   delete_cognito_user ${username}

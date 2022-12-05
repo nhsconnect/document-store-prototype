@@ -4,6 +4,7 @@ import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-componen
 import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
 import {useNavigate} from "react-router";
 import BackButton from "../components/BackButton";
+import {useFeatureToggle} from "../providers/FeatureToggleProvider";
 
 const states = {
     INITIAL: "initial",
@@ -11,23 +12,6 @@ const states = {
     SUCCEEDED: "succeeded",
     FAILED: "failed",
 };
-
-const alignMiddle = {
-    verticalAlign: 'middle'
-}
-
-function Document({client, documentData, downloadError}) {
-    return (
-        <Table.Row>
-            <Table.Cell style={alignMiddle}>
-                {documentData.description}
-            </Table.Cell>
-            <Table.Cell style={alignMiddle}>
-                {documentData.indexed.toLocaleString()}
-            </Table.Cell>
-        </Table.Row>
-    );
-}
 
 const SearchResultsPage = ({client}) => {
     const {register} = useForm();
@@ -38,6 +22,7 @@ const SearchResultsPage = ({client}) => {
     const[downloadState, setDownloadState] = useState(states.INITIAL);
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
+    const isCIS2Enabled = useFeatureToggle("CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED");
 
     useEffect(() => {
         if (!nhsNumber) {
@@ -74,7 +59,8 @@ const SearchResultsPage = ({client}) => {
     }
 
     function goToHome() {
-        navigate("/home");
+        const homePagePath = isCIS2Enabled ? "/home" : "/";
+        navigate(homePagePath);
     }
 
     return (
@@ -126,8 +112,14 @@ const SearchResultsPage = ({client}) => {
 
                                 <Table.Body>
                                     {searchResults.map((result) => (
-                                        <Document key={result.id} client={client} documentData={result}
-                                                  downloadError={(error) => setDownloadError(error)}/>
+                                        <Table.Row>
+                                            <Table.Cell>
+                                                {result.description}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {result.indexed.toLocaleString()}
+                                            </Table.Cell>
+                                        </Table.Row>
                                     ))}
                                 </Table.Body>
                             </Table>
@@ -137,7 +129,7 @@ const SearchResultsPage = ({client}) => {
                     {searchResults.length === 0 && <p>No record found</p>}
                 </>
             )}
-            <Button onClick={goToHome}>Start Again</Button>
+            {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) && <Button onClick={goToHome}>Start Again</Button>}
         </>
     );
 };
