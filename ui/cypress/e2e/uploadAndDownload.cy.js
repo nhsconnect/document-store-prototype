@@ -3,8 +3,7 @@ import * as path from 'path';
 
 describe('upload and download', () => {
     it('searches for a patient, uploads, and then downloads their docs', () => {
-        const randomNHSNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-        const nhsNumber = Cypress.env('REACT_APP_ENV') === 'local' ? randomNHSNumber : '9000000009'
+        const nhsNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
         const isCIS2Enabled = config.features[Cypress.env('REACT_APP_ENV')]
             .CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED;
         const username = Cypress.env('username');
