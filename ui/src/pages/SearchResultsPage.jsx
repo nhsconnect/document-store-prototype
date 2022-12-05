@@ -1,32 +1,34 @@
-import React, {useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
-import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-components";
-import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
-import {useNavigate} from "react-router";
-import BackButton from "../components/BackButton";
-import {useFeatureToggle} from "../providers/FeatureToggleProvider";
+import React, {useEffect, useState} from 'react';
+import {useForm} from 'react-hook-form';
+import {Button, ErrorMessage, Fieldset, Input, Table} from 'nhsuk-react-components';
+import {useNhsNumberProviderContext} from '../providers/NhsNumberProvider';
+import {useNavigate} from 'react-router';
+import BackButton from '../components/BackButton';
+import {useFeatureToggle} from '../providers/FeatureToggleProvider';
+import {downloadFile} from '../utils/utils';
 
 const states = {
-    INITIAL: "initial",
-    PENDING: "pending",
-    SUCCEEDED: "succeeded",
-    FAILED: "failed",
+    INITIAL: 'initial',
+    PENDING: 'pending',
+    SUCCEEDED: 'succeeded',
+    FAILED: 'failed',
 };
 
-const SearchResultsPage = ({client}) => {
+export default function SearchResultsPage({client}) {
     const {register} = useForm();
-    const {ref: nhsNumberRef, ...nhsNumberProps} = register("nhsNumber");
-    const [searchResults, setSearchResults] = useState([]);
-    const [downloadError, setDownloadError] = useState(false);
-    const [submissionState, setSubmissionState] = useState(states.INITIAL);
-    const[downloadState, setDownloadState] = useState(states.INITIAL);
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
-    const isCIS2Enabled = useFeatureToggle("CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED");
+    const isCIS2Enabled = useFeatureToggle('CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED');
+
+    const [searchResults, setSearchResults] = useState([]);
+    const [submissionState, setSubmissionState] = useState(states.INITIAL);
+    const [downloadState, setDownloadState] = useState(states.INITIAL);
+
+    const {ref: nhsNumberRef, ...nhsNumberProps} = register('nhsNumber');
 
     useEffect(() => {
         if (!nhsNumber) {
-            navigate("/search/patient-trace");
+            navigate('/search/patient-trace');
             return;
         }
         const search = async () => {
@@ -44,13 +46,13 @@ const SearchResultsPage = ({client}) => {
         void search();
     }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
-    const downloadAll = async() => {
+    const downloadAll = async () => {
         setDownloadState(states.PENDING);
         try {
-            const uri = await client.getPresignedUrlForZip(nhsNumber);
-            const aElement = document.createElement('a');
-            aElement.href = uri;
-            aElement.click();
+            const preSignedUrl = await client.getPresignedUrlForZip(nhsNumber);
+
+            downloadFile(preSignedUrl, `patient-record-${nhsNumber}`);
+
             setDownloadState(states.SUCCEEDED);
         } catch (e) {
             setDownloadState(states.FAILED);
@@ -59,7 +61,7 @@ const SearchResultsPage = ({client}) => {
     }
 
     function goToHome() {
-        const homePagePath = isCIS2Enabled ? "/home" : "/";
+        const homePagePath = isCIS2Enabled ? '/home' : '/';
         navigate(homePagePath);
     }
 
@@ -67,9 +69,9 @@ const SearchResultsPage = ({client}) => {
         <>
             <BackButton/>
             <Fieldset>
-                <Fieldset.Legend headingLevel={'h1'} isPageHeading>Download and view a stored document</Fieldset.Legend>
+                <Fieldset.Legend headingLevel="h1" isPageHeading>Download and view a stored document</Fieldset.Legend>
                 <Input
-                    id={"nhs-number-input"}
+                    id="nhs-number-input"
                     name="nhsNumber"
                     label="Find by NHS number"
                     {...nhsNumberProps}
@@ -79,7 +81,7 @@ const SearchResultsPage = ({client}) => {
                 />
                 {submissionState === states.PENDING && (
                     <p>
-                        <progress aria-label={"Loading..."}></progress>
+                        <progress aria-label="Loading..."/>
                     </p>
                 )}
             </Fieldset>
@@ -101,7 +103,8 @@ const SearchResultsPage = ({client}) => {
                                 disabled={downloadState === states.PENDING}>
                                 Download All
                             </Button>
-                            {(downloadError || downloadState === states.FAILED) && <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
+                            {downloadState === states.FAILED &&
+                                <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
                             <Table caption="List of documents available to download">
                                 <Table.Head>
                                     <Table.Row>
@@ -109,10 +112,9 @@ const SearchResultsPage = ({client}) => {
                                         <Table.Cell>Uploaded At</Table.Cell>
                                     </Table.Row>
                                 </Table.Head>
-
                                 <Table.Body>
-                                    {searchResults.map((result) => (
-                                        <Table.Row>
+                                    {searchResults.map((result, index) => (
+                                        <Table.Row key={`document-${index}`}>
                                             <Table.Cell>
                                                 {result.description}
                                             </Table.Cell>
@@ -125,13 +127,11 @@ const SearchResultsPage = ({client}) => {
                             </Table>
                         </>
                     )}
-
                     {searchResults.length === 0 && <p>No record found</p>}
                 </>
             )}
-            {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) && <Button onClick={goToHome}>Start Again</Button>}
+            {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) &&
+                <Button onClick={goToHome}>Start Again</Button>}
         </>
     );
-};
-
-export default SearchResultsPage;
+}

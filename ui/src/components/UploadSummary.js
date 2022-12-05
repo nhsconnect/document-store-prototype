@@ -1,4 +1,4 @@
-import { Details, ErrorSummary, Table, Button } from "nhsuk-react-components"
+import { Details, ErrorSummary, Table } from "nhsuk-react-components"
 import { documentUploadStates} from "../enums/documentUploads"
 import { formatSize } from "../utils/utils"
 
