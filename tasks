@@ -258,10 +258,19 @@ run-e2e-tests)
 create-cognito-user)
   username=$2
   password=$3
+  dojo -c Dojofile-infra "./tasks _create-cognito-user ${username} ${password}"
+  ;;
+_create-cognito-user)
+  username=$2
+  password=$3
   confirm_current_role
   create_cognito_user ${username} ${password}
   ;;
 delete-cognito-user)
+  username=$2
+  dojo -c Dojofile-infra "./tasks _delete-cognito-user ${username}"
+  ;;
+_delete-cognito-user)
   username=$2
   confirm_current_role
   delete_cognito_user ${username}
