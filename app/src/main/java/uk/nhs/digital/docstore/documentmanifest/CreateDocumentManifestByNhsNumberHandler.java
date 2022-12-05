@@ -87,7 +87,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
 
     private DocumentZipTrace getDocumentZipTrace(String location) {
         long timeToLive = Long.parseLong(System.getenv("DOCUMENT_ZIP_TRACE_TTL_IN_DAYS"));
-        var expDate = Instant.now().plus(timeToLive, ChronoUnit.DAYS);
+        var expDate = Instant.now().plus(timeToLive, ChronoUnit.SECONDS);
         var documentZipTrace = new DocumentZipTrace();
         documentZipTrace.setCorrelationId(Tracer.getCorrelationId());
         documentZipTrace.setCreatedAt(Instant.now().toString());
