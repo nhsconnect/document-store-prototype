@@ -1,12 +1,23 @@
 # UI
 
-## Pre-requisites
+## Prerequisites
 
-Before starting the UI, install dependencies using:
+- [Node](https://nodejs.org/en/download/)
+- [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
+- [nvm](https://github.com/nvm-sh/nvm)
+
+_Note: Node/npm versions can be managed using [nvm](https://github.com/nvm-sh/nvm). The version can be found in
+the [.nvmrc](.nvmrc)._
+
+## Installing
+
+To install dependencies, run:
 
 ```bash
 npm ci
 ```
+
+_Note: This will remove your current `node_modules` package and replace it with a new one._
 
 ## Starting the UI
 
@@ -63,5 +74,5 @@ npx cypress open
 
 We have implemented a rudimentary feature toggle system using the `config.js` file. Feature activation is determined at
 build time depending on the `NODE_ENV` environment variable. There is a feature toggle
-React [context provider](ui/src/providers/FeatureToggleProvider.jsx) and custom hook for checking the value of the
+React [context provider](src/providers/FeatureToggleProvider.jsx) and custom hook for checking the value of the
 toggle.
