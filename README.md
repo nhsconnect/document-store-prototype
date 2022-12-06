@@ -6,6 +6,7 @@ Proof of concept implementation for an interoperable service capable of storing 
 
 - [Git](https://git-scm.com/)
 - [Dojo](https://github.com/kudulab/dojo#installation)
+- [Terraform](https://formulae.brew.sh/formula/terraform)
 - [colima](https://formulae.brew.sh/formula/colima)
 - [docker](https://formulae.brew.sh/formula/docker)
 - [docker-compose](https://formulae.brew.sh/formula/docker-compose)
@@ -22,9 +23,9 @@ of `CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED` feature toggle in the frontend.
 
 ### Running The Document Store
 
-#### 1. Start Colima
+#### 1. Start colima
 
-To start Colima, run:
+To start colima, run:
 
 ```bash
 colima start
@@ -970,4 +971,4 @@ to colima not being started. You can fix this by running `colima start`.
 
 If you are experiencing timeouts when running `./tasks start-localstack`, it is likely due to the Lima VM not having
 enough resources allocated to it. You can add more resources to the Lima VM by running `colima start --edit` and
-increasing the number of CPUs allocated and memory usage. 
+increasing the number of CPUs allocated to 4 and memory usage to 8GB. 
