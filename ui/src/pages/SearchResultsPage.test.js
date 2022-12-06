@@ -176,7 +176,7 @@ describe('<SearchResultsPage />', () => {
             expect(apiClientMock.getPresignedUrlForZip).toHaveBeenCalled();
 
             await waitFor(() => {
-                expect(screen.getByRole('button', {name: 'Download All'})).not.toBeDisabled();
+                expect(screen.queryByRole('button', {name: 'Download All'}));
             });
 
             expect(screen.queryByText('Failed to download, please retry.')).not.toBeInTheDocument();
@@ -200,7 +200,7 @@ describe('<SearchResultsPage />', () => {
             });
         });
 
-        it('should disable the download all button while waiting to download the zip file', async () => {
+        it('should disable and change Download All button to "Downloading..." while waiting to download the zip file', async () => {
             const apiClientMock = new ApiClient();
             const searchResult = searchResultFactory.build();
             apiClientMock.findByNhsNumber = jest.fn(() => {
@@ -214,17 +214,21 @@ describe('<SearchResultsPage />', () => {
                 expect(screen.getByText('List of documents available to download')).toBeInTheDocument();
             });
             userEvent.click(screen.getByRole('button', {name: 'Download All'}));
-            expect(screen.getByRole('button', {name: 'Download All'})).toBeDisabled();
+            await waitFor(() => {
+                expect(screen.queryByRole('button', {name: 'Downloading...'})).toBeDisabled();
+            });
         });
 
         it('should display error message when download fails after clicking download all button', async () => {
             const apiClientMock = new ApiClient();
+            const err = new Error('No url received');
+            const consoleError = jest.spyOn(console, 'error').mockImplementation(() => jest.fn());
             const searchResult = searchResultFactory.build();
             apiClientMock.findByNhsNumber = jest.fn(() => {
                 return [searchResult];
             });
             apiClientMock.getPresignedUrlForZip = jest.fn(() => {
-                throw new Error('No url received');
+                throw err;
             });
 
             render(<SearchResultsPage client={apiClientMock}/>);
@@ -238,6 +242,7 @@ describe('<SearchResultsPage />', () => {
             expect(apiClientMock.getPresignedUrlForZip).toHaveBeenCalled();
             await waitFor(() => {
                 expect(screen.getByText('Failed to download, please retry.')).toBeInTheDocument();
+                expect(consoleError).toHaveBeenCalledWith(err);
             });
         });
     });

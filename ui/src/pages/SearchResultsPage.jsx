@@ -101,7 +101,7 @@ export default function SearchResultsPage({client}) {
                                 secondary
                                 onClick={downloadAll}
                                 disabled={downloadState === states.PENDING}>
-                                Download All
+                                {downloadState === states.PENDING ? 'Downloading...' : 'Download All'}
                             </Button>
                             {downloadState === states.FAILED &&
                                 <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
