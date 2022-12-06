@@ -45,7 +45,7 @@ _Note: This will deploy your API Lambdas if their JARs are already built._
 
 #### 3. Build API Lambda JARs
 
-To build/re-build these into your `app/build/libs` dir, run in a non-dojo terminal window:
+To build/re-build these into [app/build/libs](app/build/libs), run in a non-dojo terminal:
 
 ```bash
 ./tasks build-api-jars
@@ -59,27 +59,27 @@ To deploy the API to LocalStack, run in a non-dojo terminal:
 ./tasks deploy-to-localstack
 ```
 
-The Terraform output from the deployment will include two important values:
+#### 5. Setup UI Config
+
+The Terraform output from [step 4](#4-deploy-api) will include two important values:
 
 - `api_gateway_rest_api_id`
 - `api_gateway_rest_api_stage`
 
-These can be used to construct requests with `curl` or Postman. They are also used to construct the API endpoint
-in `ui/src/config.js`. The URLs will have the following
-form: `http://HOST:3000/restapis/API-ID/STAGE/_user_request_/PATH`, where:
+In the [UI config](ui/src/config.js), replace `doc-store-api` `endpoint` with the following
+URL: `http://HOST:3000/restapis/API-ID/STAGE/_user_request_/PATH`. Then replace the following values:
 
-- `HOST`: the hostname or IP of the docker container for LocalStack.
-    - Within the docker-compose containers, this is `localstack`
-    - From outside your host laptop, this is `localhost` as LocalStack is exposed on local
-      port `4566`
-- `API-ID`: the value of `api_gateway_rest_api_id`
-  `STAGE`: the value from `api_gateway_rest_api_stage`
-- `PATH`: the remainder of the endpoint path. For example, a URL for the to request the metadata for a document with
-  ID `1234` might look like: `http://localhost:3000/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234`
+- `HOST` with `localstack` if within docker-compose containers or `localhost` if outside the host laptop
+    - In most cases, this will be `localhost`
+- `API-ID` with `api_gateway_rest_api_id`
+- `STAGE` with `api_gateway_rest_api_stage`
+
+_Note: A typical URL to request document metadata would look
+like: `http://localhost:3000/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234`._
 
 ### Running The UI
 
-For info on starting and developing the UI, visit the [UI README](/ui/README.md).
+For info on the UI, visit the [UI README](ui/README.md).
 
 ## Running Services On AWS
 
@@ -174,6 +174,19 @@ Machine, may need to target other IP addresses.
 
 To use this with Docker Machine, one might add the following to the Bash profile (or a utility
 like [direnv](https://direnv.net/)): `export EDGE_HOST_NAME=0.0.0.0`.
+
+## Troubleshooting
+
+### Docker Daemon Is Not Running
+
+If you see a log saying that the docker daemon is not running when running `./tasks start-localstack`, it is likely due
+to colima not being started. You can fix this by running `colima start`.
+
+### LocalStack Timeout On Start
+
+If you are experiencing timeouts when running `./tasks start-localstack`, it is likely due to the Lima VM not having
+enough resources allocated to it. You can add more resources to the Lima VM by running `colima start --edit` and
+increasing the number of CPUs allocated to 4 and memory usage to 8GB.
 
 ## APIs
 
@@ -959,16 +972,3 @@ No matches found:
   "total": 0
 }
 ```
-
-## Troubleshooting
-
-### Docker Daemon Is Not Running
-
-If you see a log saying that the docker daemon is not running when running `./tasks start-localstack`, it is likely due
-to colima not being started. You can fix this by running `colima start`.
-
-### LocalStack Timeout On Start
-
-If you are experiencing timeouts when running `./tasks start-localstack`, it is likely due to the Lima VM not having
-enough resources allocated to it. You can add more resources to the Lima VM by running `colima start --edit` and
-increasing the number of CPUs allocated to 4 and memory usage to 8GB. 
