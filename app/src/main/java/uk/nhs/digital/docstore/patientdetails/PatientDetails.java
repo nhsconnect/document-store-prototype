@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore.patientdetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;

@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -45,13 +46,13 @@ class PdsAdaptorClientTest {
     }
 
     @Test
-    public void shouldMakeOutboundCallAndReturnPatientDetailsIfPatientSearchConfigStubbingToggledOff() {
+    public void shouldMakeCallPdsAndReturnNullPatientDetailsIfPatientSearchConfigStubbingToggledOff() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
         var pdsAdaptorClient = new PdsAdaptorClient(stubbingOffPatientSearchConfig, httpClient);
 
-        when(httpClient.get(any(), any())).thenReturn(new Stub404HttpResponse());
+        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
 
         String nhsNumber = "1234";
 
@@ -61,10 +62,41 @@ class PdsAdaptorClientTest {
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsAdaptorRootUri())).isNotNull();
     }
 
-    private static class Stub404HttpResponse implements HttpResponse<String> {
+    @Test
+    @Disabled
+    public void shouldMakeCallPdsAndReturnNotNullPatientDetailsIfPatientSearchConfigStubbingToggledOff() {
+        var testLogappender = TestLogAppender.addTestLogAppender();
+
+        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
+        var pdsAdaptorClient = new PdsAdaptorClient(stubbingOffPatientSearchConfig, httpClient);
+
+        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(200, this.getJSONPatientDetails()));
+
+        String nhsNumber = "1234";
+
+        pdsAdaptorClient.fetchPatientDetails(nhsNumber);
+
+        verify(httpClient).get(any(), contains(nhsNumber));
+        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsAdaptorRootUri())).isNotNull();
+    }
+
+    private String getJSONPatientDetails() {
+        return null;
+    }
+
+    private static class StubPdsResponse implements HttpResponse<String> {
+
+        private int statusCode;
+
+        private String body;
+
+        public StubPdsResponse(int statusCode, String body) {
+            this.statusCode = statusCode;
+        }
+
         @Override
         public int statusCode() {
-            return 404;
+            return statusCode;
         }
 
         @Override
@@ -84,7 +116,7 @@ class PdsAdaptorClientTest {
 
         @Override
         public String body() {
-            return null;
+            return body;
         }
 
         @Override
