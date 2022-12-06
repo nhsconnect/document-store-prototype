@@ -16,7 +16,7 @@ public class PatientSearchConfig {
     }
 
     public String pdsAdaptorRootUri() {
-        return environment.getEnvVar("PDS_ADAPTOR_BASE_URL", "http://pds-adaptor:8080/");
+        return environment.getEnvVar("PDS_FHIR_ENDPOINT", "https://sandbox.api.service.nhs.uk/personal-demographics/FHIR/R4/");
     }
 
     public boolean pdsAdaptorIsStubbed() {
