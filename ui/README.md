@@ -64,14 +64,14 @@ npm test
 E2E tests are run using [Cypress](https://www.cypress.io/) and require all services (incl. the UI) to be running
 locally.
 
-#### Config Setup
+#### 1. Setup Cypress Config
 
 Before running the tests, you must set valid AWS Cognito credentials. Copy
 the [cypress.env.json.example](cypress.env.json.example) file and rename it to `cypress.env.json`. Replace the empty
 strings with a valid
 AWS Cognito username and password.
 
-#### Running Cypress
+#### 2. Run Cypress
 
 To start the E2E tests in open mode (with a visible browser window), run:
 
