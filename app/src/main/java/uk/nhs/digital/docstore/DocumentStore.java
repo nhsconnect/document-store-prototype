@@ -17,7 +17,7 @@ import java.time.Instant;
 import java.util.Date;
 
 public class DocumentStore {
-    private static final Duration PRE_SIGNED_URL_DURATION = Duration.ofSeconds(60);
+    private static final Duration PRE_SIGNED_URL_DURATION = Duration.ofMinutes(30);
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_ENDPOINT = "";
     private final String bucketName;

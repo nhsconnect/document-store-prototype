@@ -6,25 +6,32 @@ Proof of concept implementation for an interoperable service capable of storing 
 
 - [Git](https://git-scm.com/)
 - [Dojo](https://github.com/kudulab/dojo#installation)
+- [Terraform](https://formulae.brew.sh/formula/terraform)
 - [colima](https://formulae.brew.sh/formula/colima)
 - [docker](https://formulae.brew.sh/formula/docker)
 - [docker-compose](https://formulae.brew.sh/formula/docker-compose)
 - [git-mob](https://www.npmjs.com/package/git-mob)
-- [Node](https://nodejs.org/en/download/): `v14.17.x`
-- [npm](https://docs.npmjs.com/cli/v6/commands/npm-install): `v6.14.x`
 - [AWS CLI](https://aws.amazon.com/cli/)
 
 _Note: It is recommended to use [Homebrew](https://brew.sh/) to install most of these._
 
 ## Running Locally
 
-It is possible to run the Document Store backend locally (minus Cognito or CIS2). Authentication through the UI will
-still require either Cognito to be set up in AWS, or CIS2 to be configured (depending on the value of
-the `CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED` feature toggle on the frontend).
+It is possible to run the Document Store backend locally (excl. Cognito and CIS2). Auth through the UI will
+still require either Cognito to be set up in AWS, or CIS2 to be configured. This is determined by the value
+of `CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED` feature toggle in the frontend.
 
 ### Running The Document Store
 
-#### 1. Start LocalStack
+#### 1. Start colima
+
+To start colima, run:
+
+```bash
+colima start
+```
+
+#### 2. Start LocalStack
 
 To start LocalStack (incl. bootstrap and applying to Terraform), run:
 
@@ -36,7 +43,7 @@ To start LocalStack (incl. bootstrap and applying to Terraform), run:
 
 _Note: This will deploy your API Lambdas if their JARs are already built._
 
-#### 2. Build API Lambda JARs
+#### 3. Build API Lambda JARs
 
 To build/re-build these into your `app/build/libs` dir, run in a non-dojo terminal window:
 
@@ -44,7 +51,9 @@ To build/re-build these into your `app/build/libs` dir, run in a non-dojo termin
 ./tasks build-api-jars
 ```
 
-3. Deploy or re-deploy the API:
+#### 4. Deploy API:
+
+To deploy the API to LocalStack, run in a non-dojo terminal:
 
 ```bash
 ./tasks deploy-to-localstack
@@ -55,51 +64,40 @@ The Terraform output from the deployment will include two important values:
 - `api_gateway_rest_api_id`
 - `api_gateway_rest_api_stage`
 
-These can be used to construct requests with `curl` or Postman, and also to construct the API endpoint
-in `ui/src/config.js`. The URLs will have the following form:
+These can be used to construct requests with `curl` or Postman. They are also used to construct the API endpoint
+in `ui/src/config.js`. The URLs will have the following
+form: `http://HOST:3000/restapis/API-ID/STAGE/_user_request_/PATH`, where:
 
-```
-http://HOST:3000/restapis/API-ID/STAGE/_user_request_/PATH
-```
+- `HOST`: the hostname or IP of the docker container for LocalStack.
+    - Within the docker-compose containers, this is `localstack`
+    - From outside your host laptop, this is `localhost` as LocalStack is exposed on local
+      port `4566`
+- `API-ID`: the value of `api_gateway_rest_api_id`
+  `STAGE`: the value from `api_gateway_rest_api_stage`
+- `PATH`: the remainder of the endpoint path. For example, a URL for the to request the metadata for a document with
+  ID `1234` might look like: `http://localhost:3000/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234`
 
-where
+### Running The UI
 
-- `HOST` is the hostname or IP of the Docker container for LocalStack. Within the 'docker-compose' containers
-  this is `localstack`, from outside in your host laptop this is `localhost` because localstack is exposed on the local
-  4566 port.
-- `API-ID` is the value from
-- `api_gateway_rest_api_id`, `STAGE` is the value from `api_gateway_rest_api_stage`, and `PATH` is the remainder of the
-  endpoint path. For example, to request the metadata for a document with ID `1234`, the URL might look like:
+For info on starting and developing the UI, visit the [UI README](/ui/README.md).
 
-```
-http://localhost:3000/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234
-```
+## Running Services On AWS
 
-(TODO - set this up as an ENV variable automatically?)
-
-### Starting the UI
-
-For information on starting and testing the UI, please visit [the UI ReadMe](/ui/README.md)
-
-## Running services on AWS
-
-### AWS authentication
+### AWS Auth
 
 Ensure the correct role has been assumed before running any operations against
 AWS, [see here for details](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
 
-### Create terraform state bucket and the DynamoDB locking table
+### Create Terraform State Bucket & The DynamoDB Locking Table
 
   ```bash
     ./bootstrap-terraform.sh "environment"
   ```
 
-example: `./bootstrap-terraform.sh pre-prod`
-
 ### Initialising GoCD Agents
 
 In order to deploy to AWS from the pipeline, a GoCD agent must have a role and policy attached to it. These need to be
-created before running the pipeline for the first time. This can be done by running the following gradle tasks:
+created before running the pipeline for the first time. This can be done by running the following Gradle tasks:
 
 1. Create a CI Role:
     ```bash
@@ -112,45 +110,51 @@ created before running the pipeline for the first time. This can be done by runn
 
 ### Basic Auth
 
-By default, basic auth is enabled in all environments, to disable the basic auth `enable_basic_auth` terraform variable
-can be set to false
+By default, basic auth is enabled in all envs, to disable the basic auth. Set the Terraform variable `enable_basic_auth`
+to false.
 
-1. Basic auth username will be same the environment name. eg dev, pre-prod
-2. To get the password for the basic auth in the environment
-
-```bash
-   aws ssm get-parameter --name /prs/{ENVIRONMENT}/user-input/basic-auth-password --with-decryption
-```
+1. Basic auth username will be same the env name. e.g. `dev`, `pre-prod`
+2. To get the password for the basic auth in the env:
+    ```bash
+       aws ssm get-parameter --name /prs/{ENVIRONMENT}/user-input/basic-auth-password --with-decryption
+    ```
 
 ### Managing Cognito Users
 
 There are commands available for creating and deleting Cognito users. You will need to assume a role with permission to
 create and delete users in the relevant AWS account before running them.
 
-`./tasks create-cognito-user ${username} ${password}`
-`./tasks delete-cognito-user ${username}`
+Creating:
+
+```bash
+  ./tasks create-cognito-user ${username} ${password}`
+```
+
+Deleting:
+
+```bash
+  ./tasks delete-cognito-user ${username}
+```
 
 ## Testing
 
-The `test` source set contains unit tests. These don't have any dependencies on infrastructure or external services.
+The `test` source set contains unit tests. These don't have any dependencies on infra or external services.
 These are run in CI. There is also a suite of API tests within the `e2eTest` source set which require LocalStack to
 simulate AWS. Since we are using the open source version of LocalStack, we are unable to run the API tests in CI.
 
-There also a set of E2E test that run in the browser using Cypress. See [the UI ReadMe](/ui/README.md)
+There also a set of E2E test that run in the browser using Cypress. See the [UI README](/ui/README.md).
 
-### Reading logs
+### Reading Logs
 
-Useful logging output may not be revealed in the output from end-to-end tests. In that instance, it may be useful to
+Useful logging output may not be revealed in the output from E2E tests. In that instance, it may be useful to
 read the logs from LocalStack. This is done using the AWS CLI tool, pointing it at the LocalStack container. The command
-looks like the following:
+looks like the following: `aws --endpoint-url=http://HOST:4566 logs tail /aws/lambda/HANDLER`, where:
 
-```bash
-aws --endpoint-url=http://HOST:4566 logs tail /aws/lambda/HANDLER
-```
+- `HOST` should be substituted for the hostname of the LocalStack Docker container (see the
+  [env variables](#env-variables) section for more info)
+- `HANDLER` should be substituted for the name of the relevant controller
 
-where `HOST` should be substituted for the hostname of the LocalStack Docker container (see the
-[Environment variables](#environment-variables) section for more information), and `HANDLER` should be substituted for
-the name of the relevant controller. For instance, to read search logs with a native Docker service, one could run:
+For instance, to read search logs with a native Docker service, one could run:
 
 ```bash
 aws --endpoint-url=http://localhost:4566 logs tail /aws/lambda/DocumentReferenceSearchHandler
@@ -159,21 +163,17 @@ aws --endpoint-url=http://localhost:4566 logs tail /aws/lambda/DocumentReference
 One may also follow log output as it happens by applying the `follow` flag to the `tail` subcommand:
 `tail --follow HANDLER`.
 
-### Environment variables
+### Env Variables
 
 LocalStack and the E2E tests support a native Docker service running on `localhost`. Other setups, such as Docker
 Machine, may need to target other IP addresses.
 
-| Variable name  | Description                                                                                   |
-|----------------|-----------------------------------------------------------------------------------------------|
-| EDGE_HOST_NAME | Overrides the host that LocalStack binds its edge service to (default: `127.0.0.1`).          |
+| Variable name    | Description                                                                                   |
+|------------------|-----------------------------------------------------------------------------------------------|
+| `EDGE_HOST_NAME` | Overrides the host that LocalStack binds its edge service to (default: `127.0.0.1`).          |
 
 To use this with Docker Machine, one might add the following to the Bash profile (or a utility
-like [direnv](https://direnv.net/)):
-
-```bash
-export EDGE_HOST_NAME=0.0.0.0
-```
+like [direnv](https://direnv.net/)): `export EDGE_HOST_NAME=0.0.0.0`.
 
 ## APIs
 
@@ -971,4 +971,4 @@ to colima not being started. You can fix this by running `colima start`.
 
 If you are experiencing timeouts when running `./tasks start-localstack`, it is likely due to the Lima VM not having
 enough resources allocated to it. You can add more resources to the Lima VM by running `colima start --edit` and
-increasing the number of CPUs allocated and memory usage. 
+increasing the number of CPUs allocated to 4 and memory usage to 8GB. 

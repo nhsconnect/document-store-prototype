@@ -51,4 +51,10 @@ public class ErrorResponseGenerator {
                 .addIssue(operationOutcomeIssueComponent));
         return apiConfig.getApiGatewayResponse(statusCode, body, "GET, OPTIONS, POST", null);
     }
+
+    public APIGatewayProxyResponseEvent outOfMemoryResponse(OutOfMemoryError e) {
+        logger.error(e.getMessage(), e);
+        var body = "File too large: " +  e.getMessage();
+        return apiConfig.getApiGatewayResponse(507, body, "GET, OPTIONS, POST", null);
+    }
 }

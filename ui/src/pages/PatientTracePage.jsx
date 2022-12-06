@@ -1,36 +1,29 @@
-import {
-    Button,
-    ErrorSummary,
-    Fieldset,
-    Input,
-    SummaryList,
-    WarningCallout,
-} from "nhsuk-react-components";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
-import BackButton from "../components/BackButton";
+import {Button, ErrorSummary, Fieldset, Input, SummaryList, WarningCallout,} from 'nhsuk-react-components';
+import React, {useState} from 'react';
+import {useForm} from 'react-hook-form';
+import {useNavigate} from 'react-router';
+import {useNhsNumberProviderContext} from '../providers/NhsNumberProvider';
+import BackButton from '../components/BackButton';
 
 const states = {
-    IDLE: "idle",
-    SEARCHING: "searching",
-    SUCCEEDED: "succeeded",
-    FAILED: "failed",
+    IDLE: 'idle',
+    SEARCHING: 'searching',
+    SUCCEEDED: 'succeeded',
+    FAILED: 'failed',
 };
 
-export const PatientTracePage = ({ client, nextPage, title }) => {
-    const { register, formState, getValues, handleSubmit } = useForm();
-    const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
-        required: "Please enter a 10 digit NHS number",
+export const PatientTracePage = ({client, nextPage, title}) => {
+    const {register, formState, getValues, handleSubmit} = useForm();
+    const {ref: nhsNumberRef, ...nhsNumberProps} = register('nhsNumber', {
+        required: 'Please enter a 10 digit NHS number',
         pattern: {
             value: /^[0-9]{10}$/,
-            message: "Please enter a 10 digit NHS number",
+            message: 'Please enter a 10 digit NHS number',
         },
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});
-    const [nhsNumber, setNhsNumber] = useNhsNumberProviderContext();
+    const [, setNhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
@@ -45,13 +38,13 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
     };
 
     const onNextClicked = () => {
-        setNhsNumber(getValues("nhsNumber"));
+        setNhsNumber(getValues('nhsNumber'));
         navigate(nextPage);
     };
 
     return (
         <>
-            <BackButton />
+            <BackButton/>
             <form onSubmit={handleSubmit(doSubmit)} noValidate>
                 {submissionState === states.FAILED && (
                     <ErrorSummary
@@ -68,11 +61,11 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
                     </ErrorSummary>
                 )}
                 <Fieldset>
-                    <Fieldset.Legend headingLevel={"h1"} isPageHeading>
+                    <Fieldset.Legend headingLevel={'h1'} isPageHeading>
                         {title}
                     </Fieldset.Legend>
                     <Input
-                        id={"nhs-number-input"}
+                        id={'nhs-number-input'}
                         label="NHS number"
                         name="nhsNumber"
                         error={formState.errors.nhsNumber?.message}
@@ -84,7 +77,7 @@ export const PatientTracePage = ({ client, nextPage, title }) => {
                 </Fieldset>
                 {submissionState === states.SEARCHING && (
                     <p>
-                        <progress aria-label={"Loading..."} />
+                        <progress aria-label={'Loading...'}/>
                     </p>
                 )}
                 {submissionState === states.SUCCEEDED &&

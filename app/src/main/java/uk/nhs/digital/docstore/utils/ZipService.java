@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static java.util.zip.Deflater.DEFLATED;
+
 public class ZipService {
     private final DocumentStore documentStore;
 
@@ -26,6 +28,7 @@ public class ZipService {
     public ByteArrayInputStream zipDocuments(List<DocumentMetadata> documentMetadataList) throws IOException {
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
+        zipOutputStream.setLevel(DEFLATED);
 
         for (DocumentMetadata metadata : documentMetadataList) {
             if (metadata.isDocumentUploaded()){

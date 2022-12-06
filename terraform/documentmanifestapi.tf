@@ -4,8 +4,8 @@ resource "aws_lambda_function" "document_manifest_lambda" {
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
 
-  timeout     = 15
-  memory_size = 448
+  timeout     = 60
+  memory_size = 1000
 
   filename = var.lambda_jar_filename
 

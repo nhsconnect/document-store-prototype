@@ -5,7 +5,7 @@ import ca.uhn.fhir.parser.IParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
-import uk.nhs.digital.docstore.exceptions.*;
+import uk.nhs.digital.docstore.exceptions.TestException;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +53,20 @@ public class ErrorResponseGeneratorTest {
         assertThat(headers.get("Access-Control-Allow-Origin")).isEqualTo(AMPLIFY_BASE_URL);
         assertThat(headers.get("Access-Control-Allow-Methods")).isEqualTo("GET, OPTIONS, POST");
         assertThatJson(response.getBody()).isEqualTo(expectedErrorResponse);
+    }
+
+    @Test
+    void return507ForOutOfMemoryErrors() {
+        var error = "out of memory error";
+
+        var response = errorResponseGenerator.outOfMemoryResponse(new OutOfMemoryError(error));
+        var headers = response.getHeaders();
+
+        assertThat(response.getStatusCode()).isEqualTo(507);
+        assertThat(headers.get("Content-Type")).isEqualTo("application/fhir+json");
+        assertThat(headers.get("Access-Control-Allow-Origin")).isEqualTo(AMPLIFY_BASE_URL);
+        assertThat(headers.get("Access-Control-Allow-Methods")).isEqualTo("GET, OPTIONS, POST");
+        assertThat(response.getBody()).isEqualTo("File too large: " + error);
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {

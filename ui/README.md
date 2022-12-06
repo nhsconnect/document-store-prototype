@@ -1,12 +1,23 @@
 # UI
 
-## Pre-requisites
+## Prerequisites
 
-Before starting the UI, install dependencies using:
+- [Node](https://nodejs.org/en/download/)
+- [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
+- [nvm](https://github.com/nvm-sh/nvm)
+
+_Note: Node/npm versions can be managed using [nvm](https://github.com/nvm-sh/nvm). The version can be found in
+the [.nvmrc](.nvmrc)._
+
+## Installing
+
+To install dependencies, run:
 
 ```bash
 npm ci
 ```
+
+_Note: This will remove your current `node_modules` package and replace it with a new one._
 
 ## Starting the UI
 
@@ -36,11 +47,13 @@ npm run start
 Don't close this while looking at the UI or running the cypress tests - you'll need to run the rest of this in a new
 terminal.
 
-## Testing the UI
+## Testing
 
 ### Unit Tests
 
-Unit tests are run using Jest test runner. To run all units tests:
+Unit tests are run using [Jest](https://jestjs.io/)
+and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/). They are ran using the
+following command:
 
 ```bash
 npm test
@@ -48,20 +61,33 @@ npm test
 
 ### E2E Tests
 
-E2E tests are run using Cypress. Before running the tests, you must set valid AWS Cognito credentials. Copy
-the `cypress.env.json.example` file and rename the file to `cypress.env.json`. Replace the empty strings with a valid
-AWS Cognito username and password. Ensure the `config.js` file has been configured as explained above, and that
-localstack is running.
+E2E tests are run using [Cypress](https://www.cypress.io/) and require all services (incl. the UI) to be running
+locally.
 
-To start Cypress:
+#### Config Setup
+
+Before running the tests, you must set valid AWS Cognito credentials. Copy
+the [cypress.env.json.example](cypress.env.json.example) file and rename it to `cypress.env.json`. Replace the empty
+strings with a valid
+AWS Cognito username and password.
+
+#### Running Cypress
+
+To start the E2E tests in open mode (with a visible browser window), run:
 
 ```bash
-npx cypress open
+npm run test:e2e:open
+```
+
+For headless mode (without a visible browser window), run:
+
+```bash
+npm run test:e2e
 ```
 
 ## Feature Toggles
 
 We have implemented a rudimentary feature toggle system using the `config.js` file. Feature activation is determined at
 build time depending on the `NODE_ENV` environment variable. There is a feature toggle
-React [context provider](ui/src/providers/FeatureToggleProvider.jsx) and custom hook for checking the value of the
+React [context provider](src/providers/FeatureToggleProvider.jsx) and custom hook for checking the value of the
 toggle.

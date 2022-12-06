@@ -80,6 +80,8 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
         } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e, fhirContext.newJsonParser());
+        } catch (OutOfMemoryError outOfMemoryError) {
+            return errorResponseGenerator.outOfMemoryResponse(outOfMemoryError);
         }
     }
 
