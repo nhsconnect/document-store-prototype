@@ -1,5 +1,7 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import uk.nhs.digital.docstore.utils.CommonUtils;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -14,6 +16,7 @@ public class SimpleHttpClient {
         try {
             var confirmNHSNumberRequest = HttpRequest.newBuilder(URI.create(uri))
                     .GET()
+                    .header("X-Request-ID", CommonUtils.generateRandomUUIDString())
                     .build();
             return newHttpClient().send(confirmNHSNumberRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
         }
