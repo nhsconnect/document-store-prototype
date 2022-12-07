@@ -19,13 +19,16 @@ describe('upload and download', () => {
         if (isCIS2Enabled) {
             cy.contains('Start now').click();
             cy.cis2Login(username, password);
+
+            cy.url().should('eq', baseUrl + '/home');
         } else {
             cy.login(username, password);
+
+            cy.url().should('eq', baseUrl + '/');
         }
 
         cy.injectAxe();
 
-        cy.url().should('eq', baseUrl + '/');
         cy.get('#upload').check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.get('form').submit();
@@ -48,9 +51,10 @@ describe('upload and download', () => {
 
             cy.visit('/');
             cy.contains('Start now').click();
+        } else {
+            cy.url().should('eq', baseUrl + '/');
         }
 
-        cy.url().should('eq', baseUrl + '/');
         cy.get('#download').check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.get('form').submit();
