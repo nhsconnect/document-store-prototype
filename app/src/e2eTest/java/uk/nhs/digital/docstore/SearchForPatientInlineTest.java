@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
-import uk.nhs.digital.docstore.patientdetails.PdsAdaptorClient;
+import uk.nhs.digital.docstore.patientdetails.PdsFhirClient;
 import uk.nhs.digital.docstore.patientdetails.SearchPatientDetailsHandler;
 
 import java.io.File;
@@ -37,14 +37,14 @@ public class SearchForPatientInlineTest {
     @BeforeEach
     public void setUp() {
         var patientSearchConfig = new LocalhostPdsAdaptorNoStubbingPatientSearchConfig();
-        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsAdaptorClient(patientSearchConfig));
+        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsFhirClient(patientSearchConfig));
         requestBuilder = new RequestEventBuilder();
     }
 
     @Test
     void returnsUsableResponseWhenDefaultToStubbedResponses() {
         var defaultConfigWithStubbingOn = new PatientSearchConfig();
-        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsAdaptorClient(defaultConfigWithStubbingOn));
+        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsFhirClient(defaultConfigWithStubbingOn));
 
         var reasonableRequest = requestBuilder
                 .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009")

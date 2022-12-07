@@ -21,21 +21,21 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
 
     private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
-    private final PdsAdaptorClient pdsAdaptorClient;
+    private final PdsFhirClient pdsFhirClient;
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {
-        this(new ApiConfig(), new PdsAdaptorClient());
+        this(new ApiConfig(), new PdsFhirClient());
     }
 
-    public SearchPatientDetailsHandler(ApiConfig apiConfig, PdsAdaptorClient pdsAdaptorClient) {
-        this(FhirContext.forR4(), apiConfig, pdsAdaptorClient);
+    public SearchPatientDetailsHandler(ApiConfig apiConfig, PdsFhirClient pdsFhirClient) {
+        this(FhirContext.forR4(), apiConfig, pdsFhirClient);
     }
 
-    public SearchPatientDetailsHandler(FhirContext fhirContext, ApiConfig apiConfig, PdsAdaptorClient pdsAdaptorClient) {
+    public SearchPatientDetailsHandler(FhirContext fhirContext, ApiConfig apiConfig, PdsFhirClient pdsFhirClient) {
         this.fhirContext = fhirContext;
         this.apiConfig = apiConfig;
-        this.pdsAdaptorClient = pdsAdaptorClient;
+        this.pdsFhirClient = pdsFhirClient;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
         try {
             var parameterForm = new NHSNumberSearchParameterForm(searchParameters);
 
-            var patientDetails = pdsAdaptorClient.fetchPatientDetails(parameterForm.getNhsNumber());
+            var patientDetails = pdsFhirClient.fetchPatientDetails(parameterForm.getNhsNumber());
             if (patientDetails == null) {
                 return emptyBundleResponse();
             }

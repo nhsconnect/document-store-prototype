@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PdsAdaptorClientTest {
+class PdsFhirClientTest {
 
     @Mock
     private SimpleHttpClient httpClient;
@@ -33,7 +33,7 @@ class PdsAdaptorClientTest {
 
         var defaultPatientSearchConfig = new PatientSearchConfig();
 
-        var pdsAdaptorClient = new PdsAdaptorClient(defaultPatientSearchConfig, httpClient);
+        var pdsAdaptorClient = new PdsFhirClient(defaultPatientSearchConfig, httpClient);
 
         var nhsNumber = "123445678";
 
@@ -51,7 +51,7 @@ class PdsAdaptorClientTest {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsAdaptorClient = new PdsAdaptorClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsAdaptorClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
 
@@ -68,7 +68,7 @@ class PdsAdaptorClientTest {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsAdaptorClient = new PdsAdaptorClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsAdaptorClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
 
         String nhsNumber = "9000000009";
 

@@ -5,22 +5,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class PdsAdaptorClient {
-    private static final Logger logger = LoggerFactory.getLogger(PdsAdaptorClient.class);
+public class PdsFhirClient {
+    private static final Logger logger = LoggerFactory.getLogger(PdsFhirClient.class);
 
     private final PatientSearchConfig patientSearchConfig;
     private final PatientDetailsMapper patientDetailsMapper;
     private final SimpleHttpClient httpClient;
 
-    public PdsAdaptorClient() {
+    public PdsFhirClient() {
         this(new PatientSearchConfig());
     }
 
-    public PdsAdaptorClient(PatientSearchConfig patientSearchConfig) {
+    public PdsFhirClient(PatientSearchConfig patientSearchConfig) {
         this(patientSearchConfig, new SimpleHttpClient());
     }
 
-    public PdsAdaptorClient(PatientSearchConfig patientSearchConfig, SimpleHttpClient httpClient) {
+    public PdsFhirClient(PatientSearchConfig patientSearchConfig, SimpleHttpClient httpClient) {
         this.patientSearchConfig = patientSearchConfig;
         this.httpClient = httpClient;
         this.patientDetailsMapper = new PatientDetailsMapper();
