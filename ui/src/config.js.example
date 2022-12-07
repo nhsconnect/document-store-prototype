@@ -5,7 +5,7 @@ const config = {
         userPoolWebClientId: "%client-id%",
         providerId: "%oidc-provider-id%",
         oauth: {
-            domain: "%cognito-domain%",
+            domain: "https://%cognito-domain%",
             scope: ["openid"],
             redirectSignIn: "%cognito-redirect-signin%",
             redirectSignOut: "%cognito-redirect-signout%",

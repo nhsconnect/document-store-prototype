@@ -5,7 +5,7 @@ const config = {
         userPoolWebClientId: "7mm2u6re8jsptrgallf74g2c6c",
         providerId: "COGNITO",
         oauth: {
-            domain: "doc-store-user-pool.auth.eu-west-2.amazoncognito.com",
+            domain: "https://doc-store-user-pool.auth.eu-west-2.amazoncognito.com",
             scope: ["openid"],
             redirectSignIn: "http://localhost:3000/cis2-auth-callback",
             redirectSignOut: "http://localhost:3000",
