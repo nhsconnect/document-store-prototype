@@ -1,6 +1,6 @@
-import {Auth, Hub} from "aws-amplify";
-import {useContext, useEffect, useMemo} from "react";
-import {useLocation} from "react-router";
+import { Auth, Hub } from "aws-amplify";
+import { useContext, useEffect, useMemo } from "react";
+import { useLocation } from "react-router";
 
 import awsConfig from "../../config";
 import AuthenticationContext from "../../providers/AuthenticatorErrorsProvider";
@@ -83,7 +83,6 @@ const CIS2Authenticator = ({ children }) => {
 
     useEffect(() => {
         const authHandler = async ({ payload: { event, data } }) => {
-            console.log("EVENT: ", event)
             switch (event) {
                 case "signIn":
                 case "cognitoHostedUI":
