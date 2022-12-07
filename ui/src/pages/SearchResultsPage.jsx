@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {useForm} from 'react-hook-form';
-import {Button, ErrorMessage, Fieldset, Input, Table} from 'nhsuk-react-components';
-import {useNhsNumberProviderContext} from '../providers/NhsNumberProvider';
-import {useNavigate} from 'react-router';
-import BackButton from '../components/BackButton';
-import {useFeatureToggle} from '../providers/FeatureToggleProvider';
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
+import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-components";
+import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
+import {useNavigate} from "react-router";
+import BackButton from "../components/BackButton";
+import useApi from "../apiClients/useApi";
 import {downloadFile} from '../utils/utils';
 
 const states = {
@@ -14,17 +14,15 @@ const states = {
     FAILED: 'failed',
 };
 
-export default function SearchResultsPage({client}) {
+const SearchResultsPage = () => {
+    const client = useApi()
     const {register} = useForm();
-    const [nhsNumber] = useNhsNumberProviderContext();
-    const navigate = useNavigate();
-    const isCIS2Enabled = useFeatureToggle('CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED');
-
+    const {ref: nhsNumberRef, ...nhsNumberProps} = register("nhsNumber");
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
-    const [downloadState, setDownloadState] = useState(states.INITIAL);
-
-    const {ref: nhsNumberRef, ...nhsNumberProps} = register('nhsNumber');
+    const[downloadState, setDownloadState] = useState(states.INITIAL);
+    const [nhsNumber] = useNhsNumberProviderContext();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!nhsNumber) {
@@ -44,7 +42,7 @@ export default function SearchResultsPage({client}) {
             }
         };
         void search();
-    }, [client, nhsNumber, navigate, setSubmissionState, setSearchResults]);
+    }, [nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
     const downloadAll = async () => {
         setDownloadState(states.PENDING);
@@ -60,9 +58,8 @@ export default function SearchResultsPage({client}) {
         }
     }
 
-    function goToHome() {
-        const homePagePath = isCIS2Enabled ? '/home' : '/';
-        navigate(homePagePath);
+    const goToHome = () => {
+        navigate("/home");
     }
 
     return (
@@ -135,3 +132,5 @@ export default function SearchResultsPage({client}) {
         </>
     );
 }
+
+export default SearchResultsPage

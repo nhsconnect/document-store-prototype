@@ -60,7 +60,8 @@ function get_signout_url {
   fi
 }
 
-function update_ui_config_file() {
+function create_ui_config_file() {
+  cp ui/src/config.js.example ui/src/config.js
   user_pool="$(jq -r '.cognito_user_pool_ids.value[0]' "$1")"
   user_pool_client_id="$(jq -r '.cognito_client_ids.value[0]' "$1")"
   api_endpoint="$(jq -r '.api_gateway_url.value' "$1")"
@@ -76,6 +77,7 @@ function update_ui_config_file() {
   sed -i "s~%cognito-redirect-signin%~${cognito_redirect_signin}~" ui/src/config.js
   sed -i "s~%cognito-redirect-signout%~${cognito_redirect_signout}~" ui/src/config.js
   sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
+  sed -i "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
 }
 
 function create_cypress_config_file() {
@@ -168,7 +170,7 @@ install-ui-dependencies)
   ;;
 configure-ui)
   get_terraform_output terraform_output.json
-  update_ui_config_file terraform_output.json
+  create_ui_config_file terraform_output.json
   ;;
 test-ui)
   cd ui

@@ -1,4 +1,4 @@
-import { Amplify, Auth, API } from "aws-amplify";
+import { Amplify, API } from "aws-amplify";
 import React from "react";
 import {
     BrowserRouter as Router,
@@ -7,40 +7,31 @@ import {
     Routes,
 } from "react-router-dom";
 import "./App.scss";
-import awsConfig from "./config";
+import config from "./config";
 import ApiClient from "./apiClients/apiClient";
 import Authenticator from "./components/Authenticator/Authenticator";
 import HomePage from "./pages/HomePage";
 import Layout from "./components/layout";
-import FeatureToggleProvider, {
-    useFeatureToggle,
-} from "./providers/FeatureToggleProvider";
+import FeatureToggleProvider from "./providers/FeatureToggleProvider";
 import { NhsNumberProvider } from "./providers/NhsNumberProvider";
 import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import StartPage from "./pages/StartPage";
-import CIS2AuthenticationResultNavigator from "./components/Authenticator/CIS2AuthenticationResultNavigator";
+import AuthenticationCallbackRouter from "./components/Authenticator/AuthenticationCallbackRouter";
+import AuthProvider from "./components/Authenticator/AuthProvider";
 
-Amplify.configure(awsConfig);
+Amplify.configure({ API: config.API });
 
-const client = new ApiClient(API, Auth);
+const client = new ApiClient(API);
 const AppRoutes = () => {
-    const isCIS2Enabled = useFeatureToggle(
-        "CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED"
-    );
-    const homePagePath = isCIS2Enabled ? "/home" : "/";
     return (
         <Routes>
-            {isCIS2Enabled && (
-                <>
-                    <Route element={<StartPage />} path={"/"} />
-                    <Route
-                        element={<CIS2AuthenticationResultNavigator />}
-                        path={"cis2-auth-callback"}
-                    />
-                </>
-            )}
+            <Route element={<StartPage />} path={"/"} />
+            <Route
+                element={<AuthenticationCallbackRouter />}
+                path={"cis2-auth-callback"}
+            />
             <Route
                 element={
                     <Authenticator.Protected>
@@ -48,7 +39,7 @@ const AppRoutes = () => {
                     </Authenticator.Protected>
                 }
             >
-                <Route path={homePagePath} element={<HomePage />} />
+                <Route path={"/home"} element={<HomePage />} />
                 <Route
                     path="/search"
                     element={
@@ -93,7 +84,7 @@ const AppRoutes = () => {
                     />
                     <Route
                         path="/upload/submit"
-                        element={<UploadDocumentPage client={client} nextPagePath={homePagePath} />}
+                        element={<UploadDocumentPage client={client} nextPagePath={"/home"} />}
                     />
                 </Route>
             </Route>
@@ -101,16 +92,18 @@ const AppRoutes = () => {
     );
 };
 
+
+
 const App = () => {
     return (
-        <FeatureToggleProvider>
+        <FeatureToggleProvider config={config}>
             <Router>
-                <Authenticator>
+                <AuthProvider>
                     <Layout>
                         <Authenticator.Errors />
                         <AppRoutes />
                     </Layout>
-                </Authenticator>
+                </AuthProvider>
             </Router>
         </FeatureToggleProvider>
     );

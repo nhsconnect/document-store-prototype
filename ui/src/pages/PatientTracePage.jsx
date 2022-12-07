@@ -1,9 +1,17 @@
-import {Button, ErrorSummary, Fieldset, Input, SummaryList, WarningCallout,} from 'nhsuk-react-components';
-import React, {useState} from 'react';
-import {useForm} from 'react-hook-form';
-import {useNavigate} from 'react-router';
-import {useNhsNumberProviderContext} from '../providers/NhsNumberProvider';
-import BackButton from '../components/BackButton';
+import {
+    Button,
+    ErrorSummary,
+    Fieldset,
+    Input,
+    SummaryList,
+    WarningCallout,
+} from "nhsuk-react-components";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import BackButton from "../components/BackButton";
+import useApi from "../apiClients/useApi";
 
 const states = {
     IDLE: 'idle',
@@ -12,10 +20,11 @@ const states = {
     FAILED: 'failed',
 };
 
-export const PatientTracePage = ({client, nextPage, title}) => {
-    const {register, formState, getValues, handleSubmit} = useForm();
-    const {ref: nhsNumberRef, ...nhsNumberProps} = register('nhsNumber', {
-        required: 'Please enter a 10 digit NHS number',
+export const PatientTracePage = ({ nextPage, title }) => {
+    const client = useApi()
+    const { register, formState, getValues, handleSubmit } = useForm();
+    const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
+        required: "Please enter a 10 digit NHS number",
         pattern: {
             value: /^[0-9]{10}$/,
             message: 'Please enter a 10 digit NHS number',

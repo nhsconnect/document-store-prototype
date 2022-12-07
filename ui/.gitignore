@@ -26,3 +26,5 @@ cypress.env.json
 cypress/screenshots/
 cypress/videos/
 cypress/downloads/
+
+src/config.js

@@ -9,6 +9,7 @@ import DocumentsInput from "../components/DocumentsInput";
 import { formatSize } from "../utils/utils";
 import { documentUploadStates as stateNames, documentUploadSteps } from "../enums/documentUploads";
 import UploadSummary from "../components/UploadSummary";
+import useApi from "../apiClients/useApi"
 
 const uploadStateMessages = {
     [stateNames.SELECTED]: "Waiting...",
@@ -19,7 +20,8 @@ const uploadStateMessages = {
     [stateNames.FAILED]: "Upload failed"
 }
 
-const UploadDocumentPage = ({ client, nextPagePath }) => {
+const UploadDocumentPage = ({ nextPagePath }) => {
+    const client = useApi()
     const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
     const documents = watch("documents")
     const [nhsNumber] = useNhsNumberProviderContext();

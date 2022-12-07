@@ -73,9 +73,9 @@ variable "pds_adaptor_is_stubbed" {
   default = "true"
 }
 
-variable "cognito_cis2_provider_name" {
-  type    = string
-  default = "example"
+variable "cognito_oidc_providers" {
+  type    = list(string)
+  default = []
 }
 
 variable "cognito_cis2_provider_client_id" {

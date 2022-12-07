@@ -3,18 +3,16 @@ import axios from "axios";
 import {documentUploadStates} from "../enums/documentUploads"
 
 class ApiClient {
-  constructor(api, auth) {
+  constructor(api, user) {
     this.api = api;
-    this.auth = auth;
+    this.user = user;
   }
 
   async findByNhsNumber(nhsNumber) {
     const data = await this.api.get("doc-store-api", "/DocumentReference", {
       headers: {
         Accept: "application/fhir+json",
-        Authorization: `Bearer ${(await this.auth.currentSession())
-          .getIdToken()
-          .getJwtToken()}`,
+        Authorization: `Bearer ${this.user.access_token}`,
       },
       queryStringParameters: {
         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
@@ -60,12 +58,9 @@ class ApiClient {
 
     onUploadStateChange(documentUploadStates.WAITING, 0)
 
-    const token = (await this.auth.currentSession())
-      .getIdToken()
-      .getJwtToken();
     const requestHeaders = {
       Accept: "application/fhir+json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${this.user.access_token}`,
     };
     
     try {
@@ -106,9 +101,7 @@ class ApiClient {
     const data = await this.api.get("doc-store-api", "/PatientDetails", {
       headers: {
         Accept: "application/fhir+json",
-        Authorization: `Bearer ${(await this.auth.currentSession())
-          .getIdToken()
-          .getJwtToken()}`,
+        Authorization: `Bearer ${this.user.access_token}`,
       },
       queryStringParameters: {
         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
@@ -127,9 +120,7 @@ class ApiClient {
     const data = await this.api.get("doc-store-api", "/DocumentReference/"+id, {
       headers: {
         Accept: "application/fhir+json",
-        Authorization: `Bearer ${(await this.auth.currentSession())
-          .getIdToken()
-          .getJwtToken()}`,
+        Authorization: `Bearer ${this.user.access_token}`,
       },
     });
 
@@ -143,9 +134,7 @@ class ApiClient {
     const data = await this.api.get("doc-store-api", "/DocumentManifest", {
       headers: {
         Accept: "application/fhir+json",
-        Authorization: `Bearer ${(await this.auth.currentSession())
-            .getIdToken()
-            .getJwtToken()}`,
+        Authorization: `Bearer ${this.user.access_token}`,
       },
       queryStringParameters: {
         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,

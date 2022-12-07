@@ -3,13 +3,13 @@ const config = {
         region: "%region%",
         userPoolId: "%pool-id%",
         userPoolWebClientId: "%client-id%",
-        providerId: "cis2devoidc",
+        providerId: "%oidc-provider-id%",
         oauth: {
             domain: "%cognito-domain%",
             scope: ["openid"],
             redirectSignIn: "%cognito-redirect-signin%",
             redirectSignOut: "%cognito-redirect-signout%",
-            responseType: "token",
+            responseType: "code",
         },
     },
     API: {
@@ -20,20 +20,7 @@ const config = {
             },
         ],
     },
-    features: {
-        local: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-        },
-        dev: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: true,
-        },
-        "pre-prod": {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false,
-        },
-        prod: {
-            CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED: false
-        }
-    },
+    features: {},
 };
 
 export default config;

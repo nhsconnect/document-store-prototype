@@ -1,32 +1,23 @@
 import 'cypress-axe';
 import * as path from 'path';
-import config from '../../src/config';
 import {logAccessibilityViolations} from '../support/utils';
 
 describe('upload and download', () => {
     it('searches for a patient, uploads, and then downloads their docs', () => {
         const baseUrl = Cypress.config('baseUrl');
+        const nhsNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
         const username = Cypress.env('username');
         const password = Cypress.env('password');
-        const isCIS2Enabled = config.features[Cypress.env('REACT_APP_ENV')].CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED;
-        const nhsNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
         const uploadedFilePathNames = ['cypress/fixtures/test_patient_record.pdf', 'cypress/fixtures/test_patient_record_two.pdf'];
         const downloadedDocumentPath = path.join(Cypress.config('downloadsFolder'), `patient-record-${nhsNumber}.zip`);
 
         cy.visit('/');
         cy.title().should('eq', 'Document Store');
 
-        if (isCIS2Enabled) {
-            cy.contains('Start now').click();
-            cy.cis2Login(username, password);
+        cy.contains('Start now').click();
+        cy.cis2Login(username, password);
 
-            cy.url().should('eq', baseUrl + '/home');
-        } else {
-            cy.login(username, password);
-
-            cy.url().should('eq', baseUrl + '/');
-        }
-
+        cy.url().should('eq', baseUrl + '/home');
         cy.injectAxe();
 
         cy.get('#upload').check();
@@ -46,14 +37,10 @@ describe('upload and download', () => {
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.contains('Finish').click();
 
-        if (isCIS2Enabled) {
-            cy.url().should('eq', baseUrl + '/home');
+        cy.url().should('eq', Cypress.config('baseUrl') + '/home');
 
-            cy.visit('/');
-            cy.contains('Start now').click();
-        } else {
-            cy.url().should('eq', baseUrl + '/');
-        }
+        cy.visit('/');
+        cy.contains('Start now').click();
 
         cy.get('#download').check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);

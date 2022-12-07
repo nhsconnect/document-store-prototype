@@ -4,33 +4,22 @@ import axios from "axios";
 
 jest.mock("axios");
 
+const token = "token";
+const user = {
+    access_token: token
+};
+
 describe("test the findByNhsNumber method", () => {
     test("returns a list of documents associated with an NHS number", async () => {
-        const token = "token";
-        const auth = {
-            currentSession: async () => {
-                return {
-                    getIdToken: () => {
-                        return {
-                            getJwtToken: () => {
-                                return token;
-                            },
-                        };
-                    },
-                };
-            },
-        };
         const getMock = jest.fn(() => {
             return responseBody;
         });
         const api = { get: getMock };
-        const apiClient = new ApiClient(api, auth);
+        const apiClient = new ApiClient(api, user);
         const nhsNumber = 12345;
         const requestHeaders = {
             Accept: "application/fhir+json",
-            Authorization: `Bearer ${(await auth.currentSession())
-                .getIdToken()
-                .getJwtToken()}`,
+            Authorization: `Bearer ${token}`,
         };
         const queryStringParametersMock = {
             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
@@ -92,22 +81,8 @@ describe("test the uploadDocument method", () => {
                 }, 2)
             })
         });
-        const token = "token";
-        const auth = {
-            currentSession: async () => {
-                return {
-                    getIdToken: () => {
-                        return {
-                            getJwtToken: () => {
-                                return token;
-                            },
-                        };
-                    },
-                };
-            },
-        };
         const api = { post: postMock };
-        const apiClient = new ApiClient(api, auth);
+        const apiClient = new ApiClient(api, user);
         const fileName = "hello.txt";
         const document = new File(["hello"], fileName, {
             type: "text/plain",
@@ -189,21 +164,7 @@ describe("test the uploadDocument method", () => {
         });
 
         const api = { post: postMock };
-        const token = "token";
-        const auth = {
-            currentSession: async () => {
-                return {
-                    getIdToken: () => {
-                        return {
-                            getJwtToken: () => {
-                                return token;
-                            },
-                        };
-                    },
-                };
-            },
-        };
-        const apiClient = new ApiClient(api, auth);
+        const apiClient = new ApiClient(api, user);
         const fileName = "hello.txt";
         const document = new File(["hello"], fileName, {
             type: "text/plain",
@@ -238,21 +199,7 @@ describe("test the uploadDocument method", () => {
         });
 
         const api = { post: postMock };
-        const token = "token";
-        const auth = {
-            currentSession: async () => {
-                return {
-                    getIdToken: () => {
-                        return {
-                            getJwtToken: () => {
-                                return token;
-                            },
-                        };
-                    },
-                };
-            },
-        };
-        const apiClient = new ApiClient(api, auth);
+        const apiClient = new ApiClient(api, user);
         const fileName = "hello.txt";
         const document = new File(["hello"], fileName, {
             type: "text/plain",
@@ -296,28 +243,12 @@ describe("tests the getPatientDetails method", () => {
         const getMock = jest.fn(() => {
             return responseBody;
         });
-        const token = "token";
-        const auth = {
-            currentSession: async () => {
-                return {
-                    getIdToken: () => {
-                        return {
-                            getJwtToken: () => {
-                                return token;
-                            },
-                        };
-                    },
-                };
-            },
-        };
         const api = { get: getMock };
-        const apiClient = new ApiClient(api, auth);
+        const apiClient = new ApiClient(api, user);
         const nhsNumber = "9000000009";
         const requestHeaders = {
             Accept: "application/fhir+json",
-            Authorization: `Bearer ${(await auth.currentSession())
-                .getIdToken()
-                .getJwtToken()}`,
+            Authorization: `Bearer ${user.access_token}`,
         };
         const queryStringParametersMock = {
             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
@@ -355,31 +286,15 @@ describe("tests the getPatientDetails method", () => {
 
 describe("test the getPresignedUrl method", () => {
     test("returns a presigned url associated with the document id ", async () => {
-        const token = "token";
-        const auth = {
-            currentSession: async () => {
-                return {
-                    getIdToken: () => {
-                        return {
-                            getJwtToken: () => {
-                                return token;
-                            },
-                        };
-                    },
-                };
-            },
-        };
         const getMock = jest.fn(() => {
             return responseBody;
         });
         const api = { get: getMock };
-        const apiClient = new ApiClient(api, auth);
+        const apiClient = new ApiClient(api, user);
         const id = 12345;
         const requestHeaders = {
             Accept: "application/fhir+json",
-            Authorization: `Bearer ${(await auth.currentSession())
-                .getIdToken()
-                .getJwtToken()}`,
+            Authorization: `Bearer ${token}`,
         };
         const retrieveUrl = "retrieve-url";
         const responseBody = {
@@ -401,31 +316,15 @@ describe("test the getPresignedUrl method", () => {
 
 describe("test the getPresignedUrlForZip method", () => {
     test("returns a presigned url associated with zip of all documents related to an nhs number ", async () => {
-        const token = "token";
-        const auth = {
-            currentSession: async () => {
-                return {
-                    getIdToken: () => {
-                        return {
-                            getJwtToken: () => {
-                                return token;
-                            },
-                        };
-                    },
-                };
-            },
-        };
         const getMock = jest.fn(() => {
             return expectedResponse;
         });
         const api = { get: getMock };
-        const apiClient = new ApiClient(api, auth);
+        const apiClient = new ApiClient(api, user);
         const nhsNumber = "1234567890";
         const requestHeaders = {
             Accept: "application/fhir+json",
-            Authorization: `Bearer ${(await auth.currentSession())
-                .getIdToken()
-                .getJwtToken()}`,
+            Authorization: `Bearer ${token}`,
         };
         const responseUrl = "presigned-url";
         const expectedResponse = {

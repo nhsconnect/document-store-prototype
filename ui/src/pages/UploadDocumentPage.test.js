@@ -1,14 +1,12 @@
 import { render, screen, waitFor,within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { nanoid } from "nanoid/non-secure";
 import { act } from "react-dom/test-utils";
-
-import ApiClient from "../apiClients/apiClient";
+import useApi from "../apiClients/useApi";
 import { documentUploadStates } from "../enums/documentUploads";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import UploadDocumentPage from "./UploadDocumentPage";
 
-jest.mock("../apiClients/apiClient");
+jest.mock("../apiClients/useApi");
 jest.mock("../providers/NhsNumberProvider", () => ({
     useNhsNumberProviderContext: jest.fn(),
 }));
@@ -18,7 +16,7 @@ jest.mock("react-router", () => ({
 }));
 
 beforeEach(() => {
-    ApiClient.mockReset()
+    useApi.mockReset()
 })
 
 describe("UploadDocumentPage", () => {
@@ -49,20 +47,21 @@ describe("UploadDocumentPage", () => {
         });
 
         it("uploads documents and displays the progress", async () => {
-            const apiClientMock = new ApiClient();
 
             const uploadStateChangeTriggers = {};
             const resolvers = {}
             
-            apiClientMock.uploadDocument = async (document, nhsNumber, onUploadStateChange) => {
-                uploadStateChangeTriggers[document.name] = onUploadStateChange
+            useApi.mockImplementation(() => ({
+                uploadDocument: async (document, nhsNumber, onUploadStateChange) => {
+                    uploadStateChangeTriggers[document.name] = onUploadStateChange
 
-                return new Promise((resolve) => {
-                    resolvers[document.name] = resolve
-                })
-            };
+                    return new Promise((resolve) => {
+                        resolvers[document.name] = resolve
+                    })
+                }
+            }));
 
-            render(<UploadDocumentPage client={apiClientMock} nextPagePath={nextPagePath} />);
+            render(<UploadDocumentPage nextPagePath={nextPagePath} />);
 
             const documentOne = makeTextFile("one", 100);
             const documentTwo = makeTextFile("two", 200);

@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import FeatureToggleProvider, {
   useFeatureToggle,
 } from "./FeatureToggleProvider";
-import config from "../config";
 
 const TestComponent = () => {
   const featureToggle = useFeatureToggle("TEST");
@@ -13,21 +12,18 @@ const TestComponent = () => {
 
 describe("The feature toggle provider", () => {
   let env;
-  let defaultFeaturesConfig;
   beforeAll(() => {
     env = process.env.REACT_APP_ENV;
-    defaultFeaturesConfig = config.features;
   });
   afterAll(() => {
     process.env.REACT_APP_ENV = env;
-    config.features = defaultFeaturesConfig;
   });
 
   it("allows the consuming component to detect when a feature is active", () => {
     process.env.REACT_APP_ENV = "development";
-    config.features = { development: { TEST: true } };
+    const config = { features: { development: { TEST: true } } };
     render(
-      <FeatureToggleProvider>
+      <FeatureToggleProvider config={config}>
         <TestComponent />
       </FeatureToggleProvider>
     );
@@ -37,9 +33,9 @@ describe("The feature toggle provider", () => {
 
   it("allows the consuming component to detect when a feature is inactive", () => {
     process.env.REACT_APP_ENV = "development";
-    config.features = { development: { TEST: false } };
+    const config = { features: { development: { TEST: false } } };
     render(
-      <FeatureToggleProvider>
+      <FeatureToggleProvider config={config}>
         <TestComponent />
       </FeatureToggleProvider>
     );
@@ -48,9 +44,9 @@ describe("The feature toggle provider", () => {
 
   it("provides a default value of false to the consuming component when a toggle is not defined", () => {
     process.env.REACT_APP_ENV = "development";
-    config.features = { development: { TEST: undefined } };
+    const config = { features: { development: { TEST: undefined } } };
     render(
-      <FeatureToggleProvider>
+      <FeatureToggleProvider config={config}>
         <TestComponent />
       </FeatureToggleProvider>
     );
@@ -69,9 +65,9 @@ describe("The feature toggle provider", () => {
 
   it("provides a default value of false to the consuming component when REACT_APP_ENV is not defined", () => {
     process.env.REACT_APP_ENV = undefined;
-    config.features = { development: { TEST: undefined } };
+    const config = { features: { development: { TEST: undefined } } };
     render(
-      <FeatureToggleProvider>
+      <FeatureToggleProvider config={config}>
         <TestComponent />
       </FeatureToggleProvider>
     );
