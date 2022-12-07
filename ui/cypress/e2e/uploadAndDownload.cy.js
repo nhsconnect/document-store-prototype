@@ -42,6 +42,11 @@ describe('upload and download', () => {
         cy.visit('/');
         cy.contains('Start now').click();
 
+        cy.get('#download').then(($el) => {
+            assert.isTrue(Cypress.dom.isAttached($el))
+        })
+        cy.injectAxe();
+        
         cy.get('#download').check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.get('form').submit();
