@@ -8,8 +8,8 @@
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "test": "react-scripts test",
-    "test:e2e": "cypress run",
-    "test:e2e:open": "cypress open"
+    "test:e2e": "cypress run --browser chrome",
+    "test:e2e:open": "cypress open --browser chrome"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^1.2.23",

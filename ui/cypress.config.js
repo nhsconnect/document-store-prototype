@@ -7,6 +7,18 @@ module.exports = defineConfig({
         includeShadowDom: true,
         chromeWebSecurity: false,
         watchForFileChanges: false,
-        videoUploadOnPasses: false
+        videoUploadOnPasses: false,
+        setupNodeEvents(on) {
+            on('task', {
+                log(message) {
+                    console.log(message);
+                    return null;
+                },
+                table(message) {
+                    console.table(message);
+                    return null;
+                }
+            })
+        }
     },
 });
