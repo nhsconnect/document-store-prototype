@@ -61,7 +61,7 @@ output "cognito_redirect_signout" {
 
 resource "aws_cognito_identity_provider" "cis2_identity_provider" {
   user_pool_id  = aws_cognito_user_pool.pool[0].id
-  provider_name = var.cognito_cis2_provider_name
+  provider_name = "cis2devoidc"
   provider_type = "OIDC"
 
   provider_details = {
