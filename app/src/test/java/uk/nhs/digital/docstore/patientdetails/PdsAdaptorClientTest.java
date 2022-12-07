@@ -1,6 +1,6 @@
 package uk.nhs.digital.docstore.patientdetails;
 
-import org.junit.jupiter.api.Disabled;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -13,6 +13,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,16 +64,15 @@ class PdsAdaptorClientTest {
     }
 
     @Test
-    @Disabled
     public void shouldMakeCallPdsAndReturnNotNullPatientDetailsIfPatientSearchConfigStubbingToggledOff() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
         var pdsAdaptorClient = new PdsAdaptorClient(stubbingOffPatientSearchConfig, httpClient);
 
-        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(200, this.getJSONPatientDetails()));
+        String nhsNumber = "9000000009";
 
-        String nhsNumber = "1234";
+        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
 
         pdsAdaptorClient.fetchPatientDetails(nhsNumber);
 
@@ -80,18 +80,24 @@ class PdsAdaptorClientTest {
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsAdaptorRootUri())).isNotNull();
     }
 
-    private String getJSONPatientDetails() {
-        return null;
+    private String getJSONPatientDetails(String nhsNumber) {
+        return new JSONObject()
+                .put("givenName", List.of("Test"))
+                .put("birthDate", "Test")
+                .put("postalCode", "Test")
+                .put("nhsNumber", nhsNumber)
+                .put("familyName", "Test").toString();
     }
 
     private static class StubPdsResponse implements HttpResponse<String> {
 
-        private int statusCode;
+        private final int statusCode;
 
-        private String body;
+        private final String body;
 
         public StubPdsResponse(int statusCode, String body) {
             this.statusCode = statusCode;
+            this.body = body;
         }
 
         @Override
