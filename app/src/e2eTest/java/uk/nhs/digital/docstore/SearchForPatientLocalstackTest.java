@@ -65,7 +65,7 @@ public class SearchForPatientLocalstackTest {
                 .GET()
                 .build();
 
-        stubFor(get(urlEqualTo("/patient-trace-information/9111231130"))
+        stubFor(get(urlEqualTo("/Patient/9111231130"))
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")

@@ -57,17 +57,12 @@ public class SearchForPatientInlineTest {
 
     @Test
     void returnsSuccessResponse() throws IOException, InterruptedException {
-        Map<String, Object> patientData = Map.of("nhsNumber", "9000000009",
-                "givenName", List.of("Jane"),
-                "familyName", "Doe",
-                "postalCode", "LS1 6AE",
-                "birthdate", "1998-07-11");
-
-        stubFor(get(urlEqualTo("/patient-trace-information/9000000009"))
+       var patientData = getContentFromResource("search-patient-details/pds-fhir-responses/complete-patient-details-response.json");
+        stubFor(get(urlEqualTo("/Patient/9000000009"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(toJson(patientData))));
+                        .withBody(patientData)));
 
         var request = requestBuilder
                 .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009")
