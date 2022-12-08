@@ -2,7 +2,6 @@ package uk.nhs.digital.docstore;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -10,8 +9,6 @@ import java.io.IOException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.net.http.HttpClient.newHttpClient;
@@ -20,29 +17,25 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
 import static uk.nhs.digital.docstore.helpers.BaseUriHelper.resolveContainerHost;
-import static uk.nhs.digital.docstore.json.JsonMapper.toJson;
 
 
 public class SearchForPatientLocalstackTest {
 
     @BeforeAll
-    static public void pointWiremockToPdsAdaptorContainer() {
-        WireMock.configureFor(resolveContainerHost("pds-adaptor"), 8080);
+    static public void pointWiremockToPdsFhirContainer() {
+        WireMock.configureFor(resolveContainerHost("pds-fhir"), 8080);
     }
 
+    //Will fail while pds adaptor is stubbed
     @Test
     void returnsSuccessResponse() throws IOException, InterruptedException {
-        Map<String, Object> patientData = Map.of("nhsNumber", "9000000009",
-                "givenName", List.of("Jane"),
-                "familyName", "Doe",
-                "postalCode", "LS1 6AE",
-                "birthdate", "1998-07-11");
+        var patientData = getContentFromResource("search-patient-details/pds-fhir-responses/complete-patient-details-response.json");
 
-        stubFor(get(urlEqualTo("/patient-trace-information/9000000009"))
+        stubFor(get(urlEqualTo("/Patient/9000000009"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(toJson(patientData))));
+                        .withBody(patientData)));
 
         var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9000000009"))
                 .GET()
@@ -57,10 +50,10 @@ public class SearchForPatientLocalstackTest {
                 .isEqualTo(getContentFromResource("search-patient-details/patient-details-response.json"));
     }
 
+    //Will fail while pds adaptor is stubbed as there is no patient not found case
     @Test
-    @Disabled("Will fail while pds adaptor is stubbed as there is no patient not found case")
     void returnsMissingPatientResponseWhenPatientNotFound() throws IOException, InterruptedException {
-        String expectedPatientDetailsResponse = getContentFromResource("search-patient-details/missing-patient-response.json");
+        var expectedPatientDetailsResponse = getContentFromResource("search-patient-details/missing-patient-response.json");
         var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9111231130"))
                 .GET()
                 .build();
@@ -82,7 +75,7 @@ public class SearchForPatientLocalstackTest {
 
     @Test
     void returnsErrorResponseWhenAnUnrecognisedSubjectIdentifierSystemIsInput() throws IOException, InterruptedException {
-        String expectedPatientDetailsErrorResponse = getContentFromResource("errors/unrecognised-subject-identifier-system.json");
+        var expectedPatientDetailsErrorResponse = getContentFromResource("errors/unrecognised-subject-identifier-system.json");
         var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=unrecognised-subject-identifier-system%7C9000000009"))
                 .GET()
                 .build();
@@ -97,7 +90,7 @@ public class SearchForPatientLocalstackTest {
 
     @Test
     void returnsErrorResponseWhenAnInvalidSubjectIdentifierIsInput() throws IOException, InterruptedException {
-        String expectedPatientDetailsErrorResponse = getContentFromResource("errors/invalid-subject-identifier.json");
+        var expectedPatientDetailsErrorResponse = getContentFromResource("errors/invalid-subject-identifier.json");
         var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7Cinvalid-subject-identifier"))
                 .GET()
                 .build();
@@ -112,7 +105,7 @@ public class SearchForPatientLocalstackTest {
 
     @Test
     void returnsErrorResponseWhenSearchParametersAreMissing() throws IOException, InterruptedException {
-        String expectedPatientDetailsErrorResponse = getContentFromResource("errors/missing-search-parameters.json");
+        var expectedPatientDetailsErrorResponse = getContentFromResource("errors/missing-search-parameters.json");
         var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails"))
                 .GET()
                 .build();

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PatientDetailsMapperTest {
@@ -16,7 +15,7 @@ class PatientDetailsMapperTest {
     private static final String BIRTH_DATE = "2010-10-22";
 
     @Test
-    void canDecodeAFullPatientDetailsResponseFromPdsAdaptor() {
+    void canDecodeAFullPatientDetailsResponseFromPdsFhir() {
         var nhsNumber = "9000000009";
         var pdsResponse = getPdsResponse(nhsNumber, "complete");
 
@@ -30,7 +29,7 @@ class PatientDetailsMapperTest {
     }
 
     @Test
-    void canDecodeARestrictedPatientDetailsResponseFromPdsAdaptor() {
+    void canDecodeARestrictedPatientDetailsResponseFromPdsFhir() {
         var nhsNumber = "9000000025";
         var pdsResponse = getPdsResponse(nhsNumber, "sensitive");
 
@@ -44,7 +43,7 @@ class PatientDetailsMapperTest {
     }
 
     @Test
-    void canDecodeIncompletePatientDetailsResponseFromPdsAdaptor() {
+    void canDecodeIncompletePatientDetailsResponseFromPdsFhir() {
         var nhsNumber = "9000000033";
         var pdsResponse = getPdsResponse(nhsNumber, "incomplete");
 

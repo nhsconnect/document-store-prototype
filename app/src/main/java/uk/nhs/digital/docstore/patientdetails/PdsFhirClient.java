@@ -27,15 +27,15 @@ public class PdsFhirClient {
     }
 
     public PatientDetails fetchPatientDetails(String nhsNumber) {
-        if (patientSearchConfig.pdsAdaptorIsStubbed()) {
+        if (patientSearchConfig.pdsFhirIsStubbed()) {
             logger.info("Returning stub PDS adaptor response");
             return new PatientDetails(List.of("Jane"), "Doe", "1998-07-11", "LS1 6AE", nhsNumber);
         }
 
 
         var path = "Patient/" + nhsNumber;
-        logger.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsAdaptorRootUri());
-        var response = httpClient.get(patientSearchConfig.pdsAdaptorRootUri(), path);
+        logger.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
+        var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path);
 
         PatientDetails patientDetails = null;
         if (response.statusCode() != 404) {

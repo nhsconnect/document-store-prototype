@@ -15,12 +15,12 @@ public class PatientSearchConfig {
         this.environment = environment;
     }
 
-    public String pdsAdaptorRootUri() {
+    public String pdsFhirRootUri() {
         return environment.getEnvVar("PDS_FHIR_ENDPOINT", "https://sandbox.api.service.nhs.uk/personal-demographics/FHIR/R4/");
     }
 
-    public boolean pdsAdaptorIsStubbed() {
-        return TRUE.equals(environment.getEnvVar("PDS_ADAPTOR_IS_STUBBED", TRUE));
+    public boolean pdsFhirIsStubbed() {
+        return TRUE.equals(environment.getEnvVar("PDS_FHIR_IS_STUBBED", TRUE));
     }
 
 }

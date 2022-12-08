@@ -17,15 +17,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.nhs.digital.docstore.json.JsonMapper.toJson;
 
-@WireMockTest(httpPort = SearchForPatientInlineTest.LocalhostPdsAdaptorNoStubbingPatientSearchConfig.PDS_ADAPTOR_PORT)
+@WireMockTest(httpPort = SearchForPatientInlineTest.LocalhostPdsFhirNoStubbingPatientSearchConfig.PDS_FHIR_PORT)
 @ExtendWith(MockitoExtension.class)
 public class SearchForPatientInlineTest {
 
@@ -36,7 +33,7 @@ public class SearchForPatientInlineTest {
 
     @BeforeEach
     public void setUp() {
-        var patientSearchConfig = new LocalhostPdsAdaptorNoStubbingPatientSearchConfig();
+        var patientSearchConfig = new LocalhostPdsFhirNoStubbingPatientSearchConfig();
         handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsFhirClient(patientSearchConfig));
         requestBuilder = new RequestEventBuilder();
     }
@@ -56,7 +53,7 @@ public class SearchForPatientInlineTest {
     }
 
     @Test
-    void returnsSuccessResponse() throws IOException, InterruptedException {
+    void returnsSuccessResponse() throws IOException {
        var patientData = getContentFromResource("search-patient-details/pds-fhir-responses/complete-patient-details-response.json");
         stubFor(get(urlEqualTo("/Patient/9000000009"))
                 .willReturn(aResponse()
@@ -78,9 +75,9 @@ public class SearchForPatientInlineTest {
     }
 
     @Test
-    void returnsMissingPatientResponseWhenPatientNotFound() throws IOException, InterruptedException {
+    void returnsMissingPatientResponseWhenPatientNotFound() throws IOException {
 
-        stubFor(get(urlEqualTo("/patient-trace-information/9111231130"))
+        stubFor(get(urlEqualTo("/Patient/9111231130"))
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")
@@ -128,7 +125,7 @@ public class SearchForPatientInlineTest {
     }
 
     @Test
-    void returnsErrorResponseWhenSearchParametersAreMissing() throws IOException, InterruptedException {
+    void returnsErrorResponseWhenSearchParametersAreMissing() throws IOException {
         var parameterlessRequest = requestBuilder.build();
 
         var responseEvent = handler.handleRequest(parameterlessRequest, context);
@@ -145,16 +142,16 @@ public class SearchForPatientInlineTest {
         return new String(Files.readAllBytes(file.toPath()));
     }
 
-    public static class LocalhostPdsAdaptorNoStubbingPatientSearchConfig extends PatientSearchConfig {
-        public static final int PDS_ADAPTOR_PORT = 8081;
+    public static class LocalhostPdsFhirNoStubbingPatientSearchConfig extends PatientSearchConfig {
+        public static final int PDS_FHIR_PORT = 8081;
 
         @Override
-        public String pdsAdaptorRootUri() {
-            return String.format("http://localhost:%d/", PDS_ADAPTOR_PORT);
+        public String pdsFhirRootUri() {
+            return String.format("http://localhost:%d/", PDS_FHIR_PORT);
         }
 
         @Override
-        public boolean pdsAdaptorIsStubbed() {
+        public boolean pdsFhirIsStubbed() {
             return false;
         }
     }

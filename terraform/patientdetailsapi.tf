@@ -14,7 +14,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
   environment {
     variables = {
       PDS_FHIR_ENDPOINT = var.pds_fhir_sandbox_url
-      PDS_ADAPTOR_IS_STUBBED = var.pds_adaptor_is_stubbed
+      PDS_FHIR_IS_STUBBED = var.pds_fhir_is_stubbed
       AMPLIFY_BASE_URL       = local.amplify_base_url
     }
   }

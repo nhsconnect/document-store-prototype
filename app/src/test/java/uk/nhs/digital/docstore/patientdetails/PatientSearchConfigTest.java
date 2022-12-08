@@ -10,30 +10,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PatientSearchConfigTest {
 
     @Test
-    void shouldTurnOffPdsAdaptorStubbingIfEnvironmentVarSetToFalse() {
-        var stubEnvironment = new StubEnvironment().withVariable("PDS_ADAPTOR_IS_STUBBED", "false");
+    void shouldTurnOffPdsFhirStubbingIfEnvironmentVarSetToFalse() {
+        var stubEnvironment = new StubEnvironment().withVariable("PDS_FHIR_IS_STUBBED", "false");
 
         var config = new PatientSearchConfig(stubEnvironment);
 
-        assertThat(config.pdsAdaptorIsStubbed()).isFalse();
+        assertThat(config.pdsFhirIsStubbed()).isFalse();
     }
 
     @Test
-    void shouldTurnOnPdsAdaptorStubbingIfEnvironmentVarIsNotSet() {
-        var stubEnvironment = new StubEnvironment().withoutVariable("PDS_ADAPTOR_IS_STUBBED");
+    void shouldTurnOnPdsFhirStubbingIfEnvironmentVarIsNotSet() {
+        var stubEnvironment = new StubEnvironment().withoutVariable("PDS_FHIR_IS_STUBBED");
 
         var config = new PatientSearchConfig(stubEnvironment);
 
-        assertThat(config.pdsAdaptorIsStubbed()).isTrue();
+        assertThat(config.pdsFhirIsStubbed()).isTrue();
     }
 
     @Test
-    void shouldTurnOnPdsAdaptorStubbingIfEnvironmentVarIsSetToTrue() {
-        var stubEnvironment = new StubEnvironment().withVariable("PDS_ADAPTOR_IS_STUBBED", "true");
+    void shouldTurnOnPdsFhirStubbingIfEnvironmentVarIsSetToTrue() {
+        var stubEnvironment = new StubEnvironment().withVariable("PDS_FHIR_IS_STUBBED", "true");
 
         var config = new PatientSearchConfig(stubEnvironment);
 
-        assertThat(config.pdsAdaptorIsStubbed()).isTrue();
+        assertThat(config.pdsFhirIsStubbed()).isTrue();
     }
 
     private class StubEnvironment extends Environment {

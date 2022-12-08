@@ -33,11 +33,11 @@ class PdsFhirClientTest {
 
         var defaultPatientSearchConfig = new PatientSearchConfig();
 
-        var pdsAdaptorClient = new PdsFhirClient(defaultPatientSearchConfig, httpClient);
+        var pdsFhirClient = new PdsFhirClient(defaultPatientSearchConfig, httpClient);
 
         var nhsNumber = "123445678";
 
-        var patientDetails = pdsAdaptorClient.fetchPatientDetails(nhsNumber);
+        var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient, never()).get(any(), any());
 
@@ -51,16 +51,16 @@ class PdsFhirClientTest {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsAdaptorClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
 
         String nhsNumber = "9000000009";
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
 
-        pdsAdaptorClient.fetchPatientDetails(nhsNumber);
+        pdsFhirClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsAdaptorRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
@@ -68,16 +68,16 @@ class PdsFhirClientTest {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsAdaptorClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
 
         String nhsNumber = "9111231130";
 
-        pdsAdaptorClient.fetchPatientDetails(nhsNumber);
+        pdsFhirClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsAdaptorRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     private String getJSONPatientDetails(String nhsNumber) {
@@ -142,7 +142,7 @@ class PdsFhirClientTest {
 
     private class StubbingOffPatientSearchConfig extends PatientSearchConfig {
         @Override
-        public boolean pdsAdaptorIsStubbed() {
+        public boolean pdsFhirIsStubbed() {
             return false;
         }
     }

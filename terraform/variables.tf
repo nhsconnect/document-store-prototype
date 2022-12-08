@@ -58,17 +58,12 @@ variable "s3_use_path_style" {
   default     = false
 }
 
-variable "pds_adaptor_base_url" {
-  type    = string
-  default = "https://pds-adaptor.prod.non-prod.patient-deductions.nhs.uk"
-}
-
 variable "pds_fhir_sandbox_url" {
   type    = string
   default = "https://sandbox.api.service.nhs.uk/personal-demographics/FHIR/R4/"
 }
 
-variable "pds_adaptor_is_stubbed" {
+variable "pds_fhir_is_stubbed" {
   type    = string
   default = "true"
 }
