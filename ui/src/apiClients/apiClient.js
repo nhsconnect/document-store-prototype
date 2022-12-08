@@ -12,7 +12,7 @@ class ApiClient {
     const data = await this.api.get("doc-store-api", "/DocumentReference", {
       headers: {
         Accept: "application/fhir+json",
-        Authorization: `Bearer ${this.user.access_token}`,
+        Authorization: `Bearer ${this.user.id_token}`,
       },
       queryStringParameters: {
         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
@@ -60,7 +60,7 @@ class ApiClient {
 
     const requestHeaders = {
       Accept: "application/fhir+json",
-      Authorization: `Bearer ${this.user.access_token}`,
+      Authorization: `Bearer ${this.user.id_token}`,
     };
     
     try {
@@ -101,7 +101,7 @@ class ApiClient {
     const data = await this.api.get("doc-store-api", "/PatientDetails", {
       headers: {
         Accept: "application/fhir+json",
-        Authorization: `Bearer ${this.user.access_token}`,
+        Authorization: `Bearer ${this.user.id_token}`,
       },
       queryStringParameters: {
         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
@@ -120,7 +120,7 @@ class ApiClient {
     const data = await this.api.get("doc-store-api", "/DocumentReference/"+id, {
       headers: {
         Accept: "application/fhir+json",
-        Authorization: `Bearer ${this.user.access_token}`,
+        Authorization: `Bearer ${this.user.id_token}`,
       },
     });
 
@@ -134,7 +134,7 @@ class ApiClient {
     const data = await this.api.get("doc-store-api", "/DocumentManifest", {
       headers: {
         Accept: "application/fhir+json",
-        Authorization: `Bearer ${this.user.access_token}`,
+        Authorization: `Bearer ${this.user.id_token}`,
       },
       queryStringParameters: {
         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,

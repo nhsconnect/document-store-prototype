@@ -6,7 +6,7 @@ jest.mock("axios");
 
 const token = "token";
 const user = {
-    access_token: token
+    id_token: token
 };
 
 describe("test the findByNhsNumber method", () => {
@@ -248,7 +248,7 @@ describe("tests the getPatientDetails method", () => {
         const nhsNumber = "9000000009";
         const requestHeaders = {
             Accept: "application/fhir+json",
-            Authorization: `Bearer ${user.access_token}`,
+            Authorization: `Bearer ${user.id_token}`,
         };
         const queryStringParametersMock = {
             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
