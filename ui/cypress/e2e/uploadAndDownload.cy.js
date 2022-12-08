@@ -11,48 +11,49 @@ describe('upload and download', () => {
 
         cy.visit('/');
         cy.title().should('eq', 'Document Store');
-
-        cy.contains('Start now').click();
-        cy.cis2Login(username, password);
+        cy.findByRole('button', {name: 'Start now'}).click();
 
         cy.url().should('eq', baseUrl + '/home');
+        cy.findByPlaceholderText('User Name').type(username);
+        cy.findByPlaceholderText('Password').type(password);
+        cy.findByRole('button', {name: 'Continue'}).click();
 
-        cy.get('#upload').check();
-        cy.get('form').submit();
+        cy.url().should('eq', baseUrl + '/home');
+        // Todo: Replace cy.wait() with a guard to wait until React has completed it's initial render(s)
+        cy.wait(500);
+        cy.findByRole('radio', {name: /Upload/}).check()
+        cy.findByRole('button', {name: 'Continue'}).click();
 
         cy.url().should('eq', baseUrl + '/upload/patient-trace');
-        cy.get('input').type(nhsNumber);
-        cy.get('form').submit();
-        cy.contains('Next').click();
+        cy.findByRole('textbox', {name: 'NHS number'}).type(nhsNumber);
+        cy.findByRole('button', {name: 'Search'}).click();
+        cy.findByRole('button', {name: 'Next'}).click();
 
         cy.url().should('eq', baseUrl + '/upload/submit');
         cy.get('input[type=file]').selectFile(uploadedFilePathNames);
-        cy.get('form').submit();
-        cy.get('table').contains('Your documents are uploading');
-        cy.contains('Finish').click();
+        cy.findByRole('button', {name: 'Upload'}).click();
+        cy.findByRole('button', {name: 'Finish'}).click();
 
         cy.url().should('eq', Cypress.config('baseUrl') + '/home');
-
         cy.visit('/');
-        cy.contains('Start now').click();
+        cy.findByRole('button', {name: 'Start now'}).click();
 
-        cy.get('#download').then(($el) => {
-            assert.isTrue(Cypress.dom.isAttached($el))
-        })
-
-        cy.get('#download').check();
-        cy.get('form').submit();
+        cy.url().should('eq', baseUrl + '/home');
+        // Todo: Replace cy.wait() with a guard to wait until React has completed it's initial render(s)
+        cy.wait(500);
+        cy.findByRole('radio', {name: /Download/}).check();
+        cy.findByRole('button', {name: 'Continue'}).click();
 
         cy.url().should('eq', baseUrl + '/search/patient-trace');
-        cy.get('input').type(nhsNumber);
-        cy.get('form').submit();
-        cy.contains('Next').click();
+        cy.findByRole('textbox', {name: 'NHS number'}).type(nhsNumber);
+        cy.findByRole('button', {name: 'Search'}).click();
+        cy.findByRole('button', {name: 'Next'}).click();
 
         cy.url().should('eq', baseUrl + '/search/results');
         cy.readFile(downloadedDocumentPath).should('not.exist');
-        cy.contains('Download All').click();
+        cy.findByRole('button', {name: 'Download All'}).click();
         cy.readFile(downloadedDocumentPath).should('exist');
-        cy.contains('Log Out').click();
+        cy.findByRole('button', {name: 'Log Out'}).click();
 
         cy.url().should('eq', baseUrl + '/');
     });

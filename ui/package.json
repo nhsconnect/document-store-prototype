@@ -55,10 +55,11 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/cypress": "^8.0.7",
     "@testing-library/react-hooks": "^8.0.1",
+    "cypress-axe": "^1.1.0",
     "fishery": "^2.2.2",
-    "sass": "^1.54.7",
-    "cypress-axe": "^1.1.0"
+    "sass": "^1.54.7"
   },
   "engines": {
     "node": ">=16.0.0"

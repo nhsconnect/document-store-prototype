@@ -1,0 +1,4 @@
+fileignoreconfig:
+version: ""
+scopeconfig:
+  - scope: node
