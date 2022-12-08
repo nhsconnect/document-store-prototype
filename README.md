@@ -12,8 +12,10 @@ Proof of concept implementation for an interoperable service capable of storing 
 - [docker-compose](https://formulae.brew.sh/formula/docker-compose)
 - [git-mob](https://www.npmjs.com/package/git-mob)
 - [AWS CLI](https://aws.amazon.com/cli/)
+- [nvm](https://formulae.brew.sh/formula/nvm)
 
 _Note: It is recommended to use [Homebrew](https://brew.sh/) to install most of these._
+Please refer to the troubleshooting section for known problems
 
 ## Running Locally
 
@@ -174,6 +176,10 @@ like [direnv](https://direnv.net/)): `export EDGE_HOST_NAME=0.0.0.0`.
 
 If you see a log saying that the docker daemon is not running when running `./tasks start-localstack`, it is likely due
 to colima not being started. You can fix this by running `colima start`.
+
+### nvm 
+If you're having problems downloading the node version using nvm then switch to n (or your favourite node package manager)
+[n](https://formulae.brew.sh/formula/n)
 
 ### LocalStack Timeout On Start
 
