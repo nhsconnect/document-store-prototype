@@ -28,7 +28,7 @@ class PdsFhirClientTest {
     private SimpleHttpClient httpClient;
 
     @Test
-    public void shouldReturnStubbedPatientWithoutOutboundHttpCallByDefault() {
+    public void shouldReturnStubbedPatientWithoutOutboundHttpCallIfPatientSearchConfigStubbingToggledOn() {
         var testLogAppender = TestLogAppender.addTestLogAppender();
 
         var defaultPatientSearchConfig = new PatientSearchConfig();
@@ -47,24 +47,7 @@ class PdsFhirClientTest {
     }
 
     @Test
-    public void shouldMakeCallPdsAndReturnNullPatientDetailsIfPatientSearchConfigStubbingToggledOff() {
-        var testLogappender = TestLogAppender.addTestLogAppender();
-
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsAdaptorClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
-
-        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
-
-        String nhsNumber = "1234";
-
-        pdsAdaptorClient.fetchPatientDetails(nhsNumber);
-
-        verify(httpClient).get(any(), contains(nhsNumber));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsAdaptorRootUri())).isNotNull();
-    }
-
-    @Test
-    public void shouldMakeCallPdsAndReturnNotNullPatientDetailsIfPatientSearchConfigStubbingToggledOff() {
+    public void shouldMakeCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
@@ -80,13 +63,29 @@ class PdsFhirClientTest {
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsAdaptorRootUri())).isNotNull();
     }
 
+    @Test
+    public void shouldMakeCallToPdsAndReturnNullWhenPdsFhirReturns404() {
+        var testLogappender = TestLogAppender.addTestLogAppender();
+
+        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
+        var pdsAdaptorClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+
+        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
+
+        String nhsNumber = "9111231130";
+
+        pdsAdaptorClient.fetchPatientDetails(nhsNumber);
+
+        verify(httpClient).get(any(), contains(nhsNumber));
+        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsAdaptorRootUri())).isNotNull();
+    }
+
     private String getJSONPatientDetails(String nhsNumber) {
         return new JSONObject()
-                .put("givenName", List.of("Test"))
+                .put("name", List.of(new PatientDetails.Name(List.of("Test"), "Test")))
                 .put("birthDate", "Test")
-                .put("postalCode", "Test")
-                .put("nhsNumber", nhsNumber)
-                .put("familyName", "Test").toString();
+                .put("address", List.of(new PatientDetails.Address("Test")))
+                .put("id", nhsNumber).toString();
     }
 
     private static class StubPdsResponse implements HttpResponse<String> {

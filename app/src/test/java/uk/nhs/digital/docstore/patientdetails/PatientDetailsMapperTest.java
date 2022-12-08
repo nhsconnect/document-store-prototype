@@ -1,32 +1,60 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.json.JsonMapper;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PatientDetailsMapperTest {
+    private static final String FAMILY_NAME = "Smith";
+    private static final String GIVEN_NAME = "Jane";
+    private static final String POSTAL_CODE = "LS16AE";
+    private static final String BIRTH_DATE = "2010-10-22";
 
     @Test
     void canDecodeAFullPatientDetailsResponseFromPdsAdaptor() {
-        var patientDetailsJson = JsonMapper.toJson(Map.of("nhsNumber", "9000000009",
-                "givenName", List.of("Foo", "Bar"),
-                "familyName", "Baz",
-                "postalCode", "LS1 4DX",
-                "birthdate", "1980-10-14"));
+        var nhsNumber = "9000000009";
+        var pdsResponse = getPdsResponse(nhsNumber, "complete");
 
-        var patientDetails = new PatientDetailsMapper().fromPatientDetailsResponseBody(patientDetailsJson);
+        var patientDetails = new PatientDetailsMapper().fromPatientDetailsResponseBody(pdsResponse);
 
-        assertThat(patientDetails.getNhsNumber()).isEqualTo("9000000009");
-        assertThat(patientDetails.getBirthdate()).isEqualTo("1980-10-14");
-        assertThat(patientDetails.getGivenName()).isEqualTo(List.of("Foo", "Bar"));
-        assertThat(patientDetails.getFamilyName()).isEqualTo("Baz");
-        assertThat(patientDetails.getPostalCode()).isEqualTo("LS1 4DX");
+        assertThat(patientDetails.getNhsNumber()).isEqualTo(nhsNumber);
+        assertThat(patientDetails.getBirthDate()).isEqualTo(BIRTH_DATE);
+        assertThat(patientDetails.getGivenName()).isEqualTo(List.of(GIVEN_NAME));
+        assertThat(patientDetails.getFamilyName()).isEqualTo(FAMILY_NAME);
+        assertThat(patientDetails.getPostalCode()).isEqualTo(POSTAL_CODE);
+    }
+
+    @Test
+    void canDecodeARestrictedPatientDetailsResponseFromPdsAdaptor() {
+        var nhsNumber = "9000000025";
+        var pdsResponse = getPdsResponse(nhsNumber, "sensitive");
+
+        var patientDetails = new PatientDetailsMapper().fromPatientDetailsResponseBody(pdsResponse);
+
+        assertThat(patientDetails.getNhsNumber()).isEqualTo(nhsNumber);
+        assertThat(patientDetails.getBirthDate()).isEqualTo(BIRTH_DATE);
+        assertThat(patientDetails.getGivenName()).isEqualTo(List.of(GIVEN_NAME));
+        assertThat(patientDetails.getFamilyName()).isEqualTo(FAMILY_NAME);
+        assertThat(patientDetails.getPostalCode()).isEqualTo(null);
+    }
+
+    @Test
+    void canDecodeIncompletePatientDetailsResponseFromPdsAdaptor() {
+        var nhsNumber = "9000000033";
+        var pdsResponse = getPdsResponse(nhsNumber, "incomplete");
+
+        var patientDetails = new PatientDetailsMapper().fromPatientDetailsResponseBody(pdsResponse);
+
+        assertThat(patientDetails.getNhsNumber()).isEqualTo(nhsNumber);
+        assertThat(patientDetails.getBirthDate()).isEqualTo(null);
+        assertThat(patientDetails.getGivenName()).isEqualTo(null);
+        assertThat(patientDetails.getFamilyName()).isEqualTo(null);
+        assertThat(patientDetails.getPostalCode()).isEqualTo(null);
     }
 
     @Test
@@ -34,7 +62,7 @@ class PatientDetailsMapperTest {
         var patientDetails = new PatientDetailsMapper().fromPatientDetailsResponseBody("{}");
 
         assertThat(patientDetails.getNhsNumber()).isNull();
-        assertThat(patientDetails.getBirthdate()).isNull();
+        assertThat(patientDetails.getBirthDate()).isNull();
         assertThat(patientDetails.getGivenName()).isNull();
         assertThat(patientDetails.getFamilyName()).isNull();
         assertThat(patientDetails.getPostalCode()).isNull();
@@ -45,4 +73,17 @@ class PatientDetailsMapperTest {
         assertThrows(RuntimeException.class, () -> new PatientDetailsMapper().fromPatientDetailsResponseBody("{"));
     }
 
+    private String getPdsResponse(String nhsNumber, String patientStatus) {
+        var json = new JSONObject().put("id", nhsNumber);
+        if ("complete".equals(patientStatus) || "sensitive".equals(patientStatus)){
+            json.put("name", List.of(new PatientDetails.Name(List.of(GIVEN_NAME), FAMILY_NAME)));
+            json.put("birthDate", BIRTH_DATE);
+            if (!"sensitive".equals(patientStatus)){
+                json.put("address", List.of(new PatientDetails.Address(POSTAL_CODE)));
+            }
+        }
+        return  json.toString();
+
+
+    }
 }

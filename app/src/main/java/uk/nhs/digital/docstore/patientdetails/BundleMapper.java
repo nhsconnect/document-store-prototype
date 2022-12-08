@@ -56,7 +56,7 @@ public class BundleMapper {
         name.setUse(HumanName.NameUse.USUAL)
                 .setFamily(patientDetails.getFamilyName())
                 .setGiven(patientDetails.getGivenName().stream().map(StringType::new).collect(toList()));
-        LocalDate birthdate = new LocalDate(patientDetails.getBirthdate());
+        LocalDate birthdate = new LocalDate(patientDetails.getBirthDate());
 
         Patient patient = new Patient();
         patient.setIdentifier(List.of(patientIdentifier));

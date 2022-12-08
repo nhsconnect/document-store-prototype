@@ -33,7 +33,7 @@ public class PdsFhirClient {
         }
 
 
-        String path = "Patient/" + nhsNumber;
+        var path = "Patient/" + nhsNumber;
         logger.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsAdaptorRootUri());
         var response = httpClient.get(patientSearchConfig.pdsAdaptorRootUri(), path);
 
