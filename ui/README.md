@@ -34,6 +34,15 @@ file needs to be modified to connect to a Cognito pool and the API Gateway. Ther
 | `%api-gateway-id%`    | `api_gateway_id`                       |
 | `%api-gateway-stage%` | `api_gateway_stage`                    |
 
+You can view the Terraform output by running:
+```bash
+./tasks view-terraform-logs
+```
+
+_Note: A typical URL to request document metadata would look
+like: `http://localhost:3000/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234`._
+
+
 Once the `config.js` has been edited, the UI can be started from the `ui` subdirectory with `npm`:
 
 ```bash

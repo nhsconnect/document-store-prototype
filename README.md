@@ -59,24 +59,6 @@ To deploy the API to LocalStack, run in a non-dojo terminal:
 ./tasks deploy-to-localstack
 ```
 
-#### 5. Setup UI Config
-
-The Terraform output from [step 4](#4-deploy-api) will include two important values:
-
-- `api_gateway_rest_api_id`
-- `api_gateway_rest_api_stage`
-
-In the [UI config](ui/src/config.js), replace `doc-store-api` `endpoint` with the following
-URL: `http://HOST:3000/restapis/API-ID/STAGE/_user_request_/PATH`. Then replace the following values:
-
-- `HOST` with `localstack` if within docker-compose containers or `localhost` if outside the host laptop
-    - In most cases, this will be `localhost`
-- `API-ID` with `api_gateway_rest_api_id`
-- `STAGE` with `api_gateway_rest_api_stage`
-
-_Note: A typical URL to request document metadata would look
-like: `http://localhost:3000/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234`._
-
 ### Running The UI
 
 For info on the UI, visit the [UI README](ui/README.md).
