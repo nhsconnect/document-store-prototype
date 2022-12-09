@@ -1,5 +1,3 @@
 {
-  "resourceType": "Bundle",
-  "type": "searchset",
-  "total": 0
+  "error": "Patient does not exist for given NHS number."
 }

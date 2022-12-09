@@ -1,5 +1,5 @@
 import ApiClient from "./apiClient";
-import { documentUploadStates } from "../enums/documentUploads";
+import {documentUploadStates} from "../enums/documentUploads";
 import axios from "axios";
 
 jest.mock("axios");
@@ -261,7 +261,41 @@ describe("tests the getPatientDetails method", () => {
                 queryStringParameters: queryStringParametersMock,
             })
         );
-        expect(returnedPatientBundle).toStrictEqual(patientObject);
+        expect(returnedPatientBundle).toStrictEqual(responseBody);
+    });
+
+    it("returns error patient not found when given the NHS number 9111231130", async () => {
+        const nhsNumber = "9111231130";
+        const error = "Patient does not exist for given NHS number.";
+        const getMock = jest.fn(() => {
+            return responseBody;
+        });
+        const api = { get: getMock };
+        const apiClient = new ApiClient(api, user);
+        const requestHeaders = {
+            Accept: "application/json",
+            Authorization: `Bearer ${user.id_token}`,
+        };
+        const queryStringParametersMock = {
+            "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+        };
+        const responseBody = {
+            error: error,
+        };
+
+        const returnedPatientBundle = await apiClient.getPatientDetails(
+            nhsNumber
+        );
+
+        expect(getMock).toHaveBeenCalledWith(
+            "doc-store-api",
+            "/PatientDetails",
+            expect.objectContaining({
+                headers: requestHeaders,
+                queryStringParameters: queryStringParametersMock,
+            })
+        );
+        expect(returnedPatientBundle).toStrictEqual(responseBody);
     });
 });
 

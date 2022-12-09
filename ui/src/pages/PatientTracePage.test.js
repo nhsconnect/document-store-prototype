@@ -1,9 +1,9 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import {render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { PatientTracePage } from "./PatientTracePage";
+import {PatientTracePage} from "./PatientTracePage";
 import * as ReactRouter from "react-router";
-import useApi from "../apiClients/useApi"; 
+import useApi from "../apiClients/useApi";
 
 jest.mock("../apiClients/useApi");
 const mockSetNhsNumber = jest.fn();
@@ -18,6 +18,12 @@ const patientData = {
     nhsNumber: fakeNhsNumber,
     postalCode: "LS1 6AE"
 };
+const patientDetailsResponse = {
+    result: {
+        patientDetails: patientData
+    }
+};
+
 describe("PatientTracePage", () => {
 
     const mockNavigate = jest.fn();
@@ -53,7 +59,7 @@ describe("PatientTracePage", () => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return patientData
+                        return patientDetailsResponse
                     }
                 }
             };
@@ -76,7 +82,7 @@ describe("PatientTracePage", () => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return patientData
+                        return patientDetailsResponse
                     }
                 }
             };
@@ -120,7 +126,7 @@ describe("PatientTracePage", () => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return patientData
+                        return patientDetailsResponse
                     }
                 }
             };
@@ -148,7 +154,7 @@ describe("PatientTracePage", () => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return patientData
+                        return patientDetailsResponse
                     }
                 }
             };
@@ -258,14 +264,15 @@ describe("PatientTracePage", () => {
             screen.queryByRole("button", { name: "Search" })
         ).toBeInTheDocument();
     });
-    // Disabled and will be enabled after adding error handling
-    xit("displays a message when no patient details are found", async () => {
+
+    it("displays a message when no patient details are found", async () => {
         const fakeNhsNumber = "0987654321";
+        const error = "Patient not found."
         useApi.mockImplementation(() => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return []
+                        return {error};
                     }
                 }
             };
@@ -276,13 +283,9 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(screen.getByText("Patient Not Found")).toBeInTheDocument();
+            expect(screen.getByText("Please Verify NHS Number")).toBeInTheDocument();
         });
-        expect(
-            screen.getByText(
-                "Please verify NHS number again. However, if you are sure it's correct you can proceed."
-            )
-        ).toBeInTheDocument();
+        expect(screen.getByText(error)).toBeInTheDocument();
     });
 });
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.exceptions.PdsException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
 
 import javax.net.ssl.SSLSession;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
@@ -64,7 +66,24 @@ class PdsFhirClientTest {
     }
 
     @Test
-    public void shouldMakeCallToPdsAndReturnNullWhenPdsFhirReturnsOtherThan200() {
+    public void shouldMakeCallToPdsAndThrowExceptionWhenPdsFhirReturns400() {
+        var testLogappender = TestLogAppender.addTestLogAppender();
+
+        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
+        var pdsFhirClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+
+        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(400, null));
+
+        String nhsNumber = "9000000000";
+
+        assertThrows(PdsException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Invalid NHS number.");
+
+        verify(httpClient).get(any(), contains(nhsNumber));
+        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+    }
+
+    @Test
+    public void shouldMakeCallToPdsAndThrowExceptionWhenPdsFhirReturns404() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
@@ -74,7 +93,24 @@ class PdsFhirClientTest {
 
         String nhsNumber = "9111231130";
 
-        pdsFhirClient.fetchPatientDetails(nhsNumber);
+        assertThrows(PdsException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
+
+        verify(httpClient).get(any(), contains(nhsNumber));
+        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+    }
+
+    @Test
+    public void shouldMakeCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() {
+        var testLogappender = TestLogAppender.addTestLogAppender();
+
+        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
+        var pdsFhirClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+
+        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(500, null));
+
+        String nhsNumber = "9111231130";
+
+        assertThrows(RuntimeException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Got an error when requesting patient from PDS: 500");
 
         verify(httpClient).get(any(), contains(nhsNumber));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();

@@ -7,15 +7,14 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
+import uk.nhs.digital.docstore.exceptions.PdsException;
 
-import java.util.List;
 import java.util.Map;
 
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -51,9 +50,6 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var parameterForm = new NHSNumberSearchParameterForm(searchParameters);
 
             var patientDetails = pdsFhirClient.fetchPatientDetails(parameterForm.getNhsNumber());
-            if (patientDetails == null) {
-                return emptyBundleResponse();
-            }
 
             logger.debug("Generating response body");
             var json = convertToJson(patientDetails);
@@ -62,9 +58,18 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             logger.debug("Processing finished - about to return the response");
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
         }
+        catch (PdsException e) {
+            return apiConfig.getApiGatewayResponse(200, getBodyWithError(e), "GET", null);
+        }
         catch (Exception e) {
             return errorResponseGenerator.errorResponse(e, fhirContext.newJsonParser());
         }
+    }
+
+    private String getBodyWithError(Exception e) {
+        return "{\n" +
+                "   \"error\": \""+ e.getMessage() +"\"\n" +
+                "}";
     }
 
     private String getBody(String patientDetails) {
@@ -79,29 +84,9 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
         return ow.writeValueAsString(patientDetails);
     }
 
-
-    private APIGatewayProxyResponseEvent emptyBundleResponse() {
-        var body = "{\n" +
-                "  \"resourceType\": \"Bundle\",\n" +
-                "  \"type\": \"searchset\",\n" +
-                "  \"total\": 0\n" +
-                "}";
-        return apiConfig.getApiGatewayResponse(200, body, "GET", null);
-    }
-
     private static Map<String, String> queryParametersFrom(APIGatewayProxyRequestEvent requestEvent) {
         return requestEvent.getQueryStringParameters() == null
                 ? Map.of()
                 : requestEvent.getQueryStringParameters();
-    }
-
-    private static Bundle fhirBundleOf(PatientDetails patientDetails) {
-        BundleMapper bundleMapper = new BundleMapper();
-        return bundleMapper.toBundle(List.of(patientDetails));
-    }
-
-    private String toJson(Bundle payload) {
-        var jsonParser = fhirContext.newJsonParser();
-        return jsonParser.encodeResourceToString(payload);
     }
 }

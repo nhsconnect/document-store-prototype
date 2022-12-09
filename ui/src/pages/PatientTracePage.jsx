@@ -1,14 +1,8 @@
-import {
-    Button,
-    ErrorSummary,
-    Fieldset,
-    Input,
-    SummaryList,
-} from "nhsuk-react-components";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import {Button, ErrorSummary, Fieldset, Input, SummaryList, WarningCallout,} from "nhsuk-react-components";
+import React, {useState} from "react";
+import {useForm} from "react-hook-form";
+import {useNavigate} from "react-router";
+import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
 
@@ -31,14 +25,20 @@ export const PatientTracePage = ({ nextPage, title }) => {
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});
+    const [errorMessage, setErrorMessage] = useState("");
     const [, setNhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
             setSubmissionState(states.SEARCHING);
-            const patientData = await client.getPatientDetails(data.nhsNumber);
-            setPatientDetails(patientData);
+            setErrorMessage("");
+            const response = await client.getPatientDetails(data.nhsNumber);
+            if (response.error){
+                setErrorMessage(response.error);
+            } else {
+                setPatientDetails(response.result.patientDetails);
+            }
             setSubmissionState(states.SUCCEEDED);
         } catch (e) {
             setSubmissionState(states.FAILED);
@@ -88,7 +88,7 @@ export const PatientTracePage = ({ nextPage, title }) => {
                         <progress aria-label={'Loading...'}/>
                     </p>
                 )}
-                {submissionState === states.SUCCEEDED && (
+                {(submissionState === states.SUCCEEDED && !errorMessage) && (
                         <SummaryList>
                             <SummaryList.Row>
                                 <SummaryList.Key>Family Name</SummaryList.Key>
@@ -99,7 +99,7 @@ export const PatientTracePage = ({ nextPage, title }) => {
                             <SummaryList.Row>
                                 <SummaryList.Key>Given Name</SummaryList.Key>
                                 <SummaryList.Value>
-                                    {patientDetails.givenName[0]}
+                                    {patientDetails.givenName?.map(name => `${name} `)}
                                 </SummaryList.Value>
                             </SummaryList.Row>
                             <SummaryList.Row>
@@ -115,25 +115,22 @@ export const PatientTracePage = ({ nextPage, title }) => {
                                 </SummaryList.Value>
                             </SummaryList.Row>
                         </SummaryList>
-                    )}
-                {/*{submissionState === states.SUCCEEDED && (*/}
-                {/*        <WarningCallout>*/}
-                {/*            <WarningCallout.Label>*/}
-                {/*                Patient Not Found*/}
-                {/*            </WarningCallout.Label>*/}
-                {/*            <p>*/}
-                {/*                Please verify NHS number again. However, if you*/}
-                {/*                are sure it's correct you can proceed.*/}
-                {/*            </p>*/}
-                {/*        </WarningCallout>*/}
-                {/*    )}*/}
+                )}
+                {(submissionState === states.SUCCEEDED && errorMessage) && (
+                    <WarningCallout>
+                        <WarningCallout.Label>
+                            Please Verify NHS Number
+                        </WarningCallout.Label>
+                        <p>{errorMessage}</p>
+                    </WarningCallout>
+                )}
                 {(submissionState === states.IDLE ||
                     submissionState === states.FAILED ||
                     submissionState === states.SEARCHING) && (
                     <Button type="submit">Search</Button>
                 )}
             </form>
-            {submissionState === states.SUCCEEDED && (
+            {(submissionState === states.SUCCEEDED && !errorMessage) && (
                 <Button onClick={onNextClicked}>Next</Button>
             )}
         </>

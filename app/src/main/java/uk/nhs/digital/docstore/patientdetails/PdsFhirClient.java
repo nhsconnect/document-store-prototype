@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore.patientdetails;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.exceptions.PdsException;
 
 import java.util.List;
 
@@ -39,7 +40,18 @@ public class PdsFhirClient {
         if (response.statusCode() == 200) {
             return patientDetailsMapper.fromPatientDetailsResponseBody(response.body());
         }
+        handleErrorResponse(response.statusCode());
         return null;
+    }
+
+    private void handleErrorResponse(int statusCode) {
+        if (statusCode == 400){
+            throw new PdsException("Invalid NHS number.");
+        }
+        if (statusCode == 404){
+            throw new PdsException("Patient does not exist for given NHS number.");
+        }
+        throw new RuntimeException("Got an error when requesting patient from PDS: " + statusCode);
     }
 
 }

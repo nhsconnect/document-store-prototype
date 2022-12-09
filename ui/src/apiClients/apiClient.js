@@ -106,10 +106,10 @@ class ApiClient {
         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
       },
     });
-    if(data.result?.patientDetails){
-      return data.result.patientDetails;
+    if(data){
+      return data;
     }
-    throw new Error();
+    throw new Error("Error while getting patient details.");
   }
 
   async getPresignedUrl(id) {
