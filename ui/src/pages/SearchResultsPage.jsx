@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
-import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-components";
-import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
-import {useNavigate} from "react-router";
-import BackButton from "../components/BackButton";
-import useApi from "../apiClients/useApi";
+import React, {useEffect, useState} from 'react';
+import {useForm} from 'react-hook-form';
+import {Button, ErrorMessage, Fieldset, Input, Table} from 'nhsuk-react-components';
+import {useNhsNumberProviderContext} from '../providers/NhsNumberProvider';
+import {useNavigate} from 'react-router';
+import BackButton from '../components/BackButton';
+import useApi from '../apiClients/useApi';
 import {downloadFile} from '../utils/utils';
 
 const states = {
@@ -15,12 +15,12 @@ const states = {
 };
 
 const SearchResultsPage = () => {
-    const client = useApi()
+    const client = useApi();
     const {register} = useForm();
-    const {ref: nhsNumberRef, ...nhsNumberProps} = register("nhsNumber");
+    const {ref: nhsNumberRef, ...nhsNumberProps} = register('nhsNumber');
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
-    const[downloadState, setDownloadState] = useState(states.INITIAL);
+    const [downloadState, setDownloadState] = useState(states.INITIAL);
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
@@ -42,6 +42,9 @@ const SearchResultsPage = () => {
             }
         };
         void search();
+
+        // Todo: Remove the suppression when we provide a client to the dependency array that remains stable between renders
+        // eslint-disable-next-line
     }, [nhsNumber, navigate, setSubmissionState, setSearchResults]);
 
     const downloadAll = async () => {
@@ -59,7 +62,7 @@ const SearchResultsPage = () => {
     }
 
     const goToHome = () => {
-        navigate("/home");
+        navigate('/home');
     }
 
     return (
