@@ -9,48 +9,54 @@
 _Note: Node/npm versions can be managed using [nvm](https://github.com/nvm-sh/nvm). The version can be found in
 the [.nvmrc](.nvmrc)._
 
-## Installing
+## Running Locally
+
+### 1. Install Dependencies
 
 To install dependencies, run:
 
 ```bash
-npm ci
+npm install
 ```
-_Note: This will remove your current `node_modules` package and replace it with a new one._
 
-Create a config file by copying `ui/src/config.js.local.example` to `config.js`.
+_Note: Ensure you have the correct Node version set before doing this._
 
-## Starting the UI
+### 2. Create Config
 
-As with any other React application built upon create-react-app, it can be served locally with hot reloading during
-development. However, as the application is authenticated using Cognito, logging in with valid credentials is still a
-necessity as is configuring the local application to connect to the relevant user pool.
+Create a config file by copying [config.js.local.example](src/config.js.local.example) and rename it to `config.js`.
 
-The `ui/src/config.js` must be modified to include values necessary to connect to backend services. This
-file needs to be modified to connect to a Cognito pool and the API Gateway. There are two placeholders to replacein the API gateway configuration.
+### 3. Setup Config
 
-| Placeholder           | Terraform output                       |
-| --------------------- | -------------------------------------- |
-| `%api-gateway-id%`    | `api_gateway_id`                       |
-| `%api-gateway-stage%` | `api_gateway_stage`                    |
+The [config.js](src/config.js) file must be modified to include values necessary to connect to backend services. This
+file needs to be modified to connect to a Cognito pool and the API Gateway. There are two placeholders to replace in the
+API gateway configuration.
+
+| Placeholder           | Terraform output    |
+|-----------------------|---------------------|
+| `%api-gateway-id%`    | `api_gateway_id`    |
+| `%api-gateway-stage%` | `api_gateway_stage` |
 
 You can view the Terraform output by running:
+
 ```bash
 ./tasks view-terraform-logs
 ```
 
-_Note: A typical URL to request document metadata would look
-like: `http://localhost:3000/restapis/ce33iruji1/test/_user_request_/DocumentReference/1234`._
+### 4. Start The App
 
-
-Once the `config.js` has been edited, the UI can be started from the `ui` subdirectory with `npm`:
+The UI can be started by running:
 
 ```bash
-npm run start
+npm start
 ```
 
-Don't close this while looking at the UI or running the cypress tests - you'll need to run the rest of this in a new
-terminal.
+_Note: Do not exit the program/terminal whilst running the UI or Cypress tests. The can run the latter in another
+terminal window._
+
+### 5. Log Into The App
+
+The app is authenticated using Cognito, logging in with valid credentials is still a
+necessity as is configuring the local app to connect to the relevant user pool.
 
 ## Testing
 
@@ -96,3 +102,8 @@ We have implemented a rudimentary feature toggle system using the `config.js` fi
 build time depending on the `NODE_ENV` environment variable. There is a feature toggle
 React [context provider](src/providers/FeatureToggleProvider.jsx) and custom hook for checking the value of the
 toggle.
+
+## Design
+
+The UI follows the guidelines specified in the [NHS Service Manual](https://service-manual.nhs.uk/). To help achieve
+this, we utilise the UI components provided by the [nhsuk-frontend](https://github.com/nhsuk/nhsuk-frontend) package. 
