@@ -681,7 +681,7 @@ Body:
 |--------------------------------|---------------------------|---------------------------|
 | Unrecognised system identifier | INVALID_IDENTIFIER_SYSTEM | Invalid identifier system |
 | Invalid subject identifier     | INVALID_IDENTIFIER_VALUE  | Invalid identifier value  |
-| Missing search parameter       | INVALID_PARAMETER         | Invalid parameter         |        |
+| Missing search parameter       | INVALID_PARAMETER         | Invalid parameter         |
 
 ##### Internal server error
 
@@ -931,7 +931,7 @@ Body:
 |--------------------------------|---------------------------|---------------------------|
 | Unrecognised system identifier | INVALID_IDENTIFIER_SYSTEM | Invalid identifier system |
 | Invalid subject identifier     | INVALID_IDENTIFIER_VALUE  | Invalid identifier value  |
-| Missing search parameter       | INVALID_PARAMETER         | Invalid parameter         |        |
+| Missing search parameter       | INVALID_PARAMETER         | Invalid parameter         |
 
 ##### Internal server error
 
@@ -958,7 +958,6 @@ Body:
     }
   ]
 }
-
 ```
 
 #### Examples
