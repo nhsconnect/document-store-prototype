@@ -4,7 +4,6 @@ import {
     Fieldset,
     Input,
     SummaryList,
-    WarningCallout,
 } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -89,47 +88,45 @@ export const PatientTracePage = ({ nextPage, title }) => {
                         <progress aria-label={'Loading...'}/>
                     </p>
                 )}
-                {submissionState === states.SUCCEEDED &&
-                    patientDetails.length > 0 && (
+                {submissionState === states.SUCCEEDED && (
                         <SummaryList>
                             <SummaryList.Row>
                                 <SummaryList.Key>Family Name</SummaryList.Key>
                                 <SummaryList.Value>
-                                    {patientDetails[0].name.family}
+                                    {patientDetails.familyName}
                                 </SummaryList.Value>
                             </SummaryList.Row>
                             <SummaryList.Row>
                                 <SummaryList.Key>Given Name</SummaryList.Key>
                                 <SummaryList.Value>
-                                    {patientDetails[0].name.given[0]}
+                                    {patientDetails.givenName[0]}
                                 </SummaryList.Value>
                             </SummaryList.Row>
                             <SummaryList.Row>
                                 <SummaryList.Key>DoB</SummaryList.Key>
                                 <SummaryList.Value>
-                                    {patientDetails[0].dateOfBirth.toLocaleDateString()}
+                                    {patientDetails.birthDate}
                                 </SummaryList.Value>
                             </SummaryList.Row>
                             <SummaryList.Row>
                                 <SummaryList.Key>Postcode</SummaryList.Key>
                                 <SummaryList.Value>
-                                    {patientDetails[0].postcode}
+                                    {patientDetails.postalCode}
                                 </SummaryList.Value>
                             </SummaryList.Row>
                         </SummaryList>
                     )}
-                {submissionState === states.SUCCEEDED &&
-                    patientDetails.length === 0 && (
-                        <WarningCallout>
-                            <WarningCallout.Label>
-                                Patient Not Found
-                            </WarningCallout.Label>
-                            <p>
-                                Please verify NHS number again. However, if you
-                                are sure it's correct you can proceed.
-                            </p>
-                        </WarningCallout>
-                    )}
+                {/*{submissionState === states.SUCCEEDED && (*/}
+                {/*        <WarningCallout>*/}
+                {/*            <WarningCallout.Label>*/}
+                {/*                Patient Not Found*/}
+                {/*            </WarningCallout.Label>*/}
+                {/*            <p>*/}
+                {/*                Please verify NHS number again. However, if you*/}
+                {/*                are sure it's correct you can proceed.*/}
+                {/*            </p>*/}
+                {/*        </WarningCallout>*/}
+                {/*    )}*/}
                 {(submissionState === states.IDLE ||
                     submissionState === states.FAILED ||
                     submissionState === states.SEARCHING) && (

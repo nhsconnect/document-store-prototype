@@ -18,7 +18,6 @@ class ApiClient {
         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
       },
     });
-
     return data.total > 0
       ? data.entry.map(({resource}) => ({
         id: resource.id,
@@ -100,20 +99,17 @@ class ApiClient {
   async getPatientDetails(nhsNumber) {
     const data = await this.api.get("doc-store-api", "/PatientDetails", {
       headers: {
-        Accept: "application/fhir+json",
+        Accept: "application/json",
         Authorization: `Bearer ${this.user.id_token}`,
       },
       queryStringParameters: {
         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
       },
     });
-    return data.total > 0
-      ? data.entry.map(({resource}) => ({
-        dateOfBirth: new Date(resource.birthDate),
-        postcode: resource.address[0].postalCode,
-        name: resource.name[0],
-      }))
-      : [];
+    if(data.result?.patientDetails){
+      return data.result.patientDetails;
+    }
+    throw new Error();
   }
 
   async getPresignedUrl(id) {

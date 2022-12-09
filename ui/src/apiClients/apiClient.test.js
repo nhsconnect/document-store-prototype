@@ -225,48 +225,29 @@ describe("test the uploadDocument method", () => {
 
 describe("tests the getPatientDetails method", () => {
     it("returns a patient trace when given the NHS number 9000000009", async () => {
+        const nhsNumber = "9000000009";
         const patientObject = {
-            id: "9000000009",
-            name: [
-                {
-                    given: ["Joe"],
-                    family: "Bloggs",
-                },
-            ],
-            birthDate: "2001-10-05",
-            address: [
-                {
-                    postalCode: "AB1 2CD",
-                },
-            ],
+            "birthDate": "2010-10-22",
+            "familyName": "Smith",
+            "givenName": ["Jane"],
+            "nhsNumber": nhsNumber,
+            "postalCode": "LS1 6AE"
         };
         const getMock = jest.fn(() => {
             return responseBody;
         });
         const api = { get: getMock };
         const apiClient = new ApiClient(api, user);
-        const nhsNumber = "9000000009";
         const requestHeaders = {
-            Accept: "application/fhir+json",
+            Accept: "application/json",
             Authorization: `Bearer ${user.id_token}`,
         };
         const queryStringParametersMock = {
             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
         };
         const responseBody = {
-            total: 1,
-            entry: [{ resource: patientObject }],
+            result: { patientDetails: patientObject },
         };
-        const expectedPatientBundle = [
-            {
-                name: {
-                    given: ["Joe"],
-                    family: "Bloggs",
-                },
-                dateOfBirth: new Date(Date.UTC(2001, 9, 5)),
-                postcode: "AB1 2CD",
-            },
-        ];
 
         const returnedPatientBundle = await apiClient.getPatientDetails(
             nhsNumber
@@ -280,7 +261,7 @@ describe("tests the getPatientDetails method", () => {
                 queryStringParameters: queryStringParametersMock,
             })
         );
-        expect(returnedPatientBundle).toStrictEqual(expectedPatientBundle);
+        expect(returnedPatientBundle).toStrictEqual(patientObject);
     });
 });
 

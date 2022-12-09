@@ -5,6 +5,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,8 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             }
 
             logger.debug("Generating response body");
-            var body = toJson(fhirBundleOf(patientDetails));
+            var json = convertToJson(patientDetails);
+            var body = getBody(json);
 
             logger.debug("Processing finished - about to return the response");
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
@@ -63,6 +66,19 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             return errorResponseGenerator.errorResponse(e, fhirContext.newJsonParser());
         }
     }
+
+    private String getBody(String patientDetails) {
+       return "{\n" +
+               "   \"result\": {\n" +
+               "       \"patientDetails\": "+ patientDetails +
+               "   }\n" +
+               "}";
+    }
+    private String convertToJson(PatientDetails patientDetails) throws JsonProcessingException {
+        var ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        return ow.writeValueAsString(patientDetails);
+    }
+
 
     private APIGatewayProxyResponseEvent emptyBundleResponse() {
         var body = "{\n" +
