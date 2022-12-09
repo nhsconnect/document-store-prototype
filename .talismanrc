@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: tasks
+  checksum: 1735d5c1da0831c0064d556c0346f08c81dc31c6eeb43035179547b341fa5cf5
 version: ""
 scopeconfig:
   - scope: node
