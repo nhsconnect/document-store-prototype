@@ -64,7 +64,7 @@ class PdsFhirClientTest {
     }
 
     @Test
-    public void shouldMakeCallToPdsAndReturnNullWhenPdsFhirReturns404() {
+    public void shouldMakeCallToPdsAndReturnNullWhenPdsFhirReturnsOtherThan200() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();

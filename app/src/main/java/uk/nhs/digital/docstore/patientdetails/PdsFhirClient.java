@@ -32,16 +32,14 @@ public class PdsFhirClient {
             return new PatientDetails(List.of("Jane"), "Doe", "1998-07-11", "LS1 6AE", nhsNumber);
         }
 
-
         var path = "Patient/" + nhsNumber;
         logger.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
         var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path);
 
-        PatientDetails patientDetails = null;
-        if (response.statusCode() != 404) {
-            patientDetails = patientDetailsMapper.fromPatientDetailsResponseBody(response.body());
+        if (response.statusCode() == 200) {
+            return patientDetailsMapper.fromPatientDetailsResponseBody(response.body());
         }
-        return patientDetails;
+        return null;
     }
 
 }
