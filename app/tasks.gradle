@@ -17,7 +17,9 @@ tasks.register('attachPolicyToCIRole', Exec) {
 tasks.register('e2eTest', Test) {
     group 'verification'
     description 'Run all end-to-end tests against LocalStack.'
-
+    e2eTest {
+        systemProperty 'PDS_FHIR_IS_STUBBED', System.getProperty('PDS_FHIR_IS_STUBBED')
+    }
     testClassesDirs = sourceSets.e2eTest.output.classesDirs
     classpath = sourceSets.e2eTest.runtimeClasspath
 }
