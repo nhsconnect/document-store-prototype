@@ -8,7 +8,6 @@ services:
       - AWS_ENDPOINT=http://localstack:4566
     links:
       - localstack:localstack
-      - pds-adaptor:pds-adaptor
       - terraform:terraform
     depends_on:
       terraform:
@@ -32,11 +31,6 @@ services:
     volumes:
       - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-  pds-adaptor:
-    image: wiremock/wiremock
-    command: --verbose
-    ports:
-      - "8080:8080"
   bootstrap-terraform:
     image: "amazon/aws-cli"
     working_dir: /work
