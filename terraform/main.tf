@@ -156,6 +156,7 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       module.get_doc_ref_endpoint,
       module.create_doc_ref_endpoint,
       module.search_doc_ref_endpoint,
+      module.delete_doc_ref_endpoint,
       module.patient_details_endpoint,
       module.document_manifest_endpoint,
       module.patient_details_collection_preflight,
