@@ -40,6 +40,8 @@ public class SearchForPatientLocalstackTest {
                 .isEqualTo(getContentFromResource(expectedPatientDetailsResponse));
     }
 
+    @DisabledIfSystemProperty(named = "PDS_FHIR_IS_STUBBED", matches = "true")
+    @DisabledIfEnvironmentVariable(named = "PDS_FHIR_IS_STUBBED", matches = "true")
     @Test
     void returnsSuccessResponseForPatientWithMissingInformation() throws IOException, InterruptedException {
         var expectedPatientDetailsResponse = "search-patient-details/patient-details-response-for-missing-information.json";
