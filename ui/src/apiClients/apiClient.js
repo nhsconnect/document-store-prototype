@@ -109,7 +109,6 @@ class ApiClient {
     if(data){
       return data;
     }
-    throw new Error("Error while getting patient details.");
   }
 
   async getPresignedUrl(id) {

@@ -25,22 +25,21 @@ export const PatientTracePage = ({ nextPage, title }) => {
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});
-    const [errorMessage, setErrorMessage] = useState("");
+    const [statusCode, setStatusCode] = useState(null);
     const [, setNhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
             setSubmissionState(states.SEARCHING);
-            setErrorMessage("");
+            setStatusCode(null);
             const response = await client.getPatientDetails(data.nhsNumber);
-            if (response.error){
-                setErrorMessage(response.error);
-            } else {
-                setPatientDetails(response.result.patientDetails);
-            }
+            setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
         } catch (e) {
+            if (e.response?.status){
+                setStatusCode(e.response.status);
+            }
             setSubmissionState(states.FAILED);
         }
     };
@@ -54,7 +53,7 @@ export const PatientTracePage = ({ nextPage, title }) => {
         <>
             <BackButton/>
             <form onSubmit={handleSubmit(doSubmit)} noValidate>
-                {submissionState === states.FAILED && (
+                {(submissionState === states.FAILED && statusCode !== 404) && (
                     <ErrorSummary
                         aria-labelledby="error-summary-title"
                         role="alert"
@@ -88,7 +87,7 @@ export const PatientTracePage = ({ nextPage, title }) => {
                         <progress aria-label={'Loading...'}/>
                     </p>
                 )}
-                {(submissionState === states.SUCCEEDED && !errorMessage) && (
+                {submissionState === states.SUCCEEDED && (
                         <SummaryList>
                             <SummaryList.Row>
                                 <SummaryList.Key>Family Name</SummaryList.Key>
@@ -116,21 +115,24 @@ export const PatientTracePage = ({ nextPage, title }) => {
                             </SummaryList.Row>
                         </SummaryList>
                 )}
-                {(submissionState === states.SUCCEEDED && errorMessage) && (
-                    <WarningCallout>
-                        <WarningCallout.Label>
-                            Please Verify NHS Number
-                        </WarningCallout.Label>
-                        <p>{errorMessage}</p>
-                    </WarningCallout>
-                )}
+
+                {(submissionState === states.FAILED && statusCode === 404) && (
+                        <WarningCallout>
+                            <WarningCallout.Label>
+                                Patient Not Found
+                            </WarningCallout.Label>
+                            <p>
+                                Please verify NHS number again.
+                            </p>
+                        </WarningCallout>
+                    )}
                 {(submissionState === states.IDLE ||
                     submissionState === states.FAILED ||
                     submissionState === states.SEARCHING) && (
                     <Button type="submit">Search</Button>
                 )}
             </form>
-            {(submissionState === states.SUCCEEDED && !errorMessage) && (
+            {submissionState === states.SUCCEEDED && (
                 <Button onClick={onNextClicked}>Next</Button>
             )}
         </>

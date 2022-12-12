@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.exceptions.PdsException;
+import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
 
 import javax.net.ssl.SSLSession;
@@ -76,7 +76,7 @@ class PdsFhirClientTest {
 
         String nhsNumber = "9000000000";
 
-        assertThrows(PdsException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Invalid NHS number.");
+        assertThrows(RuntimeException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber));
 
         verify(httpClient).get(any(), contains(nhsNumber));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
@@ -93,7 +93,7 @@ class PdsFhirClientTest {
 
         String nhsNumber = "9111231130";
 
-        assertThrows(PdsException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
+        assertThrows(PatientNotFoundException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
 
         verify(httpClient).get(any(), contains(nhsNumber));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();

@@ -68,7 +68,7 @@ public class SearchForPatientLocalstackTest {
 
         var patientDetailsResponse = newHttpClient().send(patientDetailsRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
 
-        assertThat(patientDetailsResponse.statusCode()).isEqualTo(200);
+        assertThat(patientDetailsResponse.statusCode()).isEqualTo(404);
         assertThat(patientDetailsResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
         assertThatJson(patientDetailsResponse.body())
                 .whenIgnoringPaths("$.meta")
