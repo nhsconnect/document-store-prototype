@@ -267,13 +267,14 @@ describe("PatientTracePage", () => {
 
     it("displays a message when no patient details are found", async () => {
         const fakeNhsNumber = "0987654321";
-        const error = "Patient not found."
+        const errorResponse = {
+            status: 404,
+            message: "404 Patient not found."
+        };
         useApi.mockImplementation(() => {
             return {
-                getPatientDetails: (nhsNumber) => {
-                    if (nhsNumber === fakeNhsNumber) {
-                        return {error};
-                    }
+                getPatientDetails: () => {
+                    throw {response: errorResponse}
                 }
             };
         });
@@ -283,9 +284,8 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(screen.getByText("Please Verify NHS Number")).toBeInTheDocument();
+            expect(screen.getByText("Patient Not Found")).toBeInTheDocument();
         });
-        expect(screen.getByText(error)).toBeInTheDocument();
     });
 });
 

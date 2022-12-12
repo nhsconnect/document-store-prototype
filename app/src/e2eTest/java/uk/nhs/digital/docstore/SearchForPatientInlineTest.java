@@ -89,7 +89,7 @@ public class SearchForPatientInlineTest {
 
         var responseEvent = handler.handleRequest(request, context);
 
-        assertThat(responseEvent.getStatusCode()).isEqualTo(200);
+        assertThat(responseEvent.getStatusCode()).isEqualTo(404);
         assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
         assertThatJson(responseEvent.getBody())
                 .whenIgnoringPaths("$.meta")

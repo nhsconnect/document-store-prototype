@@ -13,7 +13,7 @@ import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
-import uk.nhs.digital.docstore.exceptions.PdsException;
+import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 
 import java.util.Map;
 
@@ -58,8 +58,8 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             logger.debug("Processing finished - about to return the response");
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
         }
-        catch (PdsException e) {
-            return apiConfig.getApiGatewayResponse(200, getBodyWithError(e), "GET", null);
+        catch (PatientNotFoundException e) {
+            return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
         }
         catch (Exception e) {
             return errorResponseGenerator.errorResponse(e, fhirContext.newJsonParser());
@@ -68,7 +68,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
 
     private String getBodyWithError(Exception e) {
         return "{\n" +
-                "   \"error\": \""+ e.getMessage() +"\"\n" +
+                "   \"errorMessage\": \""+ e.getMessage() +"\"\n" +
                 "}";
     }
 
