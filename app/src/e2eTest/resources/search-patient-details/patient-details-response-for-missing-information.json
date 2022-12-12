@@ -1,0 +1,11 @@
+{
+  "result": {
+    "patientDetails": {
+      "birthDate": "2010-10-22",
+      "familyName": "Smythe",
+      "givenName": ["Janet"],
+      "nhsNumber": "9000000025",
+      "postalCode": null
+    }
+  }
+}
