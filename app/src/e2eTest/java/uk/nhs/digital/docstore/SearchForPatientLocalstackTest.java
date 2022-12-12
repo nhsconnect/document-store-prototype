@@ -40,6 +40,23 @@ public class SearchForPatientLocalstackTest {
                 .isEqualTo(getContentFromResource(expectedPatientDetailsResponse));
     }
 
+    @Test
+    void returnsSuccessResponseForPatientWithMissingInformation() throws IOException, InterruptedException {
+        var expectedPatientDetailsResponse = "search-patient-details/patient-details-response-for-missing-information.json";
+
+        var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9000000025"))
+                .GET()
+                .build();
+
+        var patientDetailsResponse = newHttpClient().send(patientDetailsRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
+
+        assertThat(patientDetailsResponse.statusCode()).isEqualTo(200);
+        assertThat(patientDetailsResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(patientDetailsResponse.body())
+                .whenIgnoringPaths("$.meta", "$.entry[*].resource.meta")
+                .isEqualTo(getContentFromResource(expectedPatientDetailsResponse));
+    }
+
     @DisabledIfSystemProperty(named = "PDS_FHIR_IS_STUBBED", matches = "true")
     @DisabledIfEnvironmentVariable(named = "PDS_FHIR_IS_STUBBED", matches = "true")
     @Test
