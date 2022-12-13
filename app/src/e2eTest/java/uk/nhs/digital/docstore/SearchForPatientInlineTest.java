@@ -113,7 +113,7 @@ public class SearchForPatientInlineTest {
     @Test
     void returnsErrorResponseWhenAnInvalidSubjectIdentifierIsInput() throws IOException {
         var request = requestBuilder
-                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number%7Cinvalid-subject-identifier")
+                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|")
                 .build();
 
         var responseEvent = handler.handleRequest(request, context);

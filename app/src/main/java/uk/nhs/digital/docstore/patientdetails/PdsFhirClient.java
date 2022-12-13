@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore.patientdetails;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 
 import java.util.List;
@@ -40,11 +41,14 @@ public class PdsFhirClient {
         if (response.statusCode() == 200) {
             return patientDetailsMapper.fromPatientDetailsResponseBody(response.body());
         }
-        handleErrorResponse(response.statusCode());
+        handleErrorResponse(response.statusCode(), nhsNumber);
         return null;
     }
 
-    private void handleErrorResponse(int statusCode) {
+    private void handleErrorResponse(int statusCode, String nhsNumber) {
+        if (statusCode == 400){
+            throw new InvalidResourceIdException(nhsNumber);
+        }
         if (statusCode == 404){
             throw new PatientNotFoundException("Patient does not exist for given NHS number.");
         }

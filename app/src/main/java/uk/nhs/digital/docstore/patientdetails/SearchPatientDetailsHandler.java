@@ -62,7 +62,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
         }
         catch (Exception e) {
-            return errorResponseGenerator.errorResponse(e, fhirContext.newJsonParser());
+            return errorResponseGenerator.errorResponse(e);
         }
     }
 

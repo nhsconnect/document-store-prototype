@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
 
@@ -76,7 +77,7 @@ class PdsFhirClientTest {
 
         String nhsNumber = "9000000000";
 
-        assertThrows(RuntimeException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber));
+        assertThrows(InvalidResourceIdException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber));
 
         verify(httpClient).get(any(), contains(nhsNumber));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();

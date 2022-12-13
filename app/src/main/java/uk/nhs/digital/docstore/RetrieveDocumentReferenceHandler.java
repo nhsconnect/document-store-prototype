@@ -80,7 +80,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
         }
             catch (Exception e) {
-            return errorResponseGenerator.errorResponse(e, fhirContext.newJsonParser());
+            return errorResponseGenerator.errorResponse(e);
         }
     }
 

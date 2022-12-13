@@ -1,18 +1,3 @@
 {
-  "resourceType": "OperationOutcome",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "code-invalid",
-      "details": {
-        "coding": [
-          {
-            "system": "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1",
-            "code": "INVALID_CODE_SYSTEM",
-            "display": "Invalid code system"
-          }
-        ]
-      }
-    }
-  ]
+  "errorMessage": "Unrecognised coding system: 'unsupported-system'"
 }
