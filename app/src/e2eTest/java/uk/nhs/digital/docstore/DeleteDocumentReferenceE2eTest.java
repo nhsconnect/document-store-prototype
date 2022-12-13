@@ -14,6 +14,7 @@ import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public class DeleteDocumentReferenceE2eTest {
         assertThat(deleteDocumentReferenceResponse.statusCode()).isEqualTo(200);
 
         var actual = dynamoDbClient.getItem(TABLE_NAME, Map.of("ID", document.get("ID")));
-
-        assertThat(actual.getItem().get("DeletedAt")).isNotNull();
+        var deletedAt = actual.getItem().get("Deleted").getS();
+        assertThat(Instant.now().isAfter(Instant.parse(deletedAt))).isTrue();
     }
 }

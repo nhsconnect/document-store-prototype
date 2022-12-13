@@ -23,6 +23,7 @@ public class DocumentMetadata {
     private String description;
     private String created;
     private String indexed;
+    private String deleted;
     private List<String> type;
 
     @DynamoDBHashKey(attributeName = "ID")
@@ -93,6 +94,11 @@ public class DocumentMetadata {
         return indexed;
     }
 
+    @DynamoDBAttribute(attributeName = "Deleted")
+    public String getDeleted(){return deleted;}
+
+    public void setDeleted(String deleted){this.deleted = deleted;}
+
     public void setIndexed(String indexed) {
         this.indexed = indexed;
     }
@@ -132,6 +138,7 @@ public class DocumentMetadata {
                 ", description='" + description + '\'' +
                 ", created='" + created + '\'' +
                 ", indexed='" + indexed + '\'' +
+                ", deleted='" + deleted + '\'' +
                 ", type=" + type +
                 '}';
     }
