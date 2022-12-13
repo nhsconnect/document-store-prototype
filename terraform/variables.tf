@@ -68,6 +68,12 @@ variable "pds_fhir_is_stubbed" {
   default = "true"
 }
 
+variable "cognito_domain_prefix" {
+  type    = string
+  default = ""
+  description = "This should be an empty string for the dev environment. If this changes it must be updated with CIS2"
+}
+
 variable "cognito_oidc_providers" {
   type    = list(string)
   default = []

@@ -295,6 +295,7 @@ pipelines:
           environment_variables:
             ENVIRONMENT: pre-prod
             NHS_CIS2_ENVIRONMENT: development
+            OIDC_PROVIDER_ID: "COGNITO"
           clean_workspace: true
           jobs:
             e2e-tests: *e2e_test

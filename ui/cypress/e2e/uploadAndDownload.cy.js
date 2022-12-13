@@ -3,10 +3,13 @@ import {logAccessibilityViolations} from '../support/utils';
 
 describe('upload and download', () => {
     it('searches for a patient, uploads, and then downloads their docs', () => {
+        cy.disableSameSiteCookieRestrictions();
+        
         const baseUrl = Cypress.config('baseUrl');
         const nhsNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
         const username = Cypress.env('username');
         const password = Cypress.env('password');
+        const oidcProvider = Cypress.env('oidc_provider')
         const uploadedFilePathNames = ['cypress/fixtures/test_patient_record.pdf', 'cypress/fixtures/test_patient_record_two.pdf'];
         const downloadedDocumentPath = path.join(Cypress.config('downloadsFolder'), `patient-record-${nhsNumber}.zip`);
 
@@ -14,10 +17,17 @@ describe('upload and download', () => {
         cy.title().should('eq', 'Document Store');
         cy.findByRole('button', {name: 'Start now'}).click();
 
-        //cy.url().should('eq', baseUrl + '/home');
-        cy.findByPlaceholderText('User Name').type(username);
-        cy.findByPlaceholderText('Password').type(password);
-        cy.findByRole('button', {name: 'Continue'}).click();
+        if (oidcProvider === "cis2devoidc") {
+            cy.findByPlaceholderText('User Name').type(username);
+            cy.findByPlaceholderText('Password').type(password);
+            cy.findByRole('button', {name: 'Continue'}).click();
+        }
+
+        if (oidcProvider === "COGNITO") {
+            cy.get('input[name="username"]:visible').type(username);
+            cy.get('input[name="password"]:visible').type(password);
+            cy.get('input[name="signInSubmitButton"]:visible').click();
+        }
 
         cy.url().should('eq', baseUrl + '/home');
         cy.injectAxe();
