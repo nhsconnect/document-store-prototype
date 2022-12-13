@@ -22,8 +22,8 @@ public class SearchForPatientLocalstackTest {
 
     @Test
     void returnsSuccessResponse() throws IOException, InterruptedException {
-        var expectedPatientDetailsResponse = (System.getProperty("PDS_FHIR_IS_STUBBED").equals("true") ||
-                System.getenv("PDS_FHIR_IS_STUBBED").equals("true"))
+        var expectedPatientDetailsResponse = (System.getProperty("PDS_FHIR_IS_STUBBED") == "true" ||
+                System.getenv("PDS_FHIR_IS_STUBBED") == "true")
                 ? "search-patient-details/patient-details-stubbed-response.json"
                 : "search-patient-details/patient-details-response.json";
 

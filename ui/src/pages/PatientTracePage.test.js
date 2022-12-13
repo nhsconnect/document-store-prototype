@@ -287,6 +287,29 @@ describe("PatientTracePage", () => {
             expect(screen.getByText("Patient Not Found")).toBeInTheDocument();
         });
     });
+
+    it("displays a message when nhs number is invalid", async () => {
+        const fakeNhsNumber = "9000000000";
+        const errorResponse = {
+            status: 400,
+            message: "400 Invalid NHS number."
+        };
+        useApi.mockImplementation(() => {
+            return {
+                getPatientDetails: () => {
+                    throw {response: errorResponse}
+                }
+            };
+        });
+        render(<PatientTracePage />);
+
+        enterNhsNumber(fakeNhsNumber);
+        startSearch();
+
+        await waitFor(() => {
+            expect(screen.getByText("The NHS number provided is invalid. Please Retry.")).toBeInTheDocument();
+        });
+    });
 });
 
 function clickNext() {

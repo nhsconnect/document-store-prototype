@@ -85,7 +85,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
             presignedS3Url = s3client.generatePresignedUrl(uploadRequest);
             savedDocumentMetadata = documentReferenceService.save(inputDocumentReference, s3ObjectKey);
         } catch (Exception e) {
-            return errorResponseGenerator.errorResponse(e, jsonParser);
+            return errorResponseGenerator.errorResponse(e);
         }
 
         logger.debug("Generating response body");

@@ -63,7 +63,11 @@ export const PatientTracePage = ({ nextPage, title }) => {
                             There is a problem
                         </ErrorSummary.Title>
                         <ErrorSummary.Body>
-                            <p>Technical error - Please retry.</p>
+                            {statusCode === 400 ?
+                                <p>The NHS number provided is invalid. Please Retry.</p>
+                            :
+                                <p>Technical error - Please retry.</p>
+                            }
                         </ErrorSummary.Body>
                     </ErrorSummary>
                 )}

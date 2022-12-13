@@ -1,7 +1,6 @@
 package uk.nhs.digital.docstore;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.IParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
@@ -18,20 +17,18 @@ public class ErrorResponseGeneratorTest {
     private static final FhirContext fhirContext = FhirContext.forR4();
     public static final String AMPLIFY_BASE_URL = "http://deployed-url-for-cors-origin";
     private ErrorResponseGenerator errorResponseGenerator;
-    private IParser jsonParser;
 
     @BeforeEach
     void setUp() {
         this.errorResponseGenerator = new ErrorResponseGenerator(new StubbedApiConfig(AMPLIFY_BASE_URL));
-        jsonParser = fhirContext.newJsonParser();
     }
 
     @Test
     void returnsBadRequestForExceptionsThatSerializeToOperationOutcomeIssues() throws IOException {
         String expectedErrorResponse = getContentFromResource("test-exception-response.json");
 
-        TestException exception = new TestException();
-        var response = errorResponseGenerator.errorResponse(exception, jsonParser);
+        TestException exception = new TestException("Invalid coding code");
+        var response = errorResponseGenerator.errorResponse(exception);
         var headers = response.getHeaders();
 
         assertThat(response.getStatusCode()).isEqualTo(400);
@@ -45,7 +42,7 @@ public class ErrorResponseGeneratorTest {
     void returnInternalServerErrorForOtherErrors() throws IOException {
         String expectedErrorResponse = getContentFromResource("internal-server-error-response.json");
 
-        var response = errorResponseGenerator.errorResponse(new Exception(), jsonParser);
+        var response = errorResponseGenerator.errorResponse(new Exception());
         var headers = response.getHeaders();
 
         assertThat(response.getStatusCode()).isEqualTo(500);

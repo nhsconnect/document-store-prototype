@@ -66,7 +66,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
             logger.debug("Generating response contents");
             bundle = bundleMapper.toBundle(documents);
         } catch (Exception e) {
-            return errorResponseGenerator.errorResponse(e, jsonParser);
+            return errorResponseGenerator.errorResponse(e);
         }
 
         logger.debug("Processing finished - about to return the response");
