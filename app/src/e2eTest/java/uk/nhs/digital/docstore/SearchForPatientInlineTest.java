@@ -54,7 +54,7 @@ public class SearchForPatientInlineTest {
 
     @Test
     void returnsSuccessResponse() throws IOException {
-       var patientData = getContentFromResource("search-patient-details/pds-fhir-responses/complete-patient-details-response.json");
+       var patientData = getContentFromResource("search-patient-details/pds-fhir-response/patient-details-response.json");
         stubFor(get(urlEqualTo("/Patient/9000000009"))
                 .willReturn(aResponse()
                         .withStatus(200)
