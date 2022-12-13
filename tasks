@@ -303,4 +303,8 @@ _java-dependency-scan)
 java-dependency-scan)
   dojo "./tasks _java-dependency-scan"
   ;;
+*)
+  echo "make $@"
+  make "$@"
+  ;;
 esac
