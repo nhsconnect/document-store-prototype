@@ -233,6 +233,7 @@ pipelines:
           environment_variables:
             ENVIRONMENT: dev
             NHS_CIS2_ENVIRONMENT: development
+            OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
           jobs:
             e2e-tests: *e2e_test
