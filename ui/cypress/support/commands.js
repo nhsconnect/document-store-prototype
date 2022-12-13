@@ -11,3 +11,24 @@ Cypress.Commands.overwrite('visit', (originalFn, url, options) => {
         originalFn(url, options);
     }
 });
+
+// This is necessary to use the Cognito hosted UI with a Cognito user pool OIDC provider
+Cypress.Commands.add('disableSameSiteCookieRestrictions', () => {
+    cy.intercept('*', (req) => {
+        req.on('response', (res) => {
+            if (!res.headers['set-cookie']) {
+                return;
+            }
+    
+            const disableSameSite = (headerContent) => {
+                return headerContent.replace(/samesite=(lax|strict)/ig, 'samesite=none');
+            }
+    
+            if (Array.isArray(res.headers['set-cookie'])) {
+                res.headers['set-cookie'] = res.headers['set-cookie'].map(disableSameSite);
+            } else {
+                res.headers['set-cookie'] = disableSameSite(res.headers['set-cookie']);
+            }
+        })
+    });
+});
