@@ -5,6 +5,8 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,5 +44,14 @@ public class DocumentMetadataStore extends DynamoDbConnection {
         }
         mapper.save(documentMetadata);
         return documentMetadata;
+    }
+    public List<DocumentMetadata> deleteAndSave(List<DocumentMetadata> documentMetadataList){
+        List<DocumentMetadata>  metadataList = new ArrayList<>();
+       documentMetadataList.forEach(documentMetadata -> {
+           documentMetadata.setDeleted(Instant.now().toString());
+           metadataList.add(this.save(documentMetadata));
+       }
+       );
+       return metadataList;
     }
 }
