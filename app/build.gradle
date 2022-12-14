@@ -9,15 +9,6 @@ repositories {
 }
 
 sourceSets {
-    integration {
-        compileClasspath += sourceSets.main.output
-        compileClasspath += sourceSets.test.output
-        runtimeClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.test.output
-    }
-}
-
-sourceSets {
     e2eTest {
         compileClasspath += sourceSets.main.output
         compileClasspath += sourceSets.test.output
@@ -38,7 +29,7 @@ tasks.withType(Test) {
     useJUnitPlatform()
 }
 
-e2eTest.outputs.upToDateWhen {false}
+e2eTest.outputs.upToDateWhen { false }
 
 dependencies {
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.92'
