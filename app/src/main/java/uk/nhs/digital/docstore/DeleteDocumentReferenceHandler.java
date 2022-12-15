@@ -9,11 +9,14 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.utils.CommonUtils;
 
 
 public class DeleteDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger logger = LoggerFactory.getLogger(DeleteDocumentReferenceHandler.class);
     private final ApiConfig apiConfig;
+
+    private final CommonUtils utils = new CommonUtils();
     private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
@@ -26,20 +29,32 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
     }
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
+    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         Tracer.setMDCContext(context);
+
         logger.info("API Gateway event received - processing starts");
-        String nhsNumber = new NHSNumberSearchParameterForm(input.getQueryStringParameters()).getNhsNumber();
+
         try {
+            var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
+
             logger.info("Started deleting documents");
             var metadata = metadataStore.findByNhsNumber(nhsNumber);
             if (metadata != null) {
                 metadataStore.deleteAndSave(metadata);
             }
             logger.info("Processing finished - about to return the response");
-            return apiConfig.getApiGatewayResponse(200, nhsNumber, "DELETE", null);
+            var body = getJsonBody("successfully deleted");
+            return apiConfig.getApiGatewayResponse(200, body, "DELETE", null);
         } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);
         }
+    }
+
+    private String getJsonBody(String successfullyDeleted) {
+        return "{\n" +
+                "   \"result\": {\n" +
+                "       \"message\": \"" + successfullyDeleted + "\"\n" +
+                "   }\n" +
+                "}";
     }
 }

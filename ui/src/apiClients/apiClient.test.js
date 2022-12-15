@@ -330,3 +330,38 @@ describe("test the getPresignedUrlForZip method", () => {
         expect(returnedPresignedUrl).toStrictEqual(responseUrl);
     });
 });
+describe("test the deleteAllDocuments method", () => {
+    test("returns a success message after deleting the files related to an nhs number ", async () => {
+        const getMock = jest.fn(() => {
+            return expectedResponse;
+        });
+        const api = { get: getMock };
+        const apiClient = new ApiClient(api, user);
+        const nhsNumber = "1234567890";
+        const requestHeaders = {
+            Accept: "application/fhir+json",
+            Authorization: `Bearer ${token}`,
+        };
+        const queryStringParametersMock = {
+            "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+        };
+        const expectedResponse = {
+            result:{
+                message:"successfully deleted"
+            }
+        };
+        const returnedDeleteResult = await apiClient.deleteAllDocuments(
+            nhsNumber
+        );
+
+        expect(getMock).toHaveBeenCalledWith(
+            "doc-store-api",
+            "/DocumentReference",
+            expect.objectContaining({
+                headers: requestHeaders,
+                queryStringParameters: queryStringParametersMock,
+            })
+        );
+        expect(returnedDeleteResult).toStrictEqual(expectedResponse.result.message);
+    });
+});

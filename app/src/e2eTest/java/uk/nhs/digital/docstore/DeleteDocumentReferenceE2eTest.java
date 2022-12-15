@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.net.http.HttpClient.newHttpClient;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getAwsHost;
 import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
@@ -32,6 +33,7 @@ public class DeleteDocumentReferenceE2eTest {
     private static final String CODE_VALUE = "185361000000102";
     public static final String TABLE_NAME = "DocumentReferenceMetadata";
     String baseUri = String.format(BASE_URI_TEMPLATE, getAwsHost(), DEFAULT_PORT);
+    private UtilsE2eTest utilsE2eTest = new UtilsE2eTest();
     AwsClientBuilder.EndpointConfiguration awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
     AmazonDynamoDB dynamoDbClient = AmazonDynamoDBClientBuilder.standard()
             .withEndpointConfiguration(awsEndpointConfiguration)
@@ -50,8 +52,9 @@ public class DeleteDocumentReferenceE2eTest {
 
 
     @Test
-    void shouldMarkADocumentsRelatedToTheNhsNumberAsDeleted() throws IOException, InterruptedException  {
+    void shouldMarkADocumentsRelatedToTheNhsNumberAsDeletedAndReturnSuccessfulMessage() throws IOException, InterruptedException  {
         var nhsNumber = "1234567890";
+        String expectedErrorResponse = utilsE2eTest.getContentFromResource("delete/successful-delete-response.json");
         Map<String, AttributeValue> document = Map.of(
                 "ID", new AttributeValue("1234"),
                 "NhsNumber", new AttributeValue(nhsNumber),
@@ -62,6 +65,7 @@ public class DeleteDocumentReferenceE2eTest {
                 "Created", new AttributeValue("2021-11-04T15:57:30Z"),
                 "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE)));
 
+
         dynamoDbClient.putItem(TABLE_NAME, document);
 
         var nhsNumberParameter = URLEncoder.encode("https://fhir.nhs.uk/Id/nhs-number|" + nhsNumber, StandardCharsets.UTF_8);
@@ -70,11 +74,12 @@ public class DeleteDocumentReferenceE2eTest {
                 .build();
 
         var deleteDocumentReferenceResponse = newHttpClient().send(deleteDocumentReferenceRequest, HttpResponse.BodyHandlers.ofString());
-
-        assertThat(deleteDocumentReferenceResponse.statusCode()).isEqualTo(200);
-
         var actual = dynamoDbClient.getItem(TABLE_NAME, Map.of("ID", document.get("ID")));
         var deletedAt = actual.getItem().get("Deleted").getS();
+
+        assertThat(deleteDocumentReferenceResponse.statusCode()).isEqualTo(200);
         assertThat(Instant.now().isAfter(Instant.parse(deletedAt))).isTrue();
+        assertThatJson(deleteDocumentReferenceResponse.body()).isEqualTo(expectedErrorResponse);
     }
+
 }
