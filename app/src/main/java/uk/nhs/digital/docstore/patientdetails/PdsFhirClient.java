@@ -4,14 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Address;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Name;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Period;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class PdsFhirClient {
     private static final Logger logger = LoggerFactory.getLogger(PdsFhirClient.class);
 
     private final PatientSearchConfig patientSearchConfig;
-    private final PatientDetailsMapper patientDetailsMapper;
     private final SimpleHttpClient httpClient;
 
     public PdsFhirClient() {
@@ -25,13 +29,12 @@ public class PdsFhirClient {
     public PdsFhirClient(PatientSearchConfig patientSearchConfig, SimpleHttpClient httpClient) {
         this.patientSearchConfig = patientSearchConfig;
         this.httpClient = httpClient;
-        this.patientDetailsMapper = new PatientDetailsMapper();
     }
 
-    public PatientDetails fetchPatientDetails(String nhsNumber) {
+    public Patient fetchPatientDetails(String nhsNumber) {
         if (patientSearchConfig.pdsFhirIsStubbed()) {
             logger.info("Returning stub PDS adaptor response");
-            return new PatientDetails(List.of("Jane"), "Doe", "1998-07-11", "LS1 6AE", nhsNumber);
+            return getStubbedPatient(nhsNumber);
         }
 
         var path = "Patient/" + nhsNumber;
@@ -39,10 +42,17 @@ public class PdsFhirClient {
         var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path);
 
         if (response.statusCode() == 200) {
-            return patientDetailsMapper.fromPatientDetailsResponseBody(response.body());
+            return Patient.parseFromJson(response.body());
         }
         handleErrorResponse(response.statusCode(), nhsNumber);
         return null;
+    }
+
+    private Patient getStubbedPatient(String nhsNumber) {
+        var currentPeriod = new Period(LocalDate.now().minusYears(1), null);
+        var currentName = new Name(currentPeriod, "usual", List.of("Jane"), "Doe");
+        var currentAddress = new Address(currentPeriod, "LS1 6AE", "home");
+        return new Patient(nhsNumber, "1998-07-11", List.of(currentAddress), List.of(currentName));
     }
 
     private void handleErrorResponse(int statusCode, String nhsNumber) {

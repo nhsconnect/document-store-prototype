@@ -1,10 +1,11 @@
 package uk.nhs.digital.docstore.patientdetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Address;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Name;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
+
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class PatientDetails {
     private final List<String> givenName;
     private final String familyName;
@@ -19,50 +20,6 @@ public class PatientDetails {
         this.birthDate = birthDate;
         this.postalCode = postalCode;
         this.nhsNumber = nhsNumber;
-    }
-
-    public PatientDetails(@JsonProperty("name") List<Name> name,
-                          @JsonProperty("birthDate") String birthDate,
-                          @JsonProperty("address") List<Address> address,
-                          @JsonProperty("id") String nhsNumber) {
-
-        this.givenName = getGivenNameFromName(name);
-        this.familyName = getFamilyNameFromName(name);
-        this.birthDate = birthDate;
-        this.postalCode = getPostalCodeFromAddress(address);
-        this.nhsNumber = nhsNumber;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Name {
-        private final List<String> given;
-        private final String family;
-
-        public Name(@JsonProperty("given") List<String> given, @JsonProperty("family") String family){
-            this.given = given;
-            this.family = family;
-        }
-
-        public List<String> getGiven() {
-            return given;
-        }
-
-        public String getFamily() {
-            return family;
-        }
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Address {
-        private final String postalCode;
-
-        public Address(@JsonProperty("postalCode") String postalCode){
-            this.postalCode = postalCode;
-        }
-
-        public String getPostalCode() {
-            return postalCode;
-        }
     }
 
     public List<String> getGivenName() {
@@ -85,24 +42,15 @@ public class PatientDetails {
         return nhsNumber;
     }
 
-    private String getPostalCodeFromAddress(List<Address> address) {
-        if (address == null){
-            return null;
-        }
-        return address.get(0).getPostalCode();
-    }
-
-    private List<String> getGivenNameFromName(List<Name> name) {
-        if (name == null){
-            return null;
-        }
-        return name.get(0).getGiven();
-    }
-
-    private String getFamilyNameFromName(List<Name> name) {
-        if (name == null){
-            return null;
-        }
-        return name.get(0).getFamily();
+    public static PatientDetails fromFhirPatient(Patient fhirPatient){
+        var name = fhirPatient.getCurrentUsualName();
+        var address = fhirPatient.getCurrentHomeAddress();
+        return new PatientDetails(
+                name.map(Name::getGiven).orElse(null),
+                name.map(Name::getFamily).orElse(null),
+                fhirPatient.getBirthDate(),
+                address.map(Address::getPostalCode).orElse(null),
+                fhirPatient.getId()
+        );
     }
 }

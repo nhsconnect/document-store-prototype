@@ -49,6 +49,7 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
 
     implementation 'org.json:json:20211205'
 

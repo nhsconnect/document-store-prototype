@@ -52,7 +52,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var patientDetails = pdsFhirClient.fetchPatientDetails(parameterForm.getNhsNumber());
 
             logger.debug("Generating response body");
-            var json = convertToJson(patientDetails);
+            var json = convertToJson(PatientDetails.fromFhirPatient(patientDetails));
             var body = getBody(json);
 
             logger.debug("Processing finished - about to return the response");

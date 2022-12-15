@@ -28,8 +28,7 @@
     "id" : "123",
     "use" : "usual",
     "period" : {
-      "start" : "2020-01-01",
-      "end" : "2021-12-31"
+      "start" : "2020-01-01"
     },
     "given" : [ "Jane" ],
     "family" : "Smith",
@@ -200,7 +199,7 @@
     "id" : "456",
     "period" : {
       "start" : "2020-01-01",
-      "end" : "2021-12-31"
+      "end" : "2025-12-31"
     },
     "use" : "home",
     "line" : [ "1 Trevelyan Square", "Boar Lane", "City Centre", "Leeds", "West Yorkshire" ],

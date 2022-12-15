@@ -15,6 +15,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ class PdsFhirClientTest {
 
         verify(httpClient, never()).get(any(), any());
 
-        assertThat(patientDetails.getNhsNumber()).isEqualTo(nhsNumber);
+        assertThat(patientDetails.getId()).isEqualTo(nhsNumber);
 
         assertThat(testLogAppender.findLoggedEvent("stub")).isNotNull();
     }
@@ -118,10 +119,25 @@ class PdsFhirClientTest {
     }
 
     private String getJSONPatientDetails(String nhsNumber) {
+        var jsonPeriod = new JSONObject()
+                .put("start", LocalDate.now().minusYears(1).toString())
+                .put("end", JSONObject.NULL);
+
+        var jsonName = new JSONObject()
+                .put("period", jsonPeriod)
+                .put("use", "usual")
+                .put("given", List.of("Jane"))
+                .put("family", "Doe");
+
+        var jsonAddress = new JSONObject()
+                .put("period", jsonPeriod)
+                .put("use", "home")
+                .put("postalCode", "EX1 2EX");
+
         return new JSONObject()
-                .put("name", List.of(new PatientDetails.Name(List.of("Test"), "Test")))
+                .put("name", List.of(jsonName))
                 .put("birthDate", "Test")
-                .put("address", List.of(new PatientDetails.Address("Test")))
+                .put("address", List.of(jsonAddress))
                 .put("id", nhsNumber).toString();
     }
 
