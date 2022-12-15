@@ -143,19 +143,6 @@ resource "aws_iam_role_policy" "s3_get_document_data_policy" {
   })
 }
 
-resource "aws_sqs_queue_policy" "document-store" {
-  queue_url = aws_sqs_queue.document-store.id
-  policy    = jsonencode({
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Action" : ["sqs:SendMessage"],
-        "Resource" : "${aws_sqs_queue.document-store.arn}/*"
-      }
-    ]
-  })
-}
-
 resource "aws_api_gateway_rest_api" "lambda_api" {
   name = "DocStoreAPI"
 }
