@@ -4,7 +4,7 @@ fileignoreconfig:
 - filename: ui/cypress.env.json.example
   checksum: b87419cf6f1f509047b9eca7787ff69d7bea95c33d659bd62bbbd1191bd67d5a
 - filename: ui/cypress/e2e/uploadAndDownload.cy.js
-  checksum: b596885befc4cec69f208cc0475005e5822155c57e1882c57c3d30ff41916c01
+  checksum: 014a393a8017fce12470b2b4183d7d678e5ddfda83ca231b198cde6ae064ad22
 version: ""
 scopeconfig:
   - scope: node
