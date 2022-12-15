@@ -20,12 +20,11 @@ import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
 
 public class SearchForPatientLocalstackTest {
 
+    @DisabledIfSystemProperty(named = "PDS_FHIR_IS_STUBBED", matches = "true")
+    @DisabledIfEnvironmentVariable(named = "PDS_FHIR_IS_STUBBED", matches = "true")
     @Test
     void returnsSuccessResponse() throws IOException, InterruptedException {
-        var expectedPatientDetailsResponse = (System.getProperty("PDS_FHIR_IS_STUBBED") == "true" ||
-                System.getenv("PDS_FHIR_IS_STUBBED") == "true")
-                ? "search-patient-details/patient-details-stubbed-response.json"
-                : "search-patient-details/patient-details-response.json";
+        var expectedPatientDetailsResponse = "search-patient-details/patient-details-response.json";
 
         var patientDetailsRequest = HttpRequest.newBuilder(getBaseUri().resolve("PatientDetails?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C9000000009"))
                 .GET()

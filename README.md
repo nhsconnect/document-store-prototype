@@ -70,7 +70,7 @@ For info on the UI, visit the [UI README](ui/README.md).
 Inside dojo:
 PDS_FHIR_IS_STUBBED should be set to true or false depending on the value for "pds_fhir_is_stubbed" in terraform. 
 ```
-gradle e2eTest -DPDS_FHIR_IS_STUBBED=(true/false)
+gradle e2eTest -DPDS_FHIR_IS_STUBBED=true
 ```
 
 Running tests with IntelliJ:
