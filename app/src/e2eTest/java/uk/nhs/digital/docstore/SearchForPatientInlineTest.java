@@ -2,15 +2,13 @@ package uk.nhs.digital.docstore;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
-import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
-import uk.nhs.digital.docstore.patientdetails.PdsFhirClient;
+import uk.nhs.digital.docstore.config.StubbedPatientSearchConfig;
 import uk.nhs.digital.docstore.patientdetails.SearchPatientDetailsHandler;
 
 import java.io.File;
@@ -18,11 +16,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WireMockTest(httpPort = SearchForPatientInlineTest.LocalhostPdsFhirNoStubbingPatientSearchConfig.PDS_FHIR_PORT)
 @ExtendWith(MockitoExtension.class)
 public class SearchForPatientInlineTest {
 
@@ -33,34 +29,12 @@ public class SearchForPatientInlineTest {
 
     @BeforeEach
     public void setUp() {
-        var patientSearchConfig = new LocalhostPdsFhirNoStubbingPatientSearchConfig();
-        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsFhirClient(patientSearchConfig));
+        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new StubbedPatientSearchConfig());
         requestBuilder = new RequestEventBuilder();
     }
 
     @Test
-    void returnsUsableResponseWhenDefaultToStubbedResponses() {
-        var defaultConfigWithStubbingOn = new PatientSearchConfig();
-        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new PdsFhirClient(defaultConfigWithStubbingOn));
-
-        var reasonableRequest = requestBuilder
-                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009")
-                .build();
-
-        var responseEvent = handler.handleRequest(reasonableRequest, context);
-
-        assertThat(responseEvent.getStatusCode()).isEqualTo(200);
-    }
-
-    @Test
     void returnsSuccessResponse() throws IOException {
-       var patientData = getContentFromResource("search-patient-details/pds-fhir-response/patient-details-response.json");
-        stubFor(get(urlEqualTo("/Patient/9000000009"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(patientData)));
-
         var request = requestBuilder
                 .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009")
                 .build();
@@ -75,14 +49,22 @@ public class SearchForPatientInlineTest {
     }
 
     @Test
+    void returnsSuccessResponseWithLimitedInformation() throws IOException {
+        var request = requestBuilder
+                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000025")
+                .build();
+
+        var responseEvent = handler.handleRequest(request, context);
+
+        assertThat(responseEvent.getStatusCode()).isEqualTo(200);
+        assertThat(responseEvent.getHeaders().get("Content-Type")).isEqualTo("application/fhir+json");
+        assertThatJson(responseEvent.getBody())
+                .whenIgnoringPaths("$.meta", "$.entry[*].resource.meta")
+                .isEqualTo(getContentFromResource("search-patient-details/patient-details-response-for-missing-information.json"));
+    }
+
+    @Test
     void returnsMissingPatientResponseWhenPatientNotFound() throws IOException {
-
-        stubFor(get(urlEqualTo("/Patient/9111231130"))
-                .willReturn(aResponse()
-                        .withStatus(404)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody("{}")));
-
         var request = requestBuilder
                 .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9111231130")
                 .build();
@@ -140,20 +122,6 @@ public class SearchForPatientInlineTest {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(resourcePath).getFile());
         return new String(Files.readAllBytes(file.toPath()));
-    }
-
-    public static class LocalhostPdsFhirNoStubbingPatientSearchConfig extends PatientSearchConfig {
-        public static final int PDS_FHIR_PORT = 8081;
-
-        @Override
-        public String pdsFhirRootUri() {
-            return String.format("http://localhost:%d/", PDS_FHIR_PORT);
-        }
-
-        @Override
-        public boolean pdsFhirIsStubbed() {
-            return false;
-        }
     }
 
     public static class RequestEventBuilder {

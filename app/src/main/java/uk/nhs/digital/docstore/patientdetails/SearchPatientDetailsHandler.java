@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore.patientdetails;
 
-import ca.uhn.fhir.context.FhirContext;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -19,24 +18,18 @@ import java.util.Map;
 
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger logger = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
-
-    private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
-    private final PdsFhirClient pdsFhirClient;
+
+    private final PatientSearchConfig patientSearchConfig;
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {
-        this(new ApiConfig(), new PdsFhirClient());
+        this(new ApiConfig(), new PatientSearchConfig());
     }
 
-    public SearchPatientDetailsHandler(ApiConfig apiConfig, PdsFhirClient pdsFhirClient) {
-        this(FhirContext.forR4(), apiConfig, pdsFhirClient);
-    }
-
-    public SearchPatientDetailsHandler(FhirContext fhirContext, ApiConfig apiConfig, PdsFhirClient pdsFhirClient) {
-        this.fhirContext = fhirContext;
+    public SearchPatientDetailsHandler(ApiConfig apiConfig, PatientSearchConfig patientSearchConfig) {
         this.apiConfig = apiConfig;
-        this.pdsFhirClient = pdsFhirClient;
+        this.patientSearchConfig = patientSearchConfig;
     }
 
     @Override
@@ -49,6 +42,9 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
         try {
             var parameterForm = new NHSNumberSearchParameterForm(searchParameters);
 
+            var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
+                    ? new FakePdsFhirClient()
+                    : new RealPdsFhirClient(patientSearchConfig);
             var patientDetails = pdsFhirClient.fetchPatientDetails(parameterForm.getNhsNumber());
 
             logger.debug("Generating response body");

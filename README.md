@@ -65,17 +65,6 @@ To deploy the API to LocalStack, run in a non-dojo terminal:
 
 For info on the UI, visit the [UI README](ui/README.md).
 
-### Running the backend e2e tests (API tests)
-
-Inside dojo:
-PDS_FHIR_IS_STUBBED should be set to true or false depending on the value for "pds_fhir_is_stubbed" in terraform. 
-```
-gradle e2eTest -DPDS_FHIR_IS_STUBBED=true
-```
-
-Running tests with IntelliJ:
-Should set the PDS_FHIR_IS_STUBBED environment variable in the running configuration depending on the value set for "pds_fhir_is_stubbed" in terraform.
-
 ## Running Services On AWS
 
 ### AWS Auth

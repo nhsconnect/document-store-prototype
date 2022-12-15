@@ -26,36 +26,17 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PdsFhirClientTest {
+class RealPdsFhirClientTest {
 
     @Mock
     private SimpleHttpClient httpClient;
-
-    @Test
-    public void shouldReturnStubbedPatientWithoutOutboundHttpCallIfPatientSearchConfigStubbingToggledOn() {
-        var testLogAppender = TestLogAppender.addTestLogAppender();
-
-        var defaultPatientSearchConfig = new PatientSearchConfig();
-
-        var pdsFhirClient = new PdsFhirClient(defaultPatientSearchConfig, httpClient);
-
-        var nhsNumber = "123445678";
-
-        var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
-
-        verify(httpClient, never()).get(any(), any());
-
-        assertThat(patientDetails.getId()).isEqualTo(nhsNumber);
-
-        assertThat(testLogAppender.findLoggedEvent("stub")).isNotNull();
-    }
 
     @Test
     public void shouldMakeCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
 
         String nhsNumber = "9000000009";
 
@@ -72,7 +53,7 @@ class PdsFhirClientTest {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(400, null));
 
@@ -89,7 +70,7 @@ class PdsFhirClientTest {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
 
@@ -106,7 +87,7 @@ class PdsFhirClientTest {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new PdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(500, null));
 
@@ -152,7 +133,6 @@ class PdsFhirClientTest {
             this.body = body;
         }
 
-        @Override
         public int statusCode() {
             return statusCode;
         }
