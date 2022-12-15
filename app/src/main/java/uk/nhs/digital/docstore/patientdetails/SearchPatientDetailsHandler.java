@@ -13,6 +13,8 @@ import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
+import uk.nhs.digital.docstore.publishers.AuditPublisher;
+import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
 import java.util.Map;
 
@@ -21,15 +23,17 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     private final ApiConfig apiConfig;
 
     private final PatientSearchConfig patientSearchConfig;
+    private final AuditPublisher sensitiveIndex;
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {
-        this(new ApiConfig(), new PatientSearchConfig());
+        this(new ApiConfig(), new PatientSearchConfig(), new SplunkPublisher());
     }
 
-    public SearchPatientDetailsHandler(ApiConfig apiConfig, PatientSearchConfig patientSearchConfig) {
+    public SearchPatientDetailsHandler(ApiConfig apiConfig, PatientSearchConfig patientSearchConfig, AuditPublisher sensitiveIndex) {
         this.apiConfig = apiConfig;
         this.patientSearchConfig = patientSearchConfig;
+        this.sensitiveIndex = sensitiveIndex;
     }
 
     @Override
@@ -52,6 +56,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var body = getBody(json);
 
             logger.debug("Processing finished - about to return the response");
+            sensitiveIndex.publish(body);
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
         }
         catch (PatientNotFoundException e) {
