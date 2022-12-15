@@ -25,7 +25,6 @@ provider "aws" {
     iam        = var.aws_endpoint
     lambda     = var.aws_endpoint
     s3         = var.aws_endpoint
-    sqs        = var.aws_endpoint
   }
 }
 
@@ -51,12 +50,12 @@ resource "aws_iam_role" "lambda_execution_role" {
   name = "LambdaExecution"
 
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Sid       = ""
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
         Principal = {
           Service = "lambda.amazonaws.com"
         }
@@ -87,7 +86,7 @@ resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
         "Resource" : [
           aws_dynamodb_table.doc_ref_store.arn,
           aws_dynamodb_table.doc_zip_trace_store.arn,
-        ]
+          ]
       }
     ]
   })
@@ -108,7 +107,7 @@ resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
         "Resource" : [
           "${aws_dynamodb_table.doc_ref_store.arn}/index/LocationsIndex",
           "${aws_dynamodb_table.doc_zip_trace_store.arn}/index/LocationsIndex",
-        ]
+          ]
       },
       {
         "Effect" : "Allow",
@@ -118,7 +117,7 @@ resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
         "Resource" : [
           "${aws_dynamodb_table.doc_ref_store.arn}/index/NhsNumberIndex",
           "${aws_dynamodb_table.doc_zip_trace_store.arn}/index/NhsNumberIndex",
-        ]
+          ]
       }
     ]
   })
@@ -172,12 +171,10 @@ resource "aws_api_gateway_deployment" "api_deploy" {
 }
 
 resource "aws_api_gateway_authorizer" "cognito_authorizer" {
-  name          = "cognito-authorizer"
-  type          = "COGNITO_USER_POOLS"
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  provider_arns = var.cloud_only_service_instances > 0 ? [
-    for pool_arn in aws_cognito_user_pool.pool[*].arn :pool_arn
-  ] : [
+  name        = "cognito-authorizer"
+  type        = "COGNITO_USER_POOLS"
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  provider_arns = var.cloud_only_service_instances > 0 ? [for pool_arn in aws_cognito_user_pool.pool[*].arn : pool_arn] : [
     ""
   ]
   authorizer_credentials = aws_iam_role.lambda_execution_role.arn

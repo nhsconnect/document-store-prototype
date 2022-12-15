@@ -69,8 +69,8 @@ variable "pds_fhir_is_stubbed" {
 }
 
 variable "cognito_domain_prefix" {
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
   description = "This should be an empty string for the dev environment. If this changes it must be updated with CIS2"
 }
 
@@ -123,13 +123,7 @@ variable "cognito_cis2_client_signout_urls" {
   type    = list(string)
   default = [""]
 }
-
 variable "document_zip_trace_ttl_in_days" {
   type    = number
   default = 90
-}
-
-variable "sqs_endpoint" {
-  type    = string
-  default = ""
 }

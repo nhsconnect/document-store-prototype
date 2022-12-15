@@ -17,14 +17,14 @@ services:
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=s3,lambda,dynamodb,iam,apigateway,logs,sts,sqs
+      - SERVICES=s3,lambda,dynamodb,iam,apigateway,logs,sts
       - DEFAULT_REGION=eu-west-2
       - HOSTNAME_EXTERNAL=localhost
       - LAMBDA_CONTAINER_REGISTRY=mlupin/docker-lambda
       - LAMBDA_EXECUTOR=docker-reuse
       - DEBUG=1
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:4566/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
       interval: 5s
       timeout: 5s
       retries: 5
