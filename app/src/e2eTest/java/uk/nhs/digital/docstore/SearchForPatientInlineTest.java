@@ -142,15 +142,15 @@ public class SearchForPatientInlineTest {
         var searchPatientDetailsRequest = requestBuilder.addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009").build();
         var queueUrl = "document-store-audit-queue-url";
         var getQueueRequest = new GetQueueUrlResult().withQueueUrl(queueUrl);
-        var patientDetails = getContentFromResource("search-patient-details/patient-details-response.json");
-        var expectedSendMessageRequest = new SendMessageRequest().withQueueUrl(queueUrl).withMessageBody(patientDetails);
+        var patientSearchAuditMessage = getContentFromResource("audit/patient-search-message.json");
 
         when(amazonSqsClient.getQueueUrl("document-store-audit")).thenReturn(getQueueRequest);
         handler.handleRequest(searchPatientDetailsRequest, context);
 
         verify(amazonSqsClient, times(1)).sendMessage(sendMessageRequestArgumentCaptor.capture());
         var actualSendMessageRequest = sendMessageRequestArgumentCaptor.getValue();
-        assertThatJson(actualSendMessageRequest.equals(expectedSendMessageRequest));
+        assertThat(actualSendMessageRequest.getQueueUrl()).isEqualTo(queueUrl);
+        assertThatJson(actualSendMessageRequest.getMessageBody()).whenIgnoringPaths("$.dateTime").isEqualTo(patientSearchAuditMessage);
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
