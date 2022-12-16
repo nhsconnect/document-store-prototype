@@ -279,4 +279,16 @@ _delete-cognito-user)
   confirm_current_role
   delete_cognito_user ${username}
   ;;
+attach-policy-to-ci-role)
+  dojo -c Dojofile-infra "./tasks _attach-policy-to-ci-role"
+  ;;
+_attach-policy-to-ci-role)
+  aws iam put-role-policy --role-name=ci-agent --policy-name=ci-role-policy --policy-document=file://ci-role-policy.json
+  ;;
+bootstrap-ci-role)
+  dojo -c Dojofile-infra "./tasks _bootstrap-ci-role"
+  ;;
+_bootstrap-ci-role)
+  aws iam create-role --role-name=ci-agent --assume-role-policy-document=file://ci-assume-role-policy.json
+  ;;
 esac

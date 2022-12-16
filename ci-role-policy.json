@@ -219,6 +219,19 @@
         "s3:*"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "AllowSqsQueueAdmin",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:CreateQueue",
+        "sqs:DeleteQueue",
+        "sqs:ListQueues",
+        "sqs:ListQueueTags",
+        "sqs:TagQueue",
+        "sqs:UntagQueue"
+      ],
+      "Resource": "*"
     }
   ]
 }

@@ -2,8 +2,6 @@ plugins {
     id 'java'
 }
 
-apply from: 'tasks.gradle'
-
 repositories {
     mavenCentral()
 }
@@ -29,7 +27,7 @@ tasks.withType(Test) {
     useJUnitPlatform()
 }
 
-e2eTest.outputs.upToDateWhen { false }
+//e2eTest.outputs.upToDateWhen { false }
 
 dependencies {
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.92'
@@ -83,4 +81,12 @@ jar {
 tasks.named('test') {
     useJUnitPlatform()
     environment "AMPLIFY_BASE_URL", "http://localhost:4566"
+}
+
+task e2eTest(type:Test) {
+    group 'verification'
+    description 'Run all end-to-end tests against LocalStack.'
+    testClassesDirs = sourceSets.e2eTest.output.classesDirs
+    classpath = sourceSets.e2eTest.runtimeClasspath
+    outputs.upToDateWhen { false }
 }
