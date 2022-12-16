@@ -11,10 +11,6 @@ resource "aws_lambda_function" "document_manifest_lambda" {
 
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
-  snap_start {
-    apply_on = "PublishedVersions"
-  }
-
   environment {
     variables = merge({
       AMPLIFY_BASE_URL = local.amplify_base_url,
