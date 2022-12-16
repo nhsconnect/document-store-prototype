@@ -226,8 +226,10 @@
       "Action": [
         "sqs:CreateQueue",
         "sqs:DeleteQueue",
+        "sqs:GetQueueAttributes",
         "sqs:ListQueues",
         "sqs:ListQueueTags",
+        "sqs:SetQueueAttributes",
         "sqs:TagQueue",
         "sqs:UntagQueue"
       ],
