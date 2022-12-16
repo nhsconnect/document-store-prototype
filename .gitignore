@@ -123,7 +123,6 @@ terraform.rc
 # Local .terraform directories
 **/.terraform/*
 /terraform/tfplan
-/terraform/.terraform.lock.hcl
 
 ### Java template
 # Compiled class file

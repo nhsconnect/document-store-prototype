@@ -1,24 +1,34 @@
 resource "aws_s3_bucket" "document_store" {
   bucket_prefix = "document-store-"
-  acl           = "private"
 
-  versioning {
-    enabled = true
-  }
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = true
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
   lifecycle {
     ignore_changes = [
       cors_rule
     ]
   }
 
+}
+
+resource "aws_s3_bucket_acl" "document_store_acl" {
+  bucket = aws_s3_bucket.document_store.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "document_store_encryption" {
+  bucket = aws_s3_bucket.document_store.id
+  rule {
+    bucket_key_enabled = true
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource aws_s3_bucket_versioning "document_store_versioning" {
+  bucket = aws_s3_bucket.document_store.id
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "document_store_lifecycle" {

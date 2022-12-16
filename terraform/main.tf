@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "3.75.0"
+      version = "4.47.0"
     }
   }
 
@@ -10,12 +10,11 @@ terraform {
 }
 
 provider "aws" {
-  profile = "default"
   region  = var.region
 
   skip_credentials_validation = var.disable_aws_remote_checks
   skip_requesting_account_id  = var.disable_aws_remote_checks
-  s3_force_path_style         = var.disable_aws_remote_checks
+  s3_use_path_style         = var.disable_aws_remote_checks
   skip_metadata_api_check     = var.disable_aws_remote_checks
 
   endpoints {
