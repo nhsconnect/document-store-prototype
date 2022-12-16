@@ -85,6 +85,25 @@ resource "aws_s3_bucket_cors_configuration" "document_store_bucket_cors_config" 
   }
 }
 
+resource "aws_iam_role_policy" "s3_get_document_data_policy" {
+  name = "get_document_data_policy"
+  role = aws_iam_role.lambda_execution_role.id
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:GetObject",
+          "s3:PutObject",
+        ],
+        "Resource" : "${aws_s3_bucket.document_store.arn}/*"
+      }
+    ]
+  })
+}
+
 output "document-store-bucket" {
   value = aws_s3_bucket.document_store.bucket
 }
