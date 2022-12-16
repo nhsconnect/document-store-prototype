@@ -11,8 +11,11 @@ resource "aws_iam_role_policy" "document-store" {
     "Statement" : [
       {
         "Effect" : "Allow",
-        "Action" : ["sqs:SendMessage"],
-        "Resource" : "${aws_sqs_queue.document-store.arn}/*"
+        "Action" : [
+          "sqs:SendMessage",
+          "sqs:GetQueueUrl"
+        ],
+        "Resource" : aws_sqs_queue.document-store.arn
       }
     ]
   })
