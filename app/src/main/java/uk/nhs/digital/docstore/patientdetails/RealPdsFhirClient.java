@@ -9,23 +9,23 @@ import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
 public class RealPdsFhirClient implements PdsFhirClient {
     private static final Logger logger = LoggerFactory.getLogger(RealPdsFhirClient.class);
 
-    private final PatientSearchConfig patientSearchConfig;
+    private final String pdsFhirEndpoint;
     private final SimpleHttpClient httpClient;
 
-    public RealPdsFhirClient(PatientSearchConfig patientSearchConfig) {
-        this(patientSearchConfig, new SimpleHttpClient());
+    public RealPdsFhirClient(String pdsFhirEndpoint) {
+        this(pdsFhirEndpoint, new SimpleHttpClient());
     }
 
-    public RealPdsFhirClient(PatientSearchConfig patientSearchConfig, SimpleHttpClient httpClient) {
-        this.patientSearchConfig = patientSearchConfig;
+    public RealPdsFhirClient(String pdsFhirEndpoint, SimpleHttpClient httpClient) {
+        this.pdsFhirEndpoint = pdsFhirEndpoint;
         this.httpClient = httpClient;
     }
 
     public Patient fetchPatientDetails(String nhsNumber) {
         var path = "Patient/" + nhsNumber;
 
-        logger.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
-        var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path);
+        logger.info("Confirming NHS number with PDS adaptor at " + pdsFhirEndpoint);
+        var response = httpClient.get(pdsFhirEndpoint, path);
 
         if (response.statusCode() == 200) {
             return Patient.parseFromJson(response.body());

@@ -17,8 +17,7 @@ public class ZipService {
     private final DocumentStore documentStore;
 
     public ZipService() {
-       var bucketName = System.getenv("DOCUMENT_STORE_BUCKET_NAME");
-       documentStore = new DocumentStore(bucketName);
+       documentStore = new DocumentStore(System.getenv("S3_ENDPOINT"), "true".equals(System.getenv("S3_USE_PATH_STYLE")));
     }
 
     public ZipService(DocumentStore documentStore) {
@@ -34,7 +33,7 @@ public class ZipService {
             if (metadata.isDocumentUploaded()){
                 zipOutputStream.putNextEntry(new ZipEntry(metadata.getDescription()));
 
-                IOUtils.copy(documentStore.getObjectFromS3(metadata), zipOutputStream);
+                IOUtils.copy(documentStore.getObjectFromS3(DocumentStore.DocumentDescriptor.from(metadata)), zipOutputStream);
 
                 zipOutputStream.closeEntry();
             }

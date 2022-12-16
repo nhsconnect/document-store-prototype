@@ -10,6 +10,10 @@ import java.util.Map;
 
 public class DocumentMetadataStore extends DynamoDbConnection {
 
+    public DocumentMetadataStore(String dynamodbEndpoint) {
+        super(dynamodbEndpoint);
+    }
+
     public DocumentMetadata getById(String id) {
         return mapper.load(DocumentMetadata.class, id);
     }

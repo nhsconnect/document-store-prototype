@@ -20,21 +20,17 @@ public class DocumentStore {
     private static final Duration PRE_SIGNED_URL_DURATION = Duration.ofMinutes(30);
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_ENDPOINT = "";
-    private final String bucketName;
 
     private final AmazonS3 client;
 
-    public DocumentStore(String bucketName) {
+    public DocumentStore(String s3Endpoint, boolean usePathStyle) {
         var clientBuilder = AmazonS3ClientBuilder.standard();
-        var s3Endpoint = System.getenv("S3_ENDPOINT");
-        boolean s3_use_path_style = "true".equals(System.getenv("S3_USE_PATH_STYLE"));
         if (!s3Endpoint.equals(DEFAULT_ENDPOINT)) {
             clientBuilder = clientBuilder
                     .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(s3Endpoint, AWS_REGION))
-                    .withPathStyleAccessEnabled(s3_use_path_style);
+                    .withPathStyleAccessEnabled(usePathStyle);
         }
         client = clientBuilder.build();
-        this.bucketName = bucketName;
     }
 
     public URL generatePreSignedUrl(DocumentDescriptor descriptor) {
@@ -48,11 +44,11 @@ public class DocumentStore {
         return client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
-    public S3ObjectInputStream getObjectFromS3(DocumentMetadata metadata) {
-        return client.getObject(bucketName, DocumentDescriptor.from(metadata).getPath()).getObjectContent();
+    public S3ObjectInputStream getObjectFromS3(DocumentDescriptor descriptor) {
+        return client.getObject(descriptor.getBucket(), descriptor.getPath()).getObjectContent();
     }
 
-    public void addDocument(String documentKey, InputStream documentValue) {
+    public void addDocument(String bucketName, String documentKey, InputStream documentValue) {
         client.putObject(bucketName, documentKey, documentValue, new ObjectMetadata());
     }
 
@@ -74,6 +70,8 @@ public class DocumentStore {
         public String toLocation() {
             return "s3://" + bucket + "/" + path;
         }
+
+        public String getBucket() { return bucket; }
 
         public String getPath() {
             return path;

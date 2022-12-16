@@ -40,7 +40,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
     private static final String SUBJECT_ID_CODING_SYSTEM = "https://fhir.nhs.uk/Id/nhs-number";
 
     private final DocumentReferenceService documentReferenceService = new DocumentReferenceService(
-            new DocumentMetadataStore(),
+            new DocumentMetadataStore(System.getenv("DYNAMODB_ENDPOINT")),
             System.getenv("DOCUMENT_STORE_BUCKET_NAME")
     );
 

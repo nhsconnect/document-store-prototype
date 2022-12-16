@@ -35,8 +35,7 @@ class RealPdsFhirClientTest {
     public void shouldMakeCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirClient("test.url", httpClient);
 
         String nhsNumber = "9000000009";
 
@@ -45,15 +44,14 @@ class RealPdsFhirClientTest {
         pdsFhirClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent("test.url")).isNotNull();
     }
 
     @Test
     public void shouldMakeCallToPdsAndThrowExceptionWhenPdsFhirReturns400() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirClient("test.url", httpClient);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(400, null));
 
@@ -62,15 +60,14 @@ class RealPdsFhirClientTest {
         assertThrows(InvalidResourceIdException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber));
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent("test.url")).isNotNull();
     }
 
     @Test
     public void shouldMakeCallToPdsAndThrowExceptionWhenPdsFhirReturns404() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirClient("test.url", httpClient);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
 
@@ -79,15 +76,14 @@ class RealPdsFhirClientTest {
         assertThrows(PatientNotFoundException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent("test.url")).isNotNull();
     }
 
     @Test
     public void shouldMakeCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() {
         var testLogappender = TestLogAppender.addTestLogAppender();
 
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirClient("test.url", httpClient);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(500, null));
 
@@ -96,7 +92,7 @@ class RealPdsFhirClientTest {
         assertThrows(RuntimeException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Got an error when requesting patient from PDS: 500");
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent("test.url")).isNotNull();
     }
 
     private String getJSONPatientDetails(String nhsNumber) {
@@ -170,13 +166,6 @@ class RealPdsFhirClientTest {
         @Override
         public HttpClient.Version version() {
             return null;
-        }
-    }
-
-    private class StubbingOffPatientSearchConfig extends PatientSearchConfig {
-        @Override
-        public boolean pdsFhirIsStubbed() {
-            return false;
         }
     }
 }

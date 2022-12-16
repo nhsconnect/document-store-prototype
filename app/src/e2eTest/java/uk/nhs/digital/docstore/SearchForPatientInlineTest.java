@@ -1,7 +1,6 @@
 package uk.nhs.digital.docstore;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.GetQueueUrlResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
@@ -12,15 +11,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.config.StubbedApiConfig;
-import uk.nhs.digital.docstore.config.StubbedPatientSearchConfig;
+import uk.nhs.digital.docstore.helpers.RequestEventBuilder;
+import uk.nhs.digital.docstore.patientdetails.FakePdsFhirClient;
 import uk.nhs.digital.docstore.patientdetails.SearchPatientDetailsHandler;
 import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,11 +36,12 @@ public class SearchForPatientInlineTest {
     ArgumentCaptor<SendMessageRequest> sendMessageRequestArgumentCaptor;
 
     private SearchPatientDetailsHandler handler;
-    private RequestEventBuilder requestBuilder;
+    private RequestEventBuilder requestBuilder = new RequestEventBuilder();
 
     @BeforeEach
     public void setUp() {
-        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new StubbedPatientSearchConfig(), new SplunkPublisher(amazonSqsClient));
+        StubbedApplication application = new StubbedApplication();
+        handler = new SearchPatientDetailsHandler(application);
         requestBuilder = new RequestEventBuilder();
     }
 
@@ -159,16 +158,10 @@ public class SearchForPatientInlineTest {
         return new String(Files.readAllBytes(file.toPath()));
     }
 
-    public static class RequestEventBuilder {
-        private HashMap<String, String> parameters = new HashMap<>();
-
-        private RequestEventBuilder addQueryParameter(String name, String value) {
-            parameters.put(name, value);
-            return this;
-        }
-
-        private APIGatewayProxyRequestEvent build() {
-            return new APIGatewayProxyRequestEvent().withQueryStringParameters(parameters);
+    public class StubbedApplication extends Application {
+        StubbedApplication() {
+            this.pdsFhirClient = new FakePdsFhirClient();
+            this.auditPublisher = new SplunkPublisher(amazonSqsClient);
         }
     }
 }

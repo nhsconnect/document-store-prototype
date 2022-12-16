@@ -14,8 +14,8 @@ public class DynamoDbConnection {
 
     protected final DynamoDBMapper mapper;
 
-    public DynamoDbConnection() {
-        var dynamodbClient = getDynamodbClient();
+    public DynamoDbConnection(String dynamodbEndpoint) {
+        var dynamodbClient = getDynamodbClient(dynamodbEndpoint);
         this.mapper = new DynamoDBMapper(
                 dynamodbClient,
                 DynamoDBMapperConfig.builder()
@@ -23,14 +23,13 @@ public class DynamoDbConnection {
                         .build());
     }
 
-    private AmazonDynamoDB getDynamodbClient() {
+    private AmazonDynamoDB getDynamodbClient(String dynamodbEndpoint) {
         var clientBuilder = AmazonDynamoDBClientBuilder.standard();
-        var dynamodbEndpoint = System.getenv("DYNAMODB_ENDPOINT");
         if (!dynamodbEndpoint.equals(DEFAULT_ENDPOINT)) {
-            clientBuilder = clientBuilder.withEndpointConfiguration(new AwsClientBuilder
-                    .EndpointConfiguration(dynamodbEndpoint, AWS_REGION));
+            return clientBuilder
+                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(dynamodbEndpoint, AWS_REGION))
+                    .build();
         }
-        var dynamodbClient = clientBuilder.build();
-        return dynamodbClient;
+        return clientBuilder.build();
     }
 }

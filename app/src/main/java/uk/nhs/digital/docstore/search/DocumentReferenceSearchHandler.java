@@ -10,11 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+import uk.nhs.digital.docstore.Application;
 import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
-import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 import uk.nhs.digital.docstore.utils.DocumentMetadataSearchService;
 
@@ -31,20 +31,16 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
     private final BundleMapper bundleMapper = new BundleMapper();
     private final DocumentMetadataSearchService searchService;
     private final FhirContext fhirContext;
-    private final ApiConfig apiConfig;
     private final CommonUtils utils = new CommonUtils();
 
     public DocumentReferenceSearchHandler() {
-        this(new ApiConfig());
+        this(new Application());
     }
 
-    public DocumentReferenceSearchHandler(ApiConfig apiConfig) {
-        this.apiConfig = apiConfig;
+    public DocumentReferenceSearchHandler(Application app) {
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(DEFERRED_MODEL_SCANNING);
-
-        DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-        this.searchService = new DocumentMetadataSearchService(metadataStore);
+        this.searchService = new DocumentMetadataSearchService(app.documentMetadataStore);
     }
 
     @Override
@@ -61,7 +57,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
             var documentMetadata = searchService.findMetadataByNhsNumber(nhsNumber, requestEvent.getHeaders());
 
-            var documents = documentMetadata.stream().map(metadata -> new Document(metadata)).collect(toList());
+            var documents = documentMetadata.stream().map(Document::new).collect(toList());
 
             logger.debug("Generating response contents");
             bundle = bundleMapper.toBundle(documents);
@@ -71,6 +67,6 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
 
         logger.debug("Processing finished - about to return the response");
         var body = jsonParser.encodeResourceToString(bundle);
-        return apiConfig.getApiGatewayResponse(200, body, "GET", null);
+        return new ApiConfig().getApiGatewayResponse(200, body, "GET", null);
     }
 }

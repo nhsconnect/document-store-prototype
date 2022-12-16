@@ -23,7 +23,6 @@ import uk.nhs.digital.docstore.DocumentStore.DocumentDescriptor;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
-import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
@@ -35,20 +34,18 @@ import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.NOTFOUND;
 public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger logger = LoggerFactory.getLogger(RetrieveDocumentReferenceHandler.class);
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
-    private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-    private final DocumentStore documentStore = new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final FhirContext fhirContext;
-    private final ApiConfig apiConfig;
+    private final Application app;
 
     public RetrieveDocumentReferenceHandler() {
-        this(new ApiConfig());
+        this(new Application());
     }
 
-    public RetrieveDocumentReferenceHandler(ApiConfig apiConfig) {
+    public RetrieveDocumentReferenceHandler(Application app) {
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
-        this.apiConfig = apiConfig;
+        this.app = app;
     }
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
@@ -60,13 +57,13 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
             var jsonParser = fhirContext.newJsonParser();
 
             logger.debug("Processing - after loading fhir context");
-            var metadata = metadataStore.getById(event.getPathParameters().get("id"));
+            var metadata = app.documentMetadataStore.getById(event.getPathParameters().get("id"));
 
             logger.debug("API Gateway event received - processing starts");
 
             if (metadata == null) {
                 var body = get404ResponseBody(jsonParser);
-                return apiConfig.getApiGatewayResponse(404, body,"GET", null);
+                return new ApiConfig().getApiGatewayResponse(404, body,"GET", null);
             }
 
             var content = getContentWithPresignedUrl(metadata);
@@ -77,7 +74,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
             var body = jsonParser.encodeResourceToString(resource);
 
             logger.debug("Processing finished - about to return the response");
-            return apiConfig.getApiGatewayResponse(200, body, "GET", null);
+            return new ApiConfig().getApiGatewayResponse(200, body, "GET", null);
         }
             catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);
@@ -103,7 +100,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         }
 
         logger.debug("Retrieved the requested object. Creating the pre-signed URL");
-        var preSignedUrl = documentStore.generatePreSignedUrl(DocumentDescriptor.from(metadata));
+        var preSignedUrl = app.documentStore.generatePreSignedUrl(DocumentDescriptor.from(metadata));
         return new DocumentReferenceContentComponent()
                 .setAttachment(new Attachment()
                         .setUrl(preSignedUrl.toString())

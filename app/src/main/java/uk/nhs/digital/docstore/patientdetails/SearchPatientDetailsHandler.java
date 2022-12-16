@@ -8,32 +8,27 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.Application;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
-import uk.nhs.digital.docstore.publishers.AuditPublisher;
-import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
 import java.util.Map;
 
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger logger = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
-    private final ApiConfig apiConfig;
+    private final Application application;
 
-    private final PatientSearchConfig patientSearchConfig;
-    private final AuditPublisher sensitiveIndex;
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {
-        this(new ApiConfig(), new PatientSearchConfig(), new SplunkPublisher());
+        this(new Application());
     }
 
-    public SearchPatientDetailsHandler(ApiConfig apiConfig, PatientSearchConfig patientSearchConfig, AuditPublisher sensitiveIndex) {
-        this.apiConfig = apiConfig;
-        this.patientSearchConfig = patientSearchConfig;
-        this.sensitiveIndex = sensitiveIndex;
+    public SearchPatientDetailsHandler(Application application) {
+        this.application = application;
     }
 
     @Override
@@ -45,22 +40,18 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
 
         try {
             var parameterForm = new NHSNumberSearchParameterForm(searchParameters);
-
-            var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
-                    ? new FakePdsFhirClient()
-                    : new RealPdsFhirClient(patientSearchConfig);
-            var patientDetails = pdsFhirClient.fetchPatientDetails(parameterForm.getNhsNumber());
+            var patientDetails = application.pdsFhirClient.fetchPatientDetails(parameterForm.getNhsNumber());
 
             logger.debug("Generating response body");
             var json = convertToJson(PatientDetails.fromFhirPatient(patientDetails));
             var body = getBody(json);
 
             logger.debug("Processing finished - about to return the response");
-            sensitiveIndex.publish(body);
-            return apiConfig.getApiGatewayResponse(200, body, "GET", null);
+            application.auditPublisher.publish(body);
+            return new ApiConfig().getApiGatewayResponse(200, body, "GET", null);
         }
         catch (PatientNotFoundException e) {
-            return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
+            return new ApiConfig().getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
         }
         catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);

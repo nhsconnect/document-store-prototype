@@ -13,7 +13,7 @@ class DocumentMetadataStoreTest {
 
     @BeforeEach
     void setUp() {
-        store = new DocumentMetadataStore();
+        store = new DocumentMetadataStore("test.uri");
     }
 
     @Test

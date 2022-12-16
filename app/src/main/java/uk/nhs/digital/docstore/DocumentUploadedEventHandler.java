@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
-import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 
 import java.time.Instant;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
 public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Void> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentUploadedEventHandler.class);
 
-    private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
+    private final Application application = new Application();
 
     @Override
     public Void handleRequest(S3Event event, Context context) {
@@ -32,12 +31,12 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
             String objectKey = s3.getObject().getKey();
             String location = String.format("s3://%s/%s", bucketName, objectKey);
 
-            DocumentMetadata metadata = metadataStore.getByLocation(location);
+            DocumentMetadata metadata = application.documentMetadataStore.getByLocation(location);
             metadata.setDocumentUploaded(true);
             metadata.setIndexed(Instant.now().toString());
 
             LOGGER.debug("Updating DocumentReference {} to uploaded", metadata.getId());
-            metadataStore.save(metadata);
+            application.documentMetadataStore.save(metadata);
         });
         return null;
     }
