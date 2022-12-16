@@ -11,6 +11,10 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
 
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
+
   environment {
     variables = {
       PDS_FHIR_ENDPOINT = var.pds_fhir_sandbox_url
