@@ -9,12 +9,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import org.hl7.fhir.r4.model.Attachment;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.config.ApiConfig;
@@ -23,6 +18,7 @@ import uk.nhs.digital.docstore.create.CreateDocumentReferenceRequestValidator;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.filestorage.GeneratePresignedUrlRequestFactory;
+import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
@@ -41,8 +37,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
 
     private final DocumentReferenceService documentReferenceService = new DocumentReferenceService(
             new DocumentMetadataStore(),
-            System.getenv("DOCUMENT_STORE_BUCKET_NAME")
-    );
+            new SplunkPublisher());
 
     private final AmazonS3 s3client = buildS3Client();
     private static final String AWS_REGION = "eu-west-2";
@@ -52,6 +47,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
     private final FhirContext fhirContext;
     private final CreateDocumentReferenceRequestValidator requestValidator = new CreateDocumentReferenceRequestValidator();
     private final ApiConfig apiConfig;
+    private final GeneratePresignedUrlRequestFactory requestFactory = new GeneratePresignedUrlRequestFactory(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
 
     public CreateDocumentReferenceHandler() {
         this(new ApiConfig());
@@ -80,10 +76,11 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
             logger.debug("Saving DocumentReference to DynamoDB");
 
             String s3ObjectKey = CommonUtils.generateRandomUUIDString();
-            var requestFactory = new GeneratePresignedUrlRequestFactory(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
+            var s3Location = "s3://" + System.getenv("DOCUMENT_STORE_BUCKET_NAME") + "/" + s3ObjectKey;
+            var metadata = DocumentMetadata.from(inputDocumentReference, s3Location);
             var uploadRequest = requestFactory.makeDocumentUploadRequest(s3ObjectKey);
             presignedS3Url = s3client.generatePresignedUrl(uploadRequest);
-            savedDocumentMetadata = documentReferenceService.save(inputDocumentReference, s3ObjectKey);
+            savedDocumentMetadata = documentReferenceService.save(metadata);
         } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);
         }

@@ -1,36 +1,47 @@
 package uk.nhs.digital.docstore.services;
 
-import org.hl7.fhir.r4.model.DocumentReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.NHSDocumentReference;
+import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.publishers.AuditPublisher;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.Mockito.*;
 
 public class DocumentReferenceServiceTest {
     @Test
-    public void savesDocumentMetadata() {
+    public void savesDocumentMetadataWithAuditing() throws JsonProcessingException {
+        var auditPublisher = mock(AuditPublisher.class);
         var documentMetadataStore = mock(DocumentMetadataStore.class);
-        var s3ObjectKey = "key";
-        var bucketName = "bucket";
 
-        var documentReference = new NHSDocumentReference();
-        documentReference.setContent(List.of(new DocumentReference.DocumentReferenceContentComponent()));
+        var documentMetadataId = "1";
+        var nhsNumber = "1234";
+        var documentTitle = "Document Title";
+        var contentType = "pdf";
+        var now = Instant.now();
 
-        String documentLocation = "s3://" + bucketName + "/" + s3ObjectKey;
-        var stubDocumentMetadata = DocumentMetadata.from(documentReference, documentLocation);
-        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, bucketName);
-        when(documentMetadataStore.save(any(DocumentMetadata.class))).thenReturn(stubDocumentMetadata);
+        var documentMetadata = new DocumentMetadata();
+        documentMetadata.setId(documentMetadataId);
+        documentMetadata.setNhsNumber(nhsNumber);
+        documentMetadata.setDescription(documentTitle);
+        documentMetadata.setType(List.of(contentType));
+        documentMetadata.setCreated(now.toString());
 
-        var actualDocumentMetadata = documentReferenceService.save(documentReference, s3ObjectKey);
+        when(documentMetadataStore.save(documentMetadata)).thenReturn(documentMetadata);
 
-        verify(documentMetadataStore, times(1)).save(any(DocumentMetadata.class));
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher);
+        var actualDocumentMetadata = documentReferenceService.save(documentMetadata);
 
-        assertThat(actualDocumentMetadata).isEqualTo(stubDocumentMetadata);
+        verify(documentMetadataStore).save(documentMetadata);
+
+        var auditMessage = new CreateDocumentMetadataAuditMessage(documentMetadata);
+        verify(auditPublisher).publish(refEq(auditMessage));
+
+        assertThat(actualDocumentMetadata).isEqualTo(documentMetadata);
     }
 }

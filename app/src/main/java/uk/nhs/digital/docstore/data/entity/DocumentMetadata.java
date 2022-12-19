@@ -5,7 +5,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import org.hl7.fhir.r4.model.Coding;
-import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.NHSDocumentReference;
 
 import java.util.List;
