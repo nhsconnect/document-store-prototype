@@ -9,7 +9,7 @@ import uk.nhs.digital.docstore.patientdetails.fhirdtos.Period;
 import java.time.LocalDate;
 import java.util.List;
 
-public class FakePdsFhirClient implements PdsFhirClient {
+public class FakePdsFhirService implements PdsFhirService {
     public Patient fetchPatientDetails(String nhsNumber) {
         var currentPeriod = new Period(LocalDate.now().minusYears(1), null);
         switch (nhsNumber) {

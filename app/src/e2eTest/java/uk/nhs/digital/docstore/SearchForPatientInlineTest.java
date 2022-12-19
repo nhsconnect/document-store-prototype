@@ -3,13 +3,9 @@ package uk.nhs.digital.docstore;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.GetQueueUrlResult;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
@@ -24,7 +20,6 @@ import java.util.HashMap;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SearchForPatientInlineTest {
@@ -33,10 +28,6 @@ public class SearchForPatientInlineTest {
     private Context context;
     @Mock
     private AmazonSQS amazonSqsClient;
-
-    @Captor
-    ArgumentCaptor<SendMessageRequest> sendMessageRequestArgumentCaptor;
-
     private SearchPatientDetailsHandler handler;
     private RequestEventBuilder requestBuilder;
 
@@ -51,10 +42,7 @@ public class SearchForPatientInlineTest {
         var request = requestBuilder
                 .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009")
                 .build();
-        var queueUrl = "document-store-audit-queue-url";
-        var getQueueRequest = new GetQueueUrlResult().withQueueUrl(queueUrl);
 
-        when(amazonSqsClient.getQueueUrl("document-store-audit")).thenReturn(getQueueRequest);
         var responseEvent = handler.handleRequest(request, context);
 
         assertThat(responseEvent.getStatusCode()).isEqualTo(200);
@@ -69,10 +57,7 @@ public class SearchForPatientInlineTest {
         var request = requestBuilder
                 .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000025")
                 .build();
-        var queueUrl = "document-store-audit-queue-url";
-        var getQueueRequest = new GetQueueUrlResult().withQueueUrl(queueUrl);
 
-        when(amazonSqsClient.getQueueUrl("document-store-audit")).thenReturn(getQueueRequest);
         var responseEvent = handler.handleRequest(request, context);
 
         assertThat(responseEvent.getStatusCode()).isEqualTo(200);
@@ -135,22 +120,6 @@ public class SearchForPatientInlineTest {
         assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
         assertThatJson(responseEvent.getBody())
                 .isEqualTo(getContentFromResource("errors/missing-search-parameters.json"));
-    }
-
-    @Test
-    void publishesSensitiveAuditMessageWhenPatientIsFound() throws IOException {
-        var searchPatientDetailsRequest = requestBuilder.addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009").build();
-        var queueUrl = "document-store-audit-queue-url";
-        var getQueueRequest = new GetQueueUrlResult().withQueueUrl(queueUrl);
-        var patientSearchAuditMessage = getContentFromResource("audit/patient-search-message.json");
-
-        when(amazonSqsClient.getQueueUrl("document-store-audit")).thenReturn(getQueueRequest);
-        handler.handleRequest(searchPatientDetailsRequest, context);
-
-        verify(amazonSqsClient, times(1)).sendMessage(sendMessageRequestArgumentCaptor.capture());
-        var actualSendMessageRequest = sendMessageRequestArgumentCaptor.getValue();
-        assertThat(actualSendMessageRequest.getQueueUrl()).isEqualTo(queueUrl);
-        assertThatJson(actualSendMessageRequest.getMessageBody()).whenIgnoringPaths("$.dateTime").isEqualTo(patientSearchAuditMessage);
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {

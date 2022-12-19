@@ -1,13 +1,16 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.auditmessages.PatientSearchAuditMessage;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
+import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
 import javax.net.ssl.SSLSession;
 import java.net.URI;
@@ -15,6 +18,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -26,76 +30,87 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class RealPdsFhirClientTest {
+class RealPdsFhirServiceTest {
 
     @Mock
     private SimpleHttpClient httpClient;
+    @Mock
+    private SplunkPublisher splunkPublisher;
 
     @Test
-    public void shouldMakeCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() {
+    public void shouldMakeObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
 
-        String nhsNumber = "9000000009";
+        var now = Instant.now();
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
+        var nhsNumber = "9000000009";
+
+        var auditMessage = new PatientSearchAuditMessage(nhsNumber, 200, now);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
 
         pdsFhirClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient).get(any(), contains(nhsNumber));
+        verify(splunkPublisher).publish(refEq(auditMessage));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
-    public void shouldMakeCallToPdsAndThrowExceptionWhenPdsFhirReturns400() {
+    public void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-
+        var now = Instant.now();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
+        var nhsNumber = "9000000000";
+
+        var auditMessage = new PatientSearchAuditMessage(nhsNumber, 400, now);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(400, null));
-
-        String nhsNumber = "9000000000";
 
         assertThrows(InvalidResourceIdException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber));
 
         verify(httpClient).get(any(), contains(nhsNumber));
+        verify(splunkPublisher).publish(refEq(auditMessage));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
-    public void shouldMakeCallToPdsAndThrowExceptionWhenPdsFhirReturns404() {
+    public void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-
+        var now = Instant.now();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
+        var nhsNumber = "9111231130";
+
+        var auditMessage = new PatientSearchAuditMessage(nhsNumber, 404, now);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
-
-        String nhsNumber = "9111231130";
 
         assertThrows(PatientNotFoundException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
 
         verify(httpClient).get(any(), contains(nhsNumber));
+        verify(splunkPublisher).publish(refEq(auditMessage));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
-    public void shouldMakeCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() {
+    public void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-
+        var now = Instant.now();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirClient(stubbingOffPatientSearchConfig, httpClient);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
+        var nhsNumber = "9111231130";
+
+        var auditMessage = new PatientSearchAuditMessage(nhsNumber, 500, now);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(500, null));
-
-        String nhsNumber = "9111231130";
 
         assertThrows(RuntimeException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Got an error when requesting patient from PDS: 500");
 
         verify(httpClient).get(any(), contains(nhsNumber));
+        verify(splunkPublisher).publish(refEq(auditMessage));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 

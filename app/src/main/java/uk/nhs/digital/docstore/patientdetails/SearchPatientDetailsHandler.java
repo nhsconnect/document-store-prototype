@@ -10,21 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
-import uk.nhs.digital.docstore.auditmessages.PatientSearchAuditMessage;
-import uk.nhs.digital.docstore.auditmessages.PdsResponseStatusType;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.publishers.AuditPublisher;
 import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
-import java.time.Instant;
 import java.util.Map;
 
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger logger = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
     private final ApiConfig apiConfig;
-
     private final PatientSearchConfig patientSearchConfig;
     private final AuditPublisher sensitiveIndex;
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
@@ -51,15 +47,14 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var nhsNumber = parameterForm.getNhsNumber();
 
             var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
-                    ? new FakePdsFhirClient()
-                    : new RealPdsFhirClient(patientSearchConfig);
+                    ? new FakePdsFhirService()
+                    : new RealPdsFhirService(patientSearchConfig, sensitiveIndex);
             var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
             logger.debug("Generating response body");
             var json = convertToJson(PatientDetails.fromFhirPatient(patientDetails));
             var body = getBody(json);
 
-            sensitiveIndex.publish(getAuditMessage(nhsNumber));
             logger.debug("Processing finished - about to return the response");
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
         }
@@ -69,10 +64,6 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
         catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);
         }
-    }
-
-    private String getAuditMessage(String nhsNumber) throws JsonProcessingException {
-        return new PatientSearchAuditMessage(nhsNumber, PdsResponseStatusType.SUCCESS, Instant.now().toString()).toJsonString();
     }
 
     private String getBodyWithError(Exception e) {
