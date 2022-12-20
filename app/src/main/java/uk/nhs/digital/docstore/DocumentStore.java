@@ -37,6 +37,11 @@ public class DocumentStore {
         this.bucketName = bucketName;
     }
 
+    public DocumentStore(AmazonS3 client, String bucketName){
+        this.client = client;
+        this.bucketName = bucketName;
+    }
+
     public URL generatePreSignedUrl(DocumentDescriptor descriptor) {
         return client.generatePresignedUrl(descriptor.bucket, descriptor.path, getExpirationDate());
     }

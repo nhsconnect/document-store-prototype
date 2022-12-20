@@ -15,8 +15,8 @@ import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
-import uk.nhs.digital.docstore.utils.DocumentMetadataSearchService;
 
 import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
 import static java.util.stream.Collectors.toList;
@@ -29,10 +29,11 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final BundleMapper bundleMapper = new BundleMapper();
+    private final CommonUtils utils = new CommonUtils();
+
     private final DocumentMetadataSearchService searchService;
     private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
-    private final CommonUtils utils = new CommonUtils();
 
     public DocumentReferenceSearchHandler() {
         this(new ApiConfig());
@@ -61,7 +62,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
             var documentMetadata = searchService.findMetadataByNhsNumber(nhsNumber, requestEvent.getHeaders());
 
-            var documents = documentMetadata.stream().map(metadata -> new Document(metadata)).collect(toList());
+            var documents = documentMetadata.stream().map(Document::new).collect(toList());
 
             logger.debug("Generating response contents");
             bundle = bundleMapper.toBundle(documents);

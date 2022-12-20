@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.utils;
+package uk.nhs.digital.docstore.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

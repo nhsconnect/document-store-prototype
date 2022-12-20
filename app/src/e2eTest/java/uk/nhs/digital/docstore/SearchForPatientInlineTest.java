@@ -33,7 +33,9 @@ public class SearchForPatientInlineTest {
 
     @BeforeEach
     public void setUp() {
-        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"), new StubbedPatientSearchConfig(), new SplunkPublisher(amazonSqsClient));
+        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"),
+                new StubbedPatientSearchConfig(),
+                new SplunkPublisher(amazonSqsClient));
         requestBuilder = new RequestEventBuilder();
     }
 
