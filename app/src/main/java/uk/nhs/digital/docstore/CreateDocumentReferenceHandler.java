@@ -9,7 +9,12 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Attachment;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.config.ApiConfig;
@@ -30,31 +35,29 @@ import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRE
 
 @SuppressWarnings("unused")
 public class CreateDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private static final Logger logger
-            = LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
     private static final String SUBJECT_ID_CODING_SYSTEM = "https://fhir.nhs.uk/Id/nhs-number";
-
-    private final DocumentReferenceService documentReferenceService = new DocumentReferenceService(
-            new DocumentMetadataStore(),
-            new SplunkPublisher());
-
-    private final AmazonS3 s3client = buildS3Client();
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_ENDPOINT = "";
 
-    private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
+    private final DocumentReferenceService documentReferenceService;
+    private final AmazonS3 s3client;
     private final FhirContext fhirContext;
-    private final CreateDocumentReferenceRequestValidator requestValidator = new CreateDocumentReferenceRequestValidator();
     private final ApiConfig apiConfig;
+
+    private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
+    private final CreateDocumentReferenceRequestValidator requestValidator = new CreateDocumentReferenceRequestValidator();
     private final GeneratePresignedUrlRequestFactory requestFactory = new GeneratePresignedUrlRequestFactory(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
 
     public CreateDocumentReferenceHandler() {
-        this(new ApiConfig());
+        this(new ApiConfig(), new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher()), buildS3Client());
     }
 
-    public CreateDocumentReferenceHandler(ApiConfig apiConfig) {
+    public CreateDocumentReferenceHandler(ApiConfig apiConfig, DocumentReferenceService documentReferenceService, AmazonS3 s3client) {
         this.apiConfig = apiConfig;
+        this.documentReferenceService = documentReferenceService;
+        this.s3client = s3client;
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
     }

@@ -18,7 +18,7 @@
   "content": [
     {
       "attachment": {
-        "url": "<generated>",
+        "url": "http://presigned-url",
         "contentType": "text/plain"
       }
     }

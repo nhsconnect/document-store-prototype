@@ -23,6 +23,10 @@ public class DynamoDbConnection {
                         .build());
     }
 
+    public DynamoDbConnection(DynamoDBMapper dynamodbMapper) {
+        this.mapper = dynamodbMapper;
+    }
+
     private AmazonDynamoDB getDynamodbClient() {
         var clientBuilder = AmazonDynamoDBClientBuilder.standard();
         var dynamodbEndpoint = System.getenv("DYNAMODB_ENDPOINT");

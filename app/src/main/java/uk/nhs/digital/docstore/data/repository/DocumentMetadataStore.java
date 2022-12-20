@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.data.repository;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
@@ -9,6 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 public class DocumentMetadataStore extends DynamoDbConnection {
+
+    public DocumentMetadataStore() {
+        super();
+    }
+
+    public DocumentMetadataStore(DynamoDBMapper dynamodbMapper) {
+        super(dynamodbMapper);
+    }
 
     public DocumentMetadata getById(String id) {
         return mapper.load(DocumentMetadata.class, id);
