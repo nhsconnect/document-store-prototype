@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAuditMessage;
+import uk.nhs.digital.docstore.auditmessages.SuccessfulUploadAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.publishers.AuditPublisher;
@@ -36,12 +37,39 @@ public class DocumentReferenceServiceTest {
 
         var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher);
         var actualDocumentMetadata = documentReferenceService.save(documentMetadata);
+        var auditMessage = new CreateDocumentMetadataAuditMessage(documentMetadata);
 
         verify(documentMetadataStore).save(documentMetadata);
-
-        var auditMessage = new CreateDocumentMetadataAuditMessage(documentMetadata);
         verify(auditPublisher).publish(refEq(auditMessage));
-
         assertThat(actualDocumentMetadata).isEqualTo(documentMetadata);
+    }
+
+    @Test
+    public void marksDocumentsUploadedWithAuditing() throws JsonProcessingException {
+        var auditPublisher = mock(AuditPublisher.class);
+        var documentMetadataStore = mock(DocumentMetadataStore.class);
+
+        var documentMetadataId = "2";
+        var documentTitle = "Document Title";
+        var contentType = "pdf";
+        var location = "test.url";
+        var now = Instant.now();
+
+        var documentMetadata = new DocumentMetadata();
+        documentMetadata.setId(documentMetadataId);
+        documentMetadata.setDescription(documentTitle);
+        documentMetadata.setType(List.of(contentType));
+        documentMetadata.setIndexed(now.toString());
+
+        when(documentMetadataStore.getByLocation(location)).thenReturn(documentMetadata);
+
+        var auditMessage = new SuccessfulUploadAuditMessage(documentMetadata);
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, now);
+
+        documentReferenceService.markDocumentUploaded(location);
+
+        verify(auditPublisher).publish(refEq(auditMessage));
+        verify(documentMetadataStore).save(documentMetadata);
+        verify(documentMetadataStore).getByLocation(location);
     }
 }
