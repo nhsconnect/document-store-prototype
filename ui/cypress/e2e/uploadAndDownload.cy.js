@@ -41,6 +41,7 @@ describe("upload and download", () => {
     cy.findByRole("textbox", { name: "NHS number" }).type(nhsNumber);
     cy.findByRole("button", { name: "Search" }).click();
     cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+    cy.findAllByText("Upload successful").should("have.length", 2);
     cy.findByRole("button", { name: "Next" }).click();
 
     cy.url().should("eq", baseUrl + "/upload/submit");
