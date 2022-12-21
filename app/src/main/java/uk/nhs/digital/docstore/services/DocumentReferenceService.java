@@ -14,22 +14,22 @@ import java.time.Instant;
 public class DocumentReferenceService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentReferenceService.class);
     private final DocumentMetadataStore store;
-    private final AuditPublisher auditPublisher;
+    private final AuditPublisher sensitiveIndex;
     private final Instant now;
 
-    public DocumentReferenceService(DocumentMetadataStore store, AuditPublisher auditPublisher) {
-        this(store, auditPublisher, Instant.now());
+    public DocumentReferenceService(DocumentMetadataStore store, AuditPublisher sensitiveIndex) {
+        this(store, sensitiveIndex, Instant.now());
     }
 
-    public DocumentReferenceService(DocumentMetadataStore documentMetadataStore, AuditPublisher auditPublisher, Instant now) {
+    public DocumentReferenceService(DocumentMetadataStore documentMetadataStore, AuditPublisher sensitiveIndex, Instant now) {
         this.store = documentMetadataStore;
-        this.auditPublisher = auditPublisher;
+        this.sensitiveIndex = sensitiveIndex;
         this.now = now;
     }
 
     public DocumentMetadata save(DocumentMetadata documentMetadata) throws JsonProcessingException {
         documentMetadata = store.save(documentMetadata);
-        auditPublisher.publish(new CreateDocumentMetadataAuditMessage(documentMetadata));
+        sensitiveIndex.publish(new CreateDocumentMetadataAuditMessage(documentMetadata));
         return documentMetadata;
     }
 
@@ -41,6 +41,6 @@ public class DocumentReferenceService {
         LOGGER.debug("Updating DocumentReference {} to uploaded", metadata.getId());
         store.save(metadata);
 
-        auditPublisher.publish(new SuccessfulUploadAuditMessage(metadata));
+        sensitiveIndex.publish(new SuccessfulUploadAuditMessage(metadata));
     }
 }
