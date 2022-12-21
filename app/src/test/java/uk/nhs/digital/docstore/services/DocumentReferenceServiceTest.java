@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAuditMessage;
 import uk.nhs.digital.docstore.auditmessages.SuccessfulUploadAuditMessage;
@@ -24,14 +25,14 @@ public class DocumentReferenceServiceTest {
         var nhsNumber = "1234";
         var documentTitle = "Document Title";
         var contentType = "pdf";
-        var now = Instant.now();
+        var now = DateTimeType.now().asStringValue();
 
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setId(documentMetadataId);
         documentMetadata.setNhsNumber(nhsNumber);
         documentMetadata.setDescription(documentTitle);
         documentMetadata.setType(List.of(contentType));
-        documentMetadata.setCreated(now.toString());
+        documentMetadata.setCreated(now);
 
         when(documentMetadataStore.save(documentMetadata)).thenReturn(documentMetadata);
 
