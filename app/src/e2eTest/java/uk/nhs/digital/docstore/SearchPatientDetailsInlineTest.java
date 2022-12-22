@@ -159,16 +159,16 @@ public class SearchPatientDetailsInlineTest {
         var expectedMessageBody = new JSONObject();
         expectedMessageBody.put("nhsNumber", "9000000009");
         expectedMessageBody.put("pdsResponseStatus", 200);
-        expectedMessageBody.put("dateTime", now.toString());
+        expectedMessageBody.put("timestamp", now.toString());
 
         environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
         handler.handleRequest(request, context);
 
         verify(amazonSqsClient).sendMessage(messageRequestCaptor.capture());
         var messageBody = messageRequestCaptor.getValue().getMessageBody();
-        var dateTime = JsonPath.read(messageBody, "$.dateTime").toString();
-        assertThatJson(messageBody).whenIgnoringPaths("dateTime").isEqualTo(expectedMessageBody);
-        assertThat(Instant.parse(dateTime)).isCloseTo(now, within(1, ChronoUnit.SECONDS));
+        var timestamp = JsonPath.read(messageBody, "$.timestamp").toString();
+        assertThatJson(messageBody).whenIgnoringPaths("timestamp").isEqualTo(expectedMessageBody);
+        assertThat(Instant.parse(timestamp)).isCloseTo(now, within(1, ChronoUnit.SECONDS));
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {

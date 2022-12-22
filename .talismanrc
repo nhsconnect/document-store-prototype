@@ -7,6 +7,8 @@ fileignoreconfig:
   checksum: 014a393a8017fce12470b2b4183d7d678e5ddfda83ca231b198cde6ae064ad22
 - filename: terraform/.terraform.lock.hcl
   checksum: 512a82c4e4de3c201a985a00ebde5d66a32b4c3284015b7b149c022c65163e5e
+- filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
+  checksum: 61352f0d95bc336a602b5818df4eb37c510edb28e6289825c7fa30f5a8166b6e
 version: ""
 scopeconfig:
   - scope: node

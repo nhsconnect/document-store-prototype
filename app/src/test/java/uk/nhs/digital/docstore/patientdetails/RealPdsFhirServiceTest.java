@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.auditmessages.SearchPatientDetailsAuditMessage;
@@ -20,14 +22,17 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RealPdsFhirServiceTest {
@@ -36,71 +41,98 @@ class RealPdsFhirServiceTest {
     @Mock
     private SplunkPublisher splunkPublisher;
 
+    @Captor
+    private ArgumentCaptor<SearchPatientDetailsAuditMessage> sensitiveAuditMessageCaptor;
+
     @Test
-    void shouldMakeObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException {
+    void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var now = Instant.now();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher);
         var nhsNumber = "9000000009";
-        var auditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 200, now);
+        var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 200);
 
-        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
+        when(httpClient.get(any(), any()))
+                .thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
         pdsFhirClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        verify(splunkPublisher).publish(refEq(auditMessage));
+        verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
+        var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
+        assertThat(actualSensitiveAuditMessage)
+                .usingRecursiveComparison()
+                .ignoringFields("timestamp")
+                .isEqualTo(expectedSensitiveAuditMessage);
+        assertThat(actualSensitiveAuditMessage.getTimestamp())
+                .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
-    void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException {
+    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-        var now = Instant.now();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher);
         var nhsNumber = "9000000000";
-        var auditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 400, now);
+        var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 400);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(400, null));
         assertThrows(InvalidResourceIdException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber));
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        verify(splunkPublisher).publish(refEq(auditMessage));
+        verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
+        var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
+        assertThat(actualSensitiveAuditMessage)
+                .usingRecursiveComparison()
+                .ignoringFields("timestamp")
+                .isEqualTo(expectedSensitiveAuditMessage);
+        assertThat(actualSensitiveAuditMessage.getTimestamp())
+                .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
-    void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException {
+    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-        var now = Instant.now();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher);
         var nhsNumber = "9111231130";
-        var auditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 404, now);
+        var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 404);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
         assertThrows(PatientNotFoundException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        verify(splunkPublisher).publish(refEq(auditMessage));
+        verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
+        var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
+        assertThat(actualSensitiveAuditMessage)
+                .usingRecursiveComparison()
+                .ignoringFields("timestamp")
+                .isEqualTo(expectedSensitiveAuditMessage);
+        assertThat(actualSensitiveAuditMessage.getTimestamp())
+                .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
-    void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException {
+    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-        var now = Instant.now();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher);
         var nhsNumber = "9111231130";
-        var auditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 500, now);
+        var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 500);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(500, null));
         assertThrows(RuntimeException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Got an error when requesting patient from PDS: 500");
 
         verify(httpClient).get(any(), contains(nhsNumber));
-        verify(splunkPublisher).publish(refEq(auditMessage));
+        verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
+        var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
+        assertThat(actualSensitiveAuditMessage)
+                .usingRecursiveComparison()
+                .ignoringFields("timestamp")
+                .isEqualTo(expectedSensitiveAuditMessage);
+        assertThat(actualSensitiveAuditMessage.getTimestamp()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 

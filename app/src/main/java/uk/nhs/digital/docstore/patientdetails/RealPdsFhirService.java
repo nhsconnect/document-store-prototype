@@ -9,25 +9,21 @@ import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
 import uk.nhs.digital.docstore.publishers.AuditPublisher;
 
-import java.time.Instant;
-
 public class RealPdsFhirService implements PdsFhirService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RealPdsFhirService.class);
 
     private final PatientSearchConfig patientSearchConfig;
     private final SimpleHttpClient httpClient;
     private final AuditPublisher sensitiveIndex;
-    private final Instant now;
 
     public RealPdsFhirService(PatientSearchConfig patientSearchConfig, AuditPublisher auditPublisher) {
-        this(patientSearchConfig, new SimpleHttpClient(), auditPublisher, Instant.now());
+        this(patientSearchConfig, new SimpleHttpClient(), auditPublisher);
     }
 
-    public RealPdsFhirService(PatientSearchConfig patientSearchConfig, SimpleHttpClient httpClient, AuditPublisher sensitiveIndex, Instant now) {
+    public RealPdsFhirService(PatientSearchConfig patientSearchConfig, SimpleHttpClient httpClient, AuditPublisher sensitiveIndex) {
         this.patientSearchConfig = patientSearchConfig;
         this.httpClient = httpClient;
         this.sensitiveIndex = sensitiveIndex;
-        this.now = now;
     }
 
     public Patient fetchPatientDetails(String nhsNumber) throws JsonProcessingException {
@@ -36,7 +32,7 @@ public class RealPdsFhirService implements PdsFhirService {
         LOGGER.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
         var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path);
 
-        sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, response.statusCode(), now));
+        sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, response.statusCode()));
 
         if (response.statusCode() == 200) {
             return Patient.parseFromJson(response.body());

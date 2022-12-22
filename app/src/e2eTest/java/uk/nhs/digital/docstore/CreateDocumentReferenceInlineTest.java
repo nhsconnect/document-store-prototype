@@ -27,9 +27,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -97,11 +100,12 @@ public class CreateDocumentReferenceInlineTest {
     void sendsAuditMessageToSqsWhenDocumentReferenceSuccessfullyCreated() throws IOException {
         var requestContent = getContentFromResource("create/create-document-reference-request.json");
         var request = requestBuilder.addBody(requestContent).build();
+        var now = Instant.now();
         var expectedMessageBody = new JSONObject();
         expectedMessageBody.put("nhsNumber", "34567");
         expectedMessageBody.put("fileName", "uploaded document");
         expectedMessageBody.put("fileType", "text/plain");
-        expectedMessageBody.put("created", "2021-11-03T15:57:30Z");
+        expectedMessageBody.put("timestamp", now.toString());
 
         environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
         when(s3Client.generatePresignedUrl(any())).thenReturn(new URL("http://presigned-url"));
@@ -109,7 +113,9 @@ public class CreateDocumentReferenceInlineTest {
 
         verify(amazonSqsClient).sendMessage(messageRequestCaptor.capture());
         var messageBody = messageRequestCaptor.getValue().getMessageBody();
-        assertThatJson(messageBody).whenIgnoringPaths("id").isEqualTo(expectedMessageBody);
+        var timestamp = JsonPath.read(messageBody, "$.timestamp").toString();
+        assertThatJson(messageBody).whenIgnoringPaths("id", "timestamp").isEqualTo(expectedMessageBody);
+        assertThat(Instant.parse(timestamp)).isCloseTo(now, within(1, ChronoUnit.SECONDS));
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {

@@ -7,14 +7,12 @@ public class CreateDocumentMetadataAuditMessage extends BaseAuditMessage {
     private final String nhsNumber;
     private final String fileName;
     private final String fileType;
-    private final String created;
 
-    public CreateDocumentMetadataAuditMessage(String id, String nhsNumber, String fileName, String fileType, String created) {
+    public CreateDocumentMetadataAuditMessage(String id, String nhsNumber, String fileName, String fileType) {
         this.id = id;
         this.nhsNumber = nhsNumber;
         this.fileName = fileName;
         this.fileType = fileType;
-        this.created = created;
     }
 
     public CreateDocumentMetadataAuditMessage(DocumentMetadata documentMetadata) {
@@ -22,8 +20,7 @@ public class CreateDocumentMetadataAuditMessage extends BaseAuditMessage {
                 documentMetadata.getId(),
                 documentMetadata.getNhsNumber(),
                 documentMetadata.getDescription(),
-                documentMetadata.getContentType(),
-                documentMetadata.getCreated()
+                documentMetadata.getContentType()
         );
     }
 
@@ -41,9 +38,5 @@ public class CreateDocumentMetadataAuditMessage extends BaseAuditMessage {
 
     public String getFileType() {
         return fileType;
-    }
-
-    public String getCreated() {
-        return created;
     }
 }
