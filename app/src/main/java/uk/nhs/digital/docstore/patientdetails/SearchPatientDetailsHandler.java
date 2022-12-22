@@ -19,7 +19,8 @@ import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 import java.util.Map;
 
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private static final Logger logger = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
+
     private final ApiConfig apiConfig;
     private final PatientSearchConfig patientSearchConfig;
     private final AuditPublisher sensitiveIndex;
@@ -39,28 +40,27 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         Tracer.setMDCContext(context);
 
-        logger.debug("API Gateway event received - processing starts");
+        LOGGER.debug("API Gateway event received - processing starts");
         var searchParameters = queryParametersFrom(requestEvent);
 
         try {
             var parameterForm = new NHSNumberSearchParameterForm(searchParameters);
             var nhsNumber = parameterForm.getNhsNumber();
-
             var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
                     ? new FakePdsFhirService(sensitiveIndex)
                     : new RealPdsFhirService(patientSearchConfig, sensitiveIndex);
             var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
-            logger.debug("Generating response body");
+            LOGGER.debug("Generating response body");
             var json = convertToJson(PatientDetails.fromFhirPatient(patientDetails));
             var body = getBody(json);
 
-            logger.debug("Processing finished - about to return the response");
+            LOGGER.debug("Processing finished - about to return the response");
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
         } catch (PatientNotFoundException e) {
             return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
-        } catch (Exception e) {
-            return errorResponseGenerator.errorResponse(e);
+        } catch (Exception exception) {
+            return errorResponseGenerator.errorResponse(exception);
         }
     }
 
@@ -79,8 +79,8 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     }
 
     private String convertToJson(PatientDetails patientDetails) throws JsonProcessingException {
-        var ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        return ow.writeValueAsString(patientDetails);
+        var objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        return objectWriter.writeValueAsString(patientDetails);
     }
 
     private static Map<String, String> queryParametersFrom(APIGatewayProxyRequestEvent requestEvent) {

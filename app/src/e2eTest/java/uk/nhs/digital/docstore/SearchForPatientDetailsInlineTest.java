@@ -22,27 +22,29 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class SearchForPatientInlineTest {
-
+public class SearchForPatientDetailsInlineTest {
     @Mock
     private Context context;
     @Mock
     private AmazonSQS amazonSqsClient;
+
     private SearchPatientDetailsHandler handler;
     private RequestEventBuilder requestBuilder;
 
     @BeforeEach
     public void setUp() {
-        handler = new SearchPatientDetailsHandler(new StubbedApiConfig("http://ui-url"),
+        handler = new SearchPatientDetailsHandler(
+                new StubbedApiConfig("http://ui-url"),
                 new StubbedPatientSearchConfig(),
-                new SplunkPublisher(amazonSqsClient));
+                new SplunkPublisher(amazonSqsClient)
+        );
         requestBuilder = new RequestEventBuilder();
     }
 
     @Test
     void returnsSuccessResponse() throws IOException {
         var request = requestBuilder
-                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009")
+                .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|9000000009")
                 .build();
 
         var responseEvent = handler.handleRequest(request, context);
@@ -57,7 +59,7 @@ public class SearchForPatientInlineTest {
     @Test
     void returnsSuccessResponseWithLimitedInformation() throws IOException {
         var request = requestBuilder
-                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000025")
+                .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|9000000025")
                 .build();
 
         var responseEvent = handler.handleRequest(request, context);
@@ -72,7 +74,7 @@ public class SearchForPatientInlineTest {
     @Test
     void returnsMissingPatientResponseWhenPatientNotFound() throws IOException {
         var request = requestBuilder
-                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9111231130")
+                .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|9111231130")
                 .build();
 
         var responseEvent = handler.handleRequest(request, context);
@@ -87,7 +89,7 @@ public class SearchForPatientInlineTest {
     @Test
     void returnsErrorResponseWhenAnUnrecognisedSubjectIdentifierSystemIsInput() throws IOException {
         var request = requestBuilder
-                .addQueryParameter("subject:identifier", "unrecognised-subject-identifier-system|9000000009")
+                .addQueryParameter("unrecognised-subject-identifier-system|9000000009")
                 .build();
 
         var responseEvent = handler.handleRequest(request, context);
@@ -101,7 +103,7 @@ public class SearchForPatientInlineTest {
     @Test
     void returnsErrorResponseWhenAnInvalidSubjectIdentifierIsInput() throws IOException {
         var request = requestBuilder
-                .addQueryParameter("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|")
+                .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|")
                 .build();
 
         var responseEvent = handler.handleRequest(request, context);
@@ -131,10 +133,10 @@ public class SearchForPatientInlineTest {
     }
 
     public static class RequestEventBuilder {
-        private HashMap<String, String> parameters = new HashMap<>();
+        private final HashMap<String, String> parameters = new HashMap<>();
 
-        private RequestEventBuilder addQueryParameter(String name, String value) {
-            parameters.put(name, value);
+        private RequestEventBuilder addQueryParameter(String value) {
+            parameters.put("subject:identifier", value);
             return this;
         }
 
@@ -143,4 +145,3 @@ public class SearchForPatientInlineTest {
         }
     }
 }
-

@@ -28,11 +28,9 @@ class SplunkPublisherTest {
     void sendsMessageToSqsQueue() throws JsonProcessingException {
         var queueUrl = "document-store-audit-queue-url";
         var messageBody = new StubAuditMessage("Audit payload");
-
-        environmentVariables.set("SQS_QUEUE_URL", queueUrl);
-
         var sendMessageRequest = new SendMessageRequest().withQueueUrl(queueUrl).withMessageBody(messageBody.toJsonString());
 
+        environmentVariables.set("SQS_QUEUE_URL", queueUrl);
         new SplunkPublisher(amazonSqsClient).publish(messageBody);
 
         verify(amazonSqsClient, times(1)).sendMessage(sendMessageRequest);
@@ -40,9 +38,11 @@ class SplunkPublisherTest {
 
     private static class StubAuditMessage implements AuditMessage {
         private final String message;
+
         public StubAuditMessage(String message) {
             this.message = message;
         }
+
         public String toJsonString() {
             return message;
         }
