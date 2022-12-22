@@ -22,7 +22,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class SearchForPatientDetailsInlineTest {
+public class SearchPatientDetailsInlineTest {
     @Mock
     private Context context;
     @Mock
