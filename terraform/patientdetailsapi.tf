@@ -17,6 +17,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
       PDS_FHIR_IS_STUBBED = var.pds_fhir_is_stubbed
       AMPLIFY_BASE_URL    = local.amplify_base_url
       SQS_ENDPOINT        = var.sqs_endpoint
+      SQS_QUEUE_URL       = aws_sqs_queue.document-store.url
     }
   }
 }

@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.publishers;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
@@ -7,10 +8,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.nhs.digital.docstore.auditmessages.AuditMessage;
 
 public class SplunkPublisher implements AuditPublisher {
+    private static final String AWS_REGION = "eu-west-2";
+    private static final String DEFAULT_ENDPOINT = "";
     private final AmazonSQS amazonSqsClient;
 
     public SplunkPublisher() {
-        this(AmazonSQSClientBuilder.defaultClient());
+        var clientBuilder = AmazonSQSClientBuilder.standard();
+        var sqsEndpoint = System.getenv("SQS_ENDPOINT");
+        if (!sqsEndpoint.equals(DEFAULT_ENDPOINT)) {
+            clientBuilder = clientBuilder.withEndpointConfiguration(new AwsClientBuilder
+                    .EndpointConfiguration(sqsEndpoint, AWS_REGION));
+        }
+        amazonSqsClient = clientBuilder.build();
     }
 
     public SplunkPublisher(AmazonSQS amazonSqsClient) {
@@ -18,7 +27,7 @@ public class SplunkPublisher implements AuditPublisher {
     }
 
     public void publish(AuditMessage auditMessage) throws JsonProcessingException {
-        var queueUrl = amazonSqsClient.getQueueUrl("document-store-audit").getQueueUrl();
+        var queueUrl = System.getenv("SQS_QUEUE_URL");
         var messageRequest = new SendMessageRequest().withQueueUrl(queueUrl).withMessageBody(auditMessage.toJsonString());
 
         amazonSqsClient.sendMessage(messageRequest);
