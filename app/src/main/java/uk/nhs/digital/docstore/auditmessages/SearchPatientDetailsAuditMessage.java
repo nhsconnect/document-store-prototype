@@ -2,13 +2,13 @@ package uk.nhs.digital.docstore.auditmessages;
 
 import java.time.Instant;
 
-public class PatientSearchAuditMessage extends BaseAuditMessage {
+public class SearchPatientDetailsAuditMessage extends BaseAuditMessage {
     private final String nhsNumber;
     private final int pdsResponseStatus;
     private final Instant dateTime;
 
 
-    public PatientSearchAuditMessage(String nhsNumber, int pdsResponseStatus, Instant dateTime) {
+    public SearchPatientDetailsAuditMessage(String nhsNumber, int pdsResponseStatus, Instant dateTime) {
         this.nhsNumber = nhsNumber;
         this.pdsResponseStatus = pdsResponseStatus;
         this.dateTime = dateTime;

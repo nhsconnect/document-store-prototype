@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.auditmessages.PatientSearchAuditMessage;
+import uk.nhs.digital.docstore.auditmessages.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
@@ -31,7 +31,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RealPdsFhirServiceTest {
-
     @Mock
     private SimpleHttpClient httpClient;
     @Mock
@@ -41,15 +40,12 @@ class RealPdsFhirServiceTest {
     public void shouldMakeObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-
         var now = Instant.now();
         var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
         var nhsNumber = "9000000009";
-
-        var auditMessage = new PatientSearchAuditMessage(nhsNumber, 200, now);
+        var auditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 200, now);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
-
         pdsFhirClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient).get(any(), contains(nhsNumber));
@@ -64,12 +60,10 @@ class RealPdsFhirServiceTest {
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
         var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
         var nhsNumber = "9000000000";
-
-        var auditMessage = new PatientSearchAuditMessage(nhsNumber, 400, now);
+        var auditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 400, now);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(400, null));
-
-        assertThrows(InvalidResourceIdException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber));
+        assertThrows(InvalidResourceIdException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber));
 
         verify(httpClient).get(any(), contains(nhsNumber));
         verify(splunkPublisher).publish(refEq(auditMessage));
@@ -83,12 +77,10 @@ class RealPdsFhirServiceTest {
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
         var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
         var nhsNumber = "9111231130";
-
-        var auditMessage = new PatientSearchAuditMessage(nhsNumber, 404, now);
+        var auditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 404, now);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
-
-        assertThrows(PatientNotFoundException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
+        assertThrows(PatientNotFoundException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
 
         verify(httpClient).get(any(), contains(nhsNumber));
         verify(splunkPublisher).publish(refEq(auditMessage));
@@ -102,12 +94,10 @@ class RealPdsFhirServiceTest {
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
         var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, now);
         var nhsNumber = "9111231130";
-
-        var auditMessage = new PatientSearchAuditMessage(nhsNumber, 500, now);
+        var auditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 500, now);
 
         when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(500, null));
-
-        assertThrows(RuntimeException.class,() -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Got an error when requesting patient from PDS: 500");
+        assertThrows(RuntimeException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Got an error when requesting patient from PDS: 500");
 
         verify(httpClient).get(any(), contains(nhsNumber));
         verify(splunkPublisher).publish(refEq(auditMessage));
@@ -118,13 +108,11 @@ class RealPdsFhirServiceTest {
         var jsonPeriod = new JSONObject()
                 .put("start", LocalDate.now().minusYears(1).toString())
                 .put("end", JSONObject.NULL);
-
         var jsonName = new JSONObject()
                 .put("period", jsonPeriod)
                 .put("use", "usual")
                 .put("given", List.of("Jane"))
                 .put("family", "Doe");
-
         var jsonAddress = new JSONObject()
                 .put("period", jsonPeriod)
                 .put("use", "home")
@@ -138,9 +126,7 @@ class RealPdsFhirServiceTest {
     }
 
     private static class StubPdsResponse implements HttpResponse<String> {
-
         private final int statusCode;
-
         private final String body;
 
         public StubPdsResponse(int statusCode, String body) {
@@ -188,7 +174,7 @@ class RealPdsFhirServiceTest {
         }
     }
 
-    private class StubbingOffPatientSearchConfig extends PatientSearchConfig {
+    private static class StubbingOffPatientSearchConfig extends PatientSearchConfig {
         @Override
         public boolean pdsFhirIsStubbed() {
             return false;
