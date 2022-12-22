@@ -13,9 +13,10 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
 
   environment {
     variables = {
-      PDS_FHIR_ENDPOINT = var.pds_fhir_sandbox_url
+      PDS_FHIR_ENDPOINT   = var.pds_fhir_sandbox_url
       PDS_FHIR_IS_STUBBED = var.pds_fhir_is_stubbed
-      AMPLIFY_BASE_URL       = local.amplify_base_url
+      AMPLIFY_BASE_URL    = local.amplify_base_url
+      SQS_ENDPOINT        = var.sqs_endpoint
     }
   }
 }
@@ -36,11 +37,11 @@ module "patient_details_endpoint" {
 }
 
 module "patient_details_collection_preflight" {
-  source             = "./modules/api_gateway_preflight"
-  api_gateway_id     = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_resource.patient_details_collection_resource.id
-  origin = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
-  methods = "'GET,OPTIONS,POST'"
+  source         = "./modules/api_gateway_preflight"
+  api_gateway_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id    = aws_api_gateway_resource.patient_details_collection_resource.id
+  origin         = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
+  methods        = "'GET,OPTIONS,POST'"
 }
 
 resource "aws_lambda_permission" "api_gateway_permission_for_search_patient_details" {

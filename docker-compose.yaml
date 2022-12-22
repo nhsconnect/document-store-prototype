@@ -54,10 +54,11 @@ services:
     environment:
       - AWS_ACCESS_KEY_ID=bob
       - AWS_SECRET_ACCESS_KEY=cheese
+      - AWS_REGION=eu-west-2
       - AWS_S3_ENDPOINT=http://localstack:4566
       - AWS_STS_ENDPOINT=http://localstack:4566
       - AWS_DYNAMODB_ENDPOINT=http://localstack:4566
-      - AWS_REGION=eu-west-2
+      - AWS_SQS_ENDPOINT=http://localstack:4566
     links:
       - localstack:localstack
     depends_on:
