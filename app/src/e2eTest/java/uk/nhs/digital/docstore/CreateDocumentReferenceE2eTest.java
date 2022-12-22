@@ -37,7 +37,7 @@ public class CreateDocumentReferenceE2eTest {
     private static final String INTERNAL_DOCKER_HOST = "localstack";
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         var baseUri = String.format(BASE_URI_TEMPLATE, getAwsHost(), DEFAULT_PORT);
         var awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
 
@@ -55,8 +55,8 @@ public class CreateDocumentReferenceE2eTest {
 
     @Test
     void returnsCreatedDocumentReference() throws IOException, InterruptedException {
-        String expectedDocumentReference = getContentFromResource("create/CreatedDocumentReference.json");
-        var requestContent = getContentFromResource("create/CreateDocumentReferenceRequest.json");
+        var expectedDocumentReference = getContentFromResource("create/created-document-reference.json");
+        var requestContent = getContentFromResource("create/create-document-reference-request.json");
         var createDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference"))
                 .POST(BodyPublishers.ofString(requestContent))
                 .header("Content-Type", "application/fhir+json")
@@ -64,8 +64,8 @@ public class CreateDocumentReferenceE2eTest {
                 .build();
 
         var createdDocumentReferenceResponse = getResponseFor(createDocumentReferenceRequest);
-
         var documentReference = createdDocumentReferenceResponse.body();
+
         assertThat(createdDocumentReferenceResponse.statusCode())
                 .isEqualTo(201);
         String id = JsonPath.read(documentReference, "$.id");
@@ -119,15 +119,11 @@ public class CreateDocumentReferenceE2eTest {
                 .header("Accept", "application/fhir+json")
                 .build();
 
-
         var errorResponse = getResponseFor(createRequest);
 
-        assertThat(errorResponse.statusCode())
-                .isEqualTo(400);
-        assertThat(errorResponse.headers().firstValue("Content-Type"))
-                .contains("application/fhir+json");
-        assertThatJson(errorResponse.body())
-                .isEqualTo(expectedErrorResponse);
+        assertThat(errorResponse.statusCode()).isEqualTo(400);
+        assertThat(errorResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(errorResponse.body()).isEqualTo(expectedErrorResponse);
     }
 
     private HttpResponse<String> getResponseFor(HttpRequest request) throws IOException, InterruptedException {
