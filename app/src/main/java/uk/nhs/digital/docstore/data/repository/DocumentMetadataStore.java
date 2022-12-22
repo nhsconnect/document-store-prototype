@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore.data.repository;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.utils.CommonUtils;
@@ -24,11 +25,10 @@ public class DocumentMetadataStore extends DynamoDbConnection {
     }
 
     public DocumentMetadata getByLocation(String location) {
-        List<DocumentMetadata> items = mapper.query(
+        List<DocumentMetadata> items = mapper.scan(
                 DocumentMetadata.class,
-                new DynamoDBQueryExpression<DocumentMetadata>()
-                        .withIndexName("LocationsIndex")
-                        .withKeyConditionExpression("#loc = :location")
+                new DynamoDBScanExpression()
+                        .withFilterExpression("#loc = :location")
                         .withExpressionAttributeNames(Map.of("#loc", "Location"))
                         .withExpressionAttributeValues(Map.of(":location", new AttributeValue(location)))
                         .withConsistentRead(false));

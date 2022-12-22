@@ -10,7 +10,6 @@ import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.publishers.AuditPublisher;
 
 import java.time.Instant;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -31,7 +30,7 @@ public class DocumentReferenceServiceTest {
         documentMetadata.setId(documentMetadataId);
         documentMetadata.setNhsNumber(nhsNumber);
         documentMetadata.setDescription(documentTitle);
-        documentMetadata.setType(List.of(contentType));
+        documentMetadata.setContentType(contentType);
         documentMetadata.setCreated(now);
 
         when(documentMetadataStore.save(documentMetadata)).thenReturn(documentMetadata);
@@ -59,7 +58,7 @@ public class DocumentReferenceServiceTest {
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setId(documentMetadataId);
         documentMetadata.setDescription(documentTitle);
-        documentMetadata.setType(List.of(contentType));
+        documentMetadata.setContentType(contentType);
         documentMetadata.setIndexed(now.toString());
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(documentMetadata);

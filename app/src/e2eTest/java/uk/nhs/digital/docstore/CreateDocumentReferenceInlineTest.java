@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.GetQueueUrlResult;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,10 +54,7 @@ public class CreateDocumentReferenceInlineTest {
     @Test
     void shouldSuccessfullyCreateDocumentReference() throws IOException {
         var requestContent = getContentFromResource("create/CreateDocumentReferenceRequest.json");
-        var queueUrl = "document-store-audit-queue-url";
-        var getQueueRequest = new GetQueueUrlResult().withQueueUrl(queueUrl);
 
-        when(amazonSqsClient.getQueueUrl("document-store-audit")).thenReturn(getQueueRequest);
         when(s3Client.generatePresignedUrl(any())).thenReturn(new URL("http://presigned-url"));
         doNothing().when(dynamoDBMapper).save(any());
 
