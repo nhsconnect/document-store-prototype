@@ -12,7 +12,7 @@ import uk.nhs.digital.docstore.publishers.AuditPublisher;
 import java.time.Instant;
 
 public class RealPdsFhirService implements PdsFhirService {
-    private static final Logger logger = LoggerFactory.getLogger(RealPdsFhirService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RealPdsFhirService.class);
 
     private final PatientSearchConfig patientSearchConfig;
     private final SimpleHttpClient httpClient;
@@ -33,7 +33,7 @@ public class RealPdsFhirService implements PdsFhirService {
     public Patient fetchPatientDetails(String nhsNumber) throws JsonProcessingException {
         var path = "Patient/" + nhsNumber;
 
-        logger.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
+        LOGGER.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
         var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path);
 
         sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, response.statusCode(), now));
@@ -41,17 +41,21 @@ public class RealPdsFhirService implements PdsFhirService {
         if (response.statusCode() == 200) {
             return Patient.parseFromJson(response.body());
         }
+
         handleErrorResponse(response.statusCode(), nhsNumber);
+
         return null;
     }
 
     private void handleErrorResponse(int statusCode, String nhsNumber) {
-        if (statusCode == 400){
+        if (statusCode == 400) {
             throw new InvalidResourceIdException(nhsNumber);
         }
-        if (statusCode == 404){
+
+        if (statusCode == 404) {
             throw new PatientNotFoundException("Patient does not exist for given NHS number.");
         }
+
         throw new RuntimeException("Got an error when requesting patient from PDS: " + statusCode);
     }
 
