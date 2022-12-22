@@ -47,7 +47,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var nhsNumber = parameterForm.getNhsNumber();
 
             var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
-                    ? new FakePdsFhirService()
+                    ? new FakePdsFhirService(sensitiveIndex)
                     : new RealPdsFhirService(patientSearchConfig, sensitiveIndex);
             var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
@@ -57,28 +57,27 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
 
             logger.debug("Processing finished - about to return the response");
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
-        }
-        catch (PatientNotFoundException e) {
+        } catch (PatientNotFoundException e) {
             return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);
         }
     }
 
     private String getBodyWithError(Exception e) {
         return "{\n" +
-                "   \"errorMessage\": \""+ e.getMessage() +"\"\n" +
+                "   \"errorMessage\": \"" + e.getMessage() + "\"\n" +
                 "}";
     }
 
     private String getBody(String patientDetails) {
-       return "{\n" +
-               "   \"result\": {\n" +
-               "       \"patientDetails\": "+ patientDetails +
-               "   }\n" +
-               "}";
+        return "{\n" +
+                "   \"result\": {\n" +
+                "       \"patientDetails\": " + patientDetails +
+                "   }\n" +
+                "}";
     }
+
     private String convertToJson(PatientDetails patientDetails) throws JsonProcessingException {
         var ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(patientDetails);
