@@ -2,8 +2,6 @@ package uk.nhs.digital.docstore.auditmessages;
 
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 
-import java.time.Instant;
-
 public class CreateDocumentMetadataAuditMessage extends BaseAuditMessage {
     private final String id;
     private final String nhsNumber;
