@@ -53,7 +53,7 @@ public class SearchPatientDetailsInlineTest {
     private RequestEventBuilder requestBuilder;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         handler = new SearchPatientDetailsHandler(
                 new StubbedApiConfig("http://ui-url"),
                 new StubbedPatientSearchConfig(),

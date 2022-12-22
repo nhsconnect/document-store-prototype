@@ -27,11 +27,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-
-
 @ExtendWith(MockitoExtension.class)
 public class CreateDocumentReferenceInlineTest {
-
     @Mock
     private Context context;
     @Mock
@@ -40,13 +37,14 @@ public class CreateDocumentReferenceInlineTest {
     private DynamoDBMapper dynamoDBMapper;
     @Mock
     private AmazonS3 s3Client;
+
     private CreateDocumentReferenceHandler handler;
     private RequestEventBuilder requestBuilder;
 
     @BeforeEach
     public void setUp() {
         handler = new CreateDocumentReferenceHandler(new StubbedApiConfig("http://ui-url"),
-                new DocumentReferenceService(new DocumentMetadataStore(dynamoDBMapper),new SplunkPublisher(amazonSqsClient)),
+                new DocumentReferenceService(new DocumentMetadataStore(dynamoDBMapper), new SplunkPublisher(amazonSqsClient)),
                 s3Client);
         requestBuilder = new RequestEventBuilder();
     }

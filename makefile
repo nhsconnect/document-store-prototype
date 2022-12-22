@@ -4,7 +4,7 @@ default: help
 pre-push: test-ui test-app ## Run all unit tests. Run this before pushing. Todo: Formatting & linting.
 
 .PHONY: test-ui
-test-ui: ## Run FE unit tests (with logs)
+test-ui: ## Run FE unit tests
 	cd ui && npm run test:nw
 
 .PHONY: test-app

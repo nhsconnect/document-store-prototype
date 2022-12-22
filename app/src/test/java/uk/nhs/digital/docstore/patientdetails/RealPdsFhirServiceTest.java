@@ -37,7 +37,7 @@ class RealPdsFhirServiceTest {
     private SplunkPublisher splunkPublisher;
 
     @Test
-    public void shouldMakeObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException {
+    void shouldMakeObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
         var now = Instant.now();
@@ -54,7 +54,7 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    public void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException {
+    void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var now = Instant.now();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
@@ -71,7 +71,7 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    public void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException {
+    void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var now = Instant.now();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
@@ -88,7 +88,7 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    public void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException {
+    void shouldMakeObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var now = Instant.now();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();

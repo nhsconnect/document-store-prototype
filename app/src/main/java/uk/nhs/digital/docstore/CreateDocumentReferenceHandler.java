@@ -9,12 +9,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import org.hl7.fhir.r4.model.Attachment;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.config.ApiConfig;
@@ -33,9 +28,8 @@ import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
-@SuppressWarnings("unused")
 public class CreateDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private static final Logger logger = LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
     private static final String SUBJECT_ID_CODING_SYSTEM = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String AWS_REGION = "eu-west-2";
@@ -64,23 +58,23 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
+        DocumentMetadata savedDocumentMetadata;
+        URL presignedS3Url;
 
         Tracer.setMDCContext(context);
 
-        logger.debug("API Gateway event received - processing starts");
+        LOGGER.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
-        DocumentMetadata savedDocumentMetadata;
-        URL presignedS3Url;
         try {
             var inputDocumentReference = jsonParser.parseResource(NHSDocumentReference.class, input.getBody());
             requestValidator.validate(inputDocumentReference);
 
-            logger.debug("Saving DocumentReference to DynamoDB");
-
             String s3ObjectKey = CommonUtils.generateRandomUUIDString();
             var s3Location = "s3://" + System.getenv("DOCUMENT_STORE_BUCKET_NAME") + "/" + s3ObjectKey;
             var metadata = DocumentMetadata.from(inputDocumentReference, s3Location);
+
+            LOGGER.debug("Saving DocumentReference to DynamoDB");
             var uploadRequest = requestFactory.makeDocumentUploadRequest(s3ObjectKey);
             presignedS3Url = s3client.generatePresignedUrl(uploadRequest);
             savedDocumentMetadata = documentReferenceService.save(metadata);
@@ -88,7 +82,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
             return errorResponseGenerator.errorResponse(e);
         }
 
-        logger.debug("Generating response body");
+        LOGGER.debug("Generating response body");
         var type = new CodeableConcept()
                 .setCoding(savedDocumentMetadata.getType()
                         .stream()
@@ -113,7 +107,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                 .setId(savedDocumentMetadata.getId());
         var resourceAsJson = jsonParser.encodeResourceToString(resource);
 
-        logger.debug("Processing finished - about to return the response");
+        LOGGER.debug("Processing finished - about to return the response");
         return apiConfig.getApiGatewayResponse(201, resourceAsJson, "POST", "DocumentReference/" + savedDocumentMetadata.getId());
     }
 
