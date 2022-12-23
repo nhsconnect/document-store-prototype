@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAuditMessage;
+import uk.nhs.digital.docstore.auditmessages.FileMetadata;
 import uk.nhs.digital.docstore.auditmessages.SuccessfulDocumentUploadAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
@@ -42,6 +43,6 @@ public class DocumentReferenceService {
 
         LOGGER.debug("Updating DocumentReference {} to uploaded", metadata.getId());
         metadataStore.save(metadata);
-        sensitiveIndex.publish(new SuccessfulDocumentUploadAuditMessage(metadata));
+        sensitiveIndex.publish(new SuccessfulDocumentUploadAuditMessage(FileMetadata.fromDocumentMetadata(metadata)));
     }
 }

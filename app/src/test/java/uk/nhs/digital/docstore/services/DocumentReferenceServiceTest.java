@@ -9,6 +9,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAuditMessage;
+import uk.nhs.digital.docstore.auditmessages.FileMetadata;
 import uk.nhs.digital.docstore.auditmessages.SuccessfulDocumentUploadAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
@@ -69,7 +70,7 @@ public class DocumentReferenceServiceTest {
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setIndexed(now.toString());
-        var expectedSensitiveAuditMessage = new SuccessfulDocumentUploadAuditMessage(documentMetadata);
+        var expectedSensitiveAuditMessage = new SuccessfulDocumentUploadAuditMessage(FileMetadata.fromDocumentMetadata(documentMetadata));
         var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, now);
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(documentMetadata);

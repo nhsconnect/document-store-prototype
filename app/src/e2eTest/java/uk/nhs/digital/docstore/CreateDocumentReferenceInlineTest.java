@@ -101,10 +101,13 @@ public class CreateDocumentReferenceInlineTest {
         var requestContent = getContentFromResource("create/create-document-reference-request.json");
         var request = requestBuilder.addBody(requestContent).build();
         var now = Instant.now();
+        var fileMetadata = new JSONObject();
+        fileMetadata.put("id","123");
+        fileMetadata.put("fileName","uploaded document");
+        fileMetadata.put("fileType","text/plain");
         var expectedMessageBody = new JSONObject();
         expectedMessageBody.put("nhsNumber", "34567");
-        expectedMessageBody.put("fileName", "uploaded document");
-        expectedMessageBody.put("fileType", "text/plain");
+        expectedMessageBody.put("fileMetadata", fileMetadata);
         expectedMessageBody.put("timestamp", now.toString());
 
         environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
@@ -114,7 +117,7 @@ public class CreateDocumentReferenceInlineTest {
         verify(amazonSqsClient).sendMessage(messageRequestCaptor.capture());
         var messageBody = messageRequestCaptor.getValue().getMessageBody();
         var timestamp = JsonPath.read(messageBody, "$.timestamp").toString();
-        assertThatJson(messageBody).whenIgnoringPaths("id", "timestamp").isEqualTo(expectedMessageBody);
+        assertThatJson(messageBody).whenIgnoringPaths("fileMetadata.id", "timestamp").isEqualTo(expectedMessageBody);
         assertThat(Instant.parse(timestamp)).isCloseTo(now, within(1, ChronoUnit.SECONDS));
     }
 
