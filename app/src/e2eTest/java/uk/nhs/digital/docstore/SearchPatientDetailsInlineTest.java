@@ -49,12 +49,12 @@ public class SearchPatientDetailsInlineTest {
     @SystemStub
     private EnvironmentVariables environmentVariables;
 
-    private SearchPatientDetailsHandler handler;
+    private SearchPatientDetailsHandler searchPatientDetailsHandler;
     private RequestEventBuilder requestBuilder;
 
     @BeforeEach
     void setUp() {
-        handler = new SearchPatientDetailsHandler(
+        searchPatientDetailsHandler = new SearchPatientDetailsHandler(
                 new StubbedApiConfig("http://ui-url"),
                 new StubbedPatientSearchConfig(),
                 new SplunkPublisher(amazonSqsClient)
@@ -68,7 +68,7 @@ public class SearchPatientDetailsInlineTest {
                 .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|9000000009")
                 .build();
 
-        var responseEvent = handler.handleRequest(request, context);
+        var responseEvent = searchPatientDetailsHandler.handleRequest(request, context);
 
         assertThat(responseEvent.getStatusCode()).isEqualTo(200);
         assertThat(responseEvent.getHeaders().get("Content-Type")).isEqualTo("application/fhir+json");
@@ -83,7 +83,7 @@ public class SearchPatientDetailsInlineTest {
                 .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|9000000025")
                 .build();
 
-        var responseEvent = handler.handleRequest(request, context);
+        var responseEvent = searchPatientDetailsHandler.handleRequest(request, context);
 
         assertThat(responseEvent.getStatusCode()).isEqualTo(200);
         assertThat(responseEvent.getHeaders().get("Content-Type")).isEqualTo("application/fhir+json");
@@ -98,7 +98,7 @@ public class SearchPatientDetailsInlineTest {
                 .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|9111231130")
                 .build();
 
-        var responseEvent = handler.handleRequest(request, context);
+        var responseEvent = searchPatientDetailsHandler.handleRequest(request, context);
 
         assertThat(responseEvent.getStatusCode()).isEqualTo(404);
         assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
@@ -113,7 +113,7 @@ public class SearchPatientDetailsInlineTest {
                 .addQueryParameter("unrecognised-subject-identifier-system|9000000009")
                 .build();
 
-        var responseEvent = handler.handleRequest(request, context);
+        var responseEvent = searchPatientDetailsHandler.handleRequest(request, context);
 
         verify(amazonSqsClient, never()).sendMessage(any());
         assertThat(responseEvent.getStatusCode()).isEqualTo(400);
@@ -128,7 +128,7 @@ public class SearchPatientDetailsInlineTest {
                 .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|")
                 .build();
 
-        var responseEvent = handler.handleRequest(request, context);
+        var responseEvent = searchPatientDetailsHandler.handleRequest(request, context);
 
         verify(amazonSqsClient, never()).sendMessage(any());
         assertThat(responseEvent.getStatusCode()).isEqualTo(400);
@@ -141,7 +141,7 @@ public class SearchPatientDetailsInlineTest {
     void returnsErrorResponseWhenSearchParametersAreMissing() throws IOException {
         var parameterlessRequest = requestBuilder.build();
 
-        var responseEvent = handler.handleRequest(parameterlessRequest, context);
+        var responseEvent = searchPatientDetailsHandler.handleRequest(parameterlessRequest, context);
 
         verify(amazonSqsClient, never()).sendMessage(any());
         assertThat(responseEvent.getStatusCode()).isEqualTo(400);
@@ -151,7 +151,7 @@ public class SearchPatientDetailsInlineTest {
     }
 
     @Test
-    void sendsAuditMessageToSqs() {
+    void sendsAuditMessageToSqsWhenCallingPds() {
         var request = requestBuilder
                 .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|9000000009")
                 .build();
@@ -162,7 +162,7 @@ public class SearchPatientDetailsInlineTest {
         expectedMessageBody.put("timestamp", now.toString());
 
         environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
-        handler.handleRequest(request, context);
+        searchPatientDetailsHandler.handleRequest(request, context);
 
         verify(amazonSqsClient).sendMessage(messageRequestCaptor.capture());
         var messageBody = messageRequestCaptor.getValue().getMessageBody();
@@ -180,7 +180,7 @@ public class SearchPatientDetailsInlineTest {
     public static class RequestEventBuilder {
         private final HashMap<String, String> parameters = new HashMap<>();
 
-        private RequestEventBuilder addQueryParameter(String value) {
+        RequestEventBuilder addQueryParameter(String value) {
             parameters.put("subject:identifier", value);
             return this;
         }

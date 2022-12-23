@@ -12,18 +12,24 @@ import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
-@SuppressWarnings("unused")
 public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Void> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentUploadedEventHandler.class);
 
-    private final DocumentReferenceService documentReferenceService = new DocumentReferenceService(
-            new DocumentMetadataStore(),
-            new SplunkPublisher());
+    private final DocumentReferenceService documentReferenceService;
+
+    public DocumentUploadedEventHandler() {
+        this(new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher()));
+    }
+
+    public DocumentUploadedEventHandler(DocumentReferenceService documentReferenceService) {
+        this.documentReferenceService = documentReferenceService;
+    }
 
     @Override
-    public Void handleRequest(S3Event event, Context context) {
+    public Void handleRequest(S3Event s3Event, Context context) {
         Tracer.setMDCContext(context);
-        var records = event.getRecords();
+
+        var records = s3Event.getRecords();
         LOGGER.info("Marking {} document(s) as uploaded", records.size());
 
         try {
@@ -35,9 +41,10 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
 
                 documentReferenceService.markDocumentUploaded(location);
             }
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+        } catch (JsonProcessingException jsonProcessingException) {
+            jsonProcessingException.printStackTrace();
         }
+
         return null;
     }
 }
