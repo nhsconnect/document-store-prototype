@@ -17,6 +17,8 @@ import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.entity.DocumentZipTrace;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
+import uk.nhs.digital.docstore.publishers.SplunkPublisher;
+import uk.nhs.digital.docstore.services.DocumentManifestService;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 import uk.nhs.digital.docstore.utils.ZipService;
@@ -37,7 +39,8 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
     private final DocumentMetadataStore metadataStore;
     private final DocumentZipTraceStore zipTraceStore;
     private final DocumentStore documentStore;
-    private final DocumentMetadataSearchService searchService;
+    private final DocumentMetadataSearchService metadataSearchService;
+    private final DocumentManifestService documentManifestService;
     private final ZipService zipService;
     private final String dbTimeToLive;
 
@@ -50,6 +53,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
                 new DocumentMetadataStore(),
                 new DocumentZipTraceStore(),
                 new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME")),
+                new DocumentManifestService(new SplunkPublisher()),
                 System.getenv("DOCUMENT_ZIP_TRACE_TTL_IN_DAYS")
         );
     }
@@ -58,6 +62,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
                                                     DocumentMetadataStore metadataStore,
                                                     DocumentZipTraceStore zipTraceStore,
                                                     DocumentStore documentStore,
+                                                    DocumentManifestService documentManifestService,
                                                     String dbTimeToLive) {
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
@@ -65,8 +70,9 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
         this.metadataStore = metadataStore;
         this.zipTraceStore = zipTraceStore;
         this.documentStore = documentStore;
+        this.documentManifestService = documentManifestService;
         this.dbTimeToLive = dbTimeToLive;
-        searchService = new DocumentMetadataSearchService(metadataStore);
+        metadataSearchService = new DocumentMetadataSearchService(metadataStore);
         zipService = new ZipService(documentStore);
     }
 
@@ -78,7 +84,8 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
         try {
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
 
-            var documentMetadataList = searchService.findMetadataByNhsNumber(nhsNumber, requestEvent.getHeaders());
+            var documentMetadataList = metadataSearchService.findMetadataByNhsNumber(nhsNumber,
+                    requestEvent.getHeaders());
 
             var zipInputStream = zipService.zipDocuments(documentMetadataList);
 
@@ -87,11 +94,15 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
 
             documentStore.addDocument(documentPath, zipInputStream);
 
-            var descriptor = new DocumentStore.DocumentDescriptor(System.getenv("DOCUMENT_STORE_BUCKET_NAME"), documentPath);
+            var descriptor = new DocumentStore.DocumentDescriptor(System.getenv("DOCUMENT_STORE_BUCKET_NAME"),
+                    documentPath);
 
             zipTraceStore.save(getDocumentZipTrace(descriptor.toLocation()));
 
             var preSignedUrl = documentStore.generatePreSignedUrlForZip(descriptor, fileName);
+
+            documentManifestService.audit(nhsNumber, documentMetadataList);
+
             var body = getJsonBody(preSignedUrl.toString());
 
             return apiConfig.getApiGatewayResponse(200, body, "GET", null);
