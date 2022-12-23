@@ -38,11 +38,13 @@ public class DocumentReferenceService {
 
     public void markDocumentUploaded(String location) throws JsonProcessingException {
         var metadata = metadataStore.getByLocation(location);
-        metadata.setDocumentUploaded(true);
-        metadata.setIndexed(now.toString());
+        if (metadata != null){
+            metadata.setDocumentUploaded(true);
+            metadata.setIndexed(now.toString());
 
-        LOGGER.debug("Updating DocumentReference {} to uploaded", metadata.getId());
-        metadataStore.save(metadata);
-        sensitiveIndex.publish(new SuccessfulDocumentUploadAuditMessage(FileMetadata.fromDocumentMetadata(metadata)));
+            LOGGER.debug("Updating DocumentReference {} to uploaded", metadata.getId());
+            metadataStore.save(metadata);
+            sensitiveIndex.publish(new SuccessfulDocumentUploadAuditMessage(FileMetadata.fromDocumentMetadata(metadata)));
+        }
     }
 }

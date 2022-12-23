@@ -32,7 +32,7 @@ public class DocumentMetadataStore extends DynamoDbConnection {
                         .withExpressionAttributeNames(Map.of("#loc", "Location"))
                         .withExpressionAttributeValues(Map.of(":location", new AttributeValue(location)))
                         .withConsistentRead(false));
-        return items.get(0);
+        return items.size() > 0 ? items.get(0) : null;
     }
 
     public List<DocumentMetadata> findByNhsNumber(String nhsNumber) {
