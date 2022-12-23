@@ -2,11 +2,11 @@ package uk.nhs.digital.docstore.auditmessages;
 
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 
-public class CreateDocumentMetadataAuditMessage extends BaseAuditMessage {
+public class CreateDocumentMetadataAndUploadAuditMessage extends BaseAuditMessage {
     private final String nhsNumber;
     private final FileMetadata fileMetadata;
 
-    public CreateDocumentMetadataAuditMessage(DocumentMetadata documentMetadata) {
+    public CreateDocumentMetadataAndUploadAuditMessage(DocumentMetadata documentMetadata) {
         this.nhsNumber = documentMetadata.getNhsNumber();
         this.fileMetadata = FileMetadata.fromDocumentMetadata(documentMetadata);
     }

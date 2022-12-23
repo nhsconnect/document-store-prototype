@@ -8,9 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAuditMessage;
-import uk.nhs.digital.docstore.auditmessages.FileMetadata;
-import uk.nhs.digital.docstore.auditmessages.SuccessfulDocumentUploadAuditMessage;
+import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAndUploadAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.publishers.AuditPublisher;
@@ -20,8 +18,8 @@ import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DocumentReferenceServiceTest {
@@ -31,9 +29,7 @@ public class DocumentReferenceServiceTest {
     private DocumentMetadataStore documentMetadataStore;
 
     @Captor
-    private ArgumentCaptor<CreateDocumentMetadataAuditMessage> createDocumentMetadataAuditMessageCaptor;
-    @Captor
-    private ArgumentCaptor<SuccessfulDocumentUploadAuditMessage> successfulDocumentUploadAuditMessageCaptor;
+    private ArgumentCaptor<CreateDocumentMetadataAndUploadAuditMessage> auditMessageCaptor;
 
     @Test
     public void savesDocumentMetadataWithAuditing() throws JsonProcessingException {
@@ -44,14 +40,14 @@ public class DocumentReferenceServiceTest {
         documentMetadata.setContentType("pdf");
         documentMetadata.setCreated(DateTimeType.now().asStringValue());
         var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher);
-        var expectedSensitiveAuditMessage = new CreateDocumentMetadataAuditMessage(documentMetadata);
+        var expectedSensitiveAuditMessage = new CreateDocumentMetadataAndUploadAuditMessage(documentMetadata);
 
         when(documentMetadataStore.save(documentMetadata)).thenReturn(documentMetadata);
         var actualDocumentMetadata = documentReferenceService.save(documentMetadata);
 
         verify(documentMetadataStore).save(documentMetadata);
-        verify(auditPublisher).publish(createDocumentMetadataAuditMessageCaptor.capture());
-        var actualSensitiveAuditMessage = createDocumentMetadataAuditMessageCaptor.getValue();
+        verify(auditPublisher).publish(auditMessageCaptor.capture());
+        var actualSensitiveAuditMessage = auditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
                 .usingRecursiveComparison()
                 .ignoringFields("timestamp")
@@ -70,14 +66,14 @@ public class DocumentReferenceServiceTest {
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setIndexed(now.toString());
-        var expectedSensitiveAuditMessage = new SuccessfulDocumentUploadAuditMessage(FileMetadata.fromDocumentMetadata(documentMetadata));
+        var expectedSensitiveAuditMessage =new CreateDocumentMetadataAndUploadAuditMessage(documentMetadata);
         var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, now);
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(documentMetadata);
         documentReferenceService.markDocumentUploaded(location);
 
-        verify(auditPublisher).publish(successfulDocumentUploadAuditMessageCaptor.capture());
-        var actualSensitiveAuditMessage = successfulDocumentUploadAuditMessageCaptor.getValue();
+        verify(auditPublisher).publish(auditMessageCaptor.capture());
+        var actualSensitiveAuditMessage = auditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
                 .usingRecursiveComparison()
                 .ignoringFields("timestamp")
@@ -86,5 +82,18 @@ public class DocumentReferenceServiceTest {
                 .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
         verify(documentMetadataStore).save(documentMetadata);
         verify(documentMetadataStore).getByLocation(location);
+    }
+
+    @Test
+    public void doesNotMarkDocumentAsUploadedWhenMetadataIsNull() throws JsonProcessingException {
+        var location = "test.url";
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, Instant.now());
+
+        when(documentMetadataStore.getByLocation(location)).thenReturn(null);
+        documentReferenceService.markDocumentUploaded(location);
+
+        verify(documentMetadataStore).getByLocation(location);
+        verify(auditPublisher, times(0)).publish(any());
+        verify(documentMetadataStore, times(0)).save(any());
     }
 }

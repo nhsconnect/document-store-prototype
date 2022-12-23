@@ -77,11 +77,13 @@ public class DocumentUploadedEventInlineTest {
         var id = "some-id";
         var fileName = "some-file-name";
         var fileType = "some-file-type";
+        var nhsNumber = "1234567890";
         expectedFileMetadata.put("id", id);
         expectedFileMetadata.put("fileName", fileName);
         expectedFileMetadata.put("fileType", fileType);
         var now = Instant.now();
         var expectedMessageBody = new JSONObject();
+        expectedMessageBody.put("nhsNumber", nhsNumber);
         expectedMessageBody.put("fileMetadata", expectedFileMetadata);
         expectedMessageBody.put("timestamp", now.toString());
 
@@ -90,7 +92,7 @@ public class DocumentUploadedEventInlineTest {
         when(s3EventNotificationRecord.getS3()).thenReturn(s3Entity);
         when(s3Entity.getBucket()).thenReturn(s3BucketEntity);
         when(s3Entity.getObject()).thenReturn(s3ObjectEntity);
-        when(documentMetadataStore.getByLocation(any())).thenReturn(createMetadata(id, fileName, fileType));
+        when(documentMetadataStore.getByLocation(any())).thenReturn(createMetadata(id, nhsNumber, fileName, fileType));
         documentUploadedEventHandler.handleRequest(s3Event, context);
 
         verify(amazonSqsClient).sendMessage(messageRequestCaptor.capture());
@@ -108,9 +110,10 @@ public class DocumentUploadedEventInlineTest {
         verify(amazonSqsClient, never()).sendMessage(any());
     }
 
-    private DocumentMetadata createMetadata(String id, String fileName, String fileType) {
+    private DocumentMetadata createMetadata(String id, String nhsNumber, String fileName, String fileType) {
         var metadata = new DocumentMetadata();
         metadata.setId(id);
+        metadata.setNhsNumber(nhsNumber);
         metadata.setDescription(fileName);
         metadata.setContentType(fileType);
         return metadata;
