@@ -15,6 +15,10 @@ test-app: ## Run BE unit tests (no logs)
 test-app-with-logs: ## Run BE unit tests (with logs)
 	./gradlew test --rerun-tasks --info
 
+.PHONY: build-and-deploy-to-local-stack
+build-and-deploy-to-local-stack: ## Build and deploy to LocalStack
+	./tasks build-api-jars && ./tasks deploy-to-localstack
+
 .PHONY: help
 help: ## Show help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'
