@@ -62,7 +62,7 @@ resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
           "dynamodb:Scan",
         ],
         "Resource" : [
-          "${aws_dynamodb_table.doc_ref_store.arn}/index/LocationsIndex"
+          aws_dynamodb_table.doc_ref_store.arn
         ]
       },
       {
