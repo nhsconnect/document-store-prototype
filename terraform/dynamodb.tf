@@ -59,11 +59,10 @@ resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
       {
         "Effect" : "Allow",
         "Action" : [
-          "dynamodb:Query",
+          "dynamodb:Scan",
         ],
         "Resource" : [
-          "${aws_dynamodb_table.doc_ref_store.arn}/index/LocationsIndex",
-          "${aws_dynamodb_table.doc_zip_trace_store.arn}/index/LocationsIndex",
+          "${aws_dynamodb_table.doc_ref_store.arn}/index/LocationsIndex"
         ]
       },
       {
@@ -72,8 +71,7 @@ resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
           "dynamodb:Query",
         ],
         "Resource" : [
-          "${aws_dynamodb_table.doc_ref_store.arn}/index/NhsNumberIndex",
-          "${aws_dynamodb_table.doc_zip_trace_store.arn}/index/NhsNumberIndex",
+          "${aws_dynamodb_table.doc_ref_store.arn}/index/NhsNumberIndex"
         ]
       }
     ]
