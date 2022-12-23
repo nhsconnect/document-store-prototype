@@ -46,6 +46,8 @@ describe("upload and download", () => {
     cy.url().should("eq", baseUrl + "/upload/submit");
     cy.get("input[type=file]").selectFile(uploadedFilePathNames);
     cy.findByRole("button", { name: "Upload" }).click();
+    cy.findByRole("table", { name: "Successfully uploaded documents" })
+      .within(() => cy.findAllByRole("row").should("have.length", 3));
     cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
     cy.findByRole("button", { name: "Finish" }).click();
 
