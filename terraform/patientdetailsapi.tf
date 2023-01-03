@@ -97,6 +97,10 @@ data "aws_ssm_parameter" "nhs_api_jwks" {
   count = var.cloud_only_service_instances
 }
 
+output "nhs_api_public_key" {
+  value = data.aws_ssm_parameter.nhs_api_jwks[0].value
+}
+
 resource "aws_api_gateway_integration_response" "jwks_integration_response" {
   rest_api_id        = aws_api_gateway_rest_api.lambda_api.id
   resource_id        = aws_api_gateway_resource.json_web_key_set.id
@@ -107,7 +111,7 @@ resource "aws_api_gateway_integration_response" "jwks_integration_response" {
     "application/json" = <<EOF
 {
    "statusCode" : 200,
-   "message" : ${var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_jwks[0].value : "{\"keys\":[]}"}
+   "message" : "{\"keys\":[]}"
 }
 EOF
   }
