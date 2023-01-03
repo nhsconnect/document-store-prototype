@@ -82,6 +82,13 @@ resource "aws_api_gateway_integration" "jwks_integration" {
   resource_id       = aws_api_gateway_resource.json_web_key_set.id
   http_method       = aws_api_gateway_method.get_jwks.http_method
   type              = "MOCK"
+  request_templates = {
+    "application/json" = <<EOF
+{
+   "statusCode" : 200
+}
+EOF
+  }
   depends_on        = [aws_api_gateway_method.get_jwks]
 }
 
