@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore.auditmessages;
 
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 
+@SuppressWarnings("unused")
 public class CreateDocumentMetadataAndUploadAuditMessage extends BaseAuditMessage {
     private final String nhsNumber;
     private final FileMetadata fileMetadata;

@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.auditmessages;
 
+@SuppressWarnings("unused")
 public class SearchPatientDetailsAuditMessage extends BaseAuditMessage {
     private final String nhsNumber;
     private final int pdsResponseStatus;

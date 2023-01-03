@@ -28,6 +28,7 @@ import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
+@SuppressWarnings("unused")
 public class CreateDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";

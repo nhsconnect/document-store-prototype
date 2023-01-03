@@ -18,6 +18,7 @@ import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
 

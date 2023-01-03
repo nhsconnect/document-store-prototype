@@ -12,6 +12,7 @@ import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
+@SuppressWarnings("unused")
 public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Void> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentUploadedEventHandler.class);
 
