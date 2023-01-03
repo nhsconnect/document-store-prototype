@@ -70,11 +70,11 @@ resource "aws_api_gateway_method" "get_jwks" {
 }
 
 resource "aws_api_gateway_method_response" "get_jwks_response" {
-  rest_api_id     = aws_api_gateway_rest_api.lambda_api.id
-  resource_id     = aws_api_gateway_resource.json_web_key_set.id
-  http_method     = aws_api_gateway_method.get_jwks.http_method
-  status_code     = "200"
-  depends_on = [aws_api_gateway_method.get_jwks]
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_resource.json_web_key_set.id
+  http_method = aws_api_gateway_method.get_jwks.http_method
+  status_code = "200"
+  depends_on  = [aws_api_gateway_method.get_jwks]
 }
 
 resource "aws_api_gateway_integration" "jwks_integration" {
@@ -89,21 +89,26 @@ resource "aws_api_gateway_integration" "jwks_integration" {
 }
 EOF
   }
-  depends_on        = [aws_api_gateway_method.get_jwks]
+  depends_on = [aws_api_gateway_method.get_jwks]
 }
 
 data "aws_ssm_parameter" "nhs_api_jwks" {
-  name = "/prs/${var.environment}/user-input/pds-fhir-public-key"
+  name  = "/prs/${var.environment}/user-input/pds-fhir-public-key"
   count = var.cloud_only_service_instances
 }
 
 resource "aws_api_gateway_integration_response" "jwks_integration_response" {
-  rest_api_id       = aws_api_gateway_rest_api.lambda_api.id
-  resource_id       = aws_api_gateway_resource.json_web_key_set.id
-  http_method       = aws_api_gateway_method.get_jwks.http_method
-  status_code         = aws_api_gateway_method_response.get_jwks_response.status_code
-  depends_on = [aws_api_gateway_method_response.get_jwks_response]
+  rest_api_id        = aws_api_gateway_rest_api.lambda_api.id
+  resource_id        = aws_api_gateway_resource.json_web_key_set.id
+  http_method        = aws_api_gateway_method.get_jwks.http_method
+  status_code        = aws_api_gateway_method_response.get_jwks_response.status_code
+  depends_on         = [aws_api_gateway_method_response.get_jwks_response]
   response_templates = {
-    "application/json" = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_jwks[0].value : "{\"keys\":[]}"
+    "application/json" = <<EOF
+{
+   "statusCode" : 200,
+   "message" : ${var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_jwks[0].value : "{\"keys\":[]}"}
+}
+EOF
   }
 }
