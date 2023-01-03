@@ -32,8 +32,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SystemStubsExtension.class)
@@ -156,12 +155,15 @@ public class SearchPatientDetailsInlineTest {
                 .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|9000000009")
                 .build();
         var now = Instant.now();
+        var correlationId = "some-correlation-id";
         var expectedMessageBody = new JSONObject();
         expectedMessageBody.put("nhsNumber", "9000000009");
         expectedMessageBody.put("pdsResponseStatus", 200);
         expectedMessageBody.put("timestamp", now.toString());
+        expectedMessageBody.put("correlationId", correlationId);
 
         environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
+        when(context.getAwsRequestId()).thenReturn(correlationId);
         searchPatientDetailsHandler.handleRequest(request, context);
 
         verify(amazonSqsClient).sendMessage(messageRequestCaptor.capture());

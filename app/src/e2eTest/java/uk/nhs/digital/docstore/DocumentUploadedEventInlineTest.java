@@ -78,6 +78,7 @@ public class DocumentUploadedEventInlineTest {
         var fileName = "some-file-name";
         var fileType = "some-file-type";
         var nhsNumber = "1234567890";
+        var correlationId = "some-correlation-id";
         expectedFileMetadata.put("id", id);
         expectedFileMetadata.put("fileName", fileName);
         expectedFileMetadata.put("fileType", fileType);
@@ -86,8 +87,10 @@ public class DocumentUploadedEventInlineTest {
         expectedMessageBody.put("nhsNumber", nhsNumber);
         expectedMessageBody.put("fileMetadata", expectedFileMetadata);
         expectedMessageBody.put("timestamp", now.toString());
+        expectedMessageBody.put("correlationId", correlationId);
 
         environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
+        when(context.getAwsRequestId()).thenReturn(correlationId);
         when(s3Event.getRecords()).thenReturn(List.of(s3EventNotificationRecord));
         when(s3EventNotificationRecord.getS3()).thenReturn(s3Entity);
         when(s3Entity.getBucket()).thenReturn(s3BucketEntity);

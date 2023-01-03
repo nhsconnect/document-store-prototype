@@ -101,6 +101,7 @@ public class CreateDocumentReferenceInlineTest {
         var requestContent = getContentFromResource("create/create-document-reference-request.json");
         var request = requestBuilder.addBody(requestContent).build();
         var now = Instant.now();
+        var correlationId = "some-correlation-id";
         var fileMetadata = new JSONObject();
         fileMetadata.put("id","123");
         fileMetadata.put("fileName","uploaded document");
@@ -109,8 +110,10 @@ public class CreateDocumentReferenceInlineTest {
         expectedMessageBody.put("nhsNumber", "34567");
         expectedMessageBody.put("fileMetadata", fileMetadata);
         expectedMessageBody.put("timestamp", now.toString());
+        expectedMessageBody.put("correlationId", correlationId);
 
         environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
+        when(context.getAwsRequestId()).thenReturn(correlationId);
         when(s3Client.generatePresignedUrl(any())).thenReturn(new URL("http://presigned-url"));
         handler.handleRequest(request, context);
 

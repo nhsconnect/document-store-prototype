@@ -56,16 +56,18 @@ public class CreateDocumentManifestInlineTest {
     @Captor
     ArgumentCaptor<SendMessageRequest> sendMessageRequestCaptor;
 
-    private CreateDocumentManifestByNhsNumberHandler handler;
+    private CreateDocumentManifestByNhsNumberHandler createDocumentManifestByNhsNumberHandler;
 
     @BeforeEach
     public void setUp() {
-        handler = new CreateDocumentManifestByNhsNumberHandler(new StubbedApiConfig("http://ui-url"),
+        createDocumentManifestByNhsNumberHandler = new CreateDocumentManifestByNhsNumberHandler(
+                new StubbedApiConfig("http://ui-url"),
                 metadataStore,
                 new DocumentZipTraceStore(dynamoDbMapper),
                 new DocumentStore(s3Client, "bucket-name"),
                 new DocumentManifestService(new SplunkPublisher(sqsClient)),
-                "1");
+                "1"
+        );
     }
 
     @Test
@@ -79,7 +81,7 @@ public class CreateDocumentManifestInlineTest {
         when(s3Client.getObject(anyString(), anyString())).thenReturn(new S3Object());
         when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
         doNothing().when(dynamoDbMapper).save(any());
-        var responseEvent = handler.handleRequest(requestEvent, context);
+        var responseEvent = createDocumentManifestByNhsNumberHandler.handleRequest(requestEvent, context);
 
         var responseUrl = JsonPath.<String>read(responseEvent.getBody(), "$.result.url");
         assertThat(responseEvent.getStatusCode()).isEqualTo(200);
@@ -92,6 +94,7 @@ public class CreateDocumentManifestInlineTest {
         var nhsNumber = "9000000009";
         var presignedUrl = "http://presigned-url";
         var now = Instant.now();
+        var correlationId = "some-correlation-id";
         var fileMetadata = new JSONObject();
         fileMetadata.put("id", "123");
         fileMetadata.put("fileName", "some document");
@@ -100,14 +103,16 @@ public class CreateDocumentManifestInlineTest {
         expectedMessageBody.put("nhsNumber", nhsNumber);
         expectedMessageBody.put("fileMetadataList", List.of(fileMetadata));
         expectedMessageBody.put("timestamp", now.toString());
+        expectedMessageBody.put("correlationId", correlationId);
         var requestEvent = createRequestEvent(nhsNumber);
         var metadataList = List.of(createMetadata("some document"));
 
+        when(context.getAwsRequestId()).thenReturn(correlationId);
         when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
         when(s3Client.getObject(anyString(), anyString())).thenReturn(new S3Object());
         when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
         doNothing().when(dynamoDbMapper).save(any());
-        handler.handleRequest(requestEvent, context);
+        createDocumentManifestByNhsNumberHandler.handleRequest(requestEvent, context);
 
         verify(sqsClient).sendMessage(sendMessageRequestCaptor.capture());
         var messageBody = sendMessageRequestCaptor.getValue().getMessageBody();
