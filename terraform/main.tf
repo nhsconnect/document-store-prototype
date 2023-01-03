@@ -92,6 +92,9 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_resource.doc_ref_collection_resource,
       aws_api_gateway_resource.patient_details_collection_resource,
       aws_api_gateway_resource.document_manifest_resource,
+      aws_api_gateway_resource.json_web_key_set,
+      aws_api_gateway_method.get_jwks,
+      aws_api_gateway_integration.jwks_integration,
       aws_api_gateway_authorizer.cognito_authorizer,
     ]))
   }

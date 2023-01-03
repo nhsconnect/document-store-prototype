@@ -97,7 +97,7 @@ data "aws_ssm_parameter" "nhs_api_jwks" {
   count = var.cloud_only_service_instances
 }
 
-resource "aws_api_gateway_integration_response" "doc_ref_collection_preflight_integration_response" {
+resource "aws_api_gateway_integration_response" "jwks_integration_response" {
   rest_api_id       = aws_api_gateway_rest_api.lambda_api.id
   resource_id       = aws_api_gateway_resource.json_web_key_set.id
   http_method       = aws_api_gateway_method.get_jwks.http_method
