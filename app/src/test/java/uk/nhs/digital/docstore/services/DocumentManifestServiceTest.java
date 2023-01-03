@@ -31,7 +31,7 @@ class DocumentManifestServiceTest {
     private DocumentManifestService documentManifestService;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         documentManifestService = new DocumentManifestService(publisher);
     }
 
@@ -57,5 +57,4 @@ class DocumentManifestServiceTest {
         assertThat(actualSensitiveAuditMessage.getTimestamp())
                 .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
     }
-
 }
