@@ -157,3 +157,6 @@ app/bin
 
 # Temporary dojo docker compose files
 *.dojo
+
+# NHS API auth key files
+PDS_FHIR_AUTH_KEY.*
