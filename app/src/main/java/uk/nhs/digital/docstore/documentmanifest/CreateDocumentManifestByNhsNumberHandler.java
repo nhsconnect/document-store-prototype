@@ -8,8 +8,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.config.ApiConfig;
@@ -26,17 +24,10 @@ import uk.nhs.digital.docstore.utils.ZipService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-
-@SuppressWarnings("unused")
 public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private static final Logger logger = LoggerFactory.getLogger(CreateDocumentManifestByNhsNumberHandler.class);
-    private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
-    private static final String SUBJECT_ID_CODING_SYSTEM = "https://fhir.nhs.uk/Id/nhs-number";
-    private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDocumentManifestByNhsNumberHandler.class);
 
-    private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
-    private final DocumentMetadataStore metadataStore;
     private final DocumentZipTraceStore zipTraceStore;
     private final DocumentStore documentStore;
     private final DocumentMetadataSearchService metadataSearchService;
@@ -64,50 +55,43 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
                                                     DocumentStore documentStore,
                                                     DocumentManifestService documentManifestService,
                                                     String dbTimeToLive) {
-        this.fhirContext = FhirContext.forR4();
-        this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
+        FhirContext fhirContext = FhirContext.forR4();
+        fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
+
         this.apiConfig = apiConfig;
-        this.metadataStore = metadataStore;
         this.zipTraceStore = zipTraceStore;
         this.documentStore = documentStore;
         this.documentManifestService = documentManifestService;
         this.dbTimeToLive = dbTimeToLive;
+
         metadataSearchService = new DocumentMetadataSearchService(metadataStore);
         zipService = new ZipService(documentStore);
     }
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         Tracer.setMDCContext(context);
-
-        logger.debug("API Gateway event received - processing starts");
+        LOGGER.debug("API Gateway event received - processing starts");
 
         try {
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
-
-            var documentMetadataList = metadataSearchService.findMetadataByNhsNumber(nhsNumber,
-                    requestEvent.getHeaders());
-
-            var zipInputStream = zipService.zipDocuments(documentMetadataList);
-
+            var documentMetadataList = metadataSearchService.findMetadataByNhsNumber(
+                    nhsNumber,
+                    requestEvent.getHeaders()
+            );
             var documentPath = "tmp/" + CommonUtils.generateRandomUUIDString();
             var fileName = "patient-record-" + nhsNumber + ".zip";
 
+            var zipInputStream = zipService.zipDocuments(documentMetadataList);
             documentStore.addDocument(documentPath, zipInputStream);
-
-            var descriptor = new DocumentStore.DocumentDescriptor(System.getenv("DOCUMENT_STORE_BUCKET_NAME"),
-                    documentPath);
-
+            var descriptor = new DocumentStore.DocumentDescriptor(System.getenv("DOCUMENT_STORE_BUCKET_NAME"), documentPath);
             zipTraceStore.save(getDocumentZipTrace(descriptor.toLocation()));
-
             var preSignedUrl = documentStore.generatePreSignedUrlForZip(descriptor, fileName);
-
             documentManifestService.audit(nhsNumber, documentMetadataList);
+            var responseBody = getJsonBody(preSignedUrl.toString());
 
-            var body = getJsonBody(preSignedUrl.toString());
-
-            return apiConfig.getApiGatewayResponse(200, body, "GET", null);
-        } catch (Exception e) {
-            return errorResponseGenerator.errorResponse(e);
+            return apiConfig.getApiGatewayResponse(200, responseBody, "GET", null);
+        } catch (Exception exception) {
+            return errorResponseGenerator.errorResponse(exception);
         } catch (OutOfMemoryError outOfMemoryError) {
             return errorResponseGenerator.outOfMemoryResponse(outOfMemoryError);
         }
@@ -121,6 +105,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
         documentZipTrace.setCreatedAt(Instant.now().toString());
         documentZipTrace.setLocation(location);
         documentZipTrace.setExpiryDate(expDate.getEpochSecond());
+
         return documentZipTrace;
     }
 
