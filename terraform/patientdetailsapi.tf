@@ -98,6 +98,7 @@ data "aws_ssm_parameter" "nhs_api_jwks" {
 }
 
 output "nhs_api_public_key" {
+  sensitive = true
   value = data.aws_ssm_parameter.nhs_api_jwks[0].value
 }
 
