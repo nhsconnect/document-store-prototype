@@ -1,7 +1,7 @@
 default: help
 
 .PHONY: pre-push
-pre-push: test-ui test-app ## Run all unit tests. Run this before pushing. Todo: Formatting & linting.
+pre-push: format-ui test-ui test-app ## Format UI files and run all unit tests. Todo: Formatting BE & linting.
 
 .PHONY: test-ui
 test-ui: ## Run FE unit tests
