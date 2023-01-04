@@ -73,24 +73,6 @@ resource "aws_api_gateway_rest_api" "lambda_api" {
   name = "DocStoreAPI"
 }
 
-resource "aws_api_gateway_rest_api_policy" "lambda_api_policy" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-
-  policy = jsonencode({
-    Version: "2012-10-17"
-    Statement: [
-      {
-        Effect: "Allow"
-        Principal: {
-          AWS: "*"
-        }
-        Action: "execute-api:Invoke"
-        Resource: aws_api_gateway_rest_api.lambda_api.execution_arn
-      }
-    ]
-  })
-}
-
 resource "aws_api_gateway_deployment" "api_deploy" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   stage_name  = var.api_gateway_stage
