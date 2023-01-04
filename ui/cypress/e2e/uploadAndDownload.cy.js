@@ -75,7 +75,7 @@ describe("upload and download", () => {
 
     cy.url().should("eq", baseUrl + "/search/results");
     cy.readFile(downloadedDocumentPath).should("not.exist");
-    cy.findByRole("button", { name: "Download All" }).click();
+    cy.findByRole("button", { name: "Download All Documents" }).click();
     cy.readFile(downloadedDocumentPath).should("exist");
     cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
     cy.findByRole("button", { name: "Log Out" }).click();
