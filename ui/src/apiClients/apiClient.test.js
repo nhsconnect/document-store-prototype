@@ -335,7 +335,7 @@ describe("test the deleteAllDocuments method", () => {
         const getMock = jest.fn(() => {
             return expectedResponse;
         });
-        const api = { get: getMock };
+        const api = { del: getMock };
         const apiClient = new ApiClient(api, user);
         const nhsNumber = "1234567890";
         const requestHeaders = {

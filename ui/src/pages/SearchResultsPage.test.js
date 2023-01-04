@@ -78,7 +78,9 @@ describe('<SearchResultsPage />', () => {
       expect(
         screen.getByText(searchResult.indexed.toLocaleString())
       ).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Download All" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Download All Documents" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Delete All Documents" })).toBeInTheDocument();
+
       expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
 
     });
@@ -127,7 +129,7 @@ describe('<SearchResultsPage />', () => {
       await waitFor(() => {
         expect(screen.getByText("No record found")).toBeInTheDocument();
       });
-      expect(screen.queryByRole("button", { name: "Download All" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Download All Documents" })).not.toBeInTheDocument();
     });
 
     it("displays a message when a document search fails", async () => {
@@ -158,10 +160,10 @@ describe('<SearchResultsPage />', () => {
         expect(screen.getByText("List of documents available to download")).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole("button", { name: "Download All" }));
+      userEvent.click(screen.getByRole("button", { name: "Download All Documents" }));
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: "Download All" })).not.toBeDisabled();
+        expect(screen.getByRole("button", { name: "Download All Documents" })).not.toBeDisabled();
       });
 
       expect(screen.queryByText("Failed to download, please retry.")).not.toBeInTheDocument();
@@ -176,7 +178,7 @@ describe('<SearchResultsPage />', () => {
       }));
 
       render(<SearchResultsPage />);
-      userEvent.click(await screen.findByRole('button', { name: 'Download All' }));
+      userEvent.click(await screen.findByRole('button', { name: 'Download All Documents' }));
 
       await waitFor(() => {
         expect(downloadFile).toHaveBeenCalledWith(preSignedUrl, `patient-record-${nhsNumber}`);
@@ -193,9 +195,9 @@ describe('<SearchResultsPage />', () => {
       await waitFor(() => {
         expect(screen.getByText("List of documents available to download")).toBeInTheDocument();
       });
-      userEvent.click(screen.getByRole("button", { name: "Download All" }));
+      userEvent.click(screen.getByRole("button", { name: "Download All Documents" }));
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: "Downloading..." })).toBeDisabled();
+        expect(screen.getByRole("button", { name: "Downloading All Documents..." })).toBeDisabled();
       })
     });
 
@@ -209,14 +211,48 @@ describe('<SearchResultsPage />', () => {
       render(<SearchResultsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: "Download All" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Download All Documents" })).toBeInTheDocument();
       });
-      userEvent.click(screen.getByRole("button", { name: "Download All" }));
+      userEvent.click(screen.getByRole("button", { name: "Download All Documents" }));
 
       await waitFor(() => {
         expect(screen.getByText("Failed to download, please retry.")).toBeInTheDocument();
       });
     });
+
+    it("should call api client deleteAllDocuments method when user clicks on Delete All button", async ()=>{
+      const searchResult = searchResultFactory.build();
+      useApi.mockImplementation(() => ({
+        findByNhsNumber: () => [searchResult],
+        deleteAllDocuments: () => "some-message"
+      }));
+
+      render(<SearchResultsPage />);
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: "Delete All Documents" })).toBeInTheDocument();
+      });
+      userEvent.click(screen.getByRole("button", {name:"Delete All Documents"}));
+
+      await waitFor(() =>{
+        expect(useApi().deleteAllDocuments()).toBe("some-message");
+      })
+    })
+    it("should disable the Delete All button when Deleting is in progress", async ()=>{
+      const searchResult = searchResultFactory.build();
+      useApi.mockImplementation(() => ({
+        findByNhsNumber: () => [searchResult],
+      }));
+      render(<SearchResultsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: "Delete All Documents" })).toBeInTheDocument();
+      });
+      userEvent.click(screen.getByRole("button", {name:"Delete All Documents"}));
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: "Delete All Documents" })).not.toBeDisabled();
+      });
+    })
+
   });
 
   describe("when there is NOT an NHS number", () => {

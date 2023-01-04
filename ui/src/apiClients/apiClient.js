@@ -144,7 +144,7 @@ class ApiClient {
   }
 
     async deleteAllDocuments(nhsNumber) {
-      const data = await this.api.delete("doc-store-api", "/DocumentReference", {
+      const data = await this.api.del("doc-store-api", "/DocumentReference", {
         headers: {
           Accept: "application/fhir+json",
           Authorization: `Bearer ${this.user.id_token}`,
@@ -153,7 +153,7 @@ class ApiClient {
           "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
         },
       });
-      console.log(data);
+      console.log("response",data)
       if(data.result?.message){
         return data.result.message;
       }
