@@ -7,6 +7,10 @@ pre-push: test-ui test-app ## Run all unit tests. Run this before pushing. Todo:
 test-ui: ## Run FE unit tests
 	cd ui && npm run test:nw
 
+.PHONY: format-ui
+format-ui: ## Format files within the UI package
+	cd ui && npm run format
+
 .PHONY: test-app
 test-app: ## Run BE unit tests (no logs)
 	./gradlew test --rerun-tasks
