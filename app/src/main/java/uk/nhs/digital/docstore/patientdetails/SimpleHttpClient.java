@@ -11,12 +11,13 @@ import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class SimpleHttpClient {
-    HttpResponse<String> get(String rootUri, String path) {
+    HttpResponse<String> get(String rootUri, String path, String accessToken) {
         String uri = rootUri + path;
         try {
             var confirmNHSNumberRequest = HttpRequest.newBuilder(URI.create(uri))
                     .GET()
                     .header("X-Request-ID", CommonUtils.generateRandomUUIDString())
+                    .header("Authorization", "Bearer " + accessToken)
                     .build();
             return newHttpClient().send(confirmNHSNumberRequest, HttpResponse.BodyHandlers.ofString(UTF_8));
         }

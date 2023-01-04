@@ -13,6 +13,7 @@ import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
+import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.publishers.AuditPublisher;
 import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
@@ -25,6 +26,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     private final ApiConfig apiConfig;
     private final PatientSearchConfig patientSearchConfig;
     private final AuditPublisher sensitiveIndex;
+    private final AuthService authService = new AuthService();
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {
@@ -49,7 +51,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var nhsNumber = parameterForm.getNhsNumber();
             var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
                     ? new FakePdsFhirService(sensitiveIndex)
-                    : new RealPdsFhirService(patientSearchConfig, sensitiveIndex);
+                    : new RealPdsFhirService(patientSearchConfig, sensitiveIndex, authService);
             var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
             LOGGER.debug("Generating response body");

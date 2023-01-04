@@ -12,6 +12,7 @@ import uk.nhs.digital.docstore.auditmessages.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
+import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
 import javax.net.ssl.SSLSession;
@@ -29,8 +30,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +40,8 @@ class RealPdsFhirServiceTest {
     private SimpleHttpClient httpClient;
     @Mock
     private SplunkPublisher splunkPublisher;
-
+    @Mock
+    private AuthService authService;
     @Captor
     private ArgumentCaptor<SearchPatientDetailsAuditMessage> sensitiveAuditMessageCaptor;
 
@@ -48,15 +49,17 @@ class RealPdsFhirServiceTest {
     void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = "9000000009";
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 200);
+        var accessToken = "token";
 
-        when(httpClient.get(any(), any()))
+        when(httpClient.get(any(), any(), eq(accessToken)))
                 .thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
+        when(authService.getAccessToken()).thenReturn(accessToken);
         pdsFhirClient.fetchPatientDetails(nhsNumber);
 
-        verify(httpClient).get(any(), contains(nhsNumber));
+        verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
         verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
@@ -72,14 +75,16 @@ class RealPdsFhirServiceTest {
     void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = "9000000000";
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 400);
+        var accessToken = "token";
 
-        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(400, null));
+        when(httpClient.get(any(), any(), eq(accessToken))).thenReturn(new StubPdsResponse(400, null));
+        when(authService.getAccessToken()).thenReturn(accessToken);
         assertThrows(InvalidResourceIdException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber));
 
-        verify(httpClient).get(any(), contains(nhsNumber));
+        verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
         verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
@@ -95,14 +100,17 @@ class RealPdsFhirServiceTest {
     void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = "9111231130";
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 404);
+        var accessToken = "token";
 
-        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(404, null));
+        when(httpClient.get(any(), any(), eq(accessToken))).thenReturn(new StubPdsResponse(404, null));
+        when(authService.getAccessToken()).thenReturn(accessToken);
+
         assertThrows(PatientNotFoundException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
 
-        verify(httpClient).get(any(), contains(nhsNumber));
+        verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
         verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
@@ -118,14 +126,16 @@ class RealPdsFhirServiceTest {
     void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher);
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = "9111231130";
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 500);
+        var accessToken = "token";
 
-        when(httpClient.get(any(), any())).thenReturn(new StubPdsResponse(500, null));
+        when(httpClient.get(any(), any(), eq(accessToken))).thenReturn(new StubPdsResponse(500, null));
+        when(authService.getAccessToken()).thenReturn(accessToken);
         assertThrows(RuntimeException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Got an error when requesting patient from PDS: 500");
 
-        verify(httpClient).get(any(), contains(nhsNumber));
+        verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
         verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)

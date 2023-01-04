@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.auditmessages.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
+import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
 import uk.nhs.digital.docstore.publishers.AuditPublisher;
 
@@ -15,22 +16,25 @@ public class RealPdsFhirService implements PdsFhirService {
     private final PatientSearchConfig patientSearchConfig;
     private final SimpleHttpClient httpClient;
     private final AuditPublisher sensitiveIndex;
+    private final AuthService authService;
 
-    public RealPdsFhirService(PatientSearchConfig patientSearchConfig, AuditPublisher auditPublisher) {
-        this(patientSearchConfig, new SimpleHttpClient(), auditPublisher);
+    public RealPdsFhirService(PatientSearchConfig patientSearchConfig, AuditPublisher auditPublisher, AuthService authService) {
+        this(patientSearchConfig, new SimpleHttpClient(), auditPublisher, authService);
     }
 
-    public RealPdsFhirService(PatientSearchConfig patientSearchConfig, SimpleHttpClient httpClient, AuditPublisher sensitiveIndex) {
+    public RealPdsFhirService(PatientSearchConfig patientSearchConfig, SimpleHttpClient httpClient, AuditPublisher sensitiveIndex, AuthService authService) {
         this.patientSearchConfig = patientSearchConfig;
         this.httpClient = httpClient;
         this.sensitiveIndex = sensitiveIndex;
+        this.authService = authService;
     }
 
     public Patient fetchPatientDetails(String nhsNumber) throws JsonProcessingException {
         var path = "Patient/" + nhsNumber;
 
+        var accessToken = authService.getAccessToken();
         LOGGER.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
-        var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path);
+        var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path, accessToken);
 
         sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, response.statusCode()));
 
