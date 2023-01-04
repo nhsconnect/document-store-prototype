@@ -165,7 +165,7 @@ function delete_cognito_user {
 }
 
 function create_json_for_nhs_api_public_key() {
-    echo $(get_ssm_parameter /prs/${ENVIRONMENT}/user-input/pds-fhir-public-key) > jwks.json
+    echo $(get_ssm_parameter /prs/${ENVIRONMENT}/user-input/pds-fhir-public-key) > ui/public/jwks.json
 }
 
 readonly command="$1"
@@ -177,6 +177,7 @@ install-ui-dependencies)
 configure-ui)
   get_terraform_output terraform_output.json
   create_ui_config_file terraform_output.json
+  create_json_for_nhs_api_public_key
   ;;
 test-ui)
   cd ui
@@ -187,7 +188,6 @@ build-ui)
   cd ui
   REACT_APP_ENV=${ENVIRONMENT} npm run build
   cd build
-  create_json_for_nhs_api_public_key
   tar -czf ../ui.tgz *
   ;;
 _build-api-jars)

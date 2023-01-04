@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: tasks
-  checksum: 1735d5c1da0831c0064d556c0346f08c81dc31c6eeb43035179547b341fa5cf5
+  checksum: 762b85764857a9841198be84feba0b47088afdc3821768452c8c4d8abe0d4a6d
 - filename: ui/cypress.env.json.example
   checksum: b87419cf6f1f509047b9eca7787ff69d7bea95c33d659bd62bbbd1191bd67d5a
 - filename: ui/cypress/e2e/uploadAndDownload.cy.js
