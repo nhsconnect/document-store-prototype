@@ -82,12 +82,27 @@ describe("upload and download", () => {
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.findByRole("button", { name: "Next" }).click();
 
+<<<<<<< HEAD
         cy.url().should("eq", baseUrl + "/search/results");
         cy.readFile(downloadedDocumentPath).should("not.exist");
         cy.findByRole("button", { name: "Download All Documents" }).click();
         cy.readFile(downloadedDocumentPath).should("exist");
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.findByRole("button", { name: "Log Out" }).click();
+=======
+    cy.url().should("eq", baseUrl + "/search/results");
+    cy.readFile(downloadedDocumentPath).should("not.exist");
+    cy.findByRole("button", { name: "Download All Documents" }).click();
+    cy.readFile(downloadedDocumentPath).should("exist");
+    cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+
+    cy.findByRole("button",{name:"Delete All Documents"}).click();
+    cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+    cy.url().should("eq", baseUrl + "/search/results/delete-documents-confirmation");
+
+
+    cy.findByRole("button", { name: "Log Out" }).click();
+>>>>>>> da7e860 ([PRMT-2805] Added DeleteDocumentsConfirmationPage to delete all documents attached to the patient NHS number)
 
         cy.url().should("eq", baseUrl + "/");
     });

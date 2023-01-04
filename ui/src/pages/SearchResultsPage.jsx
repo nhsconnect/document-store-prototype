@@ -68,8 +68,13 @@ const SearchResultsPage = () => {
     };
 
     const goToDeleteDocumentsConfirmationPage = () => {
+<<<<<<< HEAD
         navigate("/search/delete-documents-confirmation");
     };
+=======
+        navigate("/search/results/delete-documents-confirmation");
+    }
+>>>>>>> da7e860 ([PRMT-2805] Added DeleteDocumentsConfirmationPage to delete all documents attached to the patient NHS number)
 
     return (
         <>
@@ -109,7 +114,6 @@ const SearchResultsPage = () => {
                             </p>
                             <Button
                                 type="button"
-                                primary
                                 onClick={downloadAll}
                                 disabled={downloadState === states.PENDING}
                             >

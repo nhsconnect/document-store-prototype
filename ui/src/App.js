@@ -65,8 +65,8 @@ const AppRoutes = () => {
                     />
 
                     <Route
-                        path="/search/delete-documents-confirmation"
-                        element={<DeleteDocumentsConfirmationPage />}
+                        path="/search/results/delete-documents-confirmation"
+                        element={<DeleteDocumentsConfirmationPage  client={client}/>}
                     />
                 </Route>
 
