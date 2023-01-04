@@ -106,7 +106,8 @@ resource "aws_api_gateway_integration_response" "jwks_integration_response" {
   response_templates = {
     "application/json" = <<EOF
 {
-   "statusCode" : 200
+   "statusCode" : 200,
+   "message" : ${var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_jwks[0].value : "{\"keys\":[]}"}
 }
 EOF
   }
