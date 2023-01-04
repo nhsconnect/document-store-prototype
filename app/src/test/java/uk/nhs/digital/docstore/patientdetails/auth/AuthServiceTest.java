@@ -11,11 +11,15 @@ class AuthServiceTest {
     @Test
     void getAccessTokenFetchesAnAccessTokenFromTheNhsApiOAuthProvider() {
         var mockHttpClient = Mockito.mock(AuthServiceHttpClient.class);
+        var mockJwtBuilder = Mockito.mock(SignedJwtBuilder.class);
+
         var accessToken = new AccessToken("testtoken", "500", "bearer");
+        var signedJwt = "jwt";
 
-        when(mockHttpClient.fetchAccessToken()).thenReturn(accessToken);
+        when(mockJwtBuilder.build()).thenReturn(signedJwt);
+        when(mockHttpClient.fetchAccessToken(signedJwt)).thenReturn(accessToken);
 
-        AuthService authService = new AuthService(mockHttpClient);
+        AuthService authService = new AuthService(mockHttpClient, mockJwtBuilder);
         assertThat(authService.getAccessToken()).isEqualTo(accessToken.getAccessToken());
     }
 }
