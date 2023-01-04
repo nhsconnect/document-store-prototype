@@ -5,9 +5,6 @@ import BackButton from "../components/BackButton";
 import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
 
 const DeleteDocumentsConfirmationPage = () => {
-<<<<<<< HEAD
-    return <></>;
-=======
     const [nhsNumber] = useNhsNumberProviderContext();
 
     return (
@@ -39,7 +36,6 @@ const DeleteDocumentsConfirmationPage = () => {
             </Button>
         </>
     );
->>>>>>> da7e860 ([PRMT-2805] Added DeleteDocumentsConfirmationPage to delete all documents attached to the patient NHS number)
 };
 
 export default DeleteDocumentsConfirmationPage;
