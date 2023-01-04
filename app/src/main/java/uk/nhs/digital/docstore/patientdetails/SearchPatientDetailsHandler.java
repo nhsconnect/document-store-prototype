@@ -14,6 +14,7 @@ import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
+import uk.nhs.digital.docstore.patientdetails.auth.AuthServiceHttpClient;
 import uk.nhs.digital.docstore.publishers.AuditPublisher;
 import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
@@ -26,7 +27,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     private final ApiConfig apiConfig;
     private final PatientSearchConfig patientSearchConfig;
     private final AuditPublisher sensitiveIndex;
-    private final AuthService authService = new AuthService();
+    private final AuthService authService = new AuthService(new AuthServiceHttpClient());
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {
