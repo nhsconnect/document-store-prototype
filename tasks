@@ -164,6 +164,10 @@ function delete_cognito_user {
   fi
 }
 
+function create_json_for_nhs_api_public_key() {
+    echo $(get_ssm_parameter /prs/${ENVIRONMENT}/user-input/pds-fhir-public-key) > jwks.json
+}
+
 readonly command="$1"
 case "${command}" in
 install-ui-dependencies)
@@ -183,6 +187,7 @@ build-ui)
   cd ui
   REACT_APP_ENV=${ENVIRONMENT} npm run build
   cd build
+  create_json_for_nhs_api_public_key
   tar -czf ../ui.tgz *
   ;;
 _build-api-jars)
