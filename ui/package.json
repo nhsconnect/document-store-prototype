@@ -11,7 +11,8 @@
         "test:nw": "react-scripts test --watchAll=false",
         "test:e2e": "cypress run --browser chrome",
         "test:e2e:open": "cypress open --browser chrome",
-        "format": "prettier --write \"src/**/*.{js,jsx}\""
+        "format": "prettier --write \"src/**/*.{js,jsx}\"",
+        "lint": "eslint \"src/**/*.{js,jsx}\" --quiet"
     },
     "dependencies": {
         "@aws-amplify/ui-react": "^1.2.23",
@@ -34,12 +35,6 @@
         "react-scripts": "4.0.3",
         "web-vitals": "^1.1.2"
     },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
-    },
     "browserslist": {
         "production": [
             ">0.2%",
@@ -59,6 +54,9 @@
         "@testing-library/react-hooks": "^8.0.1",
         "@testing-library/user-event": "^12.8.3",
         "cypress-axe": "^1.1.0",
+        "eslint": "^8.31.0",
+        "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-react": "^7.31.11",
         "fishery": "^2.2.2",
         "prettier": "^2.8.1",
         "sass": "^1.54.7"

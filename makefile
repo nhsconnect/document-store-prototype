@@ -1,7 +1,7 @@
 default: help
 
 .PHONY: pre-push
-pre-push: format-ui test-ui test-app ## Format UI files and run all unit tests. Todo: Formatting BE & linting.
+pre-push: format-ui lint-ui test-ui test-app ## Format UI files and run all unit tests. Todo: Formatting BE & linting.
 
 .PHONY: test-ui
 test-ui: ## Run FE unit tests
@@ -10,6 +10,10 @@ test-ui: ## Run FE unit tests
 .PHONY: format-ui
 format-ui: ## Format files within the UI package
 	cd ui && npm run format
+
+.PHONY: lint-ui
+lint-ui: ## Format files within the UI package
+	cd ui && npm run lint
 
 .PHONY: test-app
 test-app: ## Run BE unit tests (no logs)
