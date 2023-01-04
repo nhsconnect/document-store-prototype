@@ -1,22 +1,21 @@
 import React from "react";
-import {Header} from "nhsuk-react-components";
+import { Header } from "nhsuk-react-components";
 import Authenticator from "../Authenticator/Authenticator";
 
-
 export const HeaderContainer = () => {
-  return (
-    <Header transactional>
-      <Header.Container>
-        <Header.Logo href="/"/>
-        <Header.ServiceName data-testid="header-service-name" href="/">
-          Document Store
-        </Header.ServiceName>
-        <Header.Content>
-          <Authenticator.LogOut />
-        </Header.Content>
-      </Header.Container>
-    </Header>
-  );
-}
+    return (
+        <Header transactional>
+            <Header.Container>
+                <Header.Logo href="/" />
+                <Header.ServiceName data-testid="header-service-name" href="/">
+                    Document Store
+                </Header.ServiceName>
+                <Header.Content>
+                    <Authenticator.LogOut />
+                </Header.Content>
+            </Header.Container>
+        </Header>
+    );
+};
 
 export default HeaderContainer;

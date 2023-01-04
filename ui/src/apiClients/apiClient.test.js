@@ -1,12 +1,12 @@
 import ApiClient from "./apiClient";
-import {documentUploadStates} from "../enums/documentUploads";
+import { documentUploadStates } from "../enums/documentUploads";
 import axios from "axios";
 
 jest.mock("axios");
 
 const token = "token";
 const user = {
-    id_token: token
+    id_token: token,
 };
 
 describe("test the findByNhsNumber method", () => {
@@ -70,17 +70,19 @@ describe("test the uploadDocument method", () => {
                 },
             ],
         };
-        const postMock = jest.fn(async (baseUrl, path, { onUploadProgress }) => {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    onUploadProgress()
-                }, 1)
+        const postMock = jest.fn(
+            async (baseUrl, path, { onUploadProgress }) => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        onUploadProgress();
+                    }, 1);
 
-                setTimeout(() => {
-                    resolve(metadataResponseBody)
-                }, 2)
-            })
-        });
+                    setTimeout(() => {
+                        resolve(metadataResponseBody);
+                    }, 2);
+                });
+            }
+        );
         const api = { post: postMock };
         const apiClient = new ApiClient(api, user);
         const fileName = "hello.txt";
@@ -116,24 +118,23 @@ describe("test the uploadDocument method", () => {
             created: "2021-07-11T16:57:30+01:00",
         };
 
-
-        axios.put = jest.fn((async (s3url, document, { onUploadProgress }) => {
+        axios.put = jest.fn(async (s3url, document, { onUploadProgress }) => {
             return new Promise((resolve) => {
                 setTimeout(() => {
-                    onUploadProgress({ total: 10, loaded: 5 })
-                }, 1)
+                    onUploadProgress({ total: 10, loaded: 5 });
+                }, 1);
 
                 setTimeout(() => {
-                    resolve()
-                }, 2)
-            })
-        }))
+                    resolve();
+                }, 2);
+            });
+        });
 
-        const onUploadStateChangeMock = jest.fn()
+        const onUploadStateChangeMock = jest.fn();
         await apiClient.uploadDocument(
             document,
             nhsNumber,
-            onUploadStateChangeMock,
+            onUploadStateChangeMock
         );
 
         expect(postMock).toHaveBeenCalledWith(
@@ -144,7 +145,7 @@ describe("test the uploadDocument method", () => {
                     Accept: "application/fhir+json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: requestBody
+                body: requestBody,
             })
         );
         expect(axios.put).toHaveBeenCalledWith(
@@ -152,15 +153,27 @@ describe("test the uploadDocument method", () => {
             document,
             expect.anything()
         );
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.WAITING, 0)
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.STORING_METADATA, 0)
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.UPLOADING, 50)
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.SUCCEEDED, 100)
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
+            documentUploadStates.WAITING,
+            0
+        );
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
+            documentUploadStates.STORING_METADATA,
+            0
+        );
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
+            documentUploadStates.UPLOADING,
+            50
+        );
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
+            documentUploadStates.SUCCEEDED,
+            100
+        );
     });
 
     test("reports the upload as failed if the store metadata request fails", async () => {
         const postMock = jest.fn(() => {
-            throw new Error("Request failed")
+            throw new Error("Request failed");
         });
 
         const api = { post: postMock };
@@ -171,17 +184,20 @@ describe("test the uploadDocument method", () => {
         });
         const nhsNumber = "0987654321";
 
-        const onUploadStateChangeMock = jest.fn()
+        const onUploadStateChangeMock = jest.fn();
         await apiClient.uploadDocument(
             document,
             nhsNumber,
-            onUploadStateChangeMock,
+            onUploadStateChangeMock
         );
 
-        expect(postMock).toHaveBeenCalled()
+        expect(postMock).toHaveBeenCalled();
 
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0)
-    })
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
+            documentUploadStates.FAILED,
+            0
+        );
+    });
 
     test("reports the upload as failed if the S3 upload request fails", async () => {
         const metadataResponseBody = {
@@ -195,7 +211,7 @@ describe("test the uploadDocument method", () => {
             ],
         };
         const postMock = jest.fn(() => {
-            return metadataResponseBody
+            return metadataResponseBody;
         });
 
         const api = { post: postMock };
@@ -206,32 +222,35 @@ describe("test the uploadDocument method", () => {
         });
         const nhsNumber = "0987654321";
 
-        axios.put = jest.fn((async () => {
-            throw new Error("S3 upload failed")
-        }))
+        axios.put = jest.fn(async () => {
+            throw new Error("S3 upload failed");
+        });
 
-        const onUploadStateChangeMock = jest.fn()
+        const onUploadStateChangeMock = jest.fn();
         await apiClient.uploadDocument(
             document,
             nhsNumber,
-            onUploadStateChangeMock,
+            onUploadStateChangeMock
         );
 
-        expect(postMock).toHaveBeenCalled()
+        expect(postMock).toHaveBeenCalled();
 
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0)
-    })
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
+            documentUploadStates.FAILED,
+            0
+        );
+    });
 });
 
 describe("tests the getPatientDetails method", () => {
     it("returns a patient trace when given the NHS number 9000000009", async () => {
         const nhsNumber = "9000000009";
         const patientObject = {
-            "birthDate": "2010-10-22",
-            "familyName": "Smith",
-            "givenName": ["Jane"],
-            "nhsNumber": nhsNumber,
-            "postalCode": "LS1 6AE"
+            birthDate: "2010-10-22",
+            familyName: "Smith",
+            givenName: ["Jane"],
+            nhsNumber: nhsNumber,
+            postalCode: "LS1 6AE",
         };
         const getMock = jest.fn(() => {
             return responseBody;
@@ -291,7 +310,9 @@ describe("test the getPresignedUrl method", () => {
                 headers: requestHeaders,
             })
         );
-        expect(returnedPresignedUrl).toStrictEqual(responseBody.content[0].attachment);
+        expect(returnedPresignedUrl).toStrictEqual(
+            responseBody.content[0].attachment
+        );
     });
 });
 
@@ -309,15 +330,17 @@ describe("test the getPresignedUrlForZip method", () => {
         };
         const responseUrl = "presigned-url";
         const expectedResponse = {
-            result:{
-                url:responseUrl
-            }
+            result: {
+                url: responseUrl,
+            },
         };
         const queryStringParametersMock = {
             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
         };
 
-        const returnedPresignedUrl = await apiClient.getPresignedUrlForZip(nhsNumber);
+        const returnedPresignedUrl = await apiClient.getPresignedUrlForZip(
+            nhsNumber
+        );
 
         expect(getMock).toHaveBeenCalledWith(
             "doc-store-api",
@@ -346,9 +369,9 @@ describe("test the deleteAllDocuments method", () => {
             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
         };
         const expectedResponse = {
-            result:{
-                message:"successfully deleted"
-            }
+            result: {
+                message: "successfully deleted",
+            },
         };
         const returnedDeleteResult = await apiClient.deleteAllDocuments(
             nhsNumber
@@ -362,6 +385,8 @@ describe("test the deleteAllDocuments method", () => {
                 queryStringParameters: queryStringParametersMock,
             })
         );
-        expect(returnedDeleteResult).toStrictEqual(expectedResponse.result.message);
+        expect(returnedDeleteResult).toStrictEqual(
+            expectedResponse.result.message
+        );
     });
 });

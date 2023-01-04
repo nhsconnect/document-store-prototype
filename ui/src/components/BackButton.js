@@ -1,9 +1,8 @@
-import {BackLink} from "nhsuk-react-components";
+import { BackLink } from "nhsuk-react-components";
 import React from "react";
-import {useNavigate} from "react-router";
+import { useNavigate } from "react-router";
 
 const BackButton = () => {
-
     const navigate = useNavigate();
 
     const onBack = (e) => {
@@ -12,7 +11,6 @@ const BackButton = () => {
     };
 
     return <BackLink onClick={onBack}>Back</BackLink>;
-
-}
+};
 
 export default BackButton;

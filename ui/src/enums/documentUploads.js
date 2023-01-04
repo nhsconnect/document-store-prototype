@@ -11,4 +11,4 @@ export const documentUploadStates = Object.freeze({
     UPLOADING: "uploading",
     SUCCEEDED: "succeeded",
     FAILED: "failed",
-})
+});

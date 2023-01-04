@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-- [Node](https://nodejs.org/en/download/)
-- [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
-- [nvm](https://github.com/nvm-sh/nvm)
+-   [Node](https://nodejs.org/en/download/)
+-   [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
+-   [nvm](https://github.com/nvm-sh/nvm)
 
 _Note: Node/npm versions can be managed using [nvm](https://github.com/nvm-sh/nvm). The version can be found in
 the [.nvmrc](.nvmrc)._
@@ -32,7 +32,7 @@ file needs to be modified to connect to a Cognito pool and the API Gateway. Ther
 API gateway configuration.
 
 | Placeholder           | Terraform output    |
-|-----------------------|---------------------|
+| --------------------- | ------------------- |
 | `%api-gateway-id%`    | `api_gateway_id`    |
 | `%api-gateway-stage%` | `api_gateway_stage` |
 
@@ -106,4 +106,4 @@ toggle.
 ## Design
 
 The UI follows the guidelines specified in the [NHS Service Manual](https://service-manual.nhs.uk/). To help achieve
-this, we utilise the UI components provided by the [nhsuk-frontend](https://github.com/nhsuk/nhsuk-frontend) package. 
+this, we utilise the UI components provided by the [nhsuk-frontend](https://github.com/nhsuk/nhsuk-frontend) package.

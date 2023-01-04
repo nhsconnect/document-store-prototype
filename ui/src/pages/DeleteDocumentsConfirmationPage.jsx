@@ -1,10 +1,7 @@
 import React from "react";
 
 const DeleteDocumentsConfirmationPage = () => {
-    return (
-        <>
-        </>
-    );
+    return <></>;
 };
 
 export default DeleteDocumentsConfirmationPage;

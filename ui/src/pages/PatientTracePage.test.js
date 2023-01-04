@@ -1,7 +1,7 @@
-import {render, screen, waitFor} from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import {PatientTracePage} from "./PatientTracePage";
+import { PatientTracePage } from "./PatientTracePage";
 import * as ReactRouter from "react-router";
 import useApi from "../apiClients/useApi";
 
@@ -16,16 +16,15 @@ const patientData = {
     familyName: "Smith",
     givenName: ["Jane"],
     nhsNumber: fakeNhsNumber,
-    postalCode: "LS1 6AE"
+    postalCode: "LS1 6AE",
 };
 const patientDetailsResponse = {
     result: {
-        patientDetails: patientData
-    }
+        patientDetails: patientData,
+    },
 };
 
 describe("PatientTracePage", () => {
-
     const mockNavigate = jest.fn();
     let useNavigateSpy;
 
@@ -35,7 +34,7 @@ describe("PatientTracePage", () => {
     });
 
     beforeEach(() => {
-        useNavigateSpy = jest.spyOn(ReactRouter, "useNavigate")
+        useNavigateSpy = jest.spyOn(ReactRouter, "useNavigate");
         useNavigateSpy.mockImplementation(() => mockNavigate);
     });
 
@@ -59,12 +58,12 @@ describe("PatientTracePage", () => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse
+                        return patientDetailsResponse;
                     }
-                }
+                },
             };
         });
-        
+
         render(<PatientTracePage />);
 
         enterNhsNumber(fakeNhsNumber);
@@ -82,12 +81,12 @@ describe("PatientTracePage", () => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse
+                        return patientDetailsResponse;
                     }
-                }
+                },
             };
         });
-        
+
         render(<PatientTracePage />);
 
         enterNhsNumber(fakeNhsNumber);
@@ -102,9 +101,7 @@ describe("PatientTracePage", () => {
             screen.queryByText(`${patientData.familyName}`)
         ).toBeInTheDocument();
         expect(
-            screen.queryByText(
-                `${patientData.birthDate}`
-            )
+            screen.queryByText(`${patientData.birthDate}`)
         ).toBeInTheDocument();
         expect(
             screen.queryByText(`${patientData.postalCode}`)
@@ -126,9 +123,9 @@ describe("PatientTracePage", () => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse
+                        return patientDetailsResponse;
                     }
-                }
+                },
             };
         });
 
@@ -154,16 +151,12 @@ describe("PatientTracePage", () => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse
+                        return patientDetailsResponse;
                     }
-                }
+                },
             };
         });
-        render(
-            <PatientTracePage
-                nextPage={expectedNextPage}
-            />
-        );
+        render(<PatientTracePage nextPage={expectedNextPage} />);
 
         enterNhsNumber(fakeNhsNumber);
         startSearch();
@@ -182,9 +175,9 @@ describe("PatientTracePage", () => {
             return {
                 getPatientDetails: (nhsNumber) => {
                     if (nhsNumber === fakeNhsNumber) {
-                        return []
+                        return [];
                     }
-                }
+                },
             };
         });
         render(<PatientTracePage />);
@@ -198,10 +191,10 @@ describe("PatientTracePage", () => {
     });
 
     it("displays an error message when the form is submitted and the NHS number is missing", async () => {
-        const getPatientDetails = jest.fn()
+        const getPatientDetails = jest.fn();
         useApi.mockImplementation(() => {
             return {
-                getPatientDetails
+                getPatientDetails,
             };
         });
         render(<PatientTracePage />);
@@ -219,10 +212,10 @@ describe("PatientTracePage", () => {
     it.each([["123456789"], ["12345678901"], ["123456789A"]])(
         "displays an error message when the form is submitted and the NHS number is '%s''",
         async (nhsNumber) => {
-            const getPatientDetails = jest.fn()
+            const getPatientDetails = jest.fn();
             useApi.mockImplementation(() => {
                 return {
-                    getPatientDetails
+                    getPatientDetails,
                 };
             });
             render(<PatientTracePage />);
@@ -243,8 +236,8 @@ describe("PatientTracePage", () => {
         useApi.mockImplementation(() => {
             return {
                 getPatientDetails: () => {
-                    throw Error("Error")
-                }
+                    throw Error("Error");
+                },
             };
         });
         render(<PatientTracePage />);
@@ -269,13 +262,13 @@ describe("PatientTracePage", () => {
         const fakeNhsNumber = "0987654321";
         const errorResponse = {
             status: 404,
-            message: "404 Patient not found."
+            message: "404 Patient not found.",
         };
         useApi.mockImplementation(() => {
             return {
                 getPatientDetails: () => {
-                    throw {response: errorResponse}
-                }
+                    throw { response: errorResponse };
+                },
             };
         });
         render(<PatientTracePage />);
@@ -292,13 +285,13 @@ describe("PatientTracePage", () => {
         const fakeNhsNumber = "9000000000";
         const errorResponse = {
             status: 400,
-            message: "400 Invalid NHS number."
+            message: "400 Invalid NHS number.",
         };
         useApi.mockImplementation(() => {
             return {
                 getPatientDetails: () => {
-                    throw {response: errorResponse}
-                }
+                    throw { response: errorResponse };
+                },
             };
         });
         render(<PatientTracePage />);
@@ -307,7 +300,11 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(screen.getByText("The NHS number provided is invalid. Please Retry.")).toBeInTheDocument();
+            expect(
+                screen.getByText(
+                    "The NHS number provided is invalid. Please Retry."
+                )
+            ).toBeInTheDocument();
         });
     });
 });

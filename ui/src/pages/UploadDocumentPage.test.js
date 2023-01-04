@@ -1,4 +1,4 @@
-import { render, screen, waitFor,within} from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 import useApi from "../apiClients/useApi";
@@ -16,17 +16,16 @@ jest.mock("react-router", () => ({
 }));
 
 beforeEach(() => {
-    useApi.mockReset()
-})
+    useApi.mockReset();
+});
 
 describe("UploadDocumentPage", () => {
-    const nextPagePath = "/next"
-    
+    const nextPagePath = "/next";
 
     describe("when there is an NHS number", () => {
         const nhsNumber = "1112223334";
         beforeEach(() => {
-            jest.resetAllMocks()
+            jest.resetAllMocks();
             useNhsNumberProviderContext.mockReturnValue([nhsNumber, jest.fn()]);
         });
 
@@ -39,26 +38,28 @@ describe("UploadDocumentPage", () => {
             expect(nhsNumberField()).toBeInTheDocument();
             expect(nhsNumberField()).toHaveValue(nhsNumber);
             expect(nhsNumberField()).toHaveAttribute("readonly");
-            expect(
-                screen.getByLabelText("Select files")
-            ).toBeInTheDocument();
+            expect(screen.getByLabelText("Select files")).toBeInTheDocument();
             expect(uploadButton()).toBeInTheDocument();
             expect(mockNavigate).not.toHaveBeenCalled();
         });
 
         it("uploads documents and displays the progress", async () => {
-
             const uploadStateChangeTriggers = {};
-            const resolvers = {}
-            
+            const resolvers = {};
+
             useApi.mockImplementation(() => ({
-                uploadDocument: async (document, nhsNumber, onUploadStateChange) => {
-                    uploadStateChangeTriggers[document.name] = onUploadStateChange
+                uploadDocument: async (
+                    document,
+                    nhsNumber,
+                    onUploadStateChange
+                ) => {
+                    uploadStateChangeTriggers[document.name] =
+                        onUploadStateChange;
 
                     return new Promise((resolve) => {
-                        resolvers[document.name] = resolve
-                    })
-                }
+                        resolvers[document.name] = resolve;
+                    });
+                },
             }));
 
             render(<UploadDocumentPage nextPagePath={nextPagePath} />);
@@ -69,118 +70,191 @@ describe("UploadDocumentPage", () => {
 
             const triggerUploadStateChange = (document, state, progress) => {
                 act(() => {
-                    uploadStateChangeTriggers[document.name](state, progress)
-                })
-            }
+                    uploadStateChangeTriggers[document.name](state, progress);
+                });
+            };
 
             const resolveDocumentUploadPromise = (document) => {
                 act(() => {
-                    resolvers[document.name]()
-                })
-            }
+                    resolvers[document.name]();
+                });
+            };
 
             chooseDocuments([documentOne, documentTwo, documentThree]);
             uploadDocument();
 
             await waitFor(() => {
-                expect(uploadButton()).toBeDisabled()
-            })
+                expect(uploadButton()).toBeDisabled();
+            });
 
-            triggerUploadStateChange(documentOne, documentUploadStates.WAITING, 0)
+            triggerUploadStateChange(
+                documentOne,
+                documentUploadStates.WAITING,
+                0
+            );
 
             await waitFor(() => {
                 expect(uploadForm()).not.toBeInTheDocument();
             });
 
             await waitFor(() => {
-                expect(getProgressBarValue(documentOne)).toEqual(0)
-                expect(getProgressBarMessage(documentOne).textContent).toContain("Waiting")
-            })
+                expect(getProgressBarValue(documentOne)).toEqual(0);
+                expect(
+                    getProgressBarMessage(documentOne).textContent
+                ).toContain("Waiting");
+            });
 
-            triggerUploadStateChange(documentTwo, documentUploadStates.WAITING, 0);
-
-            await waitFor(() => {
-                expect(getProgressBarValue(documentTwo)).toEqual(0)
-                expect(getProgressBarMessage(documentTwo).textContent).toContain("Waiting")
-            })
-
-            triggerUploadStateChange(documentTwo, documentUploadStates.STORING_METADATA, 0);
-
-            await waitFor(() => {
-                expect(getProgressBarValue(documentTwo)).toEqual(0)
-                expect(getProgressBarMessage(documentTwo).textContent).toContain("metadata")
-            })
-
-            triggerUploadStateChange(documentOne, documentUploadStates.STORING_METADATA, 0)
+            triggerUploadStateChange(
+                documentTwo,
+                documentUploadStates.WAITING,
+                0
+            );
 
             await waitFor(() => {
-                expect(getProgressBarValue(documentOne)).toEqual(0)
-                expect(getProgressBarMessage(documentOne).textContent).toContain("metadata")
-            })
+                expect(getProgressBarValue(documentTwo)).toEqual(0);
+                expect(
+                    getProgressBarMessage(documentTwo).textContent
+                ).toContain("Waiting");
+            });
 
-            triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 10)
-
-            await waitFor(() => {
-                expect(getProgressBarValue(documentOne)).toEqual(10)
-                expect(getProgressBarMessage(documentOne).textContent).toContain("Uploading")
-            })
-
-            triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 70)
-
-            await waitFor(() => {
-                expect(getProgressBarValue(documentOne)).toEqual(70)
-                expect(getProgressBarMessage(documentOne).textContent).toContain("Uploading")
-            })
-
-            triggerUploadStateChange(documentTwo, documentUploadStates.UPLOADING, 20)
+            triggerUploadStateChange(
+                documentTwo,
+                documentUploadStates.STORING_METADATA,
+                0
+            );
 
             await waitFor(() => {
-                expect(getProgressBarValue(documentTwo)).toEqual(20)
-                expect(getProgressBarMessage(documentTwo).textContent).toContain("Uploading")
-            })
+                expect(getProgressBarValue(documentTwo)).toEqual(0);
+                expect(
+                    getProgressBarMessage(documentTwo).textContent
+                ).toContain("metadata");
+            });
 
-            triggerUploadStateChange(documentTwo, documentUploadStates.SUCCEEDED, 100)
+            triggerUploadStateChange(
+                documentOne,
+                documentUploadStates.STORING_METADATA,
+                0
+            );
 
             await waitFor(() => {
-                expect(getProgressBarValue(documentTwo)).toEqual(100)
-                expect(getProgressBarMessage(documentTwo).textContent).toContain("successful")
-            })
+                expect(getProgressBarValue(documentOne)).toEqual(0);
+                expect(
+                    getProgressBarMessage(documentOne).textContent
+                ).toContain("metadata");
+            });
+
+            triggerUploadStateChange(
+                documentOne,
+                documentUploadStates.UPLOADING,
+                10
+            );
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(10);
+                expect(
+                    getProgressBarMessage(documentOne).textContent
+                ).toContain("Uploading");
+            });
+
+            triggerUploadStateChange(
+                documentOne,
+                documentUploadStates.UPLOADING,
+                70
+            );
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentOne)).toEqual(70);
+                expect(
+                    getProgressBarMessage(documentOne).textContent
+                ).toContain("Uploading");
+            });
+
+            triggerUploadStateChange(
+                documentTwo,
+                documentUploadStates.UPLOADING,
+                20
+            );
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(20);
+                expect(
+                    getProgressBarMessage(documentTwo).textContent
+                ).toContain("Uploading");
+            });
+
+            triggerUploadStateChange(
+                documentTwo,
+                documentUploadStates.SUCCEEDED,
+                100
+            );
+
+            await waitFor(() => {
+                expect(getProgressBarValue(documentTwo)).toEqual(100);
+                expect(
+                    getProgressBarMessage(documentTwo).textContent
+                ).toContain("successful");
+            });
 
             // Make sure document three is waiting, otherwise the "upload step" will move to complete once one and two have succeeded and failed
-            triggerUploadStateChange(documentThree, documentUploadStates.WAITING, 0)
-            triggerUploadStateChange(documentOne, documentUploadStates.FAILED, 0)
+            triggerUploadStateChange(
+                documentThree,
+                documentUploadStates.WAITING,
+                0
+            );
+            triggerUploadStateChange(
+                documentOne,
+                documentUploadStates.FAILED,
+                0
+            );
 
             await waitFor(() => {
-                expect(getProgressBarValue(documentOne)).toEqual(0)
-                expect(getProgressBarMessage(documentOne).textContent).toContain("failed")
-            })
+                expect(getProgressBarValue(documentOne)).toEqual(0);
+                expect(
+                    getProgressBarMessage(documentOne).textContent
+                ).toContain("failed");
+            });
 
             // Now we want to complete document three to move to the "complete" upload step
-            triggerUploadStateChange(documentThree, documentUploadStates.SUCCEEDED, 100)
+            triggerUploadStateChange(
+                documentThree,
+                documentUploadStates.SUCCEEDED,
+                100
+            );
 
-            resolveDocumentUploadPromise(documentOne)
-            resolveDocumentUploadPromise(documentTwo)
-            resolveDocumentUploadPromise(documentThree)
+            resolveDocumentUploadPromise(documentOne);
+            resolveDocumentUploadPromise(documentTwo);
+            resolveDocumentUploadPromise(documentThree);
 
             await waitFor(() => {
                 expect(screen.getByText("Upload Summary")).toBeInTheDocument();
             });
 
-            expect(screen.getByText(`Summary of uploaded documents for patient number ${nhsNumber}`))
+            expect(
+                screen.getByText(
+                    `Summary of uploaded documents for patient number ${nhsNumber}`
+                )
+            );
 
-            userEvent.click(screen.getByLabelText("Show successfully uploaded documents"))
+            userEvent.click(
+                screen.getByLabelText("Show successfully uploaded documents")
+            );
 
-            expect(await screen.findByText(documentTwo.name)).toBeInTheDocument()
-            expect(screen.getByText(documentThree.name)).toBeInTheDocument()
+            expect(
+                await screen.findByText(documentTwo.name)
+            ).toBeInTheDocument();
+            expect(screen.getByText(documentThree.name)).toBeInTheDocument();
 
-            expect(screen.getByText("Some of your documents could not be uploaded")).toBeInTheDocument()
-            expect(within(screen.getByRole("alert")).getByText(documentOne.name)).toBeInTheDocument()
+            expect(
+                screen.getByText("Some of your documents could not be uploaded")
+            ).toBeInTheDocument();
+            expect(
+                within(screen.getByRole("alert")).getByText(documentOne.name)
+            ).toBeInTheDocument();
 
-            userEvent.click(screen.getByRole("button", { name: "Finish" }))
+            userEvent.click(screen.getByRole("button", { name: "Finish" }));
 
-            expect(mockNavigate).toHaveBeenCalledWith(nextPagePath)
-
-        })
+            expect(mockNavigate).toHaveBeenCalledWith(nextPagePath);
+        });
     });
 
     describe("when there is NOT an NHS number", () => {
@@ -202,34 +276,34 @@ function makeTextFile(name, size) {
     if (size) {
         Object.defineProperty(file, "size", {
             value: size,
-        })
+        });
     }
-    return file
+    return file;
 }
 
 function chooseDocuments(documents) {
     userEvent.upload(screen.getByLabelText("Select files"), documents);
 }
 
-
-
 function uploadDocument() {
     userEvent.click(uploadButton());
 }
 
 function uploadForm() {
-    return screen.queryByTestId("upload-document-form")
+    return screen.queryByTestId("upload-document-form");
 }
 
 function uploadButton() {
     return screen.getByText("Upload");
 }
 
-
 function nhsNumberField() {
     return screen.getByLabelText("NHS number");
 }
 
-const getProgressBar = (document) => screen.getByRole("progressbar", { name: `Uploading ${document.name}` })
-const getProgressBarMessage = (document) => screen.getByRole("status", { name: `${document.name} upload status` })
-const getProgressBarValue = (document) => parseInt(getProgressBar(document).value);
+const getProgressBar = (document) =>
+    screen.getByRole("progressbar", { name: `Uploading ${document.name}` });
+const getProgressBarMessage = (document) =>
+    screen.getByRole("status", { name: `${document.name} upload status` });
+const getProgressBarValue = (document) =>
+    parseInt(getProgressBar(document).value);

@@ -14,7 +14,7 @@ const oidcConfig = {
         userinfo_endpoint: `${config.Auth.oauth.domain}/oauth2/userInfo`,
         end_session_endpoint: `${config.Auth.oauth.domain}/logout`,
         token_endpoint: `${config.Auth.oauth.domain}/oauth2/token`,
-        jwks_uri: `${config.Auth.oauth.domain}/${config.Auth.userPoolId}/.well-known/jwks.json`
+        jwks_uri: `${config.Auth.oauth.domain}/${config.Auth.userPoolId}/.well-known/jwks.json`,
     },
     extraQueryParams: {
         identity_provider: config.Auth.providerId,
@@ -23,10 +23,10 @@ const oidcConfig = {
     revokeTokenTypes: ["refresh_token"],
     // no silent renew via "prompt=none" (https://github.com/authts/oidc-client-ts/issues/366)
     automaticSilentRenew: false,
-}
+};
 
 const AuthProvider = ({ children }) => {
-    return <BaseProvider {...oidcConfig}>{children}</BaseProvider>
-}
+    return <BaseProvider {...oidcConfig}>{children}</BaseProvider>;
+};
 
-export default AuthProvider
+export default AuthProvider;

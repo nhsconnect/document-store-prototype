@@ -1,23 +1,29 @@
-import React, {useEffect, useState} from 'react';
-import {useForm} from 'react-hook-form';
-import {Button, ErrorMessage, Fieldset, Input, Table} from 'nhsuk-react-components';
-import {useNhsNumberProviderContext} from '../providers/NhsNumberProvider';
-import {useNavigate} from 'react-router';
-import BackButton from '../components/BackButton';
-import useApi from '../apiClients/useApi';
-import {downloadFile} from '../utils/utils';
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+    Button,
+    ErrorMessage,
+    Fieldset,
+    Input,
+    Table,
+} from "nhsuk-react-components";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import { useNavigate } from "react-router";
+import BackButton from "../components/BackButton";
+import useApi from "../apiClients/useApi";
+import { downloadFile } from "../utils/utils";
 
 const states = {
-    INITIAL: 'initial',
-    PENDING: 'pending',
-    SUCCEEDED: 'succeeded',
-    FAILED: 'failed',
+    INITIAL: "initial",
+    PENDING: "pending",
+    SUCCEEDED: "succeeded",
+    FAILED: "failed",
 };
 
 const SearchResultsPage = () => {
     const client = useApi();
-    const {register} = useForm();
-    const {ref: nhsNumberRef, ...nhsNumberProps} = register('nhsNumber');
+    const { register } = useForm();
+    const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
@@ -26,7 +32,7 @@ const SearchResultsPage = () => {
 
     useEffect(() => {
         if (!nhsNumber) {
-            navigate('/search/patient-trace');
+            navigate("/search/patient-trace");
             return;
         }
         const search = async () => {
@@ -59,17 +65,19 @@ const SearchResultsPage = () => {
             setDownloadState(states.FAILED);
             console.error(e);
         }
-    }
+    };
 
     const goToDeleteDocumentsConfirmationPage = () => {
         navigate("/search/delete-documents-confirmation");
-    }
+    };
 
     return (
         <>
-            <BackButton/>
+            <BackButton />
             <Fieldset>
-                <Fieldset.Legend headingLevel="h1" isPageHeading>Download and view a stored document</Fieldset.Legend>
+                <Fieldset.Legend headingLevel="h1" isPageHeading>
+                    Download and view a stored document
+                </Fieldset.Legend>
                 <Input
                     id="nhs-number-input"
                     name="nhsNumber"
@@ -81,7 +89,7 @@ const SearchResultsPage = () => {
                 />
                 {submissionState === states.PENDING && (
                     <p>
-                        <progress aria-label="Loading..."/>
+                        <progress aria-label="Loading..." />
                     </p>
                 )}
             </Fieldset>
@@ -95,16 +103,25 @@ const SearchResultsPage = () => {
                 <>
                     {searchResults.length > 0 && (
                         <>
-                            <p>You can choose to download all files for this patient</p>
+                            <p>
+                                You can choose to download all files for this
+                                patient
+                            </p>
                             <Button
                                 type="button"
                                 primary
                                 onClick={downloadAll}
-                                disabled={downloadState === states.PENDING}>
-                                {downloadState === states.PENDING ? 'Downloading All Documents...' : 'Download All Documents'}
+                                disabled={downloadState === states.PENDING}
+                            >
+                                {downloadState === states.PENDING
+                                    ? "Downloading All Documents..."
+                                    : "Download All Documents"}
                             </Button>
-                            {downloadState === states.FAILED &&
-                                <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
+                            {downloadState === states.FAILED && (
+                                <ErrorMessage>
+                                    Failed to download, please retry.
+                                </ErrorMessage>
+                            )}
                             <Table caption="List of documents available to download">
                                 <Table.Head>
                                     <Table.Row>
@@ -126,16 +143,18 @@ const SearchResultsPage = () => {
                                 </Table.Body>
                             </Table>
                             <p>
-                                Only use this option if you have a valid reason to permanently delete all available documents for this patient.
-                                For example, if the retention period of these documents has been reached
+                                Only use this option if you have a valid reason
+                                to permanently delete all available documents
+                                for this patient. For example, if the retention
+                                period of these documents has been reached
                             </p>
 
                             <Button
                                 type="button"
                                 secondary
                                 onClick={goToDeleteDocumentsConfirmationPage}
-                                >
-                                 Delete All Documents
+                            >
+                                Delete All Documents
                             </Button>
                         </>
                     )}
@@ -144,12 +163,17 @@ const SearchResultsPage = () => {
             )}
 
             <>
-                {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) &&
-                    <p><a className="govuk-link" href="/home">Start Again</a></p>}
+                {(submissionState === states.FAILED ||
+                    submissionState === states.SUCCEEDED) && (
+                    <p>
+                        <a className="govuk-link" href="/home">
+                            Start Again
+                        </a>
+                    </p>
+                )}
             </>
-
         </>
     );
-}
+};
 
-export default SearchResultsPage
+export default SearchResultsPage;
