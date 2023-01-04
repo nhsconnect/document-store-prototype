@@ -130,7 +130,9 @@ describe('<SearchResultsPage />', () => {
         expect(screen.getByText("No record found")).toBeInTheDocument();
       });
       expect(screen.queryByRole("button", { name: "Download All Documents" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Delete All Documents" })).not.toBeInTheDocument();
     });
+
 
     it("displays a message when a document search fails", async () => {
       useApi.mockImplementation(() => ({
@@ -219,6 +221,24 @@ describe('<SearchResultsPage />', () => {
         expect(screen.getByText("Failed to download, please retry.")).toBeInTheDocument();
       });
     });
+
+    it("should navigate to confirm deleteAllDocuments page when user clicks on Delete All button", async () => {
+      const searchResult = searchResultFactory.build();
+      useApi.mockImplementation(() => ({
+        findByNhsNumber: () => [searchResult],
+      }));
+
+      render(<SearchResultsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: "Delete All Documents" })).toBeInTheDocument();
+      });
+      userEvent.click(screen.getByRole("button", {name:"Delete All Documents"}));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/search/delete-documents-confirmation")
+      });
+    })
 
     it("should call api client deleteAllDocuments method when user clicks on Delete All button", async ()=>{
       const searchResult = searchResultFactory.build();

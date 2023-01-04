@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
-import {Button, Container, ErrorMessage, Fieldset, Input, Row, Table} from 'nhsuk-react-components';
+import {Button, ErrorMessage, Fieldset, Input, Table} from 'nhsuk-react-components';
 import {useNhsNumberProviderContext} from '../providers/NhsNumberProvider';
 import {useNavigate} from 'react-router';
 import BackButton from '../components/BackButton';
@@ -21,7 +21,6 @@ const SearchResultsPage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
-    const [deleteState, setDeleteState] = useState(states.INITIAL);
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
@@ -61,19 +60,9 @@ const SearchResultsPage = () => {
             console.error(e);
         }
     }
-    const deleteAll = async () => {
-        try{
-            setDeleteState(states.PENDING)
-            const onDeleteResponse = await client.deleteAllDocuments(nhsNumber);
-            setDeleteState(states.SUCCEEDED);
-        }catch (e){
-            console.error(e);
-            setDeleteState(states.FAILED);
-        }
-    }
 
-    const goToHome = () => {
-        navigate('/home');
+    const goToDeleteDocumentsConfirmationPage = () => {
+        navigate("/search/delete-documents-confirmation");
     }
 
     return (
@@ -136,31 +125,29 @@ const SearchResultsPage = () => {
                                     ))}
                                 </Table.Body>
                             </Table>
+                            <p>
+                                Only use this option if you have a valid reason to permanently delete all available documents for this patient.
+                                For example, if the retention period of these documents has been reached
+                            </p>
+
+                            <Button
+                                type="button"
+                                secondary
+                                onClick={goToDeleteDocumentsConfirmationPage}
+                                >
+                                 Delete All Documents
+                            </Button>
                         </>
                     )}
                     {searchResults.length === 0 && <p>No record found</p>}
                 </>
             )}
-            <Container>
-                <Row>
-                    <p>
-                        Only use this option if you have a valid reason to permanently delete all available documents for this patient.
-                        For example, if the retention period of these documents has been reached
-                    </p>
-                </Row>
-                <Row>
-                    <Button
-                        type="button"
-                        secondary
-                        onClick={deleteAll}
-                        disabled={deleteState === states.PENDING}>
-                        {deleteState === states.PENDING ? 'Deleting All Documents...' : 'Delete All Documents'}
-                    </Button>
-                </Row>
-                <Row>{(submissionState === states.FAILED || submissionState === states.SUCCEEDED) &&
-                    <a className="govuk-link" href="/home">Start Again</a>}
-                </Row>
-                </Container>
+
+            <>
+                {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) &&
+                    <p><a className="govuk-link" href="/home">Start Again</a></p>}
+            </>
+
         </>
     );
 }

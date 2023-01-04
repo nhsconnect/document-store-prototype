@@ -20,6 +20,7 @@ import SearchResultsPage from "./pages/SearchResultsPage";
 import StartPage from "./pages/StartPage";
 import AuthenticationCallbackRouter from "./components/Authenticator/AuthenticationCallbackRouter";
 import AuthProvider from "./components/Authenticator/AuthProvider";
+import DeleteDocumentsConfirmationPage from "./pages/DeleteDocumentsConfirmationPage";
 
 Amplify.configure({ API: config.API });
 
@@ -61,6 +62,11 @@ const AppRoutes = () => {
                     <Route
                         path="/search/results"
                         element={<SearchResultsPage client={client} />}
+                    />
+
+                    <Route
+                        path="/search/delete-documents-confirmation"
+                        element={<DeleteDocumentsConfirmationPage />}
                     />
                 </Route>
 
