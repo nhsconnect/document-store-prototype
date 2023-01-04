@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
-import {Button, ErrorMessage, Fieldset, Input, Table} from 'nhsuk-react-components';
+import {Button, Container, ErrorMessage, Fieldset, Input, Row, Table} from 'nhsuk-react-components';
 import {useNhsNumberProviderContext} from '../providers/NhsNumberProvider';
 import {useNavigate} from 'react-router';
 import BackButton from '../components/BackButton';
@@ -21,6 +21,7 @@ const SearchResultsPage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
+    const [deleteState, setDeleteState] = useState(states.INITIAL);
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
@@ -58,6 +59,16 @@ const SearchResultsPage = () => {
         } catch (e) {
             setDownloadState(states.FAILED);
             console.error(e);
+        }
+    }
+    const deleteAll = async () => {
+        try{
+            setDeleteState(states.PENDING)
+            const onDeleteResponse = await client.deleteAllDocuments(nhsNumber);
+            setDeleteState(states.SUCCEEDED);
+        }catch (e){
+            console.error(e);
+            setDeleteState(states.FAILED);
         }
     }
 
@@ -98,10 +109,10 @@ const SearchResultsPage = () => {
                             <p>You can choose to download all files for this patient</p>
                             <Button
                                 type="button"
-                                secondary
+                                primary
                                 onClick={downloadAll}
                                 disabled={downloadState === states.PENDING}>
-                                {downloadState === states.PENDING ? 'Downloading...' : 'Download All'}
+                                {downloadState === states.PENDING ? 'Downloading All Documents...' : 'Download All Documents'}
                             </Button>
                             {downloadState === states.FAILED &&
                                 <ErrorMessage>Failed to download, please retry.</ErrorMessage>}
@@ -130,8 +141,26 @@ const SearchResultsPage = () => {
                     {searchResults.length === 0 && <p>No record found</p>}
                 </>
             )}
-            {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) &&
-                <Button onClick={goToHome}>Start Again</Button>}
+            <Container>
+                <Row>
+                    <p>
+                        Only use this option if you have a valid reason to permanently delete all available documents for this patient.
+                        For example, if the retention period of these documents has been reached
+                    </p>
+                </Row>
+                <Row>
+                    <Button
+                        type="button"
+                        secondary
+                        onClick={deleteAll}
+                        disabled={deleteState === states.PENDING}>
+                        {deleteState === states.PENDING ? 'Deleting All Documents...' : 'Delete All Documents'}
+                    </Button>
+                </Row>
+                <Row>{(submissionState === states.FAILED || submissionState === states.SUCCEEDED) &&
+                    <a className="govuk-link" href="/home">Start Again</a>}
+                </Row>
+                </Container>
         </>
     );
 }

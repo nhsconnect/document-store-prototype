@@ -35,6 +35,7 @@ public class CreateDocumentReferenceE2eTest {
     private static final String AWS_REGION = "eu-west-2";
     private static final int DEFAULT_PORT = 4566;
     private static final String INTERNAL_DOCKER_HOST = "localstack";
+    private UtilsE2eTest utilsE2eTest = new UtilsE2eTest();
 
     @BeforeEach
     void setUp() {
@@ -55,8 +56,8 @@ public class CreateDocumentReferenceE2eTest {
 
     @Test
     void returnsCreatedDocumentReference() throws IOException, InterruptedException {
-        var expectedDocumentReference = getContentFromResource("create/created-document-reference.json");
-        var requestContent = getContentFromResource("create/create-document-reference-request.json");
+        String expectedDocumentReference = utilsE2eTest.getContentFromResource("create/created-document-reference.json");
+        var requestContent = utilsE2eTest.getContentFromResource("create/create-document-reference-request.json");
         var createDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference"))
                 .POST(BodyPublishers.ofString(requestContent))
                 .header("Content-Type", "application/fhir+json")
@@ -111,8 +112,8 @@ public class CreateDocumentReferenceE2eTest {
 
     @Test
     void returnsBadRequestIfCodingSystemIsNotSupported() throws IOException, InterruptedException {
-        String expectedErrorResponse = getContentFromResource("create/unsupported-coding-system-response.json");
-        var requestContent = getContentFromResource("create/unsupported-coding-system-request.json");
+        String expectedErrorResponse = utilsE2eTest.getContentFromResource("create/unsupported-coding-system-response.json");
+        var requestContent = utilsE2eTest.getContentFromResource("create/unsupported-coding-system-request.json");
         var createRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference"))
                 .POST(BodyPublishers.ofString(requestContent))
                 .header("Content-Type", "application/fhir+json")
@@ -135,9 +136,4 @@ public class CreateDocumentReferenceE2eTest {
                 && "final".equals(JsonPath.read(response.body(), "$.docStatus"));
     }
 
-    private String getContentFromResource(String resourcePath) throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(resourcePath).getFile());
-        return new String(Files.readAllBytes(file.toPath()));
-    }
 }

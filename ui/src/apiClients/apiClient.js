@@ -142,6 +142,23 @@ class ApiClient {
 
     throw new Error("No url received");
   }
+
+    async deleteAllDocuments(nhsNumber) {
+      const data = await this.api.del("doc-store-api", "/DocumentReference", {
+        headers: {
+          Accept: "application/fhir+json",
+          Authorization: `Bearer ${this.user.id_token}`,
+        },
+        queryStringParameters: {
+          "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+        },
+      });
+      console.log("response",data)
+      if(data.result?.message){
+        return data.result.message;
+      }
+      throw new Error("Something went wrong")
+    }
 }
 
 export default ApiClient;

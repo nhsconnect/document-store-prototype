@@ -30,6 +30,7 @@ public class ApiConfig {
         }
 
         return new APIGatewayProxyResponseEvent()
+                .withIsBase64Encoded(false)
                 .withStatusCode(statusCode)
                 .withHeaders(headers)
                 .withBody(body);
