@@ -81,7 +81,9 @@ resource "aws_api_gateway_rest_api_policy" "lambda_api_policy" {
     Statement: [
       {
         Effect: "Allow"
-        Principal: "*"
+        Principal: {
+          AWS: "*"
+        }
         Action: "execute-api:Invoke"
         Resource: aws_api_gateway_rest_api.lambda_api.execution_arn
       }
