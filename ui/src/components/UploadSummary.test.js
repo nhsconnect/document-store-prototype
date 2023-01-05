@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, waitFor, within, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { nanoid } from "nanoid/non-secure";
 import UploadSummary from "./UploadSummary";
@@ -76,7 +76,6 @@ describe("The upload summary component", () => {
 
     it("does not display the successful uploads list when all of the documents failed to upload", () => {
         const files = [makeTextFile("one", 100)];
-        const documents = [makeDocument(files[0], documentUploadStates.FAILED)];
 
         render(
             <UploadSummary

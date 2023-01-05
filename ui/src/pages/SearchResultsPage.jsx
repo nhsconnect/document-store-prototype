@@ -69,7 +69,7 @@ const SearchResultsPage = () => {
 
     const goToDeleteDocumentsConfirmationPage = () => {
         navigate("/search/results/delete-documents-confirmation");
-    }
+    };
 
     return (
         <>

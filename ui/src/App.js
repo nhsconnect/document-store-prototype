@@ -1,6 +1,11 @@
-import {Amplify, API} from "aws-amplify";
+import { Amplify, API } from "aws-amplify";
 import React from "react";
-import {BrowserRouter as Router, Outlet, Route, Routes,} from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Outlet,
+    Route,
+    Routes,
+} from "react-router-dom";
 import "./App.scss";
 import config from "./config";
 import ApiClient from "./apiClients/apiClient";
@@ -8,8 +13,8 @@ import Authenticator from "./components/Authenticator/Authenticator";
 import HomePage from "./pages/HomePage";
 import Layout from "./components/layout";
 import FeatureToggleProvider from "./providers/FeatureToggleProvider";
-import {NhsNumberProvider} from "./providers/NhsNumberProvider";
-import {PatientTracePage} from "./pages/PatientTracePage";
+import { NhsNumberProvider } from "./providers/NhsNumberProvider";
+import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import StartPage from "./pages/StartPage";
