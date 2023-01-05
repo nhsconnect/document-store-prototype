@@ -27,6 +27,12 @@ common:
                 - -c
                 - Dojofile-node
                 - ./tasks install-ui-dependencies
+  unit_test_backend: &unit_test_backend
+    tasks:
+      - exec:
+          command: dojo
+          arguments:
+            "./gradlew app:test"
   plan_terraform: &plan_terraform
     artifacts:
       - build:
@@ -194,6 +200,10 @@ pipelines:
           jobs:
             backend: *build_backend
             frontend: *build_frontend
+      - test_backend:
+          clean_workspace: true
+          jobs:
+            unit-test-backend: *unit_test_backend
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: dev
