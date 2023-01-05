@@ -176,8 +176,6 @@ common:
           source: ui/cypress/screenshots
       - test:
           source: ui/cypress/videos
-
-
 pipelines:
   "paperless-record-service.dev":
     group: paperless-record-service
@@ -210,7 +208,6 @@ pipelines:
           clean_workspace: true
           jobs:
             apply: *deploy_terraform
-
       - build_ui:
           environment_variables:
             ENVIRONMENT: dev
@@ -219,8 +216,10 @@ pipelines:
           clean_workspace: true
           jobs:
             build: *build_ui
+      - test_ui:
+          clean_workspace: true
+          jobs:
             unit-test-ui: *unit_test_ui
-
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: dev
@@ -228,7 +227,6 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
-
       - e2e_tests:
           environment_variables:
             ENVIRONMENT: dev
@@ -237,8 +235,6 @@ pipelines:
           clean_workspace: true
           jobs:
             e2e-tests: *e2e_test
-
-
   "paperless-record-service.pre-prod":
     group: paperless-record-service
     label_template: "${git[:8]}"
@@ -339,7 +335,6 @@ pipelines:
           clean_workspace: true
           jobs:
             apply: *deploy_terraform
-
       - build_ui:
           environment_variables:
             ENVIRONMENT: prod
@@ -349,7 +344,6 @@ pipelines:
           jobs:
             build: *build_ui
             unit-test-ui: *unit_test_ui
-
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: prod
