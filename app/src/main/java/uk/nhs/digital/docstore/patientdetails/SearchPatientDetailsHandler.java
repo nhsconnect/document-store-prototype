@@ -30,7 +30,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     private final PatientSearchConfig patientSearchConfig;
     private final AuditPublisher sensitiveIndex;
     // TODO: Implement RSA512 algorithm
-    private final AuthService authService = new AuthService(new AuthServiceHttpClient(), new SignedJwtBuilder(Algorithm.none()));
+    private final AuthService authService = new AuthService(new AuthServiceHttpClient(), new SignedJwtBuilder(Algorithm.none(), new PatientSearchConfig()));
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {

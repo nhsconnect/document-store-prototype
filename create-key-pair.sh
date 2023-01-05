@@ -2,7 +2,7 @@
 
 ENVIRONMENT=${1}
 REGION=eu-west-2
-KID=PDS_FHIR_AUTH_KEY
+KID="${ENVIRONMENT}-$(uuidgen)"
 
 function createKeyPair {
   openssl genrsa -out $KID.pem 4096
@@ -38,13 +38,13 @@ function addPrivateKeyToParameterStore {
         --name /prs/${ENVIRONMENT}/user-input/pds-fhir-private-key \
         --value "$PRIVATE_KEY" \
         --type SecureString \
-        --tags Key=createdBy,Value=access-request-fulfilment-team Key=name,Value="ARF private key for ${ENVIRONMENT} environment"
+        --overwrite
 
   aws ssm put-parameter \
        --name /prs/${ENVIRONMENT}/user-input/pds-fhir-public-key \
        --value "$PUBLIC_KEY" \
        --type String \
-       --tags Key=createdBy,Value=access-request-fulfilment-team Key=name,Value="ARF public key for ${ENVIRONMENT} environment"
+       --overwrite
 }
 
 if [[ -z "${ENVIRONMENT}" ]]; then
@@ -57,5 +57,8 @@ createKeyPair
 
 echo "saving public and private key to parameter store..."
 addPrivateKeyToParameterStore
+
+echo "cleaning up project directory..."
+rm $KID.pem $KID.pem.pub $KID.json
 
 echo "finished"

@@ -19,6 +19,14 @@ public class PatientSearchConfig {
         return environment.getEnvVar("PDS_FHIR_ENDPOINT", "https://sandbox.api.service.nhs.uk/personal-demographics/FHIR/R4/");
     }
 
+    public String nhsApiKey() {
+        return environment.getEnvVar("NHS_API_KEY", "");
+    }
+
+    public String nhsOauthEndpoint() {
+        return environment.getEnvVar("NHS_OAUTH_ENDPOINT", "");
+    }
+
     public boolean pdsFhirIsStubbed() {
         return TRUE.equals(environment.getEnvVar("PDS_FHIR_IS_STUBBED", TRUE));
     }
