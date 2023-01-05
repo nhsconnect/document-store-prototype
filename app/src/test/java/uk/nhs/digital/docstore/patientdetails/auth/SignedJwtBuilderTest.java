@@ -27,9 +27,10 @@ class SignedJwtBuilderTest {
 
         when(patientSearchConfig.nhsApiKey()).thenReturn(nhsApiKey);
         when(patientSearchConfig.nhsOauthEndpoint()).thenReturn(oauthEndpoint);
+        when(patientSearchConfig.pdsFhirAuthTokenSigningAlgorithm()).thenReturn(algorithm);
 
 
-        var jwtBuilder = new SignedJwtBuilder(algorithm, now, randomUuid, patientSearchConfig);
+        var jwtBuilder = new SignedJwtBuilder(patientSearchConfig, now, randomUuid);
 
         var actualJwt= jwtBuilder.build();
 

@@ -4,7 +4,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -29,8 +28,11 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     private final ApiConfig apiConfig;
     private final PatientSearchConfig patientSearchConfig;
     private final AuditPublisher sensitiveIndex;
-    // TODO: Implement RSA512 algorithm
-    private final AuthService authService = new AuthService(new AuthServiceHttpClient(), new SignedJwtBuilder(Algorithm.none(), new PatientSearchConfig()));
+
+    private final AuthService authService = new AuthService(
+            new AuthServiceHttpClient(),
+            new SignedJwtBuilder(new PatientSearchConfig())
+    );
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {

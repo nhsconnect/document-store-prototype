@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/PatientSearchConfig.java
+  checksum: 3e2ea43720ac7360f265a690449a859e41f01fc984459e53b1c08680e033b3d1
 - filename: tasks
   checksum: 762b85764857a9841198be84feba0b47088afdc3821768452c8c4d8abe0d4a6d
 - filename: ui/cypress.env.json.example
