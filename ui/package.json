@@ -54,9 +54,7 @@
         "@testing-library/react-hooks": "^8.0.1",
         "@testing-library/user-event": "^12.8.3",
         "cypress-axe": "^1.1.0",
-        "eslint": "^8.31.0",
         "eslint-config-prettier": "^8.6.0",
-        "eslint-plugin-react": "^7.31.11",
         "fishery": "^2.2.2",
         "prettier": "^2.8.1",
         "sass": "^1.54.7"
