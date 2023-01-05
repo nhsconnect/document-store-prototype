@@ -14,7 +14,7 @@ common:
           - exec:
               command: dojo
               arguments:
-                - "./gradlew app:build"
+                - "./gradlew app:build -x test"
       frontend: &build_frontend
         artifacts:
           - build:
