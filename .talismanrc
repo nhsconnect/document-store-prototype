@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: ui/cypress/e2e/uploadAndDownload.cy.js
   checksum: a12a1fbc24b509f803b5f9b8db4d785b904d24bfe534ce78a5ea97636d9c79e1
 - filename: terraform/patientdetailsapi.tf
-  checksum: 5b917263564f125baa0344197f869d787fe1ddcb32718096588dc4f42379966f
+  checksum: 4f77c399885e00687d2e8b637f53a7089cb15ba8d724471f7ac0e653743d5cd8
 version: ""
 scopeconfig:
   - scope: node
