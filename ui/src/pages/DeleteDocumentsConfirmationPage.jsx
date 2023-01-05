@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from "react";
-import {Fieldset, Radios, Button} from "nhsuk-react-components";
-import { useNavigate } from "react-router";
+import React from "react";
+import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import BackButton from "../components/BackButton";
-import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 
 const DeleteDocumentsConfirmationPage = () => {
     const [nhsNumber] = useNhsNumberProviderContext();
@@ -10,30 +9,24 @@ const DeleteDocumentsConfirmationPage = () => {
     return (
         <>
             <BackButton />
-             <Fieldset>
-                 <Fieldset.Legend isPageHeading>Delete health records and attachments</Fieldset.Legend>
-                    <Fieldset.Legend size="m">Are you sure you want to permanently delete all files for patient NHS number {nhsNumber} ?</Fieldset.Legend>
-                 <Radios
-                     name="delete-documents-action"
-                 >
-                        <Radios.Radio
-                            id="yes"
-                            value="yes"
-                        >
+            <Fieldset>
+                <Fieldset.Legend isPageHeading>
+                    Delete health records and attachments
+                </Fieldset.Legend>
+                <Fieldset.Legend size="m">
+                    Are you sure you want to permanently delete all files for
+                    patient NHS number {nhsNumber} ?
+                </Fieldset.Legend>
+                <Radios name="delete-documents-action">
+                    <Radios.Radio id="yes" value="yes">
                         Yes
-                        </Radios.Radio>
-                         <Radios.Radio
-                            id="no"
-                            value="no"
-                         >
+                    </Radios.Radio>
+                    <Radios.Radio id="no" value="no">
                         No
-                        </Radios.Radio>
+                    </Radios.Radio>
                 </Radios>
             </Fieldset>
-            <Button
-            >
-             Continue
-            </Button>
+            <Button>Continue</Button>
         </>
     );
 };
