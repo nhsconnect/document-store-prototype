@@ -7,9 +7,6 @@ common:
           - build:
               source: app/build/libs
               destination: jars
-          - test:
-              source: app/build/test-results
-              destination: test-reports
         tasks:
           - exec:
               command: dojo
@@ -28,6 +25,10 @@ common:
                 - Dojofile-node
                 - ./tasks install-ui-dependencies
   unit_test_backend: &unit_test_backend
+    artifacts:
+      - test:
+          source: app/build/test-results
+          destination: test-reports
     tasks:
       - exec:
           command: dojo
