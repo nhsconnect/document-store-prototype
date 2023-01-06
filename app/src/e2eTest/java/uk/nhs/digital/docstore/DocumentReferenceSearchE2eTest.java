@@ -65,6 +65,17 @@ public class DocumentReferenceSearchE2eTest {
                 "Content-Type", new AttributeValue("application/pdf"),
                 "DocumentUploaded", new AttributeValue().withBOOL(false),
                 "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
+        dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
+                "ID", new AttributeValue("4578"),
+                "NhsNumber", new AttributeValue("9000000009"),
+                "Location", new AttributeValue(String.format("s3://%s/%s", aws.getDocumentStoreBucketName(), S3_KEY)),
+                "ContentType", new AttributeValue("text/plain"),
+                "DocumentUploaded", new AttributeValue().withBOOL(true),
+                "Description", new AttributeValue("uploaded document"),
+                "Created", new AttributeValue("2021-11-04T15:57:30Z"),
+                "Deleted", new AttributeValue("2021-12-04T15:57:30Z"),
+                "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
+
 
 
         aws.addDocument(aws.getDocumentStoreBucketName(), S3_KEY, S3_VALUE);

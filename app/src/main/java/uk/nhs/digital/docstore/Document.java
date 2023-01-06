@@ -35,6 +35,8 @@ public class Document {
         return metadata.getCreated();
     }
 
+    public String getDeleted(){return metadata.getDeleted();}
+
     public String getIndexed() {
         return metadata.getIndexed();
     }
