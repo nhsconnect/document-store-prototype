@@ -5,10 +5,10 @@ data "aws_ssm_parameter" "pds_fhir_private_key" {
 
 data "aws_ssm_parameter" "nhs_api_key" {
   name  = "/prs/${var.environment}/user-input/nhs-api-key"
-  count = var.cloud_only_service_instances
+  count = var.environment == dev ? 1 : 0
 }
 
 data "aws_ssm_parameter" "nhs_oauth_endpoint" {
-  name  = "/prs/dev/user-input/nhs-oauth-endpoint"
+  name  = "/prs/${var.environment}/user-input/nhs-oauth-endpoint"
   count = var.cloud_only_service_instances
 }
