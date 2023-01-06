@@ -51,7 +51,7 @@ resource "aws_dynamodb_table" "doc_zip_trace_store" {
 
 resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
   name = "dynamodb_query_locations_policy"
-  role = module.lambda_iam_role.lambda_execution_role_arn
+  role = module.lambda_iam_role.lambda_execution_role_name
 
   policy = jsonencode({
     "Version" : "2012-10-17",
@@ -80,7 +80,7 @@ resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
 
 resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
   name = "get_document_reference_policy"
-  role = module.lambda_iam_role.lambda_execution_role_arn
+  role = module.lambda_iam_role.lambda_execution_role_name
 
   policy = jsonencode({
     "Version" : "2012-10-17",

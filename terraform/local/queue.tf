@@ -6,7 +6,7 @@ resource "aws_sqs_queue" "document-store" {
 
 resource "aws_iam_role_policy" "document-store" {
   name = "send_audit_messages_policy"
-  role = module.lambda_iam_role.lambda_execution_role_arn
+  role = module.lambda_iam_role.lambda_execution_role_name
   policy    = jsonencode({
     "Version": "2012-10-17",
     "Statement" : [

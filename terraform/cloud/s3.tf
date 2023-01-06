@@ -71,11 +71,11 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
   bucket = aws_s3_bucket.document_store.id
 
   lambda_function {
-    lambda_function_arn = aws_lambda_function.document_uploaded_lambda.arn
+    lambda_function_arn = module.document_uploaded_lambda.lambda_arn
     events              = ["s3:ObjectCreated:*"]
   }
 
-  depends_on = [aws_lambda_permission.s3_permission_for_document_upload_event]
+  depends_on = [module.document_uploaded_lambda]
 }
 
 resource "aws_s3_bucket_cors_configuration" "document_store_bucket_cors_config" {
@@ -84,20 +84,20 @@ resource "aws_s3_bucket_cors_configuration" "document_store_bucket_cors_config" 
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["PUT"]
-    allowed_origins = [var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : "*"]
+    allowed_origins = [local.web_url]
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
   }
 
   cors_rule {
     allowed_methods = ["GET"]
-    allowed_origins = [var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : "*"]
+    allowed_origins = [local.web_url]
   }
 }
 
 resource "aws_iam_role_policy" "s3_get_document_data_policy" {
   name = "get_document_data_policy"
-  role = aws_iam_role.lambda_execution_role.id
+  role = module.lambda_iam_role.lambda_execution_role_name
 
   policy = jsonencode({
     "Version" : "2012-10-17",

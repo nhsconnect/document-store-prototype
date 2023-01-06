@@ -147,3 +147,19 @@ output "doc_ref_collection_resource_id" {
 output "get_doc_ref_resource_id" {
   value = aws_api_gateway_resource.get_doc_ref_resource.id
 }
+
+output "get_doc_ref_lambda_invoke_arn" {
+  value = aws_lambda_function.create_doc_ref_lambda.invoke_arn
+}
+
+output "create_doc_ref_lambda_invoke_arn" {
+  value = aws_lambda_function.create_doc_ref_lambda.invoke_arn
+}
+
+output "delete_doc_ref_lambda_invoke_arn" {
+  value = aws_lambda_function.delete_doc_ref_lambda.invoke_arn
+}
+
+output "search_doc_ref_lambda_invoke_arn" {
+  value = aws_lambda_function.doc_ref_search_lambda.invoke_arn
+}

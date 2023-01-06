@@ -1,12 +1,5 @@
 resource "aws_s3_bucket" "document_store" {
   bucket_prefix = "document-store-"
-
-  lifecycle {
-    ignore_changes = [
-      cors_rule
-    ]
-  }
-
 }
 
 resource "aws_s3_bucket_acl" "document_store_acl" {
@@ -97,7 +90,7 @@ resource "aws_s3_bucket_cors_configuration" "document_store_bucket_cors_config" 
 
 resource "aws_iam_role_policy" "s3_get_document_data_policy" {
   name = "get_document_data_policy"
-  role = module.lambda_iam_role.lambda_execution_role_arn
+  role = module.lambda_iam_role.lambda_execution_role_name
 
   policy = jsonencode({
     "Version" : "2012-10-17",

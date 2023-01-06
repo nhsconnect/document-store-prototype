@@ -19,7 +19,7 @@ module "get_doc_ref_endpoint" {
   source         = "../modules/api_gateway_endpoint"
   api_gateway_id = module.apigateway.api_gateway_rest_api_id
   resource_id    = module.document_reference_api.get_doc_ref_resource_id
-  lambda_arn     = module.lambda_iam_role.lambda_execution_role_arn
+  lambda_arn     = module.document_reference_api.get_doc_ref_lambda_invoke_arn
   http_method    = "GET"
   authorization = "NONE"
   authorizer_id = null
@@ -29,7 +29,7 @@ module "create_doc_ref_endpoint" {
   source         = "../modules/api_gateway_endpoint"
   api_gateway_id = module.apigateway.api_gateway_rest_api_id
   resource_id    = module.document_reference_api.doc_ref_collection_resource_id
-  lambda_arn     = module.lambda_iam_role.lambda_execution_role_arn
+  lambda_arn     = module.document_reference_api.create_doc_ref_lambda_invoke_arn
   http_method    = "POST"
   authorization = "NONE"
   authorizer_id  = null
@@ -39,7 +39,7 @@ module "search_doc_ref_endpoint" {
   source         = "../modules/api_gateway_endpoint"
   api_gateway_id = module.apigateway.api_gateway_rest_api_id
   resource_id    = module.document_reference_api.doc_ref_collection_resource_id
-  lambda_arn     = module.lambda_iam_role.lambda_execution_role_arn
+  lambda_arn     = module.document_reference_api.search_doc_ref_lambda_invoke_arn
   http_method    = "GET"
   authorization = "NONE"
   authorizer_id  = null
@@ -49,7 +49,7 @@ module "delete_doc_ref_endpoint" {
   source             = "../modules/api_gateway_endpoint"
   api_gateway_id     = module.apigateway.api_gateway_rest_api_id
   resource_id = module.document_reference_api.doc_ref_collection_resource_id
-  lambda_arn         = module.lambda_iam_role.lambda_execution_role_arn
+  lambda_arn         = module.document_reference_api.delete_doc_ref_lambda_invoke_arn
   http_method        = "DELETE"
   authorization = "NONE"
   authorizer_id = null
