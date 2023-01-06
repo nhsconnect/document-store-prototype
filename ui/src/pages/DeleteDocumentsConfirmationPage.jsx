@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
-import {Button, Fieldset, Radios} from "nhsuk-react-components";
+import React, { useEffect, useState } from "react";
+import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import BackButton from "../components/BackButton";
 
-import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import useApi from "../apiClients/useApi";
-import {useForm} from "react-hook-form";
-import {useNavigate} from "react-router";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 const DeleteDocumentsConfirmationPage = () => {
     const client = useApi();
