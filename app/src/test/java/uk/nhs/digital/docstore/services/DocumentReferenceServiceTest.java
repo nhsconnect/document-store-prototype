@@ -39,6 +39,7 @@ public class DocumentReferenceServiceTest {
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setCreated(DateTimeType.now().asStringValue());
+        documentMetadata.setDocumentUploaded(false);
         var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher);
         var expectedSensitiveAuditMessage = new CreateDocumentMetadataAndUploadAuditMessage(documentMetadata);
 
@@ -66,7 +67,8 @@ public class DocumentReferenceServiceTest {
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setIndexed(now.toString());
-        var expectedSensitiveAuditMessage =new CreateDocumentMetadataAndUploadAuditMessage(documentMetadata);
+        documentMetadata.setDocumentUploaded(true);
+        var expectedSensitiveAuditMessage = new CreateDocumentMetadataAndUploadAuditMessage(documentMetadata);
         var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, now);
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(documentMetadata);

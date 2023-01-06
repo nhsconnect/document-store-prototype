@@ -82,12 +82,14 @@ public class DocumentUploadedEventInlineTest {
         expectedFileMetadata.put("id", id);
         expectedFileMetadata.put("fileName", fileName);
         expectedFileMetadata.put("fileType", fileType);
+
         var now = Instant.now();
         var expectedMessageBody = new JSONObject();
         expectedMessageBody.put("nhsNumber", nhsNumber);
         expectedMessageBody.put("fileMetadata", expectedFileMetadata);
         expectedMessageBody.put("timestamp", now.toString());
         expectedMessageBody.put("correlationId", correlationId);
+        expectedMessageBody.put("isDocumentUploadedToS3", true);
 
         environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
         when(context.getAwsRequestId()).thenReturn(correlationId);

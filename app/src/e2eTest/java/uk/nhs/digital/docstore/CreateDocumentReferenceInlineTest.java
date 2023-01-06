@@ -106,11 +106,13 @@ public class CreateDocumentReferenceInlineTest {
         fileMetadata.put("id","123");
         fileMetadata.put("fileName","uploaded document");
         fileMetadata.put("fileType","text/plain");
+
         var expectedMessageBody = new JSONObject();
         expectedMessageBody.put("nhsNumber", "34567");
         expectedMessageBody.put("fileMetadata", fileMetadata);
         expectedMessageBody.put("timestamp", now.toString());
         expectedMessageBody.put("correlationId", correlationId);
+        expectedMessageBody.put("isDocumentUploadedToS3", false);
 
         environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
         when(context.getAwsRequestId()).thenReturn(correlationId);
