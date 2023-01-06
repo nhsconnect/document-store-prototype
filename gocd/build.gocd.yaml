@@ -131,6 +131,13 @@ common:
   e2e_test: &e2e_test
     tasks:
       - exec:
+          # TODO: Create separate Cypress NPM project so that we do not have to install all the frontend deps
+          command: dojo
+          arguments:
+            - -c
+            - Dojofile-node
+            - ./tasks install-ui-dependencies
+      - exec:
           command: dojo
           arguments:
             - -c
