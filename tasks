@@ -181,7 +181,6 @@ configure-ui)
   ;;
 test-ui)
   cd ui
-  npm ci
   CI=true npm test
   ;;
 build-ui)
