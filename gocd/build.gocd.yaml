@@ -18,8 +18,8 @@ common:
       frontend: &build_frontend
         artifacts:
           - build:
-              source: ui/node_modules
-              destination: ui
+              source: ui/ui.tgz
+              destination: tars
         tasks:
           - exec:
               command: dojo
@@ -27,6 +27,24 @@ common:
                 - -c
                 - Dojofile-node
                 - ./tasks install-ui-dependencies
+          - exec:
+              command: dojo
+              arguments:
+                - -c
+                - Dojofile-node
+                - ./tasks test-ui
+          - exec:
+              command: dojo
+              arguments:
+                - -c
+                - Dojofile-infra
+                - ./tasks configure-ui
+          - exec:
+              command: dojo
+              arguments:
+                - -c
+                - Dojofile-node
+                - ./tasks build-ui
   plan_terraform: &plan_terraform
     artifacts:
       - build:
@@ -98,53 +116,11 @@ common:
             - -c
             - Dojofile-infra
             - ./tasks extract-json-terraform-output amplify_app_ids
-  build_ui: &build_ui
-    artifacts:
-      - build:
-          source: ui/ui.tgz
-          destination: tars
+  deploy_ui: &deploy_ui
     tasks:
       - fetch:
           stage: build
           job: frontend
-          source: ui/node_modules
-          destination: ui
-      - exec:
-          command: /bin/bash
-          arguments:
-            - -c
-            - 'ls -la ui/node_modules'
-      - exec:
-          command: dojo
-          arguments:
-            - -c
-            - Dojofile-node
-            - ./tasks install-ui-dependencies
-      - exec:
-          command: dojo
-          arguments:
-            - -c
-            - Dojofile-infra
-            - ./tasks configure-ui
-      - exec:
-          command: dojo
-          arguments:
-            - -c
-            - Dojofile-node
-            - ./tasks build-ui
-  unit_test_ui: &unit_test_ui
-    tasks:
-      - exec:
-          command: dojo
-          arguments:
-            - -c
-            - Dojofile-node
-            - ./tasks test-ui
-  deploy_ui: &deploy_ui
-    tasks:
-      - fetch:
-          stage: build_ui
-          job: build
           source: tars
       - exec:
           command: dojo
@@ -154,11 +130,6 @@ common:
             - ./tasks deploy-ui
   e2e_test: &e2e_test
     tasks:
-      - fetch:
-          stage: build
-          job: frontend
-          source: ui/node_modules
-          destination: ui
       - exec:
           command: dojo
           arguments:
@@ -170,7 +141,7 @@ common:
           arguments:
             - -c
             - Dojofile-node
-            - ./tasks install-ui-dependencies && ./tasks run-e2e-tests
+            - ./tasks run-e2e-tests
     artifacts:
       - test:
           source: ui/cypress/screenshots
@@ -190,6 +161,10 @@ pipelines:
           - gradle/**/*.*
     stages:
       - build:
+          environment_variables:
+            ENVIRONMENT: dev
+            NHS_CIS2_ENVIRONMENT: development
+            OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
           jobs:
             backend: *build_backend
@@ -208,18 +183,6 @@ pipelines:
           clean_workspace: true
           jobs:
             apply: *deploy_terraform
-      - build_ui:
-          environment_variables:
-            ENVIRONMENT: dev
-            NHS_CIS2_ENVIRONMENT: development
-            OIDC_PROVIDER_ID: "cis2devoidc"
-          clean_workspace: true
-          jobs:
-            build: *build_ui
-      - test_ui:
-          clean_workspace: true
-          jobs:
-            unit-test-ui: *unit_test_ui
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: dev
@@ -251,6 +214,10 @@ pipelines:
         stage: e2e_tests
     stages:
       - build:
+          environment_variables:
+            ENVIRONMENT: pre-prod
+            NHS_CIS2_ENVIRONMENT: development
+            OIDC_PROVIDER_ID: "COGNITO"
           clean_workspace: true
           jobs:
             backend: *build_backend
@@ -272,15 +239,6 @@ pipelines:
           clean_workspace: true
           jobs:
             apply: *deploy_terraform
-      - build_ui:
-          environment_variables:
-            ENVIRONMENT: pre-prod
-            NHS_CIS2_ENVIRONMENT: development
-            OIDC_PROVIDER_ID: "COGNITO"
-          clean_workspace: true
-          jobs:
-            build: *build_ui
-            unit-test-ui: *unit_test_ui
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: pre-prod
@@ -312,6 +270,10 @@ pipelines:
         stage: e2e_tests
     stages:
       - build:
+          environment_variables:
+            ENVIRONMENT: prod
+            NHS_CIS2_ENVIRONMENT: development
+            OIDC_PROVIDER_ID: "COGNITO"
           clean_workspace: true
           jobs:
             backend: *build_backend
@@ -335,15 +297,6 @@ pipelines:
           clean_workspace: true
           jobs:
             apply: *deploy_terraform
-      - build_ui:
-          environment_variables:
-            ENVIRONMENT: prod
-            NHS_CIS2_ENVIRONMENT: development
-            OIDC_PROVIDER_ID: "COGNITO"
-          clean_workspace: true
-          jobs:
-            build: *build_ui
-            unit-test-ui: *unit_test_ui
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: prod
