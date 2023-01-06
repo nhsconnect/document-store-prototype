@@ -62,7 +62,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
             var documentMetadata = searchService.findMetadataByNhsNumber(nhsNumber, requestEvent.getHeaders());
 
-            var documents = documentMetadata.stream().map(Document::new).collect(toList());
+            var documents = documentMetadata.stream().map(Document::new).filter(document -> document.getDeleted() == null).collect(toList());
 
             logger.debug("Generating response contents");
             bundle = bundleMapper.toBundle(documents);
