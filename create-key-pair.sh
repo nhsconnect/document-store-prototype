@@ -7,6 +7,7 @@ KID="${ENVIRONMENT}-$(uuidgen)"
 function createKeyPair {
   openssl genrsa -out $KID.pem 4096
   openssl rsa -in $KID.pem -pubout -outform PEM -out $KID.pem.pub
+  openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in $KID.pem -out pkcs8.key
 
   MODULUS=$(
       openssl rsa -pubin -in $KID.pem.pub -noout -modulus `# Print modulus of public key` \
@@ -31,7 +32,7 @@ function createKeyPair {
 }
 
 function addPrivateKeyToParameterStore {
-  PRIVATE_KEY=$(cat $KID.pem)
+  PRIVATE_KEY=$(cat pkcs8.key)
   PUBLIC_KEY=$(cat $KID.json)
 
   aws ssm put-parameter \

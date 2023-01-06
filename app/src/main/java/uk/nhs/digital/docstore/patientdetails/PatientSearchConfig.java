@@ -41,7 +41,13 @@ public class PatientSearchConfig {
 
     public Algorithm pdsFhirAuthTokenSigningAlgorithm() {
         try {
-            byte[] keyBytes = Base64.decode(environment.getEnvVar("PDS_FHIR_PRIVATE_KEY").getBytes(StandardCharsets.UTF_8));
+            String privateKeyAsString = environment.getEnvVar("PDS_FHIR_PRIVATE_KEY")
+                    .replace("-----BEGIN PRIVATE KEY-----", "")
+                    .replaceAll("\\n", "")
+                    .replace("-----END PRIVATE KEY-----", "");
+
+            byte[] keyBytes = Base64.decode(privateKeyAsString.getBytes(StandardCharsets.UTF_8));
+
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory factory = KeyFactory.getInstance("RSA");
             PrivateKey privateKey = factory.generatePrivate(keySpec);
