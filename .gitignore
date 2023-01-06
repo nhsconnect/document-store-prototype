@@ -93,7 +93,7 @@ fabric.properties
 
 ### Terraform template
 # Local .terraform directories
-**/.terraform/*
+terraform/local/.terraform/*
 
 # .tfstate files
 *.tfstate
@@ -121,8 +121,8 @@ example: *tfplan*
 terraform.rc
 
 # Local .terraform directories
-**/.terraform/*
-/terraform/tfplan
+terraform/local/.terraform/*
+terraform/local/tfplan
 
 ### Java template
 # Compiled class file

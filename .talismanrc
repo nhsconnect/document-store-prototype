@@ -21,6 +21,14 @@ fileignoreconfig:
   checksum: a12a1fbc24b509f803b5f9b8db4d785b904d24bfe534ce78a5ea97636d9c79e1
 - filename: terraform/patientdetailsapi.tf
   checksum: 4f77c399885e00687d2e8b637f53a7089cb15ba8d724471f7ac0e653743d5cd8
+- filename: terraform/local/.terraform.lock.hcl
+  checksum: 80f24143ca78c285daea5f8c716dcb4b0d19df00333b5189dd28166d82fa975a
+- filename: bootstrap-terraform.sh
+  checksum: 8201c3eb36c91ce85373f16d91b95b550cc2ece930fb77f88632d10d2b4c344e
+- filename: terraform/local/dynamodb.tf
+  checksum: fbe04a4b5997cea38a9d30978bdc8ded033a75c3138c3cdb06b8cf89c92e48ad
+- filename: terraform/cloud/patientdetailsapi.tf
+  checksum: f7acb8a475211ea46ef18a340959f834d7e94f529825d9c64e4b8dbb067601d1
 version: ""
 scopeconfig:
   - scope: node

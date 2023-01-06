@@ -11,20 +11,16 @@ resource "aws_amplify_app" "doc-store-ui" {
 
   enable_basic_auth      = var.enable_basic_auth
   basic_auth_credentials = base64encode("${var.environment}:${var.basic_auth_password}")
-
-  count = var.cloud_only_service_instances
 }
 
 resource "aws_amplify_branch" "main" {
-  app_id      = aws_amplify_app.doc-store-ui[0].id
+  app_id      = aws_amplify_app.doc-store-ui.id
   branch_name = "main"
 
   framework = "React"
   stage     = "PRODUCTION"
-
-  count = var.cloud_only_service_instances
 }
 
-output "amplify_app_ids" {
-  value = aws_amplify_app.doc-store-ui[*].id
+output "amplify_app_id" {
+  value = aws_amplify_app.doc-store-ui.id
 }

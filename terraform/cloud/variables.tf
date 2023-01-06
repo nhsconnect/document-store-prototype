@@ -7,11 +7,6 @@ variable "region" {
   default = "eu-west-2"
 }
 
-variable "cloud_only_service_instances" {
-  type    = number
-  default = 1
-}
-
 variable "enable_basic_auth" {
   type    = bool
   default = true
@@ -30,32 +25,6 @@ variable "lambda_jar_filename" {
 variable "api_gateway_stage" {
   type    = string
   default = "prod"
-}
-
-variable "disable_aws_remote_checks" {
-  type    = bool
-  default = false
-}
-
-variable "aws_endpoint" {
-  type    = string
-  default = ""
-}
-
-variable "dynamodb_endpoint" {
-  type    = string
-  default = ""
-}
-
-variable "s3_endpoint" {
-  type    = string
-  default = ""
-}
-
-variable "s3_use_path_style" {
-  type        = bool
-  description = "Needed to drive path-style presigned URLs that are simpler for localstack to use in testing"
-  default     = false
 }
 
 variable "pds_fhir_sandbox_url" {
@@ -127,9 +96,4 @@ variable "cognito_cis2_client_signout_urls" {
 variable "document_zip_trace_ttl_in_days" {
   type    = number
   default = 90
-}
-
-variable "sqs_endpoint" {
-  type    = string
-  default = ""
 }

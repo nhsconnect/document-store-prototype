@@ -31,22 +31,6 @@ services:
     volumes:
       - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-  bootstrap-terraform:
-    image: "amazon/aws-cli"
-    working_dir: /work
-    entrypoint: "/bin/bash -c 'echo Y | ./bootstrap-terraform.sh'"
-    environment:
-      - AWS_ACCESS_KEY_ID=bob
-      - AWS_SECRET_ACCESS_KEY=cheese
-      - AWS_REGION=eu-west-2
-      - AWS_ENDPOINT=http://localstack:4566
-    links:
-      - localstack:localstack
-    depends_on:
-      localstack:
-        condition: service_healthy
-    volumes:
-      - .:/work
   terraform:
     image: "hashicorp/terraform:1.0.11"
     working_dir: /work
@@ -55,14 +39,7 @@ services:
       - AWS_ACCESS_KEY_ID=bob
       - AWS_SECRET_ACCESS_KEY=cheese
       - AWS_REGION=eu-west-2
-      - AWS_S3_ENDPOINT=http://localstack:4566
-      - AWS_STS_ENDPOINT=http://localstack:4566
-      - AWS_DYNAMODB_ENDPOINT=http://localstack:4566
-      - AWS_SQS_ENDPOINT=http://localstack:4566
     links:
       - localstack:localstack
-    depends_on:
-      bootstrap-terraform:
-        condition: service_completed_successfully
     volumes:
       - .:/work

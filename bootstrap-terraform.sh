@@ -1,11 +1,7 @@
 #!/bin/bash
 
-ENVIRONMENT=${1:-local}
+ENVIRONMENT=${1}
 REGION=eu-west-2
-
-if [[ -z "$AWS_ENDPOINT" && $ENVIRONMENT == "local" ]]; then
-    AWS_ENDPOINT=http://localhost:4566
-fi
 
 function createS3Bucket {
   BUCKET_NAME=prs-${ENVIRONMENT}-terraform-state
@@ -14,38 +10,32 @@ function createS3Bucket {
   aws s3api create-bucket \
     --bucket $BUCKET_NAME\
     --acl private \
-    --create-bucket-configuration '{ "LocationConstraint": "eu-west-2" }' \
-    ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+    --create-bucket-configuration '{ "LocationConstraint": "eu-west-2" }'
 
   echo 2
   aws s3api put-bucket-encryption \
     --bucket $BUCKET_NAME \
-    --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}' \
-    ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+    --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
 
   echo 3
   aws s3api put-public-access-block\
     --bucket $BUCKET_NAME \
-    --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true \
-    ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+    --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
 
   echo 4
   aws s3api put-bucket-tagging \
     --bucket $BUCKET_NAME \
-    --tagging "TagSet=[{Key=createdBy,Value=prm-repo-team},{Key=name,Value=PRS terraform state for ${ENVIRONMENT} environment}]" \
-    ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+    --tagging "TagSet=[{Key=createdBy,Value=prm-repo-team},{Key=name,Value=PRS terraform state for ${ENVIRONMENT} environment}]"
 
   echo 5
   aws s3api put-bucket-lifecycle \
     --bucket $BUCKET_NAME \
-    --lifecycle-configuration '{"Rules": [{"ID": "Expiration lifecycle rule","Prefix": "","Status": "Enabled","NoncurrentVersionExpiration": {"NoncurrentDays": 360}}]}' \
-    ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+    --lifecycle-configuration '{"Rules": [{"ID": "Expiration lifecycle rule","Prefix": "","Status": "Enabled","NoncurrentVersionExpiration": {"NoncurrentDays": 360}}]}'
 
   echo 6
   aws s3api put-bucket-versioning \
     --bucket $BUCKET_NAME \
-    --versioning-configuration Status=Enabled \
-    ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+    --versioning-configuration Status=Enabled
 }
 
 function createDynamoDBTable {
@@ -58,8 +48,7 @@ function createDynamoDBTable {
       --key-schema AttributeName=LockID,KeyType=HASH \
       --billing-mode PROVISIONED \
       --provisioned-throughput ReadCapacityUnits=2,WriteCapacityUnits=2 \
-      --tags Key=createdBy,Value=prm-repo-team Key=name,Value="PRS terraform state locking table for ${ENVIRONMENT} environment" \
-      ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+      --tags Key=createdBy,Value=prm-repo-team Key=name,Value="PRS terraform state locking table for ${ENVIRONMENT} environment"
 }
 
 echo "bootstrapping..."

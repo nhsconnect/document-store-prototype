@@ -12,15 +12,12 @@ resource "aws_cognito_user_pool" "pool" {
     require_numbers   = true
     require_symbols   = true
   }
-  count = var.cloud_only_service_instances
 }
 
 resource "aws_cognito_user_pool_client" "client" {
   name = "doc-store-user-pool-client"
 
-  user_pool_id = aws_cognito_user_pool.pool[0].id
-
-  count = var.cloud_only_service_instances
+  user_pool_id = aws_cognito_user_pool.pool.id
 
   allowed_oauth_flows_user_pool_client = true
   explicit_auth_flows                  = ["ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
@@ -34,32 +31,11 @@ resource "aws_cognito_user_pool_client" "client" {
 
 resource "aws_cognito_user_pool_domain" "domain" {
   domain       = "${var.cognito_domain_prefix}doc-store-user-pool"
-  user_pool_id = aws_cognito_user_pool.pool[0].id
-  count        = var.cloud_only_service_instances
-}
-
-output "cognito_user_pool_ids" {
-  value = aws_cognito_user_pool.pool[*].id
-}
-
-output "cognito_user_pool_domain" {
-  value = [for domain in aws_cognito_user_pool_domain.domain[*].domain : "${domain}.auth.${var.region}.amazoncognito.com"]
-}
-
-output "cognito_client_ids" {
-  value = aws_cognito_user_pool_client.client[*].id
-}
-
-output "cognito_redirect_signin" {
-  value = aws_cognito_user_pool_client.client[*].default_redirect_uri
-}
-
-output "cognito_redirect_signout" {
-  value = var.cloud_only_service_instances > 0 ? element(aws_cognito_user_pool_client.client[*].logout_urls, 0) : []
+  user_pool_id = aws_cognito_user_pool.pool.id
 }
 
 resource "aws_cognito_identity_provider" "cis2_identity_provider" {
-  user_pool_id  = aws_cognito_user_pool.pool[0].id
+  user_pool_id  = aws_cognito_user_pool.pool.id
   provider_name = "cis2devoidc"
   provider_type = "OIDC"
 
@@ -74,6 +50,32 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
     jwks_uri                  = var.cognito_cis2_provider_jwks_uri
     attributes_request_method = "GET"
   }
+}
 
-  count = var.cloud_only_service_instances
+resource "aws_api_gateway_authorizer" "cognito_authorizer" {
+  name          = "cognito-authorizer"
+  type          = "COGNITO_USER_POOLS"
+  rest_api_id   = module.apigateway.api_gateway_rest_api_id
+  provider_arns = aws_cognito_user_pool.pool.arn
+  authorizer_credentials = module.lambda_iam_role.lambda_execution_role_arn
+}
+
+output "cognito_user_pool_id" {
+  value = aws_cognito_user_pool.pool.id
+}
+
+output "cognito_user_pool_domain" {
+  value = "${aws_cognito_user_pool_domain.domain.domain}.auth.${var.region}.amazoncognito.com"
+}
+
+output "cognito_client_id" {
+  value = aws_cognito_user_pool_client.client.id
+}
+
+output "cognito_redirect_signin" {
+  value = aws_cognito_user_pool_client.client.default_redirect_uri
+}
+
+output "cognito_redirect_signout" {
+  value = aws_cognito_user_pool_client.client.logout_urls
 }

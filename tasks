@@ -42,7 +42,7 @@ ${export_aws_session_token}" >temp_aws_credentials.sh
 }
 
 function deploy_ui() {
-  app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
+  app_id="$(jq -r '.amplify_app_id.value' "$1")"
   aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main >deployment.output
   jobId="$(jq -r .jobId deployment.output)"
   zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
@@ -62,10 +62,10 @@ function get_signout_url {
 
 function create_ui_config_file() {
   cp ui/src/config.js.example ui/src/config.js
-  user_pool="$(jq -r '.cognito_user_pool_ids.value[0]' "$1")"
-  user_pool_client_id="$(jq -r '.cognito_client_ids.value[0]' "$1")"
+  user_pool="$(jq -r '.cognito_user_pool_id.value' "$1")"
+  user_pool_client_id="$(jq -r '.cognito_client_id.value' "$1")"
   api_endpoint="$(jq -r '.api_gateway_url.value' "$1")"
-  cognito_domain="$(jq -r '.cognito_user_pool_domain.value[0]' "$1")"
+  cognito_domain="$(jq -r '.cognito_user_pool_domain.value' "$1")"
   cognito_redirect_signin="$(jq -r '.cognito_redirect_signin.value[0]' "$1")"
   cognito_redirect_signout="$(jq -r $(get_signout_url) "$1")"
   amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
@@ -97,7 +97,7 @@ function create_cypress_config_file() {
 }
 
 function export_cypress_base_url() {
-  echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com" > ui/cypress.sh
+  echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_id.value' "$1").amplifyapp.com" > ui/cypress.sh
 }
 
 function get_terraform_output() {
@@ -125,7 +125,7 @@ function check_env {
 
 function tf_init {
   check_env
-  cd terraform
+  cd terraform/cloud
 
   terraform init \
     -backend-config ${ENVIRONMENT}.s3.tfbackend
