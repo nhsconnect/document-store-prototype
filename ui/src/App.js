@@ -1,11 +1,6 @@
 import { Amplify, API } from "aws-amplify";
 import React from "react";
-import {
-    BrowserRouter as Router,
-    Outlet,
-    Route,
-    Routes,
-} from "react-router-dom";
+import { BrowserRouter as Router, Outlet, Route, Routes } from "react-router-dom";
 import "./App.scss";
 import config from "./config";
 import ApiClient from "./apiClients/apiClient";
@@ -29,10 +24,7 @@ const AppRoutes = () => {
     return (
         <Routes>
             <Route element={<StartPage />} path={"/"} />
-            <Route
-                element={<AuthenticationCallbackRouter />}
-                path={"cis2-auth-callback"}
-            />
+            <Route element={<AuthenticationCallbackRouter />} path={"cis2-auth-callback"} />
             <Route
                 element={
                     <Authenticator.Protected>
@@ -59,10 +51,7 @@ const AppRoutes = () => {
                             />
                         }
                     />
-                    <Route
-                        path="/search/results"
-                        element={<SearchResultsPage client={client} />}
-                    />
+                    <Route path="/search/results" element={<SearchResultsPage client={client} />} />
 
                     <Route
                         path="/search/results/delete-documents-confirmation"
@@ -81,21 +70,12 @@ const AppRoutes = () => {
                     <Route
                         path="/upload/patient-trace"
                         element={
-                            <PatientTracePage
-                                client={client}
-                                nextPage={"/upload/submit"}
-                                title={"Upload a document"}
-                            />
+                            <PatientTracePage client={client} nextPage={"/upload/submit"} title={"Upload a document"} />
                         }
                     />
                     <Route
                         path="/upload/submit"
-                        element={
-                            <UploadDocumentPage
-                                client={client}
-                                nextPagePath={"/home"}
-                            />
-                        }
+                        element={<UploadDocumentPage client={client} nextPagePath={"/home"} />}
                     />
                 </Route>
             </Route>

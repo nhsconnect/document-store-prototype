@@ -11,9 +11,7 @@ const StartPage = () => {
                 <li>Download and view patient digital records</li>
             </ul>
             <h2 className="nhsuk-heading-m">Before you start</h2>
-            <p>
-                You can only use this service if you have a valid CIS2 account
-            </p>
+            <p>You can only use this service if you have a valid CIS2 account</p>
             <ButtonLink href={"/home"}>Start now</ButtonLink>
         </>
     );

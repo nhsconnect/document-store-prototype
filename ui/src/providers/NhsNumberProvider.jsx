@@ -4,12 +4,7 @@ const NhsNumberProviderContext = createContext();
 
 export const NhsNumberProvider = ({ children }) => {
     const nhsNumberState = useState();
-    return (
-        <NhsNumberProviderContext.Provider value={nhsNumberState}>
-            {children}
-        </NhsNumberProviderContext.Provider>
-    );
+    return <NhsNumberProviderContext.Provider value={nhsNumberState}>{children}</NhsNumberProviderContext.Provider>;
 };
 
-export const useNhsNumberProviderContext = () =>
-    useContext(NhsNumberProviderContext);
+export const useNhsNumberProviderContext = () => useContext(NhsNumberProviderContext);

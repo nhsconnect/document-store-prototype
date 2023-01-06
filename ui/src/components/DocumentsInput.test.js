@@ -35,19 +35,12 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Select files"), [
-            documentOne,
-            documentTwo,
-        ]);
+        userEvent.upload(screen.getByLabelText("Select files"), [documentOne, documentTwo]);
 
         expect(await screen.findByText(documentOne.name)).toBeInTheDocument();
         expect(screen.getByText(documentTwo.name)).toBeInTheDocument();
-        expect(
-            screen.getByText(formatSize(documentOne.size))
-        ).toBeInTheDocument();
-        expect(
-            screen.getByText(formatSize(documentTwo.size))
-        ).toBeInTheDocument();
+        expect(screen.getByText(formatSize(documentOne.size))).toBeInTheDocument();
+        expect(screen.getByText(formatSize(documentTwo.size))).toBeInTheDocument();
     });
 
     it("validates that a file has been selected", async () => {
@@ -55,9 +48,7 @@ describe("DocumentsInput", () => {
 
         userEvent.click(screen.getByText("Submit"));
 
-        expect(
-            await screen.findByText("Please select a file")
-        ).toBeInTheDocument();
+        expect(await screen.findByText("Please select a file")).toBeInTheDocument();
     });
 
     it("validates that all of the selected files are less than 5GB", async () => {
@@ -78,19 +69,11 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Select files"), [
-            documentOne,
-            documentTwo,
-            documentThree,
-        ]);
+        userEvent.upload(screen.getByLabelText("Select files"), [documentOne, documentTwo, documentThree]);
 
         userEvent.click(screen.getByText("Submit"));
 
-        expect(
-            await screen.findByText(
-                "Please ensure that all files are less than 5GB in size"
-            )
-        );
+        expect(await screen.findByText("Please ensure that all files are less than 5GB in size"));
     });
     it("should be able to remove selected file", async () => {
         render(<FormWrapper />);
@@ -105,9 +88,7 @@ describe("DocumentsInput", () => {
                 name: `Remove ${document.name} from selection`,
             })
         );
-        await waitFor(() =>
-            expect(screen.queryByText(document.name)).not.toBeInTheDocument()
-        );
+        await waitFor(() => expect(screen.queryByText(document.name)).not.toBeInTheDocument());
     });
 
     it("adds new file selections to the existing selection", async () => {
@@ -139,17 +120,10 @@ describe("DocumentsInput", () => {
         const duplicateDocument = new File(["test"], "test.txt", {
             type: "text/plain",
         });
-        userEvent.upload(screen.getByLabelText("Select files"), [
-            document,
-            duplicateDocument,
-        ]);
+        userEvent.upload(screen.getByLabelText("Select files"), [document, duplicateDocument]);
 
         await waitFor(() =>
-            expect(
-                screen.queryByText(
-                    "There are two or more documents with the same name."
-                )
-            ).toBeInTheDocument()
+            expect(screen.queryByText("There are two or more documents with the same name.")).toBeInTheDocument()
         );
 
         userEvent.click(
@@ -159,11 +133,7 @@ describe("DocumentsInput", () => {
         );
 
         await waitFor(() =>
-            expect(
-                screen.queryByText(
-                    "There are two or more documents with the same name."
-                )
-            ).not.toBeInTheDocument()
+            expect(screen.queryByText("There are two or more documents with the same name.")).not.toBeInTheDocument()
         );
     });
 
@@ -181,9 +151,7 @@ describe("DocumentsInput", () => {
                 name: `Remove ${document.name} from selection`,
             })
         );
-        await waitFor(() =>
-            expect(screen.queryByText(document.name)).not.toBeInTheDocument()
-        );
+        await waitFor(() => expect(screen.queryByText(document.name)).not.toBeInTheDocument());
 
         userEvent.upload(screen.getByLabelText("Select files"), document);
         expect(await screen.findByText(document.name)).toBeInTheDocument();

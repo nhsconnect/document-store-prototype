@@ -10,9 +10,7 @@ const Errors = ({ title = "There is a problem" }) => {
 
     return error ? (
         <ErrorSummary>
-            <ErrorSummary.Title id="error-summary-title">
-                {title}
-            </ErrorSummary.Title>
+            <ErrorSummary.Title id="error-summary-title">{title}</ErrorSummary.Title>
             <ErrorSummary.Body>
                 <p>Technical error - Please retry</p>
             </ErrorSummary.Body>

@@ -15,10 +15,7 @@ const UploadSummary = ({ nhsNumber, documents }) => {
         <section>
             <h2>Upload Summary</h2>
             <p>Summary of uploaded documents for patient number {nhsNumber}</p>
-            <p>
-                Please delete files that were uploaded successfully from your
-                system.
-            </p>
+            <p>Please delete files that were uploaded successfully from your system.</p>
             {successfulUploads.length > 0 && (
                 <Details>
                     <Details.Summary aria-label="Show successfully uploaded documents">
@@ -42,12 +39,8 @@ const UploadSummary = ({ nhsNumber, documents }) => {
                                 {successfulUploads.map((document) => {
                                     return (
                                         <Table.Row key={document.id}>
-                                            <Table.Cell>
-                                                {document.file.name}
-                                            </Table.Cell>
-                                            <Table.Cell>
-                                                {formatSize(document.file.size)}
-                                            </Table.Cell>
+                                            <Table.Cell>{document.file.name}</Table.Cell>
+                                            <Table.Cell>{formatSize(document.file.size)}</Table.Cell>
                                         </Table.Row>
                                     );
                                 })}
@@ -57,27 +50,19 @@ const UploadSummary = ({ nhsNumber, documents }) => {
                 </Details>
             )}
             {failedUploads.length > 0 && (
-                <ErrorSummary
-                    aria-labelledby="failed-document-uploads-summary-title"
-                    role="alert"
-                    tabIndex={-1}
-                >
+                <ErrorSummary aria-labelledby="failed-document-uploads-summary-title" role="alert" tabIndex={-1}>
                     <ErrorSummary.Title id="failed-document-uploads-summary-title">
                         Some of your documents could not be uploaded
                     </ErrorSummary.Title>
                     <ErrorSummary.Body>
                         <p>
-                            You can try to upload the documents again if you
-                            wish and/or make a note of the failures for future
-                            reference
+                            You can try to upload the documents again if you wish and/or make a note of the failures for
+                            future reference
                         </p>
                         <ErrorSummary.List>
                             {failedUploads.map((document) => {
                                 return (
-                                    <li
-                                        key={document.id}
-                                        className="nhsuk-error-message"
-                                    >
+                                    <li key={document.id} className="nhsuk-error-message">
                                         {document.file.name}
                                     </li>
                                 );

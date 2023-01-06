@@ -7,10 +7,7 @@ import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import BackButton from "../components/BackButton";
 import DocumentsInput from "../components/DocumentsInput";
 import { formatSize } from "../utils/utils";
-import {
-    documentUploadStates as stateNames,
-    documentUploadSteps,
-} from "../enums/documentUploads";
+import { documentUploadStates as stateNames, documentUploadSteps } from "../enums/documentUploads";
 import UploadSummary from "../components/UploadSummary";
 import useApi from "../apiClients/useApi";
 
@@ -25,8 +22,7 @@ const uploadStateMessages = {
 
 const UploadDocumentPage = ({ nextPagePath }) => {
     const client = useApi();
-    const { handleSubmit, control, watch, getValues, formState, setValue } =
-        useForm();
+    const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
     const documents = watch("documents");
     const [nhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
@@ -39,44 +35,29 @@ const UploadDocumentPage = ({ nextPagePath }) => {
 
     const doSubmit = async (data) => {
         const doUpload = async (document) => {
-            await client.uploadDocument(
-                document.file,
-                nhsNumber,
-                (state, progress) => {
-                    setValue(
-                        "documents",
-                        produce(getValues("documents"), (draft) => {
-                            const documentIndex = draft.findIndex(
-                                (draftDocument) =>
-                                    draftDocument.id === document.id
-                            );
-                            draft[documentIndex].state = state;
-                            draft[documentIndex].progress = progress;
-                        })
-                    );
-                }
-            );
+            await client.uploadDocument(document.file, nhsNumber, (state, progress) => {
+                setValue(
+                    "documents",
+                    produce(getValues("documents"), (draft) => {
+                        const documentIndex = draft.findIndex((draftDocument) => draftDocument.id === document.id);
+                        draft[documentIndex].state = state;
+                        draft[documentIndex].progress = progress;
+                    })
+                );
+            });
         };
 
         await Promise.all(data.documents.map(doUpload));
     };
 
     const inferUploadStep = () => {
-        if (
-            !documents ||
-            documents.every(
-                (document) => document.state === stateNames.SELECTED
-            )
-        ) {
+        if (!documents || documents.every((document) => document.state === stateNames.SELECTED)) {
             return documentUploadSteps.SELECTING_FILES;
         }
 
         if (
             documents.every((document) => {
-                return (
-                    document.state === stateNames.SUCCEEDED ||
-                    document.state === stateNames.FAILED
-                );
+                return document.state === stateNames.SUCCEEDED || document.state === stateNames.FAILED;
             })
         ) {
             return documentUploadSteps.COMPLETE;
@@ -91,11 +72,7 @@ const UploadDocumentPage = ({ nextPagePath }) => {
         <>
             <BackButton />
             {uploadStep === documentUploadSteps.SELECTING_FILES && (
-                <form
-                    onSubmit={handleSubmit(doSubmit)}
-                    noValidate
-                    data-testid="upload-document-form"
-                >
+                <form onSubmit={handleSubmit(doSubmit)} noValidate data-testid="upload-document-form">
                     <Fieldset>
                         <Fieldset.Legend headingLevel={"h1"} isPageHeading>
                             Upload documents
@@ -128,19 +105,14 @@ const UploadDocumentPage = ({ nextPagePath }) => {
                         {documents.map((document) => (
                             <Table.Row key={document.id}>
                                 <Table.Cell>{document.file.name}</Table.Cell>
-                                <Table.Cell>
-                                    {formatSize(document.file.size)}
-                                </Table.Cell>
+                                <Table.Cell>{formatSize(document.file.size)}</Table.Cell>
                                 <Table.Cell>
                                     <progress
                                         aria-label={`Uploading ${document.file.name}`}
                                         max="100"
                                         value={document.progress}
                                     ></progress>
-                                    <p
-                                        role="status"
-                                        aria-label={`${document.file.name} upload status`}
-                                    >
+                                    <p role="status" aria-label={`${document.file.name} upload status`}>
                                         {uploadStateMessages[document.state]}
                                     </p>
                                 </Table.Cell>
@@ -151,10 +123,7 @@ const UploadDocumentPage = ({ nextPagePath }) => {
             )}
             {uploadStep === documentUploadSteps.COMPLETE && (
                 <>
-                    <UploadSummary
-                        documents={documents}
-                        nhsNumber={nhsNumber}
-                    ></UploadSummary>
+                    <UploadSummary documents={documents} nhsNumber={nhsNumber}></UploadSummary>
                     <Button
                         onClick={() => {
                             navigate(nextPagePath);

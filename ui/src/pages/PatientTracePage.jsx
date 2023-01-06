@@ -1,11 +1,4 @@
-import {
-    Button,
-    ErrorSummary,
-    Fieldset,
-    Input,
-    SummaryList,
-    WarningCallout,
-} from "nhsuk-react-components";
+import { Button, ErrorSummary, Fieldset, Input, SummaryList, WarningCallout } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -61,20 +54,11 @@ export const PatientTracePage = ({ nextPage, title }) => {
             <BackButton />
             <form onSubmit={handleSubmit(doSubmit)} noValidate>
                 {submissionState === states.FAILED && statusCode !== 404 && (
-                    <ErrorSummary
-                        aria-labelledby="error-summary-title"
-                        role="alert"
-                        tabIndex={-1}
-                    >
-                        <ErrorSummary.Title id="error-summary-title">
-                            There is a problem
-                        </ErrorSummary.Title>
+                    <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
+                        <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
                         <ErrorSummary.Body>
                             {statusCode === 400 ? (
-                                <p>
-                                    The NHS number provided is invalid. Please
-                                    Retry.
-                                </p>
+                                <p>The NHS number provided is invalid. Please Retry.</p>
                             ) : (
                                 <p>Technical error - Please retry.</p>
                             )}
@@ -105,50 +89,34 @@ export const PatientTracePage = ({ nextPage, title }) => {
                     <SummaryList>
                         <SummaryList.Row>
                             <SummaryList.Key>Family Name</SummaryList.Key>
-                            <SummaryList.Value>
-                                {patientDetails.familyName}
-                            </SummaryList.Value>
+                            <SummaryList.Value>{patientDetails.familyName}</SummaryList.Value>
                         </SummaryList.Row>
                         <SummaryList.Row>
                             <SummaryList.Key>Given Name</SummaryList.Key>
-                            <SummaryList.Value>
-                                {patientDetails.givenName?.map(
-                                    (name) => `${name} `
-                                )}
-                            </SummaryList.Value>
+                            <SummaryList.Value>{patientDetails.givenName?.map((name) => `${name} `)}</SummaryList.Value>
                         </SummaryList.Row>
                         <SummaryList.Row>
                             <SummaryList.Key>DoB</SummaryList.Key>
-                            <SummaryList.Value>
-                                {patientDetails.birthDate}
-                            </SummaryList.Value>
+                            <SummaryList.Value>{patientDetails.birthDate}</SummaryList.Value>
                         </SummaryList.Row>
                         <SummaryList.Row>
                             <SummaryList.Key>Postcode</SummaryList.Key>
-                            <SummaryList.Value>
-                                {patientDetails.postalCode}
-                            </SummaryList.Value>
+                            <SummaryList.Value>{patientDetails.postalCode}</SummaryList.Value>
                         </SummaryList.Row>
                     </SummaryList>
                 )}
 
                 {submissionState === states.FAILED && statusCode === 404 && (
                     <WarningCallout>
-                        <WarningCallout.Label>
-                            Patient Not Found
-                        </WarningCallout.Label>
+                        <WarningCallout.Label>Patient Not Found</WarningCallout.Label>
                         <p>Please verify NHS number again.</p>
                     </WarningCallout>
                 )}
                 {(submissionState === states.IDLE ||
                     submissionState === states.FAILED ||
-                    submissionState === states.SEARCHING) && (
-                    <Button type="submit">Search</Button>
-                )}
+                    submissionState === states.SEARCHING) && <Button type="submit">Search</Button>}
             </form>
-            {submissionState === states.SUCCEEDED && (
-                <Button onClick={onNextClicked}>Next</Button>
-            )}
+            {submissionState === states.SUCCEEDED && <Button onClick={onNextClicked}>Next</Button>}
         </>
     );
 };

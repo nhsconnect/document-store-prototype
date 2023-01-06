@@ -21,19 +21,13 @@ Cypress.Commands.add("disableSameSiteCookieRestrictions", () => {
             }
 
             const disableSameSite = (headerContent) => {
-                return headerContent.replace(
-                    /samesite=(lax|strict)/gi,
-                    "samesite=none"
-                );
+                return headerContent.replace(/samesite=(lax|strict)/gi, "samesite=none");
             };
 
             if (Array.isArray(res.headers["set-cookie"])) {
-                res.headers["set-cookie"] =
-                    res.headers["set-cookie"].map(disableSameSite);
+                res.headers["set-cookie"] = res.headers["set-cookie"].map(disableSameSite);
             } else {
-                res.headers["set-cookie"] = disableSameSite(
-                    res.headers["set-cookie"]
-                );
+                res.headers["set-cookie"] = disableSameSite(res.headers["set-cookie"]);
             }
         });
     });

@@ -16,7 +16,7 @@ fileignoreconfig:
 - filename: ui/src/components/DocumentsInput.js
   checksum: 40a32581128e743013059ff23449819d3f2c98429769c2c6f1c81fd451009867
 - filename: ui/src/components/UploadSummary.js
-  checksum: 5dfd031acb32608a77580ab08c2451bbfd5510f8a39316d8fcbc3623fb9a744f
+  checksum: 52589b3e499115d195f095d0c5895f12525799bb56829815b1d90147d1a4194e
 - filename: ui/cypress/e2e/uploadAndDownload.cy.js
   checksum: a12a1fbc24b509f803b5f9b8db4d785b904d24bfe534ce78a5ea97636d9c79e1
 - filename: terraform/patientdetailsapi.tf

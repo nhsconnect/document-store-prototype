@@ -8,9 +8,7 @@ describe("upload and download", () => {
 
     it("searches for a patient, uploads, and then downloads their docs", () => {
         const baseUrl = Cypress.config("baseUrl");
-        const nhsNumber = Math.floor(
-            1000000000 + Math.random() * 9000000000
-        ).toString();
+        const nhsNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
         const username = Cypress.env("username");
         const password = Cypress.env("password");
         const oidcProvider = Cypress.env("oidc_provider");
@@ -18,10 +16,7 @@ describe("upload and download", () => {
             "cypress/fixtures/test_patient_record.pdf",
             "cypress/fixtures/test_patient_record_two.pdf",
         ];
-        const downloadedDocumentPath = path.join(
-            Cypress.config("downloadsFolder"),
-            `patient-record-${nhsNumber}.zip`
-        );
+        const downloadedDocumentPath = path.join(Cypress.config("downloadsFolder"), `patient-record-${nhsNumber}.zip`);
 
         cy.disableSameSiteCookieRestrictions();
 
@@ -89,10 +84,7 @@ describe("upload and download", () => {
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
 
         cy.findByRole("button", { name: "Delete All Documents" }).click();
-        cy.url().should(
-            "eq",
-            baseUrl + "/search/results/delete-documents-confirmation"
-        );
+        cy.url().should("eq", baseUrl + "/search/results/delete-documents-confirmation");
         cy.findByRole("radio", { name: "Yes" }).check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
 

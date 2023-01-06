@@ -63,20 +63,13 @@ class ApiClient {
         };
 
         try {
-            const response = await this.api.post(
-                "doc-store-api",
-                "/DocumentReference",
-                {
-                    body: requestBody,
-                    headers: requestHeaders,
-                    onUploadProgress: () => {
-                        onUploadStateChange(
-                            documentUploadStates.STORING_METADATA,
-                            0
-                        );
-                    },
-                }
-            );
+            const response = await this.api.post("doc-store-api", "/DocumentReference", {
+                body: requestBody,
+                headers: requestHeaders,
+                onUploadProgress: () => {
+                    onUploadStateChange(documentUploadStates.STORING_METADATA, 0);
+                },
+            });
 
             const url = response.content[0].attachment.url;
             let s3Url = setUrlHostToLocalHost(url);
@@ -86,10 +79,7 @@ class ApiClient {
                     "Content-Type": document.type,
                 },
                 onUploadProgress: ({ total, loaded }) => {
-                    onUploadStateChange(
-                        documentUploadStates.UPLOADING,
-                        (loaded / total) * 100
-                    );
+                    onUploadStateChange(documentUploadStates.UPLOADING, (loaded / total) * 100);
                 },
             });
             onUploadStateChange(documentUploadStates.SUCCEEDED, 100);
@@ -114,16 +104,12 @@ class ApiClient {
     }
 
     async getPresignedUrl(id) {
-        const data = await this.api.get(
-            "doc-store-api",
-            "/DocumentReference/" + id,
-            {
-                headers: {
-                    Accept: "application/fhir+json",
-                    Authorization: `Bearer ${this.user.id_token}`,
-                },
-            }
-        );
+        const data = await this.api.get("doc-store-api", "/DocumentReference/" + id, {
+            headers: {
+                Accept: "application/fhir+json",
+                Authorization: `Bearer ${this.user.id_token}`,
+            },
+        });
 
         if (data?.docStatus === "final") {
             return data.content[0].attachment;

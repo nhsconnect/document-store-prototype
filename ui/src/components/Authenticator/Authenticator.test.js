@@ -27,9 +27,7 @@ describe("Authenticator", () => {
             </Authenticator.Protected>
         );
         await expectNever(() => {
-            expect(
-                screen.queryByText("this-should-NOT-be-rendered")
-            ).toBeInTheDocument();
+            expect(screen.queryByText("this-should-NOT-be-rendered")).toBeInTheDocument();
         });
     });
 
@@ -46,9 +44,7 @@ describe("Authenticator", () => {
             </Authenticator.Protected>
         );
         await waitFor(() => {
-            expect(
-                screen.queryByText("this-should-be-rendered")
-            ).toBeInTheDocument();
+            expect(screen.queryByText("this-should-be-rendered")).toBeInTheDocument();
         });
     });
 
@@ -66,9 +62,7 @@ describe("Authenticator", () => {
             </Authenticator.Protected>
         );
         await expectNever(() => {
-            expect(
-                screen.queryByText("this-should-NOT-be-rendered")
-            ).toBeInTheDocument();
+            expect(screen.queryByText("this-should-NOT-be-rendered")).toBeInTheDocument();
         });
     });
 
@@ -83,9 +77,7 @@ describe("Authenticator", () => {
         render(<Authenticator.Errors />);
 
         await waitFor(() => {
-            expect(
-                screen.queryByText("Technical error - Please retry")
-            ).toBeInTheDocument();
+            expect(screen.queryByText("Technical error - Please retry")).toBeInTheDocument();
         });
     });
 
@@ -104,9 +96,7 @@ describe("Authenticator", () => {
         );
         await waitFor(() => {
             expect(redirectFunction).not.toHaveBeenCalled();
-            expect(
-                screen.queryByText("this-should-be-rendered")
-            ).toBeInTheDocument();
+            expect(screen.queryByText("this-should-be-rendered")).toBeInTheDocument();
         });
     });
 

@@ -17,10 +17,7 @@ describe("CIS2AuthenticationResultNavigator", () => {
         Navigate.mockImplementation(() => null);
         render(<AuthenticationCallbackRouter />);
 
-        expect(Navigate).toBeCalledWith(
-            expect.objectContaining({ to: "/home", replace: true }),
-            expect.anything()
-        );
+        expect(Navigate).toBeCalledWith(expect.objectContaining({ to: "/home", replace: true }), expect.anything());
     });
 
     it("navigates to start page when authentication is unsuccessful", () => {
@@ -33,10 +30,7 @@ describe("CIS2AuthenticationResultNavigator", () => {
         Navigate.mockImplementation(() => null);
         render(<AuthenticationCallbackRouter />);
 
-        expect(Navigate).toBeCalledWith(
-            expect.objectContaining({ to: "/", replace: true }),
-            expect.anything()
-        );
+        expect(Navigate).toBeCalledWith(expect.objectContaining({ to: "/", replace: true }), expect.anything());
     });
 
     it("displays loading if authentication is incomplete", () => {

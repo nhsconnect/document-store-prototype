@@ -52,9 +52,7 @@ describe("test the findByNhsNumber method", () => {
                 queryStringParameters: queryStringParametersMock,
             })
         );
-        expect(returnedDocumentList).toStrictEqual(
-            expectedReturnedDocumentList
-        );
+        expect(returnedDocumentList).toStrictEqual(expectedReturnedDocumentList);
     });
 });
 
@@ -70,19 +68,17 @@ describe("test the uploadDocument method", () => {
                 },
             ],
         };
-        const postMock = jest.fn(
-            async (baseUrl, path, { onUploadProgress }) => {
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        onUploadProgress();
-                    }, 1);
+        const postMock = jest.fn(async (baseUrl, path, { onUploadProgress }) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    onUploadProgress();
+                }, 1);
 
-                    setTimeout(() => {
-                        resolve(metadataResponseBody);
-                    }, 2);
-                });
-            }
-        );
+                setTimeout(() => {
+                    resolve(metadataResponseBody);
+                }, 2);
+            });
+        });
         const api = { post: postMock };
         const apiClient = new ApiClient(api, user);
         const fileName = "hello.txt";
@@ -131,11 +127,7 @@ describe("test the uploadDocument method", () => {
         });
 
         const onUploadStateChangeMock = jest.fn();
-        await apiClient.uploadDocument(
-            document,
-            nhsNumber,
-            onUploadStateChangeMock
-        );
+        await apiClient.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
 
         expect(postMock).toHaveBeenCalledWith(
             "doc-store-api",
@@ -153,22 +145,10 @@ describe("test the uploadDocument method", () => {
             document,
             expect.anything()
         );
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
-            documentUploadStates.WAITING,
-            0
-        );
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
-            documentUploadStates.STORING_METADATA,
-            0
-        );
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
-            documentUploadStates.UPLOADING,
-            50
-        );
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
-            documentUploadStates.SUCCEEDED,
-            100
-        );
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.WAITING, 0);
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.STORING_METADATA, 0);
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.UPLOADING, 50);
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.SUCCEEDED, 100);
     });
 
     test("reports the upload as failed if the store metadata request fails", async () => {
@@ -185,18 +165,11 @@ describe("test the uploadDocument method", () => {
         const nhsNumber = "0987654321";
 
         const onUploadStateChangeMock = jest.fn();
-        await apiClient.uploadDocument(
-            document,
-            nhsNumber,
-            onUploadStateChangeMock
-        );
+        await apiClient.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
 
         expect(postMock).toHaveBeenCalled();
 
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
-            documentUploadStates.FAILED,
-            0
-        );
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0);
     });
 
     test("reports the upload as failed if the S3 upload request fails", async () => {
@@ -227,18 +200,11 @@ describe("test the uploadDocument method", () => {
         });
 
         const onUploadStateChangeMock = jest.fn();
-        await apiClient.uploadDocument(
-            document,
-            nhsNumber,
-            onUploadStateChangeMock
-        );
+        await apiClient.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
 
         expect(postMock).toHaveBeenCalled();
 
-        expect(onUploadStateChangeMock).toHaveBeenCalledWith(
-            documentUploadStates.FAILED,
-            0
-        );
+        expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0);
     });
 });
 
@@ -268,9 +234,7 @@ describe("tests the getPatientDetails method", () => {
             result: { patientDetails: patientObject },
         };
 
-        const returnedPatientBundle = await apiClient.getPatientDetails(
-            nhsNumber
-        );
+        const returnedPatientBundle = await apiClient.getPatientDetails(nhsNumber);
 
         expect(getMock).toHaveBeenCalledWith(
             "doc-store-api",
@@ -310,9 +274,7 @@ describe("test the getPresignedUrl method", () => {
                 headers: requestHeaders,
             })
         );
-        expect(returnedPresignedUrl).toStrictEqual(
-            responseBody.content[0].attachment
-        );
+        expect(returnedPresignedUrl).toStrictEqual(responseBody.content[0].attachment);
     });
 });
 
@@ -338,9 +300,7 @@ describe("test the getPresignedUrlForZip method", () => {
             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
         };
 
-        const returnedPresignedUrl = await apiClient.getPresignedUrlForZip(
-            nhsNumber
-        );
+        const returnedPresignedUrl = await apiClient.getPresignedUrlForZip(nhsNumber);
 
         expect(getMock).toHaveBeenCalledWith(
             "doc-store-api",
@@ -373,9 +333,7 @@ describe("test the deleteAllDocuments method", () => {
                 message: "successfully deleted",
             },
         };
-        const returnedDeleteResult = await apiClient.deleteAllDocuments(
-            nhsNumber
-        );
+        const returnedDeleteResult = await apiClient.deleteAllDocuments(nhsNumber);
 
         expect(getMock).toHaveBeenCalledWith(
             "doc-store-api",
@@ -385,8 +343,6 @@ describe("test the deleteAllDocuments method", () => {
                 queryStringParameters: queryStringParametersMock,
             })
         );
-        expect(returnedDeleteResult).toStrictEqual(
-            expectedResponse.result.message
-        );
+        expect(returnedDeleteResult).toStrictEqual(expectedResponse.result.message);
     });
 });

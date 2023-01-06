@@ -22,8 +22,6 @@ describe("The home page", () => {
             </BrowserRouter>
         );
 
-        expect(
-            screen.getByText("Download and view a stored document")
-        ).toBeInTheDocument();
+        expect(screen.getByText("Download and view a stored document")).toBeInTheDocument();
     });
 });

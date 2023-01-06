@@ -1,7 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import FeatureToggleProvider, {
-    useFeatureToggle,
-} from "./FeatureToggleProvider";
+import FeatureToggleProvider, { useFeatureToggle } from "./FeatureToggleProvider";
 
 const TestComponent = () => {
     const featureToggle = useFeatureToggle("TEST");

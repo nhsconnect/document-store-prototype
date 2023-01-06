@@ -17,9 +17,7 @@ const DocumentsInput = ({ control }) => {
         rules: {
             validate: {
                 isFile: (value) => {
-                    return (
-                        (value && value.length > 0) || "Please select a file"
-                    );
+                    return (value && value.length > 0) || "Please select a file";
                 },
                 isLessThan5GB: (value) => {
                     for (let i = 0; i < value.length; i++) {
@@ -33,34 +31,24 @@ const DocumentsInput = ({ control }) => {
     });
 
     const onRemove = (index) => {
-        const updatedValues = [
-            ...value.slice(0, index),
-            ...value.slice(index + 1),
-        ];
+        const updatedValues = [...value.slice(0, index), ...value.slice(index + 1)];
         onChange(updatedValues);
 
         // Horrible hack to update input value so that it removes the file from its selection
         // Otherwise, we cannot add a file, remove it and then add it again, as the input doesn't know its value has changed
-        inputRef.current.files = toFileList(
-            updatedValues.map((value) => value.file)
-        );
+        inputRef.current.files = toFileList(updatedValues.map((value) => value.file));
     };
 
     const hasDuplicateFiles =
         value &&
         value.some((document) => {
             return value.some(
-                (comparison) =>
-                    document.file.name === comparison.file.name &&
-                    document.id !== comparison.id
+                (comparison) => document.file.name === comparison.file.name && document.id !== comparison.id
             );
         });
 
     const changeHandler = (e) => {
-        const newFiles =
-            e.target.files instanceof Array
-                ? e.target.files
-                : Array.from(e.target.files);
+        const newFiles = e.target.files instanceof Array ? e.target.files : Array.from(e.target.files);
         const newDocumentObjects = newFiles.map((file) => ({
             id: nanoid(),
             file,
@@ -104,12 +92,8 @@ const DocumentsInput = ({ control }) => {
                         <Table.Body>
                             {value.map((document, index) => (
                                 <Table.Row key={document.id}>
-                                    <Table.Cell>
-                                        {document.file.name}
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        {formatSize(document.file.size)}
-                                    </Table.Cell>
+                                    <Table.Cell>{document.file.name}</Table.Cell>
+                                    <Table.Cell>{formatSize(document.file.size)}</Table.Cell>
                                     <Table.Cell>
                                         <Button
                                             type="button"
@@ -128,12 +112,8 @@ const DocumentsInput = ({ control }) => {
                 )}
                 {hasDuplicateFiles && (
                     <WarningCallout>
-                        <WarningCallout.Label>
-                            Possible duplicate file
-                        </WarningCallout.Label>
-                        <p>
-                            There are two or more documents with the same name.
-                        </p>
+                        <WarningCallout.Label>Possible duplicate file</WarningCallout.Label>
+                        <p>There are two or more documents with the same name.</p>
                         <p>Are you sure you want to proceed?</p>
                     </WarningCallout>
                 )}

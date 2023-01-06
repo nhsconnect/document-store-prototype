@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-    Button,
-    ErrorMessage,
-    Fieldset,
-    Input,
-    Table,
-} from "nhsuk-react-components";
+import { Button, ErrorMessage, Fieldset, Input, Table } from "nhsuk-react-components";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
@@ -94,32 +88,20 @@ const SearchResultsPage = () => {
                 )}
             </Fieldset>
             {submissionState === states.FAILED && (
-                <p>
-                    Sorry, the search failed due to an internal error. Please
-                    try again.
-                </p>
+                <p>Sorry, the search failed due to an internal error. Please try again.</p>
             )}
             {submissionState === states.SUCCEEDED && (
                 <>
                     {searchResults.length > 0 && (
                         <>
-                            <p>
-                                You can choose to download all files for this
-                                patient
-                            </p>
-                            <Button
-                                type="button"
-                                onClick={downloadAll}
-                                disabled={downloadState === states.PENDING}
-                            >
+                            <p>You can choose to download all files for this patient</p>
+                            <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING}>
                                 {downloadState === states.PENDING
                                     ? "Downloading All Documents..."
                                     : "Download All Documents"}
                             </Button>
                             {downloadState === states.FAILED && (
-                                <ErrorMessage>
-                                    Failed to download, please retry.
-                                </ErrorMessage>
+                                <ErrorMessage>Failed to download, please retry.</ErrorMessage>
                             )}
                             <Table caption="List of documents available to download">
                                 <Table.Head>
@@ -131,28 +113,19 @@ const SearchResultsPage = () => {
                                 <Table.Body>
                                     {searchResults.map((result, index) => (
                                         <Table.Row key={`document-${index}`}>
-                                            <Table.Cell>
-                                                {result.description}
-                                            </Table.Cell>
-                                            <Table.Cell>
-                                                {result.indexed.toLocaleString()}
-                                            </Table.Cell>
+                                            <Table.Cell>{result.description}</Table.Cell>
+                                            <Table.Cell>{result.indexed.toLocaleString()}</Table.Cell>
                                         </Table.Row>
                                     ))}
                                 </Table.Body>
                             </Table>
                             <p>
-                                Only use this option if you have a valid reason
-                                to permanently delete all available documents
-                                for this patient. For example, if the retention
-                                period of these documents has been reached
+                                Only use this option if you have a valid reason to permanently delete all available
+                                documents for this patient. For example, if the retention period of these documents has
+                                been reached
                             </p>
 
-                            <Button
-                                type="button"
-                                secondary
-                                onClick={goToDeleteDocumentsConfirmationPage}
-                            >
+                            <Button type="button" secondary onClick={goToDeleteDocumentsConfirmationPage}>
                                 Delete All Documents
                             </Button>
                         </>
@@ -162,8 +135,7 @@ const SearchResultsPage = () => {
             )}
 
             <>
-                {(submissionState === states.FAILED ||
-                    submissionState === states.SUCCEEDED) && (
+                {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) && (
                     <p>
                         <a className="govuk-link" href="/home">
                             Start Again

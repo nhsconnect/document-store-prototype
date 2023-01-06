@@ -19,10 +19,7 @@ const DeleteDocumentsConfirmationPage = () => {
         try {
             if (nhsNumber) {
                 const response = await client.getPatientDetails(nhsNumber);
-                setPatientName([
-                    response.result.patientDetails.givenName,
-                    response.result.patientDetails.familyName,
-                ]);
+                setPatientName([response.result.patientDetails.givenName, response.result.patientDetails.familyName]);
             }
         } catch (e) {
             console.log(e);
@@ -48,29 +45,16 @@ const DeleteDocumentsConfirmationPage = () => {
             <BackButton />
             <form onSubmit={handleSubmit(doSubmit)}>
                 <Fieldset>
-                    <Fieldset.Legend isPageHeading>
-                        Delete health records and attachments
-                    </Fieldset.Legend>
+                    <Fieldset.Legend isPageHeading>Delete health records and attachments</Fieldset.Legend>
                     <Fieldset.Legend size="m">
-                        Are you sure you want to permanently delete all files
-                        for patient {patientName[1]} {patientName[0]} NHS number{" "}
-                        {nhsNumber} ?
+                        Are you sure you want to permanently delete all files for patient {patientName[1]}{" "}
+                        {patientName[0]} NHS number {nhsNumber} ?
                     </Fieldset.Legend>
                     <Radios name="delete-documents-action">
-                        <Radios.Radio
-                            id="yes"
-                            value="yes"
-                            inputRef={trxRef}
-                            {...trxProps}
-                        >
+                        <Radios.Radio id="yes" value="yes" inputRef={trxRef} {...trxProps}>
                             Yes
                         </Radios.Radio>
-                        <Radios.Radio
-                            id="no"
-                            value="no"
-                            inputRef={trxRef}
-                            {...trxProps}
-                        >
+                        <Radios.Radio id="no" value="no" inputRef={trxRef} {...trxProps}>
                             No
                         </Radios.Radio>
                     </Radios>

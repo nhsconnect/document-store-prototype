@@ -53,9 +53,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         });
         expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
-        expect(
-            screen.getByRole("button", { name: "Continue" })
-        ).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
     });
     it('should navigate to SearchResultsPage when user choose radio button "NO" and click on continue button', async () => {
         useApi.mockImplementation(() => {
@@ -69,9 +67,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         render(<DeleteDocumentsConfirmationPage />);
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
         userEvent.click(screen.getByRole("radio", { name: "No" }));
-        expect(
-            screen.getByRole("button", { name: "Continue" })
-        ).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
         await waitFor(() => {
             expect(mockNavigate).toHaveBeenCalledWith("/search/results");
@@ -86,23 +82,14 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                     deleteAllDocuments: () => "successfully deleted",
                 };
             });
-            useNhsNumberProviderContext.mockReturnValue([
-                fakeNhsNumber,
-                jest.fn(),
-            ]);
+            useNhsNumberProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
-            expect(
-                screen.getByRole("radio", { name: "Yes" })
-            ).toBeInTheDocument();
+            expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
             userEvent.click(screen.getByRole("radio", { name: "Yes" }));
-            expect(
-                screen.getByRole("button", { name: "Continue" })
-            ).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
             userEvent.click(screen.getByRole("button", { name: "Continue" }));
             await waitFor(() => {
-                expect(useApi().deleteAllDocuments()).toBe(
-                    "successfully deleted"
-                );
+                expect(useApi().deleteAllDocuments()).toBe("successfully deleted");
             });
         });
 
@@ -115,27 +102,16 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                     },
                 };
             });
-            useNhsNumberProviderContext.mockReturnValue([
-                fakeNhsNumber,
-                jest.fn(),
-            ]);
+            useNhsNumberProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
-            expect(
-                screen.getByRole("radio", { name: "Yes" })
-            ).toBeInTheDocument();
+            expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
             userEvent.click(screen.getByRole("radio", { name: "Yes" }));
-            expect(
-                screen.getByRole("button", { name: "Continue" })
-            ).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
             userEvent.click(screen.getByRole("button", { name: "Continue" }));
             await waitFor(() => {
                 expect(mockNavigate).toHaveBeenCalledWith("/search/results");
             });
-            expect(
-                screen.getByText(
-                    "There has been an issue deleting these records, please try again later."
-                )
-            );
+            expect(screen.getByText("There has been an issue deleting these records, please try again later."));
         });
     });
 });

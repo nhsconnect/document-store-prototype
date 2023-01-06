@@ -61,9 +61,7 @@ describe("utils", () => {
     describe("downloadFile", () => {
         it("creates and clicks a link once", () => {
             const link = { click: jest.fn() };
-            jest.spyOn(document, "createElement").mockImplementation(
-                () => link
-            );
+            jest.spyOn(document, "createElement").mockImplementation(() => link);
 
             downloadFile("some-url", "some-filename");
 
@@ -73,9 +71,7 @@ describe("utils", () => {
         it("creates a link with a given URL", () => {
             const link = { click: jest.fn() };
             const url = "some-url";
-            jest.spyOn(document, "createElement").mockImplementation(
-                () => link
-            );
+            jest.spyOn(document, "createElement").mockImplementation(() => link);
 
             downloadFile(url, "some-filename");
 
@@ -85,9 +81,7 @@ describe("utils", () => {
         it("creates a link with the to be downloaded filename", () => {
             const link = { click: jest.fn() };
             const filename = "some-filename";
-            jest.spyOn(document, "createElement").mockImplementation(
-                () => link
-            );
+            jest.spyOn(document, "createElement").mockImplementation(() => link);
 
             downloadFile("some-url", filename);
 

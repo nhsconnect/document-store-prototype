@@ -1,5 +1,4 @@
 import React from "react";
-
 import Header from "./Header";
 import "./layout.scss";
 import { Footer } from "nhsuk-react-components";
@@ -10,9 +9,7 @@ const Layout = ({ children }) => {
         <>
             <Header />
             <PhaseBanner tag={"ALPHA"}>
-                {
-                    "This site is under construction. Content and structure are subject to change."
-                }
+                {"This site is under construction. Content and structure are subject to change."}
             </PhaseBanner>
             <div
                 style={{
@@ -21,10 +18,7 @@ const Layout = ({ children }) => {
                     padding: `0 1.0875rem 1.45rem`,
                 }}
             >
-                <main
-                    className="nhsuk-main-wrapper app-homepage"
-                    id="maincontent"
-                >
+                <main className="nhsuk-main-wrapper app-homepage" id="maincontent">
                     <section className="app-homepage-content">
                         <div className="nhsuk-width-container">{children}</div>
                     </section>

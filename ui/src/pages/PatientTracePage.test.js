@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-
 import { PatientTracePage } from "./PatientTracePage";
 import * as ReactRouter from "react-router";
 import useApi from "../apiClients/useApi";
@@ -41,16 +40,10 @@ describe("PatientTracePage", () => {
     it("renders the page", () => {
         render(<PatientTracePage title={"My test title"} />);
 
-        expect(
-            screen.getByRole("heading", { name: "My test title" })
-        ).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "My test title" })).toBeInTheDocument();
         expect(screen.queryByLabelText("NHS number")).toBeInTheDocument();
-        expect(
-            screen.queryByRole("button", { name: "Search" })
-        ).toBeInTheDocument();
-        expect(
-            screen.queryByRole("button", { name: "Next" })
-        ).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Search" })).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
     });
 
     it("gets the patient's data when the NHS number is submitted", async () => {
@@ -70,9 +63,7 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(
-                screen.queryByText(patientData.postalCode)
-            ).toBeInTheDocument();
+            expect(screen.queryByText(patientData.postalCode)).toBeInTheDocument();
         });
     });
 
@@ -93,28 +84,14 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(
-                screen.queryByText(`${patientData.givenName[0]}`)
-            ).toBeInTheDocument();
+            expect(screen.queryByText(`${patientData.givenName[0]}`)).toBeInTheDocument();
         });
-        expect(
-            screen.queryByText(`${patientData.familyName}`)
-        ).toBeInTheDocument();
-        expect(
-            screen.queryByText(`${patientData.birthDate}`)
-        ).toBeInTheDocument();
-        expect(
-            screen.queryByText(`${patientData.postalCode}`)
-        ).toBeInTheDocument();
-        expect(
-            screen.queryByRole("button", { name: "Next" })
-        ).toBeInTheDocument();
-        expect(
-            screen.queryByRole("button", { name: "Search" })
-        ).not.toBeInTheDocument();
-        expect(
-            screen.getByRole("textbox", { name: "NHS number" })
-        ).toHaveAttribute("readonly");
+        expect(screen.queryByText(`${patientData.familyName}`)).toBeInTheDocument();
+        expect(screen.queryByText(`${patientData.birthDate}`)).toBeInTheDocument();
+        expect(screen.queryByText(`${patientData.postalCode}`)).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Next" })).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Search" })).not.toBeInTheDocument();
+        expect(screen.getByRole("textbox", { name: "NHS number" })).toHaveAttribute("readonly");
         expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
@@ -134,9 +111,7 @@ describe("PatientTracePage", () => {
         enterNhsNumber(fakeNhsNumber);
         startSearch();
         await waitFor(() => {
-            expect(
-                screen.queryByText(`${patientData.givenName[0]}`)
-            ).toBeInTheDocument();
+            expect(screen.queryByText(`${patientData.givenName[0]}`)).toBeInTheDocument();
         });
         clickNext();
 
@@ -202,9 +177,7 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(
-                screen.getByText("Please enter a 10 digit NHS number")
-            ).toBeInTheDocument();
+            expect(screen.getByText("Please enter a 10 digit NHS number")).toBeInTheDocument();
         });
         expect(getPatientDetails).not.toHaveBeenCalled();
     });
@@ -224,9 +197,7 @@ describe("PatientTracePage", () => {
             startSearch();
 
             await waitFor(() => {
-                expect(
-                    screen.getByText("Please enter a 10 digit NHS number")
-                ).toBeInTheDocument();
+                expect(screen.getByText("Please enter a 10 digit NHS number")).toBeInTheDocument();
             });
             expect(getPatientDetails).not.toHaveBeenCalled();
         }
@@ -246,16 +217,10 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(
-                screen.getByText("Technical error - Please retry.")
-            ).toBeInTheDocument();
+            expect(screen.getByText("Technical error - Please retry.")).toBeInTheDocument();
         });
-        expect(
-            screen.queryByRole("button", { name: "Next" })
-        ).not.toBeInTheDocument();
-        expect(
-            screen.queryByRole("button", { name: "Search" })
-        ).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Search" })).toBeInTheDocument();
     });
 
     it("displays a message when no patient details are found", async () => {
@@ -300,11 +265,7 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(
-                screen.getByText(
-                    "The NHS number provided is invalid. Please Retry."
-                )
-            ).toBeInTheDocument();
+            expect(screen.getByText("The NHS number provided is invalid. Please Retry.")).toBeInTheDocument();
         });
     });
 });
