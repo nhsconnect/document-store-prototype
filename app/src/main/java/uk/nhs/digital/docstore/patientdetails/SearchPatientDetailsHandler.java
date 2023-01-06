@@ -15,7 +15,6 @@ import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthServiceHttpClient;
-import uk.nhs.digital.docstore.patientdetails.auth.SignedJwtBuilder;
 import uk.nhs.digital.docstore.publishers.AuditPublisher;
 import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 
@@ -29,10 +28,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     private final PatientSearchConfig patientSearchConfig;
     private final AuditPublisher sensitiveIndex;
 
-    private final AuthService authService = new AuthService(
-            new AuthServiceHttpClient(),
-            new SignedJwtBuilder(new PatientSearchConfig())
-    );
+    private final AuthService authService;
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {
@@ -43,6 +39,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
         this.apiConfig = apiConfig;
         this.patientSearchConfig = patientSearchConfig;
         this.sensitiveIndex = sensitiveIndex;
+        this.authService = new AuthService(new AuthServiceHttpClient(), patientSearchConfig);
     }
 
     @Override
