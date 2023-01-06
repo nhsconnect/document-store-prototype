@@ -2,7 +2,7 @@
 
 Proof of concept implementation for an interoperable service capable of storing patient and clinical documents.
 
-## Prerequisites
+## Prerequisites 
 
 - [Git](https://git-scm.com/)
 - [Dojo](https://github.com/kudulab/dojo#installation)
