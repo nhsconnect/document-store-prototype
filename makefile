@@ -8,7 +8,7 @@ test-ui: ## Run FE unit tests
 	cd ui && npm run test:nw
 
 .PHONY: format-ui
-format-ui: ## Format .js[x] files within the UI package
+format-ui: ## Format all files within the UI package
 	cd ui && npm run format
 
 .PHONY: lint-ui

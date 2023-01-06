@@ -11,8 +11,8 @@
         "test:nw": "react-scripts test --watchAll=false",
         "test:e2e": "cypress run --browser chrome",
         "test:e2e:open": "cypress open --browser chrome",
-        "format": "prettier --write \"src/**/*.{js,jsx}\"",
-        "lint": "eslint \"src/**/*.{js,jsx}\" --quiet"
+        "format": "prettier --write .",
+        "lint": "eslint \"src/**/*.{js,jsx}\""
     },
     "dependencies": {
         "@aws-amplify/ui-react": "^1.2.23",
