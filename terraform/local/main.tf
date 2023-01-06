@@ -40,7 +40,7 @@ module apigateway {
     module.doc_ref_collection_preflight,
     module.get_doc_ref_preflight,
     module.document_manifest_preflight,
-    aws_api_gateway_resource.doc_ref_collection_resource,
+    module.document_reference_api,
     module.patient_details_api,
     module.document_manifest_api
   ]

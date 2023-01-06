@@ -13,9 +13,8 @@ module "document_manifest_api" {
 
 module "document_manifest_endpoint" {
   source         = "../modules/api_gateway_endpoint"
-  environment = "local"
   api_gateway_id = module.apigateway.api_gateway_rest_api_id
-  resource_id    = module.document_manifest_api
+  resource_id    = module.document_manifest_api.document_manifest_resource_id
   lambda_arn     = module.document_manifest_api.document_manifest_lambda_invocation_arn
   http_method    = "GET"
   authorization = "NONE"
@@ -24,7 +23,6 @@ module "document_manifest_endpoint" {
 
 module "document_manifest_preflight" {
   source = "../modules/api_gateway_preflight"
-  environment = "local"
   api_gateway_id = module.apigateway.api_gateway_rest_api_id
   resource_id = module.document_manifest_api.document_manifest_resource_id
   origin = "'*'"

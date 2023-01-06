@@ -21,7 +21,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
   environment {
-    variables = env_vars
+    variables = var.env_vars
   }
 }
 

@@ -19,7 +19,7 @@ variable "basic_auth_password" {
 
 variable "lambda_jar_filename" {
   type    = string
-  default = "../app/build/libs/app.jar"
+  default = "../../app/build/libs/app.jar"
 }
 
 variable "api_gateway_stage" {
