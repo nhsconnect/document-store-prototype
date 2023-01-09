@@ -1,0 +1,8 @@
+# Dependencies
+/node_modules
+
+# Cypress
+cypress.env.json
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
