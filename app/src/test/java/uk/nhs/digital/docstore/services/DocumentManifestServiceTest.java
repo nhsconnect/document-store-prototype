@@ -8,9 +8,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.auditmessages.DownloadAllPatientRecordsAuditMessage;
+import uk.nhs.digital.docstore.audit.message.DownloadAllPatientRecordsAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
-import uk.nhs.digital.docstore.publishers.SplunkPublisher;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

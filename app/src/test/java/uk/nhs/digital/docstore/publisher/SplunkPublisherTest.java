@@ -7,8 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.auditmessages.AuditMessage;
-import uk.nhs.digital.docstore.publishers.SplunkPublisher;
+import uk.nhs.digital.docstore.audit.message.AuditMessage;
+import uk.nhs.digital.docstore.audit.message.BaseAuditMessage;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
@@ -21,6 +22,8 @@ import static org.mockito.Mockito.verify;
 class SplunkPublisherTest {
     @Mock
     private AmazonSQS amazonSqsClient;
+
+    @SuppressWarnings("unused")
     @SystemStub
     private EnvironmentVariables environmentVariables;
 
@@ -36,7 +39,7 @@ class SplunkPublisherTest {
         verify(amazonSqsClient, times(1)).sendMessage(sendMessageRequest);
     }
 
-    private static class StubAuditMessage implements AuditMessage {
+    private static class StubAuditMessage extends BaseAuditMessage implements AuditMessage {
         private final String message;
 
         public StubAuditMessage(String message) {
@@ -45,6 +48,11 @@ class SplunkPublisherTest {
 
         public String toJsonString() {
             return message;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Something happened";
         }
     }
 }

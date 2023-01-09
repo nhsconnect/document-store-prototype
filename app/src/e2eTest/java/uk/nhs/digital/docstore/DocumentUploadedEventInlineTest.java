@@ -3,38 +3,25 @@ package uk.nhs.digital.docstore;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.jayway.jsonpath.JsonPath;
-import org.json.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.publishers.SplunkPublisher;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
-import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
-import uk.org.webcompere.systemstubs.jupiter.SystemStub;
-import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 
-import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@ExtendWith(SystemStubsExtension.class)
 public class DocumentUploadedEventInlineTest {
     @Mock
     private Context context;
@@ -51,48 +38,24 @@ public class DocumentUploadedEventInlineTest {
     @Mock
     private DocumentMetadataStore documentMetadataStore;
     @Mock
-    private AmazonSQS amazonSqsClient;
-
-    @Captor
-    ArgumentCaptor<SendMessageRequest> messageRequestCaptor;
-
-    @SystemStub
-    private EnvironmentVariables environmentVariables;
+    private AuditPublisher auditPublisher;
 
     private DocumentUploadedEventHandler documentUploadedEventHandler;
 
     @BeforeEach
     void setUp() {
-        var documentReferenceService = new DocumentReferenceService(
-                documentMetadataStore,
-                new SplunkPublisher(amazonSqsClient)
-        );
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher);
 
         documentUploadedEventHandler = new DocumentUploadedEventHandler(documentReferenceService);
     }
 
     @Test
-    void sendsAuditMessageToSqsWhenThereAreRecords() {
-        var expectedFileMetadata = new JSONObject();
+    void sendsAuditMessageToSqsWhenThereAreRecords() throws JsonProcessingException {
         var id = "some-id";
         var fileName = "some-file-name";
         var fileType = "some-file-type";
         var nhsNumber = "1234567890";
-        var correlationId = "some-correlation-id";
-        expectedFileMetadata.put("id", id);
-        expectedFileMetadata.put("fileName", fileName);
-        expectedFileMetadata.put("fileType", fileType);
 
-        var now = Instant.now();
-        var expectedMessageBody = new JSONObject();
-        expectedMessageBody.put("nhsNumber", nhsNumber);
-        expectedMessageBody.put("fileMetadata", expectedFileMetadata);
-        expectedMessageBody.put("timestamp", now.toString());
-        expectedMessageBody.put("correlationId", correlationId);
-        expectedMessageBody.put("isDocumentUploadedToS3", true);
-
-        environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
-        when(context.getAwsRequestId()).thenReturn(correlationId);
         when(s3Event.getRecords()).thenReturn(List.of(s3EventNotificationRecord));
         when(s3EventNotificationRecord.getS3()).thenReturn(s3Entity);
         when(s3Entity.getBucket()).thenReturn(s3BucketEntity);
@@ -100,19 +63,7 @@ public class DocumentUploadedEventInlineTest {
         when(documentMetadataStore.getByLocation(any())).thenReturn(createMetadata(id, nhsNumber, fileName, fileType));
         documentUploadedEventHandler.handleRequest(s3Event, context);
 
-        verify(amazonSqsClient).sendMessage(messageRequestCaptor.capture());
-        var messageBody = messageRequestCaptor.getValue().getMessageBody();
-        var timestamp = JsonPath.read(messageBody, "$.timestamp").toString();
-        assertThatJson(messageBody).whenIgnoringPaths("timestamp").isEqualTo(expectedMessageBody);
-        assertThat(Instant.parse(timestamp)).isCloseTo(now, within(1, ChronoUnit.SECONDS));
-    }
-
-    @Test
-    void doesNotSendAuditMessageToSqsWhenThereAreNoRecords() {
-        when(s3Event.getRecords()).thenReturn(Collections.emptyList());
-        documentUploadedEventHandler.handleRequest(s3Event, context);
-
-        verify(amazonSqsClient, never()).sendMessage(any());
+        verify(auditPublisher).publish(any(DocumentUploadedAuditMessage.class));
     }
 
     private DocumentMetadata createMetadata(String id, String nhsNumber, String fileName, String fileType) {

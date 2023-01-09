@@ -16,7 +16,7 @@ import uk.nhs.digital.docstore.create.CreateDocumentReferenceRequestValidator;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.filestorage.GeneratePresignedUrlRequestFactory;
-import uk.nhs.digital.docstore.publishers.SplunkPublisher;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 

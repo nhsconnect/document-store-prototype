@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.auditmessages;
+package uk.nhs.digital.docstore.audit.message;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,8 +7,7 @@ import uk.nhs.digital.docstore.config.Tracer;
 
 import java.time.Instant;
 
-@SuppressWarnings("unused")
-public class BaseAuditMessage implements AuditMessage {
+public abstract class BaseAuditMessage {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final Instant timestamp;
     private final String correlationId;
@@ -22,6 +21,7 @@ public class BaseAuditMessage implements AuditMessage {
         return timestamp;
     }
 
+    @SuppressWarnings("unused")
     public String getCorrelationId() {
         return correlationId;
     }

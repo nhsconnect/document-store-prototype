@@ -1,7 +1,6 @@
-package uk.nhs.digital.docstore.auditmessages;
+package uk.nhs.digital.docstore.audit.message;
 
-@SuppressWarnings("unused")
-public class SearchPatientDetailsAuditMessage extends BaseAuditMessage {
+public class SearchPatientDetailsAuditMessage extends BaseAuditMessage implements AuditMessage {
     private final String nhsNumber;
     private final int pdsResponseStatus;
 
@@ -14,7 +13,13 @@ public class SearchPatientDetailsAuditMessage extends BaseAuditMessage {
         return nhsNumber;
     }
 
+    @SuppressWarnings("unused")
     public int getPdsResponseStatus() {
         return pdsResponseStatus;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Searched for patient details";
     }
 }

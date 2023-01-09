@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.auditmessages;
+package uk.nhs.digital.docstore.audit;
 
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;

@@ -8,10 +8,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAndUploadAuditMessage;
+import uk.nhs.digital.docstore.audit.message.AuditMessage;
+import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
+import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.publishers.AuditPublisher;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -29,7 +31,7 @@ public class DocumentReferenceServiceTest {
     private DocumentMetadataStore documentMetadataStore;
 
     @Captor
-    private ArgumentCaptor<CreateDocumentMetadataAndUploadAuditMessage> auditMessageCaptor;
+    private ArgumentCaptor<AuditMessage> auditMessageCaptor;
 
     @Test
     public void savesDocumentMetadataWithAuditing() throws JsonProcessingException {
@@ -39,9 +41,8 @@ public class DocumentReferenceServiceTest {
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setCreated(DateTimeType.now().asStringValue());
-        documentMetadata.setDocumentUploaded(false);
         var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher);
-        var expectedSensitiveAuditMessage = new CreateDocumentMetadataAndUploadAuditMessage(documentMetadata);
+        var expectedSensitiveAuditMessage = new CreateDocumentMetadataAuditMessage(documentMetadata);
 
         when(documentMetadataStore.save(documentMetadata)).thenReturn(documentMetadata);
         var actualDocumentMetadata = documentReferenceService.save(documentMetadata);
@@ -67,8 +68,7 @@ public class DocumentReferenceServiceTest {
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setIndexed(now.toString());
-        documentMetadata.setDocumentUploaded(true);
-        var expectedSensitiveAuditMessage = new CreateDocumentMetadataAndUploadAuditMessage(documentMetadata);
+        var expectedSensitiveAuditMessage = new DocumentUploadedAuditMessage(documentMetadata);
         var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, now);
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(documentMetadata);

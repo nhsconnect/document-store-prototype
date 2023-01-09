@@ -1,5 +1,10 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.stream.Collectors;
+
 public class AccessTokenRequestBody {
     private final String clientAssertion;
 
@@ -7,12 +12,16 @@ public class AccessTokenRequestBody {
         this.clientAssertion = clientAssertion;
     }
 
-    public String toFormUrlEncodedString() {
-        var requestBody = new StringBuilder();
-        requestBody.append("grant_type=client_credentials");
-        requestBody.append("client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-        requestBody.append("client_assertion=");
-        requestBody.append(this.clientAssertion);
-        return requestBody.toString();
+    public String bodyToFormUrlEncodedString() {
+        var parameters = new HashMap<String, String>();
+        parameters.put("grant_type","client_credentials");
+        parameters.put("client_assertion_type","urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
+        parameters.put("client_assertion", this.clientAssertion);
+
+        String urlEncoded = parameters.entrySet()
+                .stream()
+                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
+                .collect(Collectors.joining("&"));
+        return urlEncoded;
     }
 }
