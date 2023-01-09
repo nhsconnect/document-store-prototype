@@ -1,11 +1,7 @@
 default: help
 
 .PHONY: pre-push
-pre-push: format-ui lint-ui test-ui test-app ## Format and lint UI files and run all unit tests. Todo: BE formatting & linting.
-
-.PHONY: test-ui
-test-ui: ## Run FE unit tests
-	cd ui && npm run test:nw
+pre-push: format-ui lint-ui test-ui test-app ## Format & lint UI files & run all unit tests. Todo: BE formatting & linting.
 
 .PHONY: format-ui
 format-ui: ## Format all files within the UI package
@@ -15,6 +11,10 @@ format-ui: ## Format all files within the UI package
 lint-ui: ## Lint .js[x] files within the UI package
 	cd ui && npm run lint
 
+.PHONY: test-ui
+test-ui: ## Run UI unit tests
+	cd ui && npm run test:nw
+
 .PHONY: test-app
 test-app: ## Run BE unit tests (no logs)
 	./gradlew test --rerun-tasks
@@ -23,9 +23,19 @@ test-app: ## Run BE unit tests (no logs)
 test-app-with-logs: ## Run BE unit tests (with logs)
 	./gradlew test --rerun-tasks --info
 
+.PHONY: install-ui ## Install UI dependencies
+	cd && npm i
+
 .PHONY: build-and-deploy-to-local-stack
-build-and-deploy-to-local-stack: ## Build and deploy to LocalStack
-	./tasks build-api-jars && ./tasks deploy-to-localstack
+build-and-deploy-to-local-stack: build-api-jars deploy-to-localstack ## Build & deploy to LocalStack
+
+.PHONY: build-api-jars
+build-api-jars: ## Build API JARs
+	./tasks build-api-jars
+
+.PHONY: deploy-to-localstack
+deploy-to-localstack: ## Deploy to LocalStack
+	./tasks deploy-to-localstack
 
 .PHONY: help
 help: ## Show help
