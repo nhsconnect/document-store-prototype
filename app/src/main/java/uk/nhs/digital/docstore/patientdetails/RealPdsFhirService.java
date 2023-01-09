@@ -3,12 +3,12 @@ package uk.nhs.digital.docstore.patientdetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.auditmessages.SearchPatientDetailsAuditMessage;
+import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
-import uk.nhs.digital.docstore.publishers.AuditPublisher;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 
 public class RealPdsFhirService implements PdsFhirService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RealPdsFhirService.class);

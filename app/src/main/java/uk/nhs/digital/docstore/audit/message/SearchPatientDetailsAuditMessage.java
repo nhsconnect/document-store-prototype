@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.auditmessages;
+package uk.nhs.digital.docstore.audit.message;
 
 public class SearchPatientDetailsAuditMessage extends BaseAuditMessage {
     private final String nhsNumber;

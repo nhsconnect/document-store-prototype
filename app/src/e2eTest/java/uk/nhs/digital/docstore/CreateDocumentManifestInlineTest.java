@@ -13,13 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.auditmessages.DownloadAllPatientRecordsAuditMessage;
+import uk.nhs.digital.docstore.audit.message.DownloadAllPatientRecordsAuditMessage;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
 import uk.nhs.digital.docstore.documentmanifest.CreateDocumentManifestByNhsNumberHandler;
-import uk.nhs.digital.docstore.publishers.AuditPublisher;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.services.DocumentManifestService;
 
 import java.net.MalformedURLException;

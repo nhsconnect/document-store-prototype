@@ -1,11 +1,11 @@
-package uk.nhs.digital.docstore.publishers;
+package uk.nhs.digital.docstore.audit.publisher;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import uk.nhs.digital.docstore.auditmessages.AuditMessage;
+import uk.nhs.digital.docstore.audit.message.AuditMessage;
 
 public class SplunkPublisher implements AuditPublisher {
     private static final String AWS_REGION = "eu-west-2";

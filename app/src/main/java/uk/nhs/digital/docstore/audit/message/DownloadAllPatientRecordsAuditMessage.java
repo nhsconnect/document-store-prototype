@@ -1,5 +1,6 @@
-package uk.nhs.digital.docstore.auditmessages;
+package uk.nhs.digital.docstore.audit.message;
 
+import uk.nhs.digital.docstore.audit.FileMetadata;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 
 import java.util.List;

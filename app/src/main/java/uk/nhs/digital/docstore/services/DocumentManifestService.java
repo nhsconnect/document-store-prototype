@@ -1,9 +1,9 @@
 package uk.nhs.digital.docstore.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import uk.nhs.digital.docstore.auditmessages.DownloadAllPatientRecordsAuditMessage;
+import uk.nhs.digital.docstore.audit.message.DownloadAllPatientRecordsAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
-import uk.nhs.digital.docstore.publishers.AuditPublisher;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 
 import java.util.List;
 

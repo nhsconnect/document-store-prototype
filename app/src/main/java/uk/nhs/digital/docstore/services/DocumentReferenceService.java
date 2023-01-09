@@ -3,11 +3,11 @@ package uk.nhs.digital.docstore.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAuditMessage;
-import uk.nhs.digital.docstore.auditmessages.DocumentUploadedAuditMessage;
+import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
+import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.publishers.AuditPublisher;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 
 import java.time.Instant;
 

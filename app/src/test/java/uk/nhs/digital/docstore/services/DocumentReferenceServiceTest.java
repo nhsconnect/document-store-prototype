@@ -8,12 +8,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.auditmessages.AuditMessage;
-import uk.nhs.digital.docstore.auditmessages.CreateDocumentMetadataAuditMessage;
-import uk.nhs.digital.docstore.auditmessages.DocumentUploadedAuditMessage;
+import uk.nhs.digital.docstore.audit.message.AuditMessage;
+import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
+import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.publishers.AuditPublisher;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

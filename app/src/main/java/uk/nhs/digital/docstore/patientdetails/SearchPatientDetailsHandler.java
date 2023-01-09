@@ -15,8 +15,8 @@ import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthServiceHttpClient;
-import uk.nhs.digital.docstore.publishers.AuditPublisher;
-import uk.nhs.digital.docstore.publishers.SplunkPublisher;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 
 import java.util.Map;
 
