@@ -7,8 +7,7 @@ import uk.nhs.digital.docstore.config.Tracer;
 
 import java.time.Instant;
 
-@SuppressWarnings("unused")
-public class BaseAuditMessage implements AuditMessage {
+public abstract class BaseAuditMessage implements AuditMessage {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final Instant timestamp;
     private final String correlationId;

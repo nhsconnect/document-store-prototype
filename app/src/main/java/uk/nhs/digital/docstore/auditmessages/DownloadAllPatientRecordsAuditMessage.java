@@ -6,7 +6,6 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-@SuppressWarnings("unused")
 public class DownloadAllPatientRecordsAuditMessage extends BaseAuditMessage {
     private final String nhsNumber;
     private final List<FileMetadata> fileMetadataList;
@@ -20,6 +19,7 @@ public class DownloadAllPatientRecordsAuditMessage extends BaseAuditMessage {
         return nhsNumber;
     }
 
+    @SuppressWarnings("unused")
     public List<FileMetadata> getFileMetadataList() {
         return fileMetadataList;
     }

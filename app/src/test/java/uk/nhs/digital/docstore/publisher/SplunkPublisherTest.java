@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.auditmessages.AuditMessage;
+import uk.nhs.digital.docstore.auditmessages.BaseAuditMessage;
 import uk.nhs.digital.docstore.publishers.SplunkPublisher;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
@@ -21,6 +21,8 @@ import static org.mockito.Mockito.verify;
 class SplunkPublisherTest {
     @Mock
     private AmazonSQS amazonSqsClient;
+
+    @SuppressWarnings("unused")
     @SystemStub
     private EnvironmentVariables environmentVariables;
 
@@ -36,7 +38,7 @@ class SplunkPublisherTest {
         verify(amazonSqsClient, times(1)).sendMessage(sendMessageRequest);
     }
 
-    private static class StubAuditMessage implements AuditMessage {
+    private static class StubAuditMessage extends BaseAuditMessage {
         private final String message;
 
         public StubAuditMessage(String message) {
