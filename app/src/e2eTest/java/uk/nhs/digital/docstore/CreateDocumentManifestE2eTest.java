@@ -41,7 +41,7 @@ public class CreateDocumentManifestE2eTest {
     private final Map<String, String> document2 = Map.of("description","uploaded document 2","s3Key","key2","content","content 2");
     private final Map<String, String> document3 = Map.of("description","uploaded document 3","s3Key","key3","content","content 3");
 
-    private AwsS3Helper aws;
+    private AwsS3Helper awsS3Helper;
     private AmazonDynamoDB dynamoDbClient;
 
     @BeforeEach
@@ -49,7 +49,7 @@ public class CreateDocumentManifestE2eTest {
         var baseUri = String.format(BASE_URI_TEMPLATE, getAwsHost(), DEFAULT_PORT);
         var awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
 
-        aws = new AwsS3Helper(awsEndpointConfiguration);
+        awsS3Helper = new AwsS3Helper(awsEndpointConfiguration);
 
         dynamoDbClient = AmazonDynamoDBClientBuilder.standard()
                 .withEndpointConfiguration(awsEndpointConfiguration)
@@ -62,7 +62,7 @@ public class CreateDocumentManifestE2eTest {
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("1234"),
                 "NhsNumber", new AttributeValue("9000000009"),
-                "Location", new AttributeValue(String.format("s3://%s/%s", aws.getDocumentStoreBucketName(), document1.get("s3Key"))),
+                "Location", new AttributeValue(String.format("s3://%s/%s", awsS3Helper.getDocumentStoreBucketName(), document1.get("s3Key"))),
                 "ContentType", new AttributeValue("text/plain"),
                 "DocumentUploaded", new AttributeValue().withBOOL(true),
                 "Description", new AttributeValue(document1.get("description")),
@@ -71,7 +71,7 @@ public class CreateDocumentManifestE2eTest {
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("6987"),
                 "NhsNumber", new AttributeValue("9000000001"),
-                "Location", new AttributeValue(String.format("s3://%s/%s", aws.getDocumentStoreBucketName(), document2.get("s3Key"))),
+                "Location", new AttributeValue(String.format("s3://%s/%s", awsS3Helper.getDocumentStoreBucketName(), document2.get("s3Key"))),
                 "ContentType", new AttributeValue("text/plain"),
                 "DocumentUploaded", new AttributeValue().withBOOL(true),
                 "Description", new AttributeValue(document2.get("description")),
@@ -80,7 +80,7 @@ public class CreateDocumentManifestE2eTest {
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("5687"),
                 "NhsNumber", new AttributeValue("9000000009"),
-                "Location", new AttributeValue(String.format("s3://%s/%s", aws.getDocumentStoreBucketName(), document3.get("s3Key"))),
+                "Location", new AttributeValue(String.format("s3://%s/%s", awsS3Helper.getDocumentStoreBucketName(), document3.get("s3Key"))),
                 "ContentType", new AttributeValue("text/plain"),
                 "DocumentUploaded", new AttributeValue().withBOOL(true),
                 "Description", new AttributeValue(document3.get("description")),
@@ -89,15 +89,15 @@ public class CreateDocumentManifestE2eTest {
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("2345"),
                 "NhsNumber", new AttributeValue("9000000009"),
-                "Location", new AttributeValue(String.format("s3://%s/%s", aws.getDocumentStoreBucketName(), "somewhere")),
+                "Location", new AttributeValue(String.format("s3://%s/%s", awsS3Helper.getDocumentStoreBucketName(), "somewhere")),
                 "Content-Type", new AttributeValue("application/pdf"),
                 "DocumentUploaded", new AttributeValue().withBOOL(false),
                 "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
 
 
-        aws.addDocument(aws.getDocumentStoreBucketName(), document1.get("s3Key"), document1.get("content"));
-        aws.addDocument(aws.getDocumentStoreBucketName(), document2.get("s3Key"), document2.get("content"));
-        aws.addDocument(aws.getDocumentStoreBucketName(),document3.get("s3Key"), document3.get("content"));
+        awsS3Helper.addDocument(awsS3Helper.getDocumentStoreBucketName(), document1.get("s3Key"), document1.get("content"));
+        awsS3Helper.addDocument(awsS3Helper.getDocumentStoreBucketName(), document2.get("s3Key"), document2.get("content"));
+        awsS3Helper.addDocument(awsS3Helper.getDocumentStoreBucketName(),document3.get("s3Key"), document3.get("content"));
     }
 
     @Test

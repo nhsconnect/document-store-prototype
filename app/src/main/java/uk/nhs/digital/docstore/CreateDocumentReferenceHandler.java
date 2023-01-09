@@ -2,13 +2,11 @@ package uk.nhs.digital.docstore;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.hl7.fhir.r4.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +44,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
     private final GeneratePresignedUrlRequestFactory requestFactory = new GeneratePresignedUrlRequestFactory(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
 
     public CreateDocumentReferenceHandler() {
-        this(new ApiConfig(), new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher()), buildS3Client());
+        this(new ApiConfig(), new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher()), CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION));
     }
 
     public CreateDocumentReferenceHandler(ApiConfig apiConfig, DocumentReferenceService documentReferenceService, AmazonS3 s3client) {
@@ -110,17 +108,5 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
 
         LOGGER.debug("Processing finished - about to return the response");
         return apiConfig.getApiGatewayResponse(201, resourceAsJson, "POST", "DocumentReference/" + savedDocumentMetadata.getId());
-    }
-
-    private static AmazonS3 buildS3Client() {
-        var clientBuilder = AmazonS3ClientBuilder.standard();
-        var s3Endpoint = System.getenv("S3_ENDPOINT");
-        boolean s3_use_path_style = "true".equals(System.getenv("S3_USE_PATH_STYLE"));
-        if (!s3Endpoint.equals(DEFAULT_ENDPOINT)) {
-            clientBuilder = clientBuilder
-                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(s3Endpoint, AWS_REGION))
-                    .withPathStyleAccessEnabled(s3_use_path_style);
-        }
-        return clientBuilder.build();
     }
 }

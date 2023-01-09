@@ -1,10 +1,12 @@
 package uk.nhs.digital.docstore.helpers;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
+import com.amazonaws.services.s3.model.ListVersionsRequest;
+import com.amazonaws.services.s3.model.S3VersionSummary;
+import com.amazonaws.services.s3.model.VersionListing;
 
 public class AwsS3Helper {
     private AmazonS3 s3Client;
@@ -32,7 +34,27 @@ public class AwsS3Helper {
                 .forEach(s3Object -> s3Client.deleteObject(bucketName, s3Object.getKey()));
     }
 
+
     public void addDocument(String bucketName, String documentKey, String documentValue) {
         s3Client.putObject(bucketName, documentKey, documentValue);
+    }
+
+    public boolean markDocumentAsDelete(String s3BucketName) {
+        String s3BucketVersioningStatus = s3Client.getBucketVersioningConfiguration(s3BucketName).getStatus();
+        if (!s3BucketVersioningStatus.equals(BucketVersioningConfiguration.ENABLED)) {
+            throw new RuntimeException("It is not possible soft delete. As S3 Bucket is not versioning enabled.");
+        } else {
+            ListVersionsRequest listVersionsRequest = new ListVersionsRequest()
+                    .withBucketName(s3BucketName)
+                    .withMaxResults(2);
+            VersionListing listVersions = s3Client.listVersions(listVersionsRequest);
+            for (S3VersionSummary versionSummary : listVersions.getVersionSummaries()) {
+                if (!versionSummary.isDeleteMarker() && versionSummary.isLatest()) {
+                    versionSummary.setIsDeleteMarker(true);
+                    return  versionSummary.isDeleteMarker();
+                }
+            }
+        }
+        return Boolean.FALSE;
     }
 }
