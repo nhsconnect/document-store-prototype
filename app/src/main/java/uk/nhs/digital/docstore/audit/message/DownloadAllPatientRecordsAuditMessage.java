@@ -7,7 +7,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class DownloadAllPatientRecordsAuditMessage extends BaseAuditMessage {
+public class DownloadAllPatientRecordsAuditMessage extends BaseAuditMessage implements AuditMessage {
     private final String nhsNumber;
     private final List<FileMetadata> fileMetadataList;
 
@@ -23,5 +23,10 @@ public class DownloadAllPatientRecordsAuditMessage extends BaseAuditMessage {
     @SuppressWarnings("unused")
     public List<FileMetadata> getFileMetadataList() {
         return fileMetadataList;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Downloaded documents for patient";
     }
 }

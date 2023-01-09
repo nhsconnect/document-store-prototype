@@ -10,5 +10,7 @@ public interface AuditMessage {
     @SuppressWarnings("unused")
     String getCorrelationId();
 
+    String getDescription();
+
     String toJsonString() throws JsonProcessingException;
 }
