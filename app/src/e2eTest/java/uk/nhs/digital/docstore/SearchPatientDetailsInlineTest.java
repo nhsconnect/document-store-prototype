@@ -2,51 +2,34 @@ package uk.nhs.digital.docstore;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.jayway.jsonpath.JsonPath;
-import org.json.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.auditmessages.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.config.StubbedPatientSearchConfig;
 import uk.nhs.digital.docstore.patientdetails.SearchPatientDetailsHandler;
-import uk.nhs.digital.docstore.publishers.SplunkPublisher;
-import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
-import uk.org.webcompere.systemstubs.jupiter.SystemStub;
-import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.nhs.digital.docstore.publishers.AuditPublisher;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-@ExtendWith(SystemStubsExtension.class)
 public class SearchPatientDetailsInlineTest {
     @Mock
     private Context context;
     @Mock
-    private AmazonSQS amazonSqsClient;
-
-    @Captor
-    ArgumentCaptor<SendMessageRequest> messageRequestCaptor;
-
-    @SystemStub
-    private EnvironmentVariables environmentVariables;
+    private AuditPublisher auditPublisher;
 
     private SearchPatientDetailsHandler searchPatientDetailsHandler;
     private RequestEventBuilder requestBuilder;
@@ -56,7 +39,7 @@ public class SearchPatientDetailsInlineTest {
         searchPatientDetailsHandler = new SearchPatientDetailsHandler(
                 new StubbedApiConfig("http://ui-url"),
                 new StubbedPatientSearchConfig(),
-                new SplunkPublisher(amazonSqsClient)
+                auditPublisher
         );
         requestBuilder = new RequestEventBuilder();
     }
@@ -114,7 +97,6 @@ public class SearchPatientDetailsInlineTest {
 
         var responseEvent = searchPatientDetailsHandler.handleRequest(request, context);
 
-        verify(amazonSqsClient, never()).sendMessage(any());
         assertThat(responseEvent.getStatusCode()).isEqualTo(400);
         assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
         assertThatJson(responseEvent.getBody())
@@ -129,7 +111,6 @@ public class SearchPatientDetailsInlineTest {
 
         var responseEvent = searchPatientDetailsHandler.handleRequest(request, context);
 
-        verify(amazonSqsClient, never()).sendMessage(any());
         assertThat(responseEvent.getStatusCode()).isEqualTo(400);
         assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
         assertThatJson(responseEvent.getBody())
@@ -142,7 +123,6 @@ public class SearchPatientDetailsInlineTest {
 
         var responseEvent = searchPatientDetailsHandler.handleRequest(parameterlessRequest, context);
 
-        verify(amazonSqsClient, never()).sendMessage(any());
         assertThat(responseEvent.getStatusCode()).isEqualTo(400);
         assertThat(responseEvent.getHeaders().get("Content-Type")).contains("application/fhir+json");
         assertThatJson(responseEvent.getBody())
@@ -150,27 +130,14 @@ public class SearchPatientDetailsInlineTest {
     }
 
     @Test
-    void sendsAuditMessageToSqsWhenCallingPds() {
+    void sendsAuditMessageToSqsWhenCallingPds() throws JsonProcessingException {
         var request = requestBuilder
                 .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|9000000009")
                 .build();
-        var now = Instant.now();
-        var correlationId = "some-correlation-id";
-        var expectedMessageBody = new JSONObject();
-        expectedMessageBody.put("nhsNumber", "9000000009");
-        expectedMessageBody.put("pdsResponseStatus", 200);
-        expectedMessageBody.put("timestamp", now.toString());
-        expectedMessageBody.put("correlationId", correlationId);
 
-        environmentVariables.set("SQS_QUEUE_URL", "document-store-audit-queue-url");
-        when(context.getAwsRequestId()).thenReturn(correlationId);
         searchPatientDetailsHandler.handleRequest(request, context);
 
-        verify(amazonSqsClient).sendMessage(messageRequestCaptor.capture());
-        var messageBody = messageRequestCaptor.getValue().getMessageBody();
-        var timestamp = JsonPath.read(messageBody, "$.timestamp").toString();
-        assertThatJson(messageBody).whenIgnoringPaths("timestamp").isEqualTo(expectedMessageBody);
-        assertThat(Instant.parse(timestamp)).isCloseTo(now, within(1, ChronoUnit.SECONDS));
+        verify(auditPublisher).publish(any(SearchPatientDetailsAuditMessage.class));
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
