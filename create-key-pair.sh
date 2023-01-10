@@ -31,7 +31,7 @@ function createKeyPair {
   }' > $KID.json
 }
 
-function addPrivateKeyToParameterStore {
+function addKeyPairToParameterStore {
   PRIVATE_KEY=$(cat pkcs8.key)
   PUBLIC_KEY=$(cat $KID.json)
 
@@ -46,6 +46,12 @@ function addPrivateKeyToParameterStore {
        --value "$PUBLIC_KEY" \
        --type String \
        --overwrite
+
+  aws ssm put-parameter \
+       --name /prs/${ENVIRONMENT}/user-input/pds-fhir-kid \
+       --value "$KID" \
+       --type String \
+       --overwrite
 }
 
 if [[ -z "${ENVIRONMENT}" ]]; then
@@ -57,7 +63,7 @@ echo "creating key pair..."
 createKeyPair
 
 echo "saving public and private key to parameter store..."
-addPrivateKeyToParameterStore
+addKeyPairToParameterStore
 
 echo "cleaning up project directory..."
 rm $KID.pem $KID.pem.pub $KID.json pkcs8.key
