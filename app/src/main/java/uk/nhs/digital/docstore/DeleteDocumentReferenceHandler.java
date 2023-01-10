@@ -58,8 +58,9 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
                 logger.info("Started deleting documents from s3");
                 metadata.forEach(documentMetadata -> {
                     var bucketName = documentMetadata.getLocation().split("//")[1].split("/")[0];
-                    logger.info("Showing the bucketName"+bucketName);
-                    if (!DeleteMarkerUtil.markDocumentAsDelete(s3client,bucketName)) {
+                    var objectPrefix =  documentMetadata.getLocation().split("//")[1].split("/")[1];
+                    logger.info("Showing the bucketName "+bucketName + " object prefix " + objectPrefix);
+                    if (!DeleteMarkerUtil.markDocumentAsDelete(s3client,bucketName, objectPrefix)) {
                         logger.error("It is not possible to delete document from s3");
                     }
                 });

@@ -11,15 +11,16 @@ import uk.nhs.digital.docstore.DeleteDocumentReferenceHandler;
 
 public class DeleteMarkerUtil {
     private static final Logger logger = LoggerFactory.getLogger(DeleteDocumentReferenceHandler.class);
-    public static boolean markDocumentAsDelete(AmazonS3 s3client, String s3BucketName) {
+    public static boolean markDocumentAsDelete(AmazonS3 s3client, String s3BucketName, String objectPrefix) {
         logger.info("inside the markDocumentAsDelete method"+s3client);
-        String s3BucketVersioningStatus = s3client.getBucketVersioningConfiguration(s3BucketName).getStatus();
-        logger.info("Showing the bucketVersionStatus"+s3BucketVersioningStatus);
-        if (!s3BucketVersioningStatus.equals(BucketVersioningConfiguration.ENABLED)) {
-            throw new RuntimeException("It is not possible soft delete. As S3 Bucket is not versioning enabled.");
-        } else {
+//        String s3BucketVersioningStatus = s3client.getBucketVersioningConfiguration(s3BucketName).getStatus();
+//        logger.info("Showing the bucketVersionStatus"+s3BucketVersioningStatus);
+//        if (!s3BucketVersioningStatus.equals(BucketVersioningConfiguration.ENABLED)) {
+//            throw new RuntimeException("It is not possible soft delete. As S3 Bucket is not versioning enabled.");
+//        } else {
             ListVersionsRequest listVersionsRequest = new ListVersionsRequest()
                     .withBucketName(s3BucketName)
+                    .withPrefix(objectPrefix)
                     .withMaxResults(2);
             logger.info("Showing the ListVersionsRequest"+listVersionsRequest);
             VersionListing listVersions = s3client.listVersions(listVersionsRequest);
@@ -31,7 +32,7 @@ public class DeleteMarkerUtil {
                     return  versionSummary.isDeleteMarker();
                 }
             }
-        }
+//        }
         return Boolean.FALSE;
     }
 
