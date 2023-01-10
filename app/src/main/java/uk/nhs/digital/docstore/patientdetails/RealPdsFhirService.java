@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
+import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
@@ -29,7 +30,7 @@ public class RealPdsFhirService implements PdsFhirService {
         this.authService = authService;
     }
 
-    public Patient fetchPatientDetails(String nhsNumber) throws JsonProcessingException {
+    public Patient fetchPatientDetails(String nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException {
         var path = "Patient/" + nhsNumber;
 
         var accessToken = authService.getAccessToken();

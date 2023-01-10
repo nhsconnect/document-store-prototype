@@ -53,7 +53,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var parameterForm = new NHSNumberSearchParameterForm(searchParameters);
             var nhsNumber = parameterForm.getNhsNumber();
             var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
-                    ? new FakePdsFhirService(sensitiveIndex, authService)
+                    ? new FakePdsFhirService(sensitiveIndex)
                     : new RealPdsFhirService(patientSearchConfig, sensitiveIndex, authService);
             var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
 

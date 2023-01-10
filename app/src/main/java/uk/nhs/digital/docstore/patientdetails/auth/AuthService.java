@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.patientdetails.auth;
 
+import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 
 public class AuthService {
@@ -17,7 +18,7 @@ public class AuthService {
         this.jwtBuilder = jwtBuilder;
     }
 
-    public String getAccessToken() {
+    public String getAccessToken() throws MissingEnvironmentVariableException {
         var signedJwt = jwtBuilder.build();
         var accessTokenResponse = httpClient.fetchAccessToken(signedJwt, patientSearchConfig.nhsOauthEndpoint());
         return accessTokenResponse.getAccessToken();

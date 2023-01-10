@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 
 import java.time.Instant;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.when;
 class SignedJwtBuilderTest {
 
     @Test
-    void shouldGenerateASignedJwtWithRequiredClaims() {
+    void shouldGenerateASignedJwtWithRequiredClaims() throws MissingEnvironmentVariableException {
         var now = Instant.now();
         var randomUuid = UUID.randomUUID();
         var nhsApiKey = "nhs-api-key";

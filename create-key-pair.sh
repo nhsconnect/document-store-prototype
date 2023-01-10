@@ -60,6 +60,6 @@ echo "saving public and private key to parameter store..."
 addPrivateKeyToParameterStore
 
 echo "cleaning up project directory..."
-rm $KID.pem $KID.pem.pub $KID.json
+rm $KID.pem $KID.pem.pub $KID.json pkcs8.key
 
 echo "finished"
