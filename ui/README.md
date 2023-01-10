@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
--   [Node](https://nodejs.org/en/download/)
--   [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
--   [nvm](https://github.com/nvm-sh/nvm)
+- [Node](https://nodejs.org/en/download/)
+- [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
+- [nvm](https://github.com/nvm-sh/nvm)
 
 _Note: Node/npm versions can be managed using [nvm](https://github.com/nvm-sh/nvm). The version can be found in
 the [.nvmrc](.nvmrc)._
@@ -32,7 +32,7 @@ file needs to be modified to connect to a Cognito pool and the API Gateway. Ther
 API gateway configuration.
 
 | Placeholder           | Terraform output    |
-| --------------------- | ------------------- |
+|-----------------------|---------------------|
 | `%api-gateway-id%`    | `api_gateway_id`    |
 | `%api-gateway-stage%` | `api_gateway_stage` |
 
@@ -68,32 +68,6 @@ following command:
 
 ```bash
 npm test
-```
-
-### E2E Tests
-
-E2E tests are run using [Cypress](https://www.cypress.io/) and require all services (incl. the UI) to be running
-locally.
-
-#### 1. Setup Cypress Config
-
-Before running the tests, you must set valid AWS Cognito credentials. Copy
-the [cypress.env.json.example](cypress.env.json.example) file and rename it to `cypress.env.json`. Replace the empty
-strings with a valid
-AWS Cognito username and password.
-
-#### 2. Run Cypress
-
-To start the E2E tests in open mode (with a visible browser window), run:
-
-```bash
-npm run test:e2e:open
-```
-
-For headless mode (without a visible browser window), run:
-
-```bash
-npm run test:e2e
 ```
 
 ## Feature Toggles

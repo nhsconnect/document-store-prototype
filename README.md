@@ -2,7 +2,7 @@
 
 Proof of concept implementation for an interoperable service capable of storing patient and clinical documents.
 
-## Prerequisites 
+## Prerequisites
 
 - [Git](https://git-scm.com/)
 - [Dojo](https://github.com/kudulab/dojo#installation)
@@ -126,7 +126,10 @@ The `test` source set contains unit tests. These don't have any dependencies on 
 These are run in CI. There is also a suite of API tests within the `e2eTest` source set which require LocalStack to
 simulate AWS. Since we are using the open source version of LocalStack, we are unable to run the API tests in CI.
 
-There also a set of E2E test that run in the browser using Cypress. See the [UI README](/ui/README.md).
+### E2E Test
+
+The E2E test runs against the entire system (i.e. UI, BE, and AWS services). These can be found in [/e2eTest](e2eTest)
+and more details can be found in the [README](e2eTest/README.md).
 
 ### Reading Logs
 
@@ -152,9 +155,9 @@ One may also follow log output as it happens by applying the `follow` flag to th
 LocalStack and the E2E tests support a native Docker service running on `localhost`. Other setups, such as Docker
 Machine, may need to target other IP addresses.
 
-| Variable name    | Description                                                                                   |
-|------------------|-----------------------------------------------------------------------------------------------|
-| `EDGE_HOST_NAME` | Overrides the host that LocalStack binds its edge service to (default: `127.0.0.1`).          |
+| Variable name    | Description                                                                          |
+|------------------|--------------------------------------------------------------------------------------|
+| `EDGE_HOST_NAME` | Overrides the host that LocalStack binds its edge service to (default: `127.0.0.1`). |
 
 To use this with Docker Machine, one might add the following to the Bash profile (or a utility
 like [direnv](https://direnv.net/)): `export EDGE_HOST_NAME=0.0.0.0`.
@@ -166,8 +169,10 @@ like [direnv](https://direnv.net/)): `export EDGE_HOST_NAME=0.0.0.0`.
 If you see a log saying that the docker daemon is not running when running `./tasks start-localstack`, it is likely due
 to colima not being started. You can fix this by running `colima start`.
 
-### nvm 
-If you're having problems downloading the node version using nvm then switch to n (or your favourite node package manager)
+### nvm
+
+If you're having problems downloading the node version using nvm then switch to n (or your favourite node package
+manager)
 [n](https://formulae.brew.sh/formula/n)
 
 ### LocalStack Timeout On Start
@@ -420,9 +425,9 @@ Status: `200 OK`
 
 Headers:
 
-| Name         | Value                                                |
-|--------------|------------------------------------------------------|
-| Content-Type | application/fhir+json                                |
+| Name         | Value                 |
+|--------------|-----------------------|
+| Content-Type | application/fhir+json |
 
 Body:
 
@@ -582,9 +587,9 @@ Status: `200 OK`
 
 Headers:
 
-| Name         | Value                                                |
-|--------------|------------------------------------------------------|
-| Content-Type | application/fhir+json                                |
+| Name         | Value                 |
+|--------------|-----------------------|
+| Content-Type | application/fhir+json |
 
 Body:
 
@@ -804,9 +809,9 @@ Status: `200 OK`
 
 Headers:
 
-| Name         | Value                                                |
-|--------------|------------------------------------------------------|
-| Content-Type | application/fhir+json                                |
+| Name         | Value                 |
+|--------------|-----------------------|
+| Content-Type | application/fhir+json |
 
 Body:
 
