@@ -3,10 +3,10 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "test:e2e": "cypress run --browser chrome",
-        "test:e2e:open": "cypress open --browser chrome",
         "format": "prettier --write .",
-        "lint": "eslint \"src/**/*.{js}\""
+        "lint": "eslint \"src/**/*.{js}\"",
+        "test:e2e": "cypress run --browser chrome",
+        "test:e2e:open": "cypress open --browser chrome"
     },
     "devDependencies": {
         "@testing-library/cypress": "^8.0.7",

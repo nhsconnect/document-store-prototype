@@ -21,6 +21,8 @@ fileignoreconfig:
   checksum: a12a1fbc24b509f803b5f9b8db4d785b904d24bfe534ce78a5ea97636d9c79e1
 - filename: terraform/patientdetailsapi.tf
   checksum: 4f77c399885e00687d2e8b637f53a7089cb15ba8d724471f7ac0e653743d5cd8
+- filename: cypress/cypress.env.json.example
+  checksum: bd5a1f0b3e7ce77dcd2ae3e47bae5eb0879acf4ddce46d6eeb4a0cfcf0faa8f6
 version: ""
 scopeconfig:
   - scope: node
