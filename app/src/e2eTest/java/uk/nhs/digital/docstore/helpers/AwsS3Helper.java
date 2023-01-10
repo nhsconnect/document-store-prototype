@@ -39,22 +39,8 @@ public class AwsS3Helper {
         s3Client.putObject(bucketName, documentKey, documentValue);
     }
 
-    public boolean markDocumentAsDelete(String s3BucketName) {
-        String s3BucketVersioningStatus = s3Client.getBucketVersioningConfiguration(s3BucketName).getStatus();
-        if (!s3BucketVersioningStatus.equals(BucketVersioningConfiguration.ENABLED)) {
-            throw new RuntimeException("It is not possible soft delete. As S3 Bucket is not versioning enabled.");
-        } else {
-            ListVersionsRequest listVersionsRequest = new ListVersionsRequest()
-                    .withBucketName(s3BucketName)
-                    .withMaxResults(2);
-            VersionListing listVersions = s3Client.listVersions(listVersionsRequest);
-            for (S3VersionSummary versionSummary : listVersions.getVersionSummaries()) {
-                if (!versionSummary.isDeleteMarker() && versionSummary.isLatest()) {
-                    versionSummary.setIsDeleteMarker(true);
-                    return  versionSummary.isDeleteMarker();
-                }
-            }
-        }
-        return Boolean.FALSE;
+    public AmazonS3 getS3Client() {
+        return s3Client;
     }
+
 }

@@ -8,6 +8,7 @@ import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.helpers.AwsS3Helper;
+import uk.nhs.digital.docstore.utils.DeleteMarkerUtil;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -79,8 +80,7 @@ public class DeleteDocumentReferenceE2eTest {
         var actual = dynamoDbClient.getItem(TABLE_NAME, Map.of("ID", document.get("ID")));
         var deletedAt = actual.getItem().get("Deleted").getS();
 
-        var isMarkerAsDelete = awsS3.markDocumentAsDelete(awsS3.getDocumentStoreBucketName());
-
+        var isMarkerAsDelete = DeleteMarkerUtil.markDocumentAsDelete(awsS3.getS3Client(), awsS3.getDocumentStoreBucketName());
         assertThat(isMarkerAsDelete).isTrue();
         assertThat(deleteDocumentReferenceResponse.statusCode()).isEqualTo(200);
         assertThat(Instant.now().isAfter(Instant.parse(deletedAt))).isTrue();
