@@ -81,19 +81,19 @@ function create_ui_config_file() {
 }
 
 function create_cypress_config_file() {
-  cp ui/cypress.env.json.example ui/cypress.env.json
+  cp e2eTest/cypress.env.json.example e2eTest/cypress.env.json
   username="$(get_ssm_parameter /prs/${ENVIRONMENT}/user-input/cypress-username)"
   password="$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/cypress-password)"
   basic_auth_username=$ENVIRONMENT
   basic_auth_password="$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/basic-auth-password)"
   oidc_provider=$OIDC_PROVIDER_ID
 
-  sed -i "s/%environment%/${ENVIRONMENT}/" ui/cypress.env.json
-  sed -i "s/%username%/${username}/" ui/cypress.env.json
-  sed -i "s~%password%~${password}~" ui/cypress.env.json
-  sed -i "s~%basic_auth_username%~${basic_auth_username}~" ui/cypress.env.json
-  sed -i "s~%basic_auth_password%~${basic_auth_password}~" ui/cypress.env.json
-  sed -i "s/%oidc_provider%/${oidc_provider}/" ui/cypress.env.json
+  sed -i "s/%environment%/${ENVIRONMENT}/" e2eTest/cypress.env.json
+  sed -i "s/%username%/${username}/" e2eTest/cypress.env.json
+  sed -i "s~%password%~${password}~" e2eTest/cypress.env.json
+  sed -i "s~%basic_auth_username%~${basic_auth_username}~" e2eTest/cypress.env.json
+  sed -i "s~%basic_auth_password%~${basic_auth_password}~" e2eTest/cypress.env.json
+  sed -i "s/%oidc_provider%/${oidc_provider}/" e2eTest/cypress.env.json
 }
 
 function export_cypress_base_url() {

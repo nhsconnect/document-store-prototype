@@ -1,22 +1,16 @@
 fileignoreconfig:
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/PatientSearchConfig.java
   checksum: 3e2ea43720ac7360f265a690449a859e41f01fc984459e53b1c08680e033b3d1
-- filename: ui/cypress.env.json.example
-  checksum: b87419cf6f1f509047b9eca7787ff69d7bea95c33d659bd62bbbd1191bd67d5a
 - filename: terraform/.terraform.lock.hcl
   checksum: 512a82c4e4de3c201a985a00ebde5d66a32b4c3284015b7b149c022c65163e5e
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
   checksum: 61352f0d95bc336a602b5818df4eb37c510edb28e6289825c7fa30f5a8166b6e
-- filename: ui/cypress/support/commands.js
-  checksum: 2c1038f4da75a664ac32114fb339819dd4d112209e43a52f59c5ba6871ae6d6f
 - filename: ui/src/pages/PatientTracePage.jsx
   checksum: c977a7264b9471475fade1959b6b804554714c8c7cdf800a27cdc10237f0b6b7
 - filename: ui/src/components/DocumentsInput.js
   checksum: 40a32581128e743013059ff23449819d3f2c98429769c2c6f1c81fd451009867
 - filename: ui/src/components/UploadSummary.js
   checksum: 52589b3e499115d195f095d0c5895f12525799bb56829815b1d90147d1a4194e
-- filename: ui/cypress/e2e/uploadAndDownload.cy.js
-  checksum: a12a1fbc24b509f803b5f9b8db4d785b904d24bfe534ce78a5ea97636d9c79e1
 - filename: terraform/patientdetailsapi.tf
   checksum: 4f77c399885e00687d2e8b637f53a7089cb15ba8d724471f7ac0e653743d5cd8
 - filename: cypress/cypress.env.json.example
