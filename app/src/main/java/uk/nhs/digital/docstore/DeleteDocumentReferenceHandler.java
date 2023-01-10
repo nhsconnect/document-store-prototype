@@ -57,6 +57,7 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
                 logger.info("Started deleting documents from s3");
                 metadata.forEach(documentMetadata -> {
                     var bucketName = documentMetadata.getLocation().split("//")[1].split("/")[0];
+                    logger.info("Showing the bucketName", bucketName);
                     if (!this.markDocumentAsDelete(bucketName)) {
                         logger.error("It is not possible to delete document from s3");
                     }
@@ -73,14 +74,18 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
 
     public boolean markDocumentAsDelete(String s3BucketName) {
         String s3BucketVersioningStatus = s3client.getBucketVersioningConfiguration(s3BucketName).getStatus();
+        logger.info("Showing the bucketVersionStatus", s3BucketVersioningStatus);
         if (!s3BucketVersioningStatus.equals(BucketVersioningConfiguration.ENABLED)) {
             throw new RuntimeException("It is not possible soft delete. As S3 Bucket is not versioning enabled.");
         } else {
             ListVersionsRequest listVersionsRequest = new ListVersionsRequest()
                     .withBucketName(s3BucketName)
                     .withMaxResults(2);
+            logger.info("Showing the ListVersionsRequest", listVersionsRequest);
             VersionListing listVersions = s3client.listVersions(listVersionsRequest);
+            logger.info("Showing the VersionListing", listVersions);
             for (S3VersionSummary versionSummary : listVersions.getVersionSummaries()) {
+                logger.info("Showing the S3VersionSummary", versionSummary);
                 if (!versionSummary.isDeleteMarker() && versionSummary.isLatest()) {
                     versionSummary.setIsDeleteMarker(true);
                     return  versionSummary.isDeleteMarker();
