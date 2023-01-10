@@ -4,23 +4,18 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
+import uk.nhs.digital.docstore.utils.CommonUtils;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
 public class SignedJwtBuilder {
-    private final Instant now;
-    private final UUID uuid;
+    private final Clock clock;
     private final PatientSearchConfig patientSearchConfig;
 
-    public SignedJwtBuilder(PatientSearchConfig patientSearchConfig) {
-        this(patientSearchConfig, Instant.now(), UUID.randomUUID());
-    }
-
-    public SignedJwtBuilder(PatientSearchConfig patientSearchConfig, Instant now, UUID uuid) {
-        this.now = now;
-        this.uuid = uuid;
+    public SignedJwtBuilder(Clock clock, PatientSearchConfig patientSearchConfig) {
+        this.clock = clock;
         this.patientSearchConfig = patientSearchConfig;
     }
 
@@ -31,11 +26,11 @@ public class SignedJwtBuilder {
         Algorithm privateAlgorithm = patientSearchConfig.pdsFhirAuthPrivateTokenSigningAlgorithm();
 
         return JWT.create()
-                .withJWTId(uuid.toString())
+                .withJWTId(CommonUtils.generateRandomUUIDString())
                 .withSubject(nhsApiKey)
                 .withIssuer(nhsApiKey)
                 .withAudience(nhsOauthEndpoint)
-                .withExpiresAt(now.plus(5, ChronoUnit.MINUTES))
+                .withExpiresAt(Instant.now(clock).plus(5, ChronoUnit.MINUTES))
                 .sign(privateAlgorithm);
     }
 }

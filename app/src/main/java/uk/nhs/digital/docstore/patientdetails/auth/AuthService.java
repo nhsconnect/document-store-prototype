@@ -3,13 +3,15 @@ package uk.nhs.digital.docstore.patientdetails.auth;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 
+import java.time.Clock;
+
 public class AuthService {
     private final AuthServiceHttpClient httpClient;
     private final PatientSearchConfig patientSearchConfig;
     private final SignedJwtBuilder jwtBuilder;
 
     public AuthService(AuthServiceHttpClient httpClient, PatientSearchConfig patientSearchConfig) {
-        this(httpClient, patientSearchConfig, new SignedJwtBuilder(patientSearchConfig));
+        this(httpClient, patientSearchConfig, new SignedJwtBuilder(Clock.systemDefaultZone(), patientSearchConfig));
     }
 
     public AuthService(AuthServiceHttpClient httpClient, PatientSearchConfig patientSearchConfig, SignedJwtBuilder jwtBuilder) {

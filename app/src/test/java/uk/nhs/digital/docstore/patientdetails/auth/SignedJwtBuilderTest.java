@@ -4,10 +4,15 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
+import uk.nhs.digital.docstore.utils.CommonUtils;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
@@ -20,7 +25,8 @@ class SignedJwtBuilderTest {
     @Test
     void shouldGenerateASignedJwtWithRequiredClaims() throws MissingEnvironmentVariableException {
         var now = Instant.now();
-        var randomUuid = UUID.randomUUID();
+        var clock = Clock.fixed(now, ZoneId.systemDefault());
+        var randomUuidAsString = UUID.randomUUID().toString();
         var nhsApiKey = "nhs-api-key";
         var oauthEndpoint = "oauth-endpoint";
         var kid = "some-kid";
@@ -32,19 +38,21 @@ class SignedJwtBuilderTest {
         when(patientSearchConfig.kid()).thenReturn(kid);
         when(patientSearchConfig.pdsFhirAuthPrivateTokenSigningAlgorithm()).thenReturn(algorithm);
 
-        var jwtBuilder = new SignedJwtBuilder(patientSearchConfig, now, randomUuid);
+        var jwtBuilder = new SignedJwtBuilder(clock, patientSearchConfig);
 
-        var actualJwt= jwtBuilder.build();
+        try (MockedStatic<CommonUtils> utilities = Mockito.mockStatic(CommonUtils.class)) {
+            utilities.when(CommonUtils::generateRandomUUIDString).thenReturn(randomUuidAsString);
+            var actualJwt= jwtBuilder.build();
 
-        JWTVerifier verifier = JWT.require(algorithm)
-                .withClaim("exp", now.plus(5, ChronoUnit.MINUTES))
-                .withJWTId(randomUuid.toString())
-                .withIssuer(nhsApiKey)
-                .withSubject(nhsApiKey)
-                .withAudience(oauthEndpoint)
-                .build();
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withClaim("exp", now.plus(5, ChronoUnit.MINUTES))
+                    .withJWTId(randomUuidAsString)
+                    .withIssuer(nhsApiKey)
+                    .withSubject(nhsApiKey)
+                    .withAudience(oauthEndpoint)
+                    .build();
 
-        assertDoesNotThrow(() -> verifier.verify(actualJwt));
+            assertDoesNotThrow(() -> verifier.verify(actualJwt));
+        }
     }
-
 }
