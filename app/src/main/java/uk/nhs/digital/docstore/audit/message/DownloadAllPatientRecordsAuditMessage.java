@@ -27,6 +27,6 @@ public class DownloadAllPatientRecordsAuditMessage extends BaseAuditMessage impl
 
     @Override
     public String getDescription() {
-        return "Downloaded documents for patient";
+        return "Downloaded documents";
     }
 }

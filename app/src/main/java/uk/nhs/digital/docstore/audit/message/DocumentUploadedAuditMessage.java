@@ -23,6 +23,6 @@ public class DocumentUploadedAuditMessage extends BaseAuditMessage implements Au
 
     @Override
     public String getDescription() {
-        return "Document uploaded";
+        return "Uploaded document";
     }
 }
