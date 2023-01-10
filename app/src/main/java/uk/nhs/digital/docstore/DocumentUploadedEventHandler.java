@@ -7,17 +7,17 @@ import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotificatio
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
-@SuppressWarnings("unused")
 public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Void> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentUploadedEventHandler.class);
 
     private final DocumentReferenceService documentReferenceService;
 
+    @SuppressWarnings("unused")
     public DocumentUploadedEventHandler() {
         this(new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher()));
     }
@@ -44,6 +44,9 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
             }
         } catch (JsonProcessingException jsonProcessingException) {
             jsonProcessingException.printStackTrace();
+        } catch (Exception exception) {
+            LOGGER.error(exception.getMessage(), exception);
+            throw exception;
         }
 
         return null;

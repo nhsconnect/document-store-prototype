@@ -23,6 +23,6 @@ public class CreateDocumentMetadataAuditMessage extends BaseAuditMessage impleme
 
     @Override
     public String getDescription() {
-        return "Created document metadata";
+        return "Initiated document upload";
     }
 }
