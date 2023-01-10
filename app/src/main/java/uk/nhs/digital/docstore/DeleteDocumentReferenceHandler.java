@@ -5,17 +5,12 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
-import com.amazonaws.services.s3.model.ListVersionsRequest;
-import com.amazonaws.services.s3.model.S3VersionSummary;
-import com.amazonaws.services.s3.model.VersionListing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.utils.CommonUtils;
-import uk.nhs.digital.docstore.utils.DeleteMarkerUtil;
 
 
 public class DeleteDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -58,11 +53,9 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
                 logger.info("Started deleting documents from s3");
                 metadata.forEach(documentMetadata -> {
                     var bucketName = documentMetadata.getLocation().split("//")[1].split("/")[0];
-                    var objectPrefix =  documentMetadata.getLocation().split("//")[1].split("/")[1];
-                    logger.info("Showing the bucketName "+bucketName + " object prefix " + objectPrefix);
-                    if (!DeleteMarkerUtil.markDocumentAsDelete(s3client,bucketName, objectPrefix)) {
-                        logger.error("It is not possible to delete document from s3");
-                    }
+                    var objectKey =  documentMetadata.getLocation().split("//")[1].split("/")[1];
+                    logger.info("Showing the bucketName "+bucketName + " object key " + objectKey);
+                    s3client.deleteObject(bucketName, objectKey);
                 });
             }
 
