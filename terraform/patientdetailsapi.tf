@@ -20,7 +20,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
       NHS_OAUTH_ENDPOINT   = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_oauth_endpoint[0].value : ""
       AMPLIFY_BASE_URL     = local.amplify_base_url
       SQS_ENDPOINT         = var.sqs_endpoint
-      SQS_QUEUE_URL        = aws_sqs_queue.sensitive_audit.url
+      SQS_QUEUE_URL        = aws_sqs_queue.document-store.url
     }
   }
 }
