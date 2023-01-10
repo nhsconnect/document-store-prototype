@@ -131,29 +131,28 @@ common:
   e2e_test: &e2e_test
     tasks:
       - exec:
-          # TODO: Create separate Cypress NPM project so that we do not have to install all the frontend deps
           command: dojo
           arguments:
             - -c
             - Dojofile-node
-            - ./tasks install-ui-dependencies
+            - ./tasks install-e2e-test-dependencies
       - exec:
           command: dojo
           arguments:
             - -c
             - Dojofile-infra
-            - ./tasks configure-e2e-tests
+            - ./tasks configure-e2e-test
       - exec:
           command: dojo
           arguments:
             - -c
             - Dojofile-node
-            - ./ui/node_modules/.bin/cypress install && ./tasks run-e2e-tests
+            - ./e2eTest/node_modules/.bin/cypress install && ./tasks run-e2e-test
     artifacts:
       - test:
-          source: ui/cypress/screenshots
+          source: e2eTest/cypress/screenshots
       - test:
-          source: ui/cypress/videos
+          source: e2eTest/cypress/videos
 pipelines:
   "paperless-record-service.dev":
     group: paperless-record-service
@@ -204,7 +203,7 @@ pipelines:
             OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
           jobs:
-            e2e-tests: *e2e_test
+            e2e-test: *e2e_test
   "paperless-record-service.pre-prod":
     group: paperless-record-service
     label_template: "${git[:8]}"
@@ -260,7 +259,7 @@ pipelines:
             OIDC_PROVIDER_ID: "COGNITO"
           clean_workspace: true
           jobs:
-            e2e-tests: *e2e_test
+            e2e-test: *e2e_test
   "paperless-record-service.prod":
     group: paperless-record-service
     label_template: "${git[:8]}"

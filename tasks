@@ -97,7 +97,7 @@ function create_cypress_config_file() {
 }
 
 function export_cypress_base_url() {
-  echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com" > ui/cypress.sh
+  echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com" >e2eTest/cypress.sh
 }
 
 function get_terraform_output() {
@@ -133,8 +133,7 @@ function tf_init {
 
 function confirm_current_role {
   sts=$(aws sts get-caller-identity)
-  if [[ $? -eq 254 ]]
-  then
+  if [[ $? -eq 254 ]]; then
     echo ${sts}
     return 1
   fi
@@ -142,9 +141,8 @@ function confirm_current_role {
   echo ${sts}
   read -p "Is this the intended role (y/n)? " -n 1 -r
   echo
-  if ! [[ $REPLY =~ ^[Yy]$ ]]
-  then
-     exit
+  if ! [[ $REPLY =~ ^[Yy]$ ]]; then
+    exit
   fi
 }
 
@@ -158,14 +156,13 @@ function create_cognito_user {
 
 function delete_cognito_user {
   aws cognito-idp admin-delete-user --user-pool-id $(get_user_pool_id) --username "$1"
-  if [[ $? -eq 0 ]]
-  then
+  if [[ $? -eq 0 ]]; then
     echo "User deleted"
   fi
 }
 
 function create_json_for_nhs_api_public_key() {
-    echo $(get_ssm_parameter /prs/${ENVIRONMENT}/user-input/pds-fhir-public-key) > ui/public/jwks.json
+  echo $(get_ssm_parameter /prs/${ENVIRONMENT}/user-input/pds-fhir-public-key) >ui/public/jwks.json
 }
 
 readonly command="$1"
@@ -212,7 +209,7 @@ view-localstack-logs)
   docker logs $LOCALSTACK_CONTAINER --follow
   ;;
 view-wiremock-logs)
-  export WIREMOCK_CONTAINER=$(docker ps -a | grep wiremock/wiremock  | head -1 | cut -f 1 -d ' ')
+  export WIREMOCK_CONTAINER=$(docker ps -a | grep wiremock/wiremock | head -1 | cut -f 1 -d ' ')
   docker logs $WIREMOCK_CONTAINER --follow
   ;;
 tf_plan)
@@ -251,13 +248,17 @@ export-aws-creds)
   assume_ci_role
   export_aws_credentials
   ;;
-configure-e2e-tests)
+install-e2e-test-dependencies)
+  cd e2eTest
+  npm ci
+  ;;
+configure-e2e-test)
   get_terraform_output terraform_output.json
   export_cypress_base_url terraform_output.json
   create_cypress_config_file
   ;;
-run-e2e-tests)
-  cd ui
+run-e2e-test)
+  cd e2eTest
   source ./cypress.sh
   echo $CYPRESS_BASE_URL
   rm cypress.sh
