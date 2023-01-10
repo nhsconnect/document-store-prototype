@@ -6,6 +6,6 @@ aws_endpoint                 = "http://localstack:4566"
 dynamodb_endpoint            = "http://localstack:4566"
 s3_endpoint                  = "http://localstack:4566"
 s3_use_path_style            = true
-pds_fhir_is_stubbed          = "false"
+pds_fhir_is_stubbed          = "true"
 enable_basic_auth            = false
 sqs_endpoint                 = "http://localhost:4566"
