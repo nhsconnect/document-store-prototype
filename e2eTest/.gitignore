@@ -3,6 +3,6 @@
 
 # Cypress
 cypress.env.json
-/screenshots
-/videos
-/downloads
+cypress/screenshots
+cypress/videos
+cypress/downloads
