@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
 
@@ -13,6 +15,10 @@ public class CommonUtils {
 
     public static String generateRandomUUIDString() {
         return UUID.randomUUID().toString();
+    }
+
+    public static Instant generateExpiryDate() {
+        return Instant.now().plus(5, ChronoUnit.MINUTES);
     }
 
     public String getNhsNumberFrom(Map<String, String> queryParameters) {

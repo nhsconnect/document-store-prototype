@@ -6,16 +6,10 @@ import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-
 public class SignedJwtBuilder {
-    private final Clock clock;
     private final PatientSearchConfig patientSearchConfig;
 
-    public SignedJwtBuilder(Clock clock, PatientSearchConfig patientSearchConfig) {
-        this.clock = clock;
+    public SignedJwtBuilder(PatientSearchConfig patientSearchConfig) {
         this.patientSearchConfig = patientSearchConfig;
     }
 
@@ -30,7 +24,7 @@ public class SignedJwtBuilder {
                 .withSubject(nhsApiKey)
                 .withIssuer(nhsApiKey)
                 .withAudience(nhsOauthEndpoint)
-                .withExpiresAt(Instant.now(clock).plus(5, ChronoUnit.MINUTES))
+                .withExpiresAt(CommonUtils.generateExpiryDate())
                 .sign(privateAlgorithm);
     }
 }
