@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.patientdetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
+import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Address;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Name;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
@@ -14,13 +15,18 @@ import java.util.List;
 
 public class FakePdsFhirService implements PdsFhirService {
     private final AuditPublisher sensitiveIndex;
+    private final AuthService authService;
 
-    public FakePdsFhirService(AuditPublisher sensitiveIndex) {
+    public FakePdsFhirService(AuditPublisher sensitiveIndex, AuthService authService) {
         this.sensitiveIndex = sensitiveIndex;
+        this.authService = authService;
     }
 
     public Patient fetchPatientDetails(String nhsNumber) throws JsonProcessingException {
         var currentPeriod = new Period(LocalDate.now().minusYears(1), null);
+
+        authService.getAccessToken();
+
         switch (nhsNumber) {
             case "9000000025":
                 var restrictedPatientName = new Name(currentPeriod, "usual", List.of("Janet"), "Smythe");
