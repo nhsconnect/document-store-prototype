@@ -5,8 +5,8 @@
     "scripts": {
         "format": "prettier --write .",
         "lint": "eslint \"src/**/*.{js}\"",
-        "test:e2e": "cypress run --browser chrome",
-        "test:e2e:open": "cypress open --browser chrome"
+        "test": "cypress run --browser chrome",
+        "test:open": "cypress open --browser chrome"
     },
     "devDependencies": {
         "@testing-library/cypress": "^8.0.7",

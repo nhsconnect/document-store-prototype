@@ -48,13 +48,13 @@ Add the following values to [cypress.env.json](cypress.env.json):
 To start the E2E tests in open mode (with a visible browser window), run:
 
 ```bash
-npm run test:e2e:open
+npm run test:open
 ```
 
 For headless mode (without a visible browser window), run:
 
 ```bash
-npm run test:e2e
+npm run test
 ```
 
 _Note: E2E tests are run using [Cypress](https://www.cypress.io/) and require all services (incl. the UI) to be running

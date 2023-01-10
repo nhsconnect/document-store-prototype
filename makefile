@@ -1,7 +1,7 @@
 default: help
 
 .PHONY: pre-push
-pre-push: format-ui lint-ui test-ui test-app ## Format & lint UI files & run all unit tests. Todo: BE formatting & linting.
+pre-push: format-ui lint-ui test-ui test-app test-e2e ## Format & lint UI files & run all unit & E2E tests. Todo: BE formatting, linting, & integration tests.
 
 .PHONY: format-ui
 format-ui: ## Format all files within the UI package
@@ -22,6 +22,14 @@ test-app: ## Run BE unit tests (no logs)
 .PHONY: test-app-with-logs
 test-app-with-logs: ## Run BE unit tests (with logs)
 	./gradlew test --rerun-tasks --info
+
+.PHONY: test-e2e
+test-e2e: ## Run E2E test (without visible browser)
+	cd e2eTest && npm run test
+
+.PHONY: test-e2e-open
+test-e2e-open: ## Run E2E test (with visible browser)
+	cd e2eTest && npm run test:open
 
 .PHONY: install-ui ## Install UI dependencies
 	cd && npm i
