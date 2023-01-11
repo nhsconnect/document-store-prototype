@@ -147,7 +147,7 @@ common:
           arguments:
             - -c
             - Dojofile-node
-            - ./e2eTest/node_modules/.bin/cypress install && ./tasks run-e2e-test
+            - ./tasks run-e2e-test
     artifacts:
       - test:
           source: e2eTest/cypress/screenshots
