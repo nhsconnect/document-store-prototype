@@ -1,40 +1,40 @@
 default: help
 
 .PHONY: pre-push
-pre-push: format-node-projects lint-node-projects test-ui test-app test-e2e ## Format & lint Node projects & run all unit & E2E tests. Todo: BE formatting, linting, & integration tests.
+pre-push: format-node-projects lint-node-projects test-ui test-app test-e2e ## Format & lint Node projects & run unit & E2E tests. Todo: BE formatting, linting, & integration tests.
 
 .PHONY: format-node-projects
-format-node-projects: format-ui format-e2e-test ## Format all Prettier-compatible files for all Node projects
+format-node-projects: format-ui format-e2e-test ## Format Prettier-compatible files for Node projects
 
 .PHONY: format-ui
-format-ui: ## Format all Prettier-compatible files within /ui
+format-ui: ## Format /ui Prettier-compatible files
 	cd ui && npm run format
 
 .PHONY: format-e2e-test
-format-e2e-test: ## Format all Prettier-compatible files within /e2eTest
+format-e2e-test: ## Format /e2eTest Prettier-compatible files
 	cd e2eTest && npm run format
 
 .PHONY: lint-node-projects
-lint-node-projects: lint-ui lint-e2e-test ## Lint all all Node projects
+lint-node-projects: lint-ui lint-e2e-test ## Lint Node projects
 
 .PHONY: lint-ui
-lint-ui: ## Lint .js[x] files within /ui
+lint-ui: ## Lint /ui .js[x] files
 	cd ui && npm run lint
 
 .PHONY: lint-e2e-test
-lint-e2e-test: ## Lint .js files within /e2eTest
+lint-e2e-test: ## Lint /e2eTest .js files
 	cd e2eTest && npm run lint
 
 .PHONY: test-ui
-test-ui: ## Run UI unit tests
+test-ui: ## Run /ui unit tests
 	cd ui && npm run test:nw
 
 .PHONY: test-app
-test-app: ## Run BE unit tests (no logs)
+test-app: ## Run /app unit tests (no logs)
 	./gradlew test --rerun-tasks
 
 .PHONY: test-app-with-logs
-test-app-with-logs: ## Run BE unit tests (with logs)
+test-app-with-logs: ## Run /app unit tests (with logs)
 	./gradlew test --rerun-tasks --info
 
 .PHONY: test-e2e
@@ -46,15 +46,15 @@ test-e2e-open: ## Run E2E test (with visible browser)
 	cd e2eTest && npm run test:open
 
 .PHONY: install-node-projects
-install-node-projects: install-ui install-e2e-test ## Install dependencies for all Node projects
+install-node-projects: install-ui install-e2e-test ## Install dependencies for Node projects
 
 .PHONY: install-ui
-install-ui: ## Install UI dependencies
+install-ui: ## Install /ui dependencies
 	cd ui && npm i
 
 .PHONY: install-e2e-test
-install-e2e-test: ## Install E2E test dependencies
-	cd e2e-test && npm i
+install-e2e-test: ## Install /e2eTest dependencies
+	cd e2eTest && npm i
 
 .PHONY: build-and-deploy-to-local-stack
 build-and-deploy-to-local-stack: build-api-jars deploy-to-localstack ## Build & deploy to LocalStack
