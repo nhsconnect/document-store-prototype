@@ -25,6 +25,6 @@ class AuthServiceTest {
         when(mockHttpClient.fetchAccessToken(signedJwt, nhsOauthEndpoint)).thenReturn(accessToken);
 
         AuthService authService = new AuthService(mockHttpClient, mockPatientSearchConfig, mockJwtBuilder);
-        assertThat(authService.getAccessToken()).isEqualTo(accessToken.getAccessToken());
+        assertThat(authService.retrieveAccessToken()).isEqualTo(accessToken.getAccessToken());
     }
 }

@@ -20,7 +20,14 @@ public class AuthService {
         this.jwtBuilder = jwtBuilder;
     }
 
-    public String getAccessToken() throws MissingEnvironmentVariableException {
+    public String retrieveAccessToken() throws MissingEnvironmentVariableException {
+        //lookup
+        var signedJwt = jwtBuilder.build();
+        var accessTokenResponse = httpClient.fetchAccessToken(signedJwt, patientSearchConfig.nhsOauthEndpoint());
+        return accessTokenResponse.getAccessToken();
+    }
+
+    public String getNewAccessToken() throws MissingEnvironmentVariableException {
         var signedJwt = jwtBuilder.build();
         var accessTokenResponse = httpClient.fetchAccessToken(signedJwt, patientSearchConfig.nhsOauthEndpoint());
         return accessTokenResponse.getAccessToken();

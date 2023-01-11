@@ -9,12 +9,16 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
-import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Address;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Name;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
+import uk.nhs.digital.docstore.patientdetails.fhirdtos.Period;
 
 import javax.net.ssl.SSLSession;
 import java.net.URI;
@@ -32,8 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RealPdsFhirServiceTest {
@@ -48,6 +51,7 @@ class RealPdsFhirServiceTest {
 
     @Test
     void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException, MissingEnvironmentVariableException {
+        LocalDate periodStart = LocalDate.now().minusYears(1);
         var testLogappender = TestLogAppender.addTestLogAppender();
         var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
         var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
@@ -56,8 +60,8 @@ class RealPdsFhirServiceTest {
         var accessToken = "token";
 
         when(httpClient.get(any(), any(), eq(accessToken)))
-                .thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
-        when(authService.getAccessToken()).thenReturn(accessToken);
+                .thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber, periodStart.toString())));
+        when(authService.retrieveAccessToken()).thenReturn(accessToken);
         pdsFhirClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
@@ -82,7 +86,7 @@ class RealPdsFhirServiceTest {
         var accessToken = "token";
 
         when(httpClient.get(any(), any(), eq(accessToken))).thenReturn(new StubPdsResponse(400, null));
-        when(authService.getAccessToken()).thenReturn(accessToken);
+        when(authService.retrieveAccessToken()).thenReturn(accessToken);
         assertThrows(InvalidResourceIdException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber));
 
         verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
@@ -107,7 +111,7 @@ class RealPdsFhirServiceTest {
         var accessToken = "token";
 
         when(httpClient.get(any(), any(), eq(accessToken))).thenReturn(new StubPdsResponse(404, null));
-        when(authService.getAccessToken()).thenReturn(accessToken);
+        when(authService.retrieveAccessToken()).thenReturn(accessToken);
 
         assertThrows(PatientNotFoundException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
 
@@ -133,7 +137,7 @@ class RealPdsFhirServiceTest {
         var accessToken = "token";
 
         when(httpClient.get(any(), any(), eq(accessToken))).thenReturn(new StubPdsResponse(500, null));
-        when(authService.getAccessToken()).thenReturn(accessToken);
+        when(authService.retrieveAccessToken()).thenReturn(accessToken);
         assertThrows(RuntimeException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Got an error when requesting patient from PDS: 500");
 
         verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
@@ -147,9 +151,33 @@ class RealPdsFhirServiceTest {
         assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
-    private String getJSONPatientDetails(String nhsNumber) {
+    @Test
+    void makesCallToGetAccessTokenTwiceIfTokenHasExpired() throws MissingEnvironmentVariableException, JsonProcessingException {
+        LocalDate periodStart = LocalDate.now().minusYears(1);
+
+        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
+        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
+        var nhsNumber = "9000000009";
+        var accessToken = "token";
+        Period period = new Period(periodStart, null);
+        var expectedPatient = new Patient(nhsNumber, "Test", List.of(new Address(period, "EX1 2EX", "home")), List.of(new Name(period, "usual", List.of("Jane"), "Doe")));
+
+        when(httpClient.get(any(), any(), eq(accessToken)))
+                .thenReturn(new StubPdsResponse(401, "some error"), new StubPdsResponse(200, getJSONPatientDetails(nhsNumber, periodStart.toString())));
+        when(authService.retrieveAccessToken()).thenReturn(accessToken);
+        when(authService.getNewAccessToken()).thenReturn(accessToken);
+
+        var patient = pdsFhirClient.fetchPatientDetails(nhsNumber);
+
+        verify(httpClient, times(2)).get(any(), any(), eq(accessToken));
+        verify(splunkPublisher, times(2)).publish(any());
+        assertThat(patient).usingRecursiveComparison().isEqualTo(expectedPatient);
+    }
+
+    private String getJSONPatientDetails(String nhsNumber, String periodStart) {
+
         var jsonPeriod = new JSONObject()
-                .put("start", LocalDate.now().minusYears(1).toString())
+                .put("start", periodStart)
                 .put("end", JSONObject.NULL);
         var jsonName = new JSONObject()
                 .put("period", jsonPeriod)
