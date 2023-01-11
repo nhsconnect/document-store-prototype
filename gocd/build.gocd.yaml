@@ -134,12 +134,6 @@ common:
           command: dojo
           arguments:
             - -c
-            - Dojofile-node
-            - ./tasks install-e2e-test-dependencies
-      - exec:
-          command: dojo
-          arguments:
-            - -c
             - Dojofile-infra
             - ./tasks configure-e2e-test
       - exec:
@@ -147,7 +141,7 @@ common:
           arguments:
             - -c
             - Dojofile-node
-            - ./tasks run-e2e-test
+            - ./tasks install-e2e-test-dependencies && ./tasks run-e2e-test
     artifacts:
       - test:
           source: e2eTest/cypress/screenshots
