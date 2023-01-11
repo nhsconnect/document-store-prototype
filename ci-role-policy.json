@@ -15,7 +15,9 @@
         "amplify:CreateApp",
         "amplify:UpdateApp"
       ],
-      "Resource": ["arn:aws:amplify:*:*:apps/*"]
+      "Resource": [
+        "arn:aws:amplify:*:*:apps/*"
+      ]
     },
     {
       "Sid": "AllowCognito",
@@ -131,7 +133,9 @@
       "Sid": "AllowDynamo3",
       "Effect": "Allow",
       "Action": "dynamodb:*",
-      "Resource": ["arn:aws:dynamodb:*:*:table/*"]
+      "Resource": [
+        "arn:aws:dynamodb:*:*:table/*"
+      ]
     },
     {
       "Sid": "AllowLambda",
@@ -194,13 +198,14 @@
       "Action": [
         "iam:AttachRolePolicy",
         "iam:CreateRole",
-        "iam:*InstanceProfile*",
+        "iam:DeleteRolePolicy",
         "iam:GetRole",
         "iam:GetRolePolicy",
+        "iam:*InstanceProfile*",
         "iam:ListAttachedRolePolicies",
         "iam:ListRolePolicies",
-        "iam:PutRolePolicy",
-        "iam:PassRole"
+        "iam:PassRole",
+        "iam:PutRolePolicy"
       ],
       "Resource": "*"
     },
