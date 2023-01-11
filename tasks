@@ -262,7 +262,7 @@ run-e2e-test)
   source ./cypress.sh
   echo $CYPRESS_BASE_URL
   rm cypress.sh
-  CYPRESS_BASE_URL=${CYPRESS_BASE_URL} ./node_modules/.bin/cypress run
+  npm run test CYPRESS_BASE_URL=${CYPRESS_BASE_URL}
   ;;
 create-cognito-user)
   username=$2
