@@ -11,7 +11,7 @@ public class AuthService {
     private final SignedJwtBuilder jwtBuilder;
 
     public AuthService(AuthServiceHttpClient httpClient, PatientSearchConfig patientSearchConfig) {
-        this(httpClient, patientSearchConfig, new SignedJwtBuilder(Clock.systemDefaultZone(), patientSearchConfig));
+        this(httpClient, patientSearchConfig, new SignedJwtBuilder(Clock.systemUTC(), patientSearchConfig));
     }
 
     public AuthService(AuthServiceHttpClient httpClient, PatientSearchConfig patientSearchConfig, SignedJwtBuilder jwtBuilder) {

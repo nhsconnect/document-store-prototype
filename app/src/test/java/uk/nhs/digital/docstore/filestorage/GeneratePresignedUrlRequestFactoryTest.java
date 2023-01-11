@@ -3,7 +3,9 @@ package uk.nhs.digital.docstore.filestorage;
 import com.amazonaws.HttpMethod;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +16,8 @@ public class GeneratePresignedUrlRequestFactoryTest {
         var bucket = "bucket";
         var key = "key";
         var now = Instant.now();
-        var factory = new GeneratePresignedUrlRequestFactory(bucket, now);
+        var clock = Clock.fixed(now, ZoneId.systemDefault());
+        var factory = new GeneratePresignedUrlRequestFactory(bucket, clock);
         var thirtyMinutes = 1800;
 
         var request = factory.makeDocumentUploadRequest(key);
@@ -30,7 +33,8 @@ public class GeneratePresignedUrlRequestFactoryTest {
         var bucket = "bucket";
         var key = "key";
         var now = Instant.now();
-        var factory = new GeneratePresignedUrlRequestFactory(bucket, now);
+        var clock = Clock.fixed(now, ZoneId.systemDefault());
+        var factory = new GeneratePresignedUrlRequestFactory(bucket, clock);
         var ONE_MINUTE = 60;
 
         var request = factory.makeDocumentDownloadRequest(key);
@@ -43,7 +47,7 @@ public class GeneratePresignedUrlRequestFactoryTest {
 
     @Test
     public void makesPresignedUrlRequestWithCustomFileNameOverride() {
-        var factory = new GeneratePresignedUrlRequestFactory("bucket", Instant.now());
+        var factory = new GeneratePresignedUrlRequestFactory("bucket", Clock.systemUTC());
         var fileName = "test.txt";
         var request = factory.withFileNameOverride(fileName).makeDocumentDownloadRequest("key");
 

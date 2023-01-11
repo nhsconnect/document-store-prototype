@@ -5,10 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
 import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 
+import java.time.Clock;
 import java.time.Instant;
 
 public class DocumentReferenceService {
@@ -16,16 +17,16 @@ public class DocumentReferenceService {
 
     private final DocumentMetadataStore metadataStore;
     private final AuditPublisher sensitiveIndex;
-    private final Instant now;
+    private final Clock clock;
 
     public DocumentReferenceService(DocumentMetadataStore store, AuditPublisher sensitiveIndex) {
-        this(store, sensitiveIndex, Instant.now());
+        this(store, sensitiveIndex, Clock.systemUTC());
     }
 
-    public DocumentReferenceService(DocumentMetadataStore documentMetadataStore, AuditPublisher sensitiveIndex, Instant now) {
+    public DocumentReferenceService(DocumentMetadataStore documentMetadataStore, AuditPublisher sensitiveIndex, Clock clock) {
         this.metadataStore = documentMetadataStore;
         this.sensitiveIndex = sensitiveIndex;
-        this.now = now;
+        this.clock = clock;
     }
 
     public DocumentMetadata save(DocumentMetadata documentMetadata) throws JsonProcessingException {
@@ -39,7 +40,7 @@ public class DocumentReferenceService {
         var metadata = metadataStore.getByLocation(location);
         if (metadata != null) {
             metadata.setDocumentUploaded(true);
-            metadata.setIndexed(now.toString());
+            metadata.setIndexed(Instant.now(clock).toString());
 
             LOGGER.debug("Updating DocumentReference {} to uploaded", metadata.getId());
             metadataStore.save(metadata);

@@ -11,11 +11,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.AuditMessage;
 import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
 import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,14 +64,15 @@ public class DocumentReferenceServiceTest {
     @Test
     public void marksDocumentsUploadedWithAuditing() throws JsonProcessingException {
         var location = "test.url";
-        var now = Instant.now();
+        var clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
+        var now = Instant.now(clock);
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setId("2");
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setIndexed(now.toString());
         var expectedSensitiveAuditMessage = new DocumentUploadedAuditMessage(documentMetadata);
-        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, now);
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, clock);
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(documentMetadata);
         documentReferenceService.markDocumentUploaded(location);
@@ -89,7 +92,7 @@ public class DocumentReferenceServiceTest {
     @Test
     public void doesNotMarkDocumentAsUploadedWhenMetadataIsNull() throws JsonProcessingException {
         var location = "test.url";
-        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, Instant.now());
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, Clock.systemUTC());
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(null);
         documentReferenceService.markDocumentUploaded(location);
