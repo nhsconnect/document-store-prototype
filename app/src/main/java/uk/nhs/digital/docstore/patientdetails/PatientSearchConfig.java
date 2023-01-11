@@ -38,6 +38,10 @@ public class PatientSearchConfig {
         return environment.getEnvVar("KID");
     }
 
+    public String pdsFhirTokenName() throws MissingEnvironmentVariableException {
+        return environment.getEnvVar("PDS_FHIR_TOKEN_NAME");
+    }
+
     public Algorithm pdsFhirAuthPrivateTokenSigningAlgorithm() {
         return Algorithm.RSA512(new SigningKeyProvider(environment));
     }

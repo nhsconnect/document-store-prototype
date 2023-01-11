@@ -35,6 +35,7 @@ dependencies {
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-lambda-java-events:3.9.0'
     implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
+    implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
 
     implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.5.4'
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:5.5.1'
