@@ -39,7 +39,7 @@ class AuthServiceTest {
         when(mockPatientSearchConfig.pdsFhirTokenName()).thenReturn(parameterName);
 
         AuthService authService = new AuthService(mockHttpClient, mockPatientSearchConfig, mockJwtBuilder, mockSsm);
-        assertThat(authService.retrieveAccessToken()).isEqualTo(accessToken.getAccessToken());
+        assertThat(authService.getNewAccessToken()).isEqualTo(accessToken.getAccessToken());
         verify(mockSsm).putParameter(putParameterRequest);
     }
 
