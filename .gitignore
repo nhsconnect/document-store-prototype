@@ -121,7 +121,6 @@ example: *tfplan*
 terraform.rc
 
 # Local .terraform directories
-**/.terraform/*
 /terraform/tfplan
 
 ### Java template
@@ -160,3 +159,6 @@ app/bin
 
 # NHS API auth key files
 PDS_FHIR_AUTH_KEY.*
+
+# Dependencies
+node_modules
