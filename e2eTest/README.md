@@ -6,9 +6,9 @@ journey.
 
 ## Prerequisites
 
-- [Node](https://nodejs.org/en/download/)
-- [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
-- [nvm](https://github.com/nvm-sh/nvm)
+-   [Node](https://nodejs.org/en/download/)
+-   [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
+-   [nvm](https://github.com/nvm-sh/nvm)
 
 _Note: Node/npm versions can be managed using [nvm](https://github.com/nvm-sh/nvm). The version can be found in
 the [.nvmrc](.nvmrc)._
@@ -35,7 +35,7 @@ to `cypress.env.json.example`.
 Add the following values to [cypress.env.json](cypress.env.json):
 
 | Key                   | Value                    |
-|-----------------------|--------------------------|
+| --------------------- | ------------------------ |
 | `username`            | `<AWS Cognito username>` |
 | `password`            | `<AWS Cognito password>` |
 | `REACT_APP_ENV`       | `local`                  |
@@ -63,4 +63,4 @@ locally._
 ## CI
 
 The E2E test stage is defined in [build.gocd.yaml](../gocd/build.gocd.yaml) and runs in both `dev` and `pre-prod`. This
-stage utilises [tasks](../tasks) to run the installation, configuration, and the test itself. 
+stage utilises [tasks](../tasks) to run the installation, configuration, and the test itself.

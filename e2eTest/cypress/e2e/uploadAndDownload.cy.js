@@ -39,6 +39,7 @@ describe("upload and download", () => {
         cy.url().should("eq", baseUrl + "/home");
         cy.injectAxe();
         // Todo: Replace cy.wait() with a guard to wait until React has completed it's initial render(s)
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(500);
         cy.findByRole("radio", { name: /Upload/ }).check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
@@ -66,6 +67,7 @@ describe("upload and download", () => {
         cy.url().should("eq", baseUrl + "/home");
         cy.injectAxe();
         // Todo: Replace cy.wait() with a guard to wait until React has completed it's initial render(s)
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(500);
         cy.findByRole("radio", { name: /Download/ }).check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);

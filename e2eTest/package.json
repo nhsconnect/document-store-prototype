@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "format": "prettier --write .",
-        "lint": "eslint \"src/**/*.{js}\"",
+        "lint": "eslint \"cypress/**/*.{js,cy.js}\"",
         "test": "cypress run --browser chrome",
         "test:open": "cypress open --browser chrome",
         "test:ci": "cypress run --browser electron"
@@ -14,6 +14,8 @@
         "cypress": "^10.6.0",
         "cypress-axe": "^1.1.0",
         "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-cypress": "^2.12.1",
+        "eslint-plugin-import": "^2.26.0",
         "prettier": "^2.8.1"
     }
 }
