@@ -43,7 +43,7 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
                 documentReferenceService.markDocumentUploaded(location);
             }
         } catch (JsonProcessingException jsonProcessingException) {
-            jsonProcessingException.printStackTrace();
+            LOGGER.error(jsonProcessingException.getMessage(), jsonProcessingException);
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage(), exception);
             throw exception;
