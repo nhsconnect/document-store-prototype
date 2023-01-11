@@ -10,7 +10,9 @@ import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
@@ -22,7 +24,8 @@ class SignedJwtBuilderTest {
 
     @Test
     void shouldGenerateASignedJwtWithRequiredClaims() throws MissingEnvironmentVariableException {
-        var expiryDate = Instant.now().plus(5, ChronoUnit.MINUTES);
+        var now = Instant.now();
+        var clock = Clock.fixed(now, ZoneId.systemDefault());
         var randomUuidAsString = UUID.randomUUID().toString();
         var nhsApiKey = "nhs-api-key";
         var oauthEndpoint = "oauth-endpoint";
@@ -35,16 +38,14 @@ class SignedJwtBuilderTest {
         when(patientSearchConfig.kid()).thenReturn(kid);
         when(patientSearchConfig.pdsFhirAuthPrivateTokenSigningAlgorithm()).thenReturn(algorithm);
 
-        var jwtBuilder = new SignedJwtBuilder(patientSearchConfig);
+        var jwtBuilder = new SignedJwtBuilder(clock, patientSearchConfig);
 
-        try (MockedStatic<CommonUtils> utils = Mockito.mockStatic(CommonUtils.class)) {
-            utils.when(CommonUtils::generateRandomUUIDString).thenReturn(randomUuidAsString);
-            utils.when(CommonUtils::generateExpiryDate).thenReturn(expiryDate);
-
-            var actualJwt = jwtBuilder.build();
+        try (MockedStatic<CommonUtils> utilities = Mockito.mockStatic(CommonUtils.class)) {
+            utilities.when(CommonUtils::generateRandomUUIDString).thenReturn(randomUuidAsString);
+            var actualJwt= jwtBuilder.build();
 
             JWTVerifier verifier = JWT.require(algorithm)
-                    .withClaim("exp", expiryDate)
+                    .withClaim("exp", now.plus(5, ChronoUnit.MINUTES))
                     .withJWTId(randomUuidAsString)
                     .withIssuer(nhsApiKey)
                     .withSubject(nhsApiKey)
