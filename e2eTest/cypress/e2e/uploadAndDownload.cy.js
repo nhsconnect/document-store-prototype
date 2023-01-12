@@ -87,7 +87,7 @@ describe("upload and download", () => {
 
         cy.findByRole("button", { name: "Delete All Documents" }).click();
         cy.url().should("eq", baseUrl + "/search/results/delete-documents-confirmation");
-        cy.findByRole("radio", { name: "No" }).should('be.checked').and('have.value', 'no');
+        cy.findByRole("radio", { name: "No" }).should("be.checked").and("have.value", "no");
         cy.findByRole("button", { name: "Continue" }).click();
         cy.url().should("eq", baseUrl + "/search/results");
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);

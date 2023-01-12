@@ -1,17 +1,18 @@
-import {render, screen} from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
     DeleteDocumentsResponseProvider,
-    useDeleteDocumentsResponseProviderContext
+    useDeleteDocumentsResponseProviderContext,
 } from "./DeleteDocumentsResponseProvider";
-
 
 const TestComponent = ({ newDeleteDocumentsResponse }) => {
     const [deleteDocumentsResponse, setDeleteDocumentsResponse] = useDeleteDocumentsResponseProviderContext();
     return (
         <div>
-            <p>Delete Documents Response : { deleteDocumentsResponse || "Null"}</p>
-            <button onClick={() => setDeleteDocumentsResponse(newDeleteDocumentsResponse)}>Update Delete Documents Response</button>
+            <p>Delete Documents Response : {deleteDocumentsResponse || "Null"}</p>
+            <button onClick={() => setDeleteDocumentsResponse(newDeleteDocumentsResponse)}>
+                Update Delete Documents Response
+            </button>
         </div>
     );
 };

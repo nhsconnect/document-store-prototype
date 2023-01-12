@@ -1,11 +1,11 @@
-import {render, screen, waitFor, within} from "@testing-library/react";
-import {Factory} from "fishery";
+import { render, screen, waitFor, within } from "@testing-library/react";
+import { Factory } from "fishery";
 import useApi from "../apiClients/useApi";
-import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
+import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
-import {downloadFile} from "../utils/utils";
-import {useDeleteDocumentsResponseProviderContext} from "../providers/DeleteDocumentsResponseProvider";
+import { downloadFile } from "../utils/utils";
+import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
 
 jest.mock("../apiClients/useApi");
 jest.mock("../providers/NhsNumberProvider", () => ({
@@ -70,7 +70,9 @@ describe("<SearchResultsPage />", () => {
             render(<SearchResultsPage />);
 
             expect(screen.getByRole("progressbar", { name: "Loading..." })).toBeInTheDocument();
-            expect(await screen.findByText("There are no records associated with this patient to delete or download")).toBeInTheDocument();
+            expect(
+                await screen.findByText("There are no records associated with this patient to delete or download")
+            ).toBeInTheDocument();
         });
 
         it("displays search results when there are results", async () => {
@@ -132,7 +134,9 @@ describe("<SearchResultsPage />", () => {
             render(<SearchResultsPage />);
 
             await waitFor(() => {
-                expect(screen.getByText("There are no records associated with this patient to delete or download")).toBeInTheDocument();
+                expect(
+                    screen.getByText("There are no records associated with this patient to delete or download")
+                ).toBeInTheDocument();
             });
             expect(screen.queryByRole("button", { name: "Download All Documents" })).not.toBeInTheDocument();
             expect(screen.queryByRole("button", { name: "Delete All Documents" })).not.toBeInTheDocument();
@@ -261,23 +265,25 @@ describe("<SearchResultsPage />", () => {
                 expect(mockNavigate).toHaveBeenCalledWith("/search/results/delete-documents-confirmation");
             });
         });
-        describe("when user clicks on Delete All button and successfully navigate to confirmation page and choose Yes", ()=> {
+        describe("when user clicks on Delete All button and successfully navigate to confirmation page and choose Yes", () => {
             it("should display error message next to Delete All Documents Button when failed to delete the documents", async () => {
                 const searchResult = searchResultFactory.build();
                 const deleteDocumentsResponse = "unsuccessful";
                 useApi.mockImplementation(() => ({
-                    findByNhsNumber: () => [searchResult]
+                    findByNhsNumber: () => [searchResult],
                 }));
                 useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
 
-                render(<SearchResultsPage/>);
+                render(<SearchResultsPage />);
                 await waitFor(() => {
-                    expect(screen.getByRole("button", {name: "Delete All Documents"})).toBeInTheDocument();
+                    expect(screen.getByRole("button", { name: "Delete All Documents" })).toBeInTheDocument();
                 });
-                userEvent.click(screen.getByRole("button", {name: "Delete All Documents"}));
+                userEvent.click(screen.getByRole("button", { name: "Delete All Documents" }));
 
                 await waitFor(() => {
-                    expect(screen.getByText("There has been an issue deleting these records, please try again later.")).toBeInTheDocument();
+                    expect(
+                        screen.getByText("There has been an issue deleting these records, please try again later.")
+                    ).toBeInTheDocument();
                 });
             });
         });
@@ -287,7 +293,6 @@ describe("<SearchResultsPage />", () => {
         beforeEach(() => {
             useNhsNumberProviderContext.mockReturnValue([undefined, jest.fn()]);
             useDeleteDocumentsResponseProviderContext.mockReturnValue(["", jest.fn()]);
-
         });
 
         it("redirects to patient trace page when the NHS number is NOT available", () => {
