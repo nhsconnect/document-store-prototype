@@ -39,26 +39,26 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         Tracer.setMDCContext(context);
 
-        LOGGER.info("API Gateway event received - processing starts");
+        LOGGER.debug("API Gateway event received - processing starts");
 
         try {
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
 
-            LOGGER.info("Started deleting documents from dynamodb");
-            var metadata = metadataStore.findByNhsNumber(nhsNumber);
-            if (metadata != null) {
-                metadataStore.deleteAndSave(metadata);
+            var documentMetadataList = metadataStore.findByNhsNumber(nhsNumber);
+            if (documentMetadataList != null) {
+                LOGGER.debug("Deleting document metadata from DynamoDB");
+                metadataStore.deleteAndSave(documentMetadataList);
 
-                LOGGER.info("Started deleting documents from s3");
-                metadata.forEach(documentMetadata -> {
+                LOGGER.debug("Deleting documents from S3");
+                documentMetadataList.forEach(documentMetadata -> {
                     var bucketName = documentMetadata.getLocation().split("//")[1].split("/")[0];
                     var objectKey = documentMetadata.getLocation().split("//")[1].split("/")[1];
-                    LOGGER.info("Showing the bucketName " + bucketName + " object key " + objectKey);
+                    LOGGER.debug("Deleting object key: " + objectKey + "from bucket: " + bucketName);
                     s3client.deleteObject(bucketName, objectKey);
                 });
             }
 
-            LOGGER.info("Processing finished - about to return the response");
+            LOGGER.debug("Processing finished - about to return the response");
             var body = getJsonBody();
             return apiConfig.getApiGatewayResponse(200, body, "DELETE", null);
         } catch (Exception e) {

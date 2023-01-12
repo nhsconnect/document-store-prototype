@@ -24,7 +24,7 @@ fileignoreconfig:
 - filename: tasks
   checksum: 0ffd9edf7fb95a26dbd5db3ae6c6b9684ffc92683ca005d0a97cf0ed0483f801
 - filename: app/src/main/java/uk/nhs/digital/docstore/DeleteDocumentReferenceHandler.java
-  checksum: c094caf82ed6ae0af2650cdc56e89268003e70efb21d320bd844e8a173a51d14
+  checksum: 3b28f8010724c79aceff4fb761f31d1b89d5ede9dc0a6c524b5e82f961d4ae6f
 version: ""
 scopeconfig:
   - scope: node
