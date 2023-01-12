@@ -129,3 +129,44 @@ output "api_gateway_rest_api_stage" {
 output "api_gateway_url" {
   value = aws_api_gateway_deployment.api_deploy.invoke_url
 }
+
+resource "aws_iam_role" "authoriser_execution_role" {
+  name = "AuthoriserLambdaExecution"
+
+  assume_role_policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = [
+      {
+        Action    = "sts:AssumeRole"
+        Effect    = "Allow"
+        Sid       = ""
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "authoriser_lambda_execution_policy" {
+  role       = aws_iam_role.authoriser_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_lambda_function" "authoriser" {
+  handler       = "uk.nhs.digital.docstore.authoriser.Authoriser::handleRequest"
+  function_name = "Authoriser"
+  runtime       = "java11"
+  role          = aws_iam_role.authoriser_execution_role.arn
+
+  timeout     = 15
+  memory_size = 256
+
+  filename = var.lambda_jar_filename
+
+  source_code_hash = filebase64sha256(var.lambda_jar_filename)
+
+  environment {
+    variables = local.common_environment_variables
+  }
+}

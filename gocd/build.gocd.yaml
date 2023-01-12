@@ -45,6 +45,16 @@ common:
                 - -c
                 - Dojofile-node
                 - ./tasks build-ui
+      authoriser: &authoriser
+        artifacts:
+          - build:
+              source: authoriser/build/libs
+              destination: jars
+        tasks:
+          - exec:
+              command: dojo
+              arguments:
+                - "./gradlew authoriser:build"
   plan_terraform: &plan_terraform
     artifacts:
       - build:
@@ -169,6 +179,7 @@ pipelines:
           jobs:
             backend: *build_backend
             frontend: *build_frontend
+            authoriser: *authoriser
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: dev
