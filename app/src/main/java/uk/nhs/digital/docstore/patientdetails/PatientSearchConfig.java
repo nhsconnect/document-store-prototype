@@ -18,8 +18,8 @@ public class PatientSearchConfig {
         this.environment = environment;
     }
 
-    public String pdsFhirRootUri() {
-        return environment.getEnvVar("PDS_FHIR_ENDPOINT", "https://sandbox.api.service.nhs.uk/personal-demographics/FHIR/R4/");
+    public String pdsFhirRootUri() throws MissingEnvironmentVariableException {
+        return environment.getEnvVar("PDS_FHIR_ENDPOINT");
     }
 
     public String nhsApiKey() throws MissingEnvironmentVariableException {
