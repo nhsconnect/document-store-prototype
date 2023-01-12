@@ -14,7 +14,7 @@ import uk.nhs.digital.docstore.utils.CommonUtils;
 
 
 public class DeleteDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private static final Logger logger = LoggerFactory.getLogger(DeleteDocumentReferenceHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeleteDocumentReferenceHandler.class);
     private final ApiConfig apiConfig;
 
     private final CommonUtils utils = new CommonUtils();
@@ -30,8 +30,7 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
         this(new ApiConfig(), CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION));
     }
 
-    public DeleteDocumentReferenceHandler(ApiConfig apiConfig,  AmazonS3 s3client) {
-
+    public DeleteDocumentReferenceHandler(ApiConfig apiConfig, AmazonS3 s3client) {
         this.apiConfig = apiConfig;
         this.s3client = s3client;
     }
@@ -40,37 +39,37 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         Tracer.setMDCContext(context);
 
-        logger.info("API Gateway event received - processing starts");
+        LOGGER.info("API Gateway event received - processing starts");
 
         try {
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
 
-            logger.info("Started deleting documents from dynamodb");
+            LOGGER.info("Started deleting documents from dynamodb");
             var metadata = metadataStore.findByNhsNumber(nhsNumber);
             if (metadata != null) {
                 metadataStore.deleteAndSave(metadata);
 
-                logger.info("Started deleting documents from s3");
+                LOGGER.info("Started deleting documents from s3");
                 metadata.forEach(documentMetadata -> {
                     var bucketName = documentMetadata.getLocation().split("//")[1].split("/")[0];
-                    var objectKey =  documentMetadata.getLocation().split("//")[1].split("/")[1];
-                    logger.info("Showing the bucketName "+bucketName + " object key " + objectKey);
+                    var objectKey = documentMetadata.getLocation().split("//")[1].split("/")[1];
+                    LOGGER.info("Showing the bucketName " + bucketName + " object key " + objectKey);
                     s3client.deleteObject(bucketName, objectKey);
                 });
             }
 
-            logger.info("Processing finished - about to return the response");
-            var body = getJsonBody("successfully deleted");
+            LOGGER.info("Processing finished - about to return the response");
+            var body = getJsonBody();
             return apiConfig.getApiGatewayResponse(200, body, "DELETE", null);
         } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);
         }
     }
 
-    private String getJsonBody(String successfullyDeleted) {
+    private String getJsonBody() {
         return "{\n" +
                 "   \"result\": {\n" +
-                "       \"message\": \"" + successfullyDeleted + "\"\n" +
+                "       \"message\": \"" + "successfully deleted" + "\"\n" +
                 "   }\n" +
                 "}";
     }
