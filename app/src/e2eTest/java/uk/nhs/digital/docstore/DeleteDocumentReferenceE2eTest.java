@@ -57,7 +57,7 @@ public class DeleteDocumentReferenceE2eTest {
     void shouldMarkADocumentsRelatedToTheNhsNumberAsDeletedAndReturnSuccessfulMessage() throws IOException, InterruptedException {
         var nhsNumber = "1234567890";
         var s3Location = String.format("s3://%s/%s", awsS3.getDocumentStoreBucketName(), S3_KEY);
-        String expectedErrorResponse = getContentFromResource();
+        String successfulDeleteResponse = getContentFromResource();
         Map<String, AttributeValue> document = Map.of(
                 "ID", new AttributeValue("1234"),
                 "NhsNumber", new AttributeValue(nhsNumber),
@@ -82,7 +82,7 @@ public class DeleteDocumentReferenceE2eTest {
 
         assertThat(deleteDocumentReferenceResponse.statusCode()).isEqualTo(200);
         assertThat(Instant.now().isAfter(Instant.parse(deletedAt))).isTrue();
-        assertThatJson(deleteDocumentReferenceResponse.body()).isEqualTo(expectedErrorResponse);
+        assertThatJson(deleteDocumentReferenceResponse.body()).isEqualTo(successfulDeleteResponse);
     }
 
     private String getContentFromResource() throws IOException {
