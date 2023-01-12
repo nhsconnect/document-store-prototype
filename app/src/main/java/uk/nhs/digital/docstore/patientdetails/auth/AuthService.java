@@ -6,7 +6,6 @@ import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementClientBuilder;
 import com.amazonaws.services.simplesystemsmanagement.model.GetParameterRequest;
 import com.amazonaws.services.simplesystemsmanagement.model.GetParameterResult;
-import com.amazonaws.services.simplesystemsmanagement.model.ParameterType;
 import com.amazonaws.services.simplesystemsmanagement.model.PutParameterRequest;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
@@ -53,7 +52,7 @@ public class AuthService {
 
             PutParameterRequest request = new PutParameterRequest();
             request.withName(patientSearchConfig.pdsFhirTokenName());
-            request.withType(ParameterType.SecureString);
+            request.withValue(accessTokenResponse.getAccessToken());
             request.withOverwrite(true);
 
             ssm.putParameter(request);
