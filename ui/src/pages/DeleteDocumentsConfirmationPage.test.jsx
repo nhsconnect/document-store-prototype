@@ -74,7 +74,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         });
     });
 
-    describe('when user choose radio button "Yes" and click on continue button', async () => {
+    describe('when user choose radio button "Yes" and click on continue button', () => {
         it("should call deleteAllDocuments api method and return successfully deleted message ", async () => {
             useApi.mockImplementation(() => {
                 return {

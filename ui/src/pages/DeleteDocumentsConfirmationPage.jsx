@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import BackButton from "../components/BackButton";
-
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import useApi from "../apiClients/useApi";
 import { useForm } from "react-hook-form";
@@ -15,15 +14,18 @@ const DeleteDocumentsConfirmationPage = () => {
     const [patientName, setPatientName] = useState([]);
     const { ref: trxRef, ...trxProps } = register("trx");
 
-    useEffect(async () => {
-        try {
+    useEffect(() => {
+        async function fetchPatientDetails() {
             if (nhsNumber) {
                 const response = await client.getPatientDetails(nhsNumber);
                 setPatientName([response.result.patientDetails.givenName, response.result.patientDetails.familyName]);
             }
-        } catch (e) {
-            console.log(e);
         }
+
+        fetchPatientDetails().catch((error) => console.log(error));
+
+        // Todo: Remove the suppression when we provide a client to the dependency array that remains stable between renders
+        // eslint-disable-next-line
     }, [nhsNumber, setPatientName]);
 
     const doSubmit = async (data) => {
