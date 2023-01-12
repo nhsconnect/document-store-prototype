@@ -10,13 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthServiceHttpClient;
-import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
-import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 
 import java.util.Map;
 
@@ -58,10 +58,11 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
                     ? new FakePdsFhirService(sensitiveIndex)
                     : new RealPdsFhirService(patientSearchConfig, sensitiveIndex, authService);
-            var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
+            var fhirPatient = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
+            var patientDetails = PatientDetails.fromFhirPatient(fhirPatient);
             LOGGER.debug("Generating response body");
-            var json = convertToJson(PatientDetails.fromFhirPatient(patientDetails));
+            var json = convertToJson(patientDetails);
             var body = getBody(json);
 
             LOGGER.debug("Processing finished - about to return the response");
@@ -79,17 +80,18 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
                 "}";
     }
 
-    private String getBody(String patientDetails) {
+    private String getBody(String clientPatientDetails) {
         return "{\n" +
                 "   \"result\": {\n" +
-                "       \"patientDetails\": " + patientDetails +
+                "       \"patientDetails\": " + clientPatientDetails +
                 "   }\n" +
                 "}";
     }
 
     private String convertToJson(PatientDetails patientDetails) throws JsonProcessingException {
+        var clientPatientDetails = ClientPatientDetailsDto.fromPatientDetails(patientDetails);
         var objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        return objectWriter.writeValueAsString(patientDetails);
+        return objectWriter.writeValueAsString(clientPatientDetails);
     }
 
     private static Map<String, String> queryParametersFrom(APIGatewayProxyRequestEvent requestEvent) {
