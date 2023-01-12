@@ -33,7 +33,6 @@ public class RealPdsFhirService implements PdsFhirService {
 
     public Patient fetchPatientDetails(String nhsNumber) throws JsonProcessingException {
         var accessToken = authService.retrieveAccessToken();
-        LOGGER.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
 
         var pdsResponse = makeRequestWithPdsAndSendAuditMessage(accessToken, nhsNumber);
         boolean expiredAccessToken = pdsResponse.statusCode() == 401;
@@ -67,6 +66,7 @@ public class RealPdsFhirService implements PdsFhirService {
     }
 
     private HttpResponse<String> makeRequestWithPdsAndSendAuditMessage(String accessToken, String nhsNumber) throws JsonProcessingException {
+        LOGGER.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
         var path = "Patient/" + nhsNumber;
         var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path, accessToken);
         sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, response.statusCode()));
