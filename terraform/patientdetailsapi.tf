@@ -59,3 +59,22 @@ resource "aws_lambda_permission" "api_gateway_permission_for_search_patient_deta
   # within the API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
+
+resource "aws_iam_role_policy" "lambda_get_parameter_policy" {
+  name = "lambda_get_parameter_from_ssm_policy"
+  role = aws_iam_role.lambda_execution_role.id
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ssm:GetParameter",
+          "ssm:PutParameter"
+        ],
+        "Resource": "arn:aws:ssm:*:533825906475:parameter/*"
+      }
+    ]
+  })
+}
