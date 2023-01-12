@@ -16,15 +16,18 @@ const DeleteDocumentsConfirmationPage = () => {
     const { ref: trxRef, ...trxProps } = register("trx");
     const [, setDeleteDocumentsResponseState] = useDeleteDocumentsResponseProviderContext();
 
-    useEffect(async () => {
-        try {
+    useEffect(() => {
+        async function fetchPatientDetails() {
             if (nhsNumber) {
                 const response = await client.getPatientDetails(nhsNumber);
                 setPatientName([response.result.patientDetails.givenName, response.result.patientDetails.familyName]);
             }
-        } catch (e) {
-            console.log(e);
         }
+
+        fetchPatientDetails().catch((error) => console.error(error));
+
+        // Todo: Remove the suppression when we provide a client to the dependency array that remains stable between renders
+        // eslint-disable-next-line
     }, [nhsNumber, setPatientName]);
 
     const doSubmit = async (data) => {
@@ -35,8 +38,7 @@ const DeleteDocumentsConfirmationPage = () => {
                     setDeleteDocumentsResponseState("successful");
                     navigate("/search/results");
                 }
-            } catch (e) {
-                console.log(e);
+            } catch (error) {
                 setDeleteDocumentsResponseState("unsuccessful");
                 navigate("/search/results");
             }

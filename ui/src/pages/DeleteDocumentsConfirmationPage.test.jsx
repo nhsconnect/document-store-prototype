@@ -61,6 +61,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
     });
+
     it('should navigate to SearchResultsPage when user choose radio button "NO" and click on continue button', async () => {
         useApi.mockImplementation(() => {
             return {
@@ -79,6 +80,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
             expect(mockNavigate).toHaveBeenCalledWith("/search/results");
         });
     });
+
     describe("when user choose YES radio button and clicks continue", () => {
         it('should navigate to search results page with delete document response as "successful" when deleteAllDocuments api method returns successfully deleted message ', async () => {
             const deleteDocumentsResponse = "successful";
@@ -102,6 +104,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                 expect(mockNavigate).toHaveBeenCalledWith("/search/results");
             });
         });
+
         it('should navigate to search results page with delete documents response as "unsuccessful" when api call throws an error ', async () => {
             const deleteDocumentsResponse = "unsuccessful";
             useApi.mockImplementation(() => {
