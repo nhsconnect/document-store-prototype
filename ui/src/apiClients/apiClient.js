@@ -145,11 +145,11 @@ class ApiClient {
                 "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
             },
         });
-        console.log("response", data);
+
         if (data.result?.message) {
             return data.result.message;
         }
-        throw new Error("Something went wrong");
+        throw new Error("No message found in the data result");
     }
 }
 
