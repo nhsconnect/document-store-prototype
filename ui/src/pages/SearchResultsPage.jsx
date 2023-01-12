@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button, ErrorMessage, Fieldset, Input, Table } from "nhsuk-react-components";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
-import { useNavigate } from "react-router";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
+import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-components";
+import {useNhsNumberProviderContext} from "../providers/NhsNumberProvider";
+import {useNavigate} from "react-router";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
-import { downloadFile } from "../utils/utils";
+import {downloadFile} from "../utils/utils";
+import {useDeleteDocumentsResponseProviderContext} from "../providers/DeleteDocumentsResponseProvider";
 
 const states = {
     INITIAL: "initial",
@@ -22,7 +23,9 @@ const SearchResultsPage = () => {
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
     const [nhsNumber] = useNhsNumberProviderContext();
+    const [deleteDocumentsResponse] = useDeleteDocumentsResponseProviderContext();
     const navigate = useNavigate();
+
 
     useEffect(() => {
         if (!nhsNumber) {
@@ -128,9 +131,10 @@ const SearchResultsPage = () => {
                             <Button type="button" secondary onClick={goToDeleteDocumentsConfirmationPage}>
                                 Delete All Documents
                             </Button>
+                            {deleteDocumentsResponse === "unsuccessful" && <ErrorMessage>There has been an issue deleting these records, please try again later.</ErrorMessage>}
                         </>
                     )}
-                    {searchResults.length === 0 && <p>No record found</p>}
+                    {(searchResults.length === 0 || deleteDocumentsResponse === "successful") && <p>There are no records associated with this patient to delete or download</p>}
                 </>
             )}
 
