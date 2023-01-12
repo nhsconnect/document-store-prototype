@@ -1,12 +1,12 @@
 import * as path from "path";
 import { logAccessibilityViolations } from "../support/utils";
 
-describe("upload and download", () => {
+describe("uploads, downloads, and deletes docs", () => {
     beforeEach(() => {
         Cypress.session.clearCurrentSessionData();
     });
 
-    it("searches for a patient, uploads, and then downloads their docs", () => {
+    it("searches for a patient, uploads, downloads, and then deletes docs", () => {
         const baseUrl = Cypress.config("baseUrl");
         const nhsNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
         const username = Cypress.env("username");
