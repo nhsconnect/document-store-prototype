@@ -62,6 +62,15 @@ function createDynamoDBTable {
       ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
 }
 
+function createPdsFhirAccessTokenParameter() {
+  PARAM_NAME=/prs/${ENVIRONMENT}/pds-fhir-access-token
+    aws ssm put-parameter \
+        --name $PARAM_NAME \
+        --value access-token-placeholder \
+        --type SecureString \
+        ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+}
+
 echo "bootstrapping..."
 
 read -r -p "Are you sure you want to bootstrap terraform for the ${ENVIRONMENT} environment at ${AWS_ENDPOINT}? [y/N] " response
@@ -69,6 +78,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
     createS3Bucket
     createDynamoDBTable
+    createPdsFhirAccessTokenParameter
 else
     exit
 fi

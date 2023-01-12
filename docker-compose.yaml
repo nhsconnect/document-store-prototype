@@ -17,7 +17,7 @@ services:
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=s3,lambda,dynamodb,iam,apigateway,logs,sts,sqs
+      - SERVICES=s3,lambda,dynamodb,iam,apigateway,logs,sts,sqs,ssm
       - DEFAULT_REGION=eu-west-2
       - HOSTNAME_EXTERNAL=localhost
       - LAMBDA_CONTAINER_REGISTRY=mlupin/docker-lambda
