@@ -45,8 +45,8 @@ test-e2e: ## Run E2E test (without visible browser)
 test-e2e-open: ## Run E2E test (with visible browser)
 	cd e2eTest && npm run test:open
 
-.PHONY: install-node-projects
-install-node-projects: install-ui install-e2e-test ## Install dependencies for Node projects
+.PHONY: install
+install: install-ui install-e2e-test install-app ## Install dependencies
 
 .PHONY: install-ui
 install-ui: ## Install /ui dependencies
@@ -55,6 +55,10 @@ install-ui: ## Install /ui dependencies
 .PHONY: install-e2e-test
 install-e2e-test: ## Install /e2eTest dependencies
 	cd e2eTest && npm i
+
+.PHONY: install-app
+install-app: ## Install /app dependencies
+	cd app && ./gradlew build
 
 .PHONY: build-and-deploy-to-local-stack
 build-and-deploy-to-local-stack: build-api-jars deploy-to-localstack ## Build & deploy to LocalStack
