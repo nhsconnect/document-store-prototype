@@ -9,11 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,6 @@ public class DeleteDocumentReferenceE2eTest {
     private static final String CODE_VALUE = "185361000000102";
     public static final String TABLE_NAME = "DocumentReferenceMetadata";
     String baseUri = String.format(BASE_URI_TEMPLATE, getAwsHost(), DEFAULT_PORT);
-    private UtilsE2eTest utilsE2eTest = new UtilsE2eTest();
 
     AwsClientBuilder.EndpointConfiguration awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
     AmazonDynamoDB dynamoDbClient = AmazonDynamoDBClientBuilder.standard()
@@ -53,10 +54,10 @@ public class DeleteDocumentReferenceE2eTest {
 
 
     @Test
-    void shouldMarkADocumentsRelatedToTheNhsNumberAsDeletedAndReturnSuccessfulMessage() throws IOException, InterruptedException  {
+    void shouldMarkADocumentsRelatedToTheNhsNumberAsDeletedAndReturnSuccessfulMessage() throws IOException, InterruptedException {
         var nhsNumber = "1234567890";
         var s3Location = String.format("s3://%s/%s", awsS3.getDocumentStoreBucketName(), S3_KEY);
-        String expectedErrorResponse = utilsE2eTest.getContentFromResource("delete/successful-delete-response.json");
+        String expectedErrorResponse = getContentFromResource();
         Map<String, AttributeValue> document = Map.of(
                 "ID", new AttributeValue("1234"),
                 "NhsNumber", new AttributeValue(nhsNumber),
@@ -84,5 +85,9 @@ public class DeleteDocumentReferenceE2eTest {
         assertThatJson(deleteDocumentReferenceResponse.body()).isEqualTo(expectedErrorResponse);
     }
 
-
+    private String getContentFromResource() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("delete/successful-delete-response.json").getFile());
+        return new String(Files.readAllBytes(file.toPath()));
+    }
 }
