@@ -28,7 +28,7 @@ _Note: Ensure you have the correct Node version set before doing this._
 ### 2. Create Config
 
 Create a config file by copying [cypress.env.json.example](cypress.env.json.example) and rename it
-to `cypress.env.json.example`.
+to `cypress.env.json`.
 
 ### 3. Setup Config
 
