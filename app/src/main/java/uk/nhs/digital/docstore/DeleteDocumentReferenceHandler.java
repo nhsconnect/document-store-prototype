@@ -15,24 +15,25 @@ import uk.nhs.digital.docstore.utils.CommonUtils;
 
 public class DeleteDocumentReferenceHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteDocumentReferenceHandler.class);
-    private final ApiConfig apiConfig;
-
-    private final CommonUtils utils = new CommonUtils();
-    private final DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-    private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
-
-    private final AmazonS3 s3client;
-
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_ENDPOINT = "";
 
+    private final ApiConfig apiConfig;
+    private final AmazonS3 s3client;
+    private final DocumentMetadataStore documentMetadataStore;
+
+    private final CommonUtils utils = new CommonUtils();
+    private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
+    
+    @SuppressWarnings("unused")
     public DeleteDocumentReferenceHandler() {
-        this(new ApiConfig(), CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION));
+        this(new ApiConfig(), CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION), new DocumentMetadataStore());
     }
 
-    public DeleteDocumentReferenceHandler(ApiConfig apiConfig, AmazonS3 s3client) {
+    public DeleteDocumentReferenceHandler(ApiConfig apiConfig, AmazonS3 s3client, DocumentMetadataStore documentMetadataStore) {
         this.apiConfig = apiConfig;
         this.s3client = s3client;
+        this.documentMetadataStore = documentMetadataStore;
     }
 
     @Override
@@ -44,10 +45,10 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
         try {
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
 
-            var documentMetadataList = metadataStore.findByNhsNumber(nhsNumber);
+            var documentMetadataList = documentMetadataStore.findByNhsNumber(nhsNumber);
             if (documentMetadataList != null) {
                 LOGGER.debug("Deleting document metadata from DynamoDB");
-                metadataStore.deleteAndSave(documentMetadataList);
+                documentMetadataStore.deleteAndSave(documentMetadataList);
 
                 LOGGER.debug("Deleting documents from S3");
                 documentMetadataList.forEach(documentMetadata -> {
