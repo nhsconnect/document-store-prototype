@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore.patientdetails;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -46,15 +47,21 @@ class RealPdsFhirServiceTest {
     private SplunkPublisher splunkPublisher;
     @Mock
     private AuthService authService;
+    @Mock
+    private PatientSearchConfig patientSearchConfig;
     @Captor
     private ArgumentCaptor<SearchPatientDetailsAuditMessage> sensitiveAuditMessageCaptor;
+
+    @BeforeEach
+    void setUp() throws MissingEnvironmentVariableException {
+        when(patientSearchConfig.pdsFhirRootUri()).thenReturn("pds-fhir-endpoint");
+    }
 
     @Test
     void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException, MissingEnvironmentVariableException {
         LocalDate periodStart = LocalDate.now().minusYears(1);
         var testLogappender = TestLogAppender.addTestLogAppender();
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
+        var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = "9000000009";
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 200);
         var accessToken = "token";
@@ -73,14 +80,13 @@ class RealPdsFhirServiceTest {
                 .isEqualTo(expectedSensitiveAuditMessage);
         assertThat(actualSensitiveAuditMessage.getTimestamp())
                 .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent(patientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
     void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException, MissingEnvironmentVariableException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
+        var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = "9000000000";
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 400);
         var accessToken = "token";
@@ -98,14 +104,13 @@ class RealPdsFhirServiceTest {
                 .isEqualTo(expectedSensitiveAuditMessage);
         assertThat(actualSensitiveAuditMessage.getTimestamp())
                 .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent(patientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
     void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException, MissingEnvironmentVariableException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
+        var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = "9111231130";
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 404);
         var accessToken = "token";
@@ -124,14 +129,13 @@ class RealPdsFhirServiceTest {
                 .isEqualTo(expectedSensitiveAuditMessage);
         assertThat(actualSensitiveAuditMessage.getTimestamp())
                 .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent(patientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
     void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException, MissingEnvironmentVariableException {
         var testLogappender = TestLogAppender.addTestLogAppender();
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
+        var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = "9111231130";
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 500);
         var accessToken = "token";
@@ -148,15 +152,14 @@ class RealPdsFhirServiceTest {
                 .ignoringFields("timestamp")
                 .isEqualTo(expectedSensitiveAuditMessage);
         assertThat(actualSensitiveAuditMessage.getTimestamp()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
-        assertThat(testLogappender.findLoggedEvent(stubbingOffPatientSearchConfig.pdsFhirRootUri())).isNotNull();
+        assertThat(testLogappender.findLoggedEvent(patientSearchConfig.pdsFhirRootUri())).isNotNull();
     }
 
     @Test
     void makesCallToGetAccessTokenTwiceIfTokenHasExpired() throws MissingEnvironmentVariableException, JsonProcessingException {
         LocalDate periodStart = LocalDate.now().minusYears(1);
 
-        var stubbingOffPatientSearchConfig = new StubbingOffPatientSearchConfig();
-        var pdsFhirClient = new RealPdsFhirService(stubbingOffPatientSearchConfig, httpClient, splunkPublisher, authService);
+        var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = "9000000009";
         var accessToken = "token";
         Period period = new Period(periodStart, null);
@@ -242,13 +245,6 @@ class RealPdsFhirServiceTest {
         @Override
         public HttpClient.Version version() {
             return null;
-        }
-    }
-
-    private static class StubbingOffPatientSearchConfig extends PatientSearchConfig {
-        @Override
-        public boolean pdsFhirIsStubbed() {
-            return false;
         }
     }
 }
