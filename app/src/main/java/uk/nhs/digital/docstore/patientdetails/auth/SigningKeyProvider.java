@@ -49,7 +49,7 @@ public class SigningKeyProvider implements RSAKeyProvider {
     @Override
     public String getPrivateKeyId() {
         try {
-            return environment.getEnvVar("KID");
+            return environment.getEnvVar("PDS_FHIR_KID");
         } catch (MissingEnvironmentVariableException e) {
             throw new RuntimeException(e);
         }
