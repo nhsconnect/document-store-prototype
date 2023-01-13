@@ -56,7 +56,7 @@ public class AuthService {
 
             var signedJwt2 = jwtBuilder.build();
             LOGGER.debug("Fetching new access token from nhs");
-            var accessTokenResponse2 = httpClient.fetchAccessToken(signedJwt2, patientSearchConfig.nhsOauthEndpoint());
+            var accessTokenResponse2 = httpClient.fetchAccessToken(signedJwt, patientSearchConfig.nhsOauthEndpoint());
 
 //            PutParameterRequest request = new PutParameterRequest();
 //            request.withName(patientSearchConfig.pdsFhirTokenName());
