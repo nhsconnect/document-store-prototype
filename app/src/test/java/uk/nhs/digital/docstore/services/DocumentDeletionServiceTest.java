@@ -10,6 +10,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.DeletedAllDocumentsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
@@ -32,10 +35,18 @@ class DocumentDeletionServiceTest {
 
     @Test
     void sendsAuditMessage() throws JsonProcessingException {
-        documentDeletionService.audit();
+        var nhsNumber = "0123456789";
+        var documentMetadataList = List.of(new DocumentMetadata());
+        var expectedAuditMessage = new DeletedAllDocumentsAuditMessage(nhsNumber, documentMetadataList);
+
+        documentDeletionService.audit(nhsNumber, documentMetadataList);
 
         verify(splunkPublisher).publish(auditMessageArgumentCaptor.capture());
-        var auditMessage = auditMessageArgumentCaptor.getValue();
-        assertThat(auditMessage.getDescription()).isEqualTo("Deleted all documents");
+        var actualAuditMessage = auditMessageArgumentCaptor.getValue();
+        assertThat(actualAuditMessage.getDescription()).isEqualTo("Deleted documents");
+        assertThat(actualAuditMessage)
+                .usingRecursiveComparison()
+                .comparingOnlyFields("nhsNumber", "fileMetadataList")
+                .isEqualTo(expectedAuditMessage);
     }
 }
