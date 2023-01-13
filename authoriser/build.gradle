@@ -2,9 +2,6 @@ plugins {
     id 'java'
 }
 
-group 'org.example'
-version 'unspecified'
-
 repositories {
     mavenCentral()
 }
@@ -26,3 +23,10 @@ test {
     useJUnitPlatform()
 }
 
+jar {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}

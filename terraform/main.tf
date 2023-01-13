@@ -162,11 +162,8 @@ resource "aws_lambda_function" "authoriser" {
   timeout     = 15
   memory_size = 256
 
-  filename = var.lambda_jar_filename
+  filename = var.authoriser_lambda_jar_filename
 
-  source_code_hash = filebase64sha256(var.lambda_jar_filename)
+  source_code_hash = filebase64sha256(var.authoriser_lambda_jar_filename)
 
-  environment {
-    variables = local.common_environment_variables
-  }
 }
