@@ -60,8 +60,8 @@ install-e2e-test: ## Install /e2eTest dependencies
 install-app: ## Install /app dependencies
 	./gradlew build --refresh-dependencies
 
-.PHONY: build-and-deploy-to-local-stack
-build-and-deploy-to-local-stack: build-api-jars deploy-to-localstack ## Build & deploy to LocalStack
+.PHONY: build-and-deploy-to-localstack
+build-and-deploy-to-localstack: build-api-jars deploy-to-localstack ## Build & deploy to LocalStack
 
 .PHONY: build-api-jars
 build-api-jars: ## Build API JARs
@@ -70,6 +70,10 @@ build-api-jars: ## Build API JARs
 .PHONY: deploy-to-localstack
 deploy-to-localstack: ## Deploy to LocalStack
 	./tasks deploy-to-localstack
+
+.PHONY: start-ui
+start-ui: ## Start the UI
+	cd ui && npm start
 
 .PHONY: help
 help: ## Show help
