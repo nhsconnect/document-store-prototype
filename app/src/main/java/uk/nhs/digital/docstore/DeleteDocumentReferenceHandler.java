@@ -7,9 +7,11 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.amazonaws.services.s3.AmazonS3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.services.DocumentDeletionService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
 
@@ -21,19 +23,29 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
     private final ApiConfig apiConfig;
     private final AmazonS3 s3client;
     private final DocumentMetadataStore documentMetadataStore;
+    private final DocumentDeletionService documentDeletionService;
 
     private final CommonUtils utils = new CommonUtils();
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
-    
+
     @SuppressWarnings("unused")
     public DeleteDocumentReferenceHandler() {
-        this(new ApiConfig(), CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION), new DocumentMetadataStore());
+        this(
+                new ApiConfig(),
+                CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION),
+                new DocumentMetadataStore(),
+                new DocumentDeletionService(new SplunkPublisher())
+        );
     }
 
-    public DeleteDocumentReferenceHandler(ApiConfig apiConfig, AmazonS3 s3client, DocumentMetadataStore documentMetadataStore) {
+    public DeleteDocumentReferenceHandler(ApiConfig apiConfig,
+                                          AmazonS3 s3client,
+                                          DocumentMetadataStore documentMetadataStore,
+                                          DocumentDeletionService documentDeletionService) {
         this.apiConfig = apiConfig;
         this.s3client = s3client;
         this.documentMetadataStore = documentMetadataStore;
+        this.documentDeletionService = documentDeletionService;
     }
 
     @Override
@@ -44,8 +56,8 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
 
         try {
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
-
             var documentMetadataList = documentMetadataStore.findByNhsNumber(nhsNumber);
+
             if (documentMetadataList != null) {
                 LOGGER.debug("Deleting document metadata from DynamoDB");
                 documentMetadataStore.deleteAndSave(documentMetadataList);
@@ -54,10 +66,13 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
                 documentMetadataList.forEach(documentMetadata -> {
                     var bucketName = documentMetadata.getLocation().split("//")[1].split("/")[0];
                     var objectKey = documentMetadata.getLocation().split("//")[1].split("/")[1];
-                    LOGGER.debug("Deleting object key: " + objectKey + "from bucket: " + bucketName);
+
+                    LOGGER.debug("Deleting object key: " + objectKey + " from bucket: " + bucketName);
                     s3client.deleteObject(bucketName, objectKey);
                 });
             }
+
+            documentDeletionService.audit(nhsNumber, documentMetadataList);
 
             LOGGER.debug("Processing finished - about to return the response");
             var body = getJsonBody();
