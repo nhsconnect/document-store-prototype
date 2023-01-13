@@ -58,7 +58,7 @@ install-e2e-test: ## Install /e2eTest dependencies
 
 .PHONY: install-app
 install-app: ## Install /app dependencies
-	cd app && ./gradlew build
+	./gradlew build --refresh-dependencies
 
 .PHONY: build-and-deploy-to-local-stack
 build-and-deploy-to-local-stack: build-api-jars deploy-to-localstack ## Build & deploy to LocalStack
