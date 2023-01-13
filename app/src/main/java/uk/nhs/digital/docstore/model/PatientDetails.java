@@ -1,8 +1,4 @@
-package uk.nhs.digital.docstore.patientdetails;
-
-import uk.nhs.digital.docstore.patientdetails.fhirdtos.Address;
-import uk.nhs.digital.docstore.patientdetails.fhirdtos.Name;
-import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
+package uk.nhs.digital.docstore.model;
 
 import java.util.List;
 
@@ -40,17 +36,5 @@ public class PatientDetails {
 
     public String getNhsNumber() {
         return nhsNumber;
-    }
-
-    public static PatientDetails fromFhirPatient(Patient fhirPatient){
-        var name = fhirPatient.getCurrentUsualName();
-        var address = fhirPatient.getCurrentHomeAddress();
-        return new PatientDetails(
-                name.map(Name::getGiven).orElse(null),
-                name.map(Name::getFamily).orElse(null),
-                fhirPatient.getBirthDate(),
-                address.map(Address::getPostalCode).orElse(null),
-                fhirPatient.getId()
-        );
     }
 }

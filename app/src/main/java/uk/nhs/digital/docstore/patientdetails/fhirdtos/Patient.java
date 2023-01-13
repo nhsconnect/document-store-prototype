@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.model.PatientDetails;
 
 import java.util.List;
 import java.util.Objects;
@@ -88,5 +89,17 @@ public class Patient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public PatientDetails parse(){
+        var name = this.getCurrentUsualName();
+        var address = this.getCurrentHomeAddress();
+        return new PatientDetails(
+                name.map(Name::getGiven).orElse(null),
+                name.map(Name::getFamily).orElse(null),
+                this.getBirthDate(),
+                address.map(Address::getPostalCode).orElse(null),
+                this.getId()
+        );
     }
 }

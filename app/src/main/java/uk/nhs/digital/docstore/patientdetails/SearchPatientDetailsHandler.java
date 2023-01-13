@@ -15,6 +15,7 @@ import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
+import uk.nhs.digital.docstore.model.PatientDetails;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthServiceHttpClient;
 
@@ -60,7 +61,7 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
                     : new RealPdsFhirService(patientSearchConfig, sensitiveIndex, authService);
             var fhirPatient = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
-            var patientDetails = PatientDetails.fromFhirPatient(fhirPatient);
+            var patientDetails = fhirPatient.parse();
             LOGGER.debug("Generating response body");
             var json = convertToJson(patientDetails);
             var body = getBody(json);

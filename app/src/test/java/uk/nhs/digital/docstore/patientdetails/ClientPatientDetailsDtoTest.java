@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.patientdetails;
 
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.model.PatientDetails;
 
 import java.util.List;
 

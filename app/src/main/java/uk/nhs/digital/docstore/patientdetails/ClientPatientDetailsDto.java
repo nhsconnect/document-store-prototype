@@ -1,5 +1,7 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import uk.nhs.digital.docstore.model.PatientDetails;
+
 import java.util.List;
 
 public class ClientPatientDetailsDto {
