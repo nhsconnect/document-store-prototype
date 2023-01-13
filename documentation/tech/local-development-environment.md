@@ -81,7 +81,31 @@ LocalStack's port 4566 is bound to your host machine, so requests can be made fr
 enables you to interact with LocalStack via your host machine's terminal or any other programs, but be wary of doing so
 as differences between your environments (e.g. having a different version of terraform available) may cause problems.
 
+## This LocalStack thing sounds pretty important, anything else I should know about it?
 
+Yes. Whilst LocalStack is a brilliant project and offers pretty good representations of many AWS services, it does have
+some limitations. Here are a few that we've encountered so far relevant to this project:
 
+- There's no implementation of Cognito, SSM Parameter Store or AWS Amplify
+- IAM permission checks are not applied, so policies cannot be tested locally
+- API Gateway does not apply authorisation checks
 
+We have found a number of ways to working around these issues for local development.
 
+| Issue                                           | Workaround                                                           |
+|-------------------------------------------------|----------------------------------------------------------------------|
+| Missing AWS Congito                             | Use dev environment Cognito with local                               |
+| Missing AWS Amplify                             | Use webpack dev server in local env                                  |
+| Missing Parameter Store                         | Use terraform variables where possible, fake local secrets where not |
+| Missing IAM Permissions Checks                  | We can only test policies in cloud environments                      |
+| API Gateway does not apply authorisation checks | Unit test the authoriser and test in the dev environment             |
+
+The other impact of the limitations of LocalStack is that we have to reflect this in our terraform code. Unfortunately,
+terraform is not intended to conditionally alter infrastructure in different environments. Currently, we are working
+around this through use of the `count` meta-property on resources that are not available in LocalStack, but it does make
+Terraform code hard to reason about. We may consider splitting our cloud and local terraform projects and sharing code
+using modules.
+
+## How do I know if I've broken anything?
+
+Coming soon...

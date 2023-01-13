@@ -1,8 +1,8 @@
 fileignoreconfig:
-- filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/PatientSearchConfig.java
-  checksum: 3e2ea43720ac7360f265a690449a859e41f01fc984459e53b1c08680e033b3d1
-- filename: documentation/tech/local-development-environment.md
+- filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/PatientSearchConfig.java  
   checksum: 2fe3bca550f9835e84f065bebb962c35ffc2ba0185c7c764bb1875e476b846ce
+- filename: documentation/tech/local-development-environment.md
+  checksum: 9313e093fdeac50057945eb84cc146390b7a50724e69a555d643f62f3f6d0f92
 - filename: terraform/.terraform.lock.hcl
   checksum: 512a82c4e4de3c201a985a00ebde5d66a32b4c3284015b7b149c022c65163e5e
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
