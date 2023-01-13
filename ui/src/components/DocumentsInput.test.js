@@ -89,7 +89,7 @@ describe("DocumentsInput", () => {
 
         expect(screen.getByText(document.name)).toBeInTheDocument();
         userEvent.click(
-            screen.getByRole("button", {
+            screen.getByRole("link", {
                 name: `Remove ${document.name} from selection`,
             })
         );
@@ -132,7 +132,7 @@ describe("DocumentsInput", () => {
         );
 
         userEvent.click(
-            screen.getAllByRole("button", {
+            screen.getAllByRole("link", {
                 name: `Remove ${duplicateDocument.name} from selection`,
             })[1]
         );
@@ -152,7 +152,7 @@ describe("DocumentsInput", () => {
         expect(await screen.findByText(document.name)).toBeInTheDocument();
 
         userEvent.click(
-            screen.getByRole("button", {
+            screen.getByRole("link", {
                 name: `Remove ${document.name} from selection`,
             })
         );

@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid/non-secure";
-import { Button, Input, Table, WarningCallout } from "nhsuk-react-components";
+import { Input, Table, WarningCallout } from "nhsuk-react-components";
 import React, { useRef } from "react";
 import { useController } from "react-hook-form";
 import { documentUploadStates } from "../enums/documentUploads";
@@ -104,15 +104,13 @@ const DocumentsInput = ({ control }) => {
                                     <Table.Cell>{document.file.name}</Table.Cell>
                                     <Table.Cell>{formatSize(document.file.size)}</Table.Cell>
                                     <Table.Cell>
-                                        <Button
-                                            type="button"
-                                            className="nhsuk-u-padding-2 nhsuk-u-margin-0"
-                                            secondary
+                                        <a
+                                            href={"#"}
                                             aria-label={`Remove ${document.file.name} from selection`}
                                             onClick={() => onRemove(index)}
                                         >
                                             Remove
-                                        </Button>
+                                        </a>
                                     </Table.Cell>
                                 </Table.Row>
                             ))}
