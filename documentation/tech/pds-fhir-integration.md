@@ -31,6 +31,12 @@ owner. The current owners are:
 - Richard Whitehead
 - Ryan Brown
 
+Once all of this has been set up, the application can request an access token from the NHS oauth2 api endpoint. 
+The token will be valid for 10 minutes and should be reused until it expires.
+As the application uses AWS lambda, the token cannot be stored in memory and shared between several lambda instances.
+In order to cache the token once it has been generated, it is stored in aws parameter store and then retrieved and used in 
+the subsequent requests to PDS FHIR until it expires (401 status code response from PDS FHIR). 
+
 ## Extracting the relevant patient verification factors from the response
 
 One of the most complex aspects of the "verify NHS number" operation is that it relies on the patient's postal code and
@@ -50,3 +56,4 @@ variable and re-deploying terraform.
 - [API Registration Portal](https://onboarding.prod.api.platform.nhs.uk/)
 - [Application Restricted API Authentication](https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation/application-restricted-restful-apis-signed-jwt-authentication)
 - [PDS FHIR API Documentation](https://digital.nhs.uk/developer/api-catalogue/personal-demographics-service-fhir)
+- [Test Patient Data For Dev and Pre-Prod](https://digital.nhs.uk/developer/api-catalogue/personal-demographics-service-fhir/pds-fhir-api-test-data)
