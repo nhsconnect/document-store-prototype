@@ -1,5 +1,5 @@
 import * as path from "path";
-import { logAccessibilityViolations } from "../support/utils";
+import {logAccessibilityViolations} from "../support/utils";
 
 describe("uploads, downloads, and deletes docs", () => {
     beforeEach(() => {
@@ -8,7 +8,7 @@ describe("uploads, downloads, and deletes docs", () => {
 
     it("searches for a patient, uploads, downloads, and then deletes docs", () => {
         const baseUrl = Cypress.config("baseUrl");
-        const nhsNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+        const nhsNumber = Cypress.env("environment") === "local" ? "9000000009" : "9449305552";
         const username = Cypress.env("username");
         const password = Cypress.env("password");
         const oidcProvider = Cypress.env("oidc_provider");
