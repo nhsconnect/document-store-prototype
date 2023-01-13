@@ -1,4 +1,4 @@
-import { Button, ErrorSummary, Fieldset, Input, SummaryList, WarningCallout } from "nhsuk-react-components";
+import {Button, ErrorSummary, Fieldset, Hint, Input, Label, SummaryList, WarningCallout} from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -69,9 +69,10 @@ export const PatientTracePage = ({ nextPage, title }) => {
                     <Fieldset.Legend headingLevel={"h1"} isPageHeading>
                         {title}
                     </Fieldset.Legend>
+                    <Label>Enter NHS number</Label>
+                    <Hint>Please search patient's record you wish to upload by 10 digit NHS number. For example, 4857773456.</Hint>
                     <Input
                         id={"nhs-number-input"}
-                        label="NHS number"
                         name="nhsNumber"
                         error={formState.errors.nhsNumber?.message}
                         type="text"

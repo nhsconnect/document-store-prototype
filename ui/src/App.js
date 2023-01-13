@@ -82,7 +82,7 @@ const AppRoutes = () => {
                     <Route
                         path="/upload/patient-trace"
                         element={
-                            <PatientTracePage client={client} nextPage={"/upload/submit"} title={"Upload a document"} />
+                            <PatientTracePage client={client} nextPage={"/upload/submit"} title={"Search for patient"} />
                         }
                     />
                     <Route

@@ -41,7 +41,8 @@ describe("PatientTracePage", () => {
         render(<PatientTracePage title={"My test title"} />);
 
         expect(screen.getByRole("heading", { name: "My test title" })).toBeInTheDocument();
-        expect(screen.queryByLabelText("NHS number")).toBeInTheDocument();
+        expect(screen.queryByText("Enter NHS number")).toBeInTheDocument();
+        expect(screen.queryByText("Please search patient's record you wish to upload by 10 digit NHS number. For example, 4857773456.")).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Search" })).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
     });
