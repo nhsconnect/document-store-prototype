@@ -1,5 +1,5 @@
 import * as path from "path";
-import {logAccessibilityViolations} from "../support/utils";
+import { logAccessibilityViolations } from "../support/utils";
 
 describe("uploads, downloads, and deletes docs", () => {
     beforeEach(() => {
@@ -46,7 +46,7 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.findByRole("button", { name: "Continue" }).click();
 
         cy.url().should("eq", baseUrl + "/upload/patient-trace");
-        cy.findByRole("textbox", { name: "NHS number" }).type(nhsNumber);
+        cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.findByRole("button", { name: "Next" }).click();

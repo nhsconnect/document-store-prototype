@@ -22,7 +22,12 @@ const FormWrapper = () => {
 describe("DocumentsInput", () => {
     it("renders the choose file input", () => {
         render(<FormWrapper />);
-        expect(screen.getByLabelText("Select files")).toBeInTheDocument();
+        expect(screen.getByLabelText("Select file(s)")).toBeInTheDocument();
+        expect(
+            screen.getByText("A patient's full electronic health record including attachments must be uploaded.")
+        ).toBeInTheDocument();
+        expect(screen.getByText("You can select multiple files to upload at once.")).toBeInTheDocument();
+        expect(screen.getByText("Primary Care Support England")).toBeInTheDocument();
     });
 
     it("renders a list of the selected documents", async () => {
@@ -35,7 +40,7 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Select files"), [documentOne, documentTwo]);
+        userEvent.upload(screen.getByLabelText("Select file(s)"), [documentOne, documentTwo]);
 
         expect(await screen.findByText(documentOne.name)).toBeInTheDocument();
         expect(screen.getByText(documentTwo.name)).toBeInTheDocument();
@@ -69,7 +74,7 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Select files"), [documentOne, documentTwo, documentThree]);
+        userEvent.upload(screen.getByLabelText("Select file(s)"), [documentOne, documentTwo, documentThree]);
 
         userEvent.click(screen.getByText("Submit"));
 
@@ -80,7 +85,7 @@ describe("DocumentsInput", () => {
         const document = new File(["test"], "test.txt", {
             type: "text/plain",
         });
-        userEvent.upload(screen.getByLabelText("Select files"), [document]);
+        userEvent.upload(screen.getByLabelText("Select file(s)"), [document]);
 
         expect(screen.getByText(document.name)).toBeInTheDocument();
         userEvent.click(
@@ -101,11 +106,11 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Select files"), [documentOne]);
+        userEvent.upload(screen.getByLabelText("Select file(s)"), [documentOne]);
 
         expect(await screen.findByText(documentOne.name)).toBeInTheDocument();
 
-        userEvent.upload(screen.getByLabelText("Select files"), [documentTwo]);
+        userEvent.upload(screen.getByLabelText("Select file(s)"), [documentTwo]);
 
         expect(screen.getByText(documentOne.name)).toBeInTheDocument();
 
@@ -120,7 +125,7 @@ describe("DocumentsInput", () => {
         const duplicateDocument = new File(["test"], "test.txt", {
             type: "text/plain",
         });
-        userEvent.upload(screen.getByLabelText("Select files"), [document, duplicateDocument]);
+        userEvent.upload(screen.getByLabelText("Select file(s)"), [document, duplicateDocument]);
 
         await waitFor(() =>
             expect(screen.queryByText("There are two or more documents with the same name.")).toBeInTheDocument()
@@ -143,7 +148,7 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Select files"), document);
+        userEvent.upload(screen.getByLabelText("Select file(s)"), document);
         expect(await screen.findByText(document.name)).toBeInTheDocument();
 
         userEvent.click(
@@ -153,7 +158,7 @@ describe("DocumentsInput", () => {
         );
         await waitFor(() => expect(screen.queryByText(document.name)).not.toBeInTheDocument());
 
-        userEvent.upload(screen.getByLabelText("Select files"), document);
+        userEvent.upload(screen.getByLabelText("Select file(s)"), document);
         expect(await screen.findByText(document.name)).toBeInTheDocument();
     });
 });

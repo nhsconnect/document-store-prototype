@@ -68,8 +68,17 @@ const DocumentsInput = ({ control }) => {
             {/* override the width attribute because the value of the file input is read-only, so when we remove a file it doesn't update */}
             <Input
                 id={"documents-input"}
-                label="Select files"
-                hint="You may select multiple files"
+                label="Select file(s)"
+                hint={
+                    <ul>
+                        <li>{"A patient's full electronic health record including attachments must be uploaded."}</li>
+                        <li>{"You can select multiple files to upload at once."}</li>
+                        <li>
+                            In the event documents cannot be uploaded, they must be printed and sent via{" "}
+                            <a href="https://secure.pcse.england.nhs.uk/">Primary Care Support England</a>.
+                        </li>
+                    </ul>
+                }
                 type="file"
                 multiple={true}
                 name={name}

@@ -42,7 +42,11 @@ describe("PatientTracePage", () => {
 
         expect(screen.getByRole("heading", { name: "My test title" })).toBeInTheDocument();
         expect(screen.queryByText("Enter NHS number")).toBeInTheDocument();
-        expect(screen.queryByText("Please search patient's record you wish to upload by 10 digit NHS number. For example, 4857773456.")).toBeInTheDocument();
+        expect(
+            screen.queryByText(
+                "Please search patient's record you wish to upload by 10 digit NHS number. For example, 4857773456."
+            )
+        ).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Search" })).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
     });
@@ -92,7 +96,7 @@ describe("PatientTracePage", () => {
         expect(screen.queryByText(`${patientData.postalCode}`)).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Next" })).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Search" })).not.toBeInTheDocument();
-        expect(screen.getByRole("textbox", { name: "NHS number" })).toHaveAttribute("readonly");
+        expect(screen.getByRole("textbox", { name: "Enter NHS number" })).toHaveAttribute("readonly");
         expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
@@ -158,7 +162,7 @@ describe("PatientTracePage", () => {
         });
         render(<PatientTracePage />);
 
-        userEvent.type(screen.getByLabelText("NHS number"), fakeNhsNumber);
+        userEvent.type(screen.getByLabelText("Enter NHS number"), fakeNhsNumber);
         startSearch();
 
         await waitFor(() => {
@@ -276,7 +280,7 @@ function clickNext() {
 }
 
 function enterNhsNumber(nhsNumber) {
-    userEvent.type(screen.getByLabelText("NHS number"), nhsNumber);
+    userEvent.type(screen.getByLabelText("Enter NHS number"), nhsNumber);
 }
 
 function startSearch() {

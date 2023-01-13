@@ -36,7 +36,7 @@ describe("UploadDocumentPage", () => {
             expect(nhsNumberField()).toBeInTheDocument();
             expect(nhsNumberField()).toHaveValue(nhsNumber);
             expect(nhsNumberField()).toHaveAttribute("readonly");
-            expect(screen.getByLabelText("Select files")).toBeInTheDocument();
+            expect(screen.getByLabelText("Select file(s)")).toBeInTheDocument();
             expect(uploadButton()).toBeInTheDocument();
             expect(mockNavigate).not.toHaveBeenCalled();
         });
@@ -201,7 +201,7 @@ function makeTextFile(name, size) {
 }
 
 function chooseDocuments(documents) {
-    userEvent.upload(screen.getByLabelText("Select files"), documents);
+    userEvent.upload(screen.getByLabelText("Select file(s)"), documents);
 }
 
 function uploadDocument() {
