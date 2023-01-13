@@ -6,6 +6,7 @@ import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementClientBuilder;
 import com.amazonaws.services.simplesystemsmanagement.model.GetParameterRequest;
 import com.amazonaws.services.simplesystemsmanagement.model.GetParameterResult;
+import com.amazonaws.services.simplesystemsmanagement.model.PutParameterRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
@@ -54,17 +55,13 @@ public class AuthService {
             LOGGER.debug("Fetching new access token from nhs");
             var accessTokenResponse = httpClient.fetchAccessToken(signedJwt, patientSearchConfig.nhsOauthEndpoint());
 
-            var signedJwt2 = jwtBuilder.build();
-            LOGGER.debug("Fetching new access token from nhs");
-            var accessTokenResponse2 = httpClient.fetchAccessToken(signedJwt, patientSearchConfig.nhsOauthEndpoint());
-
-//            PutParameterRequest request = new PutParameterRequest();
-//            request.withName(patientSearchConfig.pdsFhirTokenName());
-//            request.withValue(accessTokenResponse.getAccessToken());
-//            request.withOverwrite(true);
-//            LOGGER.debug("Attempting to update pdh fhir access token in parameter store");
-//            ssm.putParameter(request);
-//            LOGGER.debug("Successfully updated parameter store with new pdh fhir access token");
+            PutParameterRequest request = new PutParameterRequest();
+            request.withName(patientSearchConfig.pdsFhirTokenName());
+            request.withValue(accessTokenResponse.getAccessToken());
+            request.withOverwrite(true);
+            LOGGER.debug("Attempting to update pdh fhir access token in parameter store");
+            ssm.putParameter(request);
+            LOGGER.debug("Successfully updated parameter store with new pdh fhir access token");
             return accessTokenResponse.getAccessToken();
 
         } catch (AmazonServiceException | MissingEnvironmentVariableException e) {

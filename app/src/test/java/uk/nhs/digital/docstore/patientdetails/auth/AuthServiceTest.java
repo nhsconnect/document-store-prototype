@@ -4,7 +4,6 @@ import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.model.GetParameterResult;
 import com.amazonaws.services.simplesystemsmanagement.model.Parameter;
 import com.amazonaws.services.simplesystemsmanagement.model.PutParameterRequest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
@@ -18,7 +17,6 @@ import static org.mockito.Mockito.when;
 class AuthServiceTest {
 
     @Test
-    @Disabled
     void getAccessTokenFetchesAnAccessTokenFromTheNhsApiOAuthProvider() throws MissingEnvironmentVariableException {
         var mockHttpClient = Mockito.mock(AuthServiceHttpClient.class);
         var mockPatientSearchConfig = Mockito.mock(PatientSearchConfig.class);

@@ -3,7 +3,6 @@ package uk.nhs.digital.docstore.patientdetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -59,7 +58,6 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    @Disabled
     void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException, MissingEnvironmentVariableException {
         LocalDate periodStart = LocalDate.now().minusYears(1);
         var testLogappender = TestLogAppender.addTestLogAppender();
@@ -86,7 +84,6 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    @Disabled
     void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException, MissingEnvironmentVariableException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
@@ -111,7 +108,6 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    @Disabled
     void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException, MissingEnvironmentVariableException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
@@ -137,7 +133,6 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    @Disabled
     void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException, MissingEnvironmentVariableException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
@@ -161,7 +156,6 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    @Disabled
     void makesCallToGetAccessTokenTwiceIfTokenHasExpired() throws MissingEnvironmentVariableException, JsonProcessingException {
         LocalDate periodStart = LocalDate.now().minusYears(1);
 

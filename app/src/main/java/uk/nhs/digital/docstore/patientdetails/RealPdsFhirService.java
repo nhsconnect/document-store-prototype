@@ -33,17 +33,17 @@ public class RealPdsFhirService implements PdsFhirService {
     }
 
     public Patient fetchPatientDetails(String nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException {
-        var accessToken = authService.getNewAccessToken();
+        var accessToken = authService.retrieveAccessToken();
 
         var pdsResponse = makeRequestWithPdsAndSendAuditMessage(accessToken, nhsNumber);
-//        boolean expiredAccessToken = pdsResponse.statusCode() == 401;
-//
-//        if (expiredAccessToken) {
-//            var newAccessToken = authService.getNewAccessToken();
-//            var newPdsResponse = makeRequestWithPdsAndSendAuditMessage(newAccessToken, nhsNumber);
-//
-//            return handleResponse(newPdsResponse, nhsNumber);
-//        }
+        boolean expiredAccessToken = pdsResponse.statusCode() == 401;
+
+        if (expiredAccessToken) {
+            var newAccessToken = authService.getNewAccessToken();
+            var newPdsResponse = makeRequestWithPdsAndSendAuditMessage(newAccessToken, nhsNumber);
+
+            return handleResponse(newPdsResponse, nhsNumber);
+        }
 
         return handleResponse(pdsResponse, nhsNumber);
     }
