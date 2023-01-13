@@ -237,6 +237,7 @@ pipelines:
           jobs:
             backend: *build_backend
             frontend: *build_frontend
+            authoriser: *authoriser
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: pre-prod
@@ -293,7 +294,7 @@ pipelines:
           jobs:
             backend: *build_backend
             frontend: *build_frontend
-
+            authoriser: *authoriser
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: prod
@@ -301,7 +302,6 @@ pipelines:
           clean_workspace: true
           jobs:
             plan: *plan_terraform
-
       - deploy_terraform:
           approval:
             type: manual
