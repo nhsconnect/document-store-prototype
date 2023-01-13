@@ -34,10 +34,6 @@ public class PatientSearchConfig {
         return TRUE.equals(environment.getEnvVar("PDS_FHIR_IS_STUBBED", TRUE));
     }
 
-    public String kid() throws MissingEnvironmentVariableException {
-        return environment.getEnvVar("KID");
-    }
-
     public String pdsFhirTokenName() throws MissingEnvironmentVariableException {
         return environment.getEnvVar("PDS_FHIR_TOKEN_NAME");
     }

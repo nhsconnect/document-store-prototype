@@ -29,13 +29,11 @@ class SignedJwtBuilderTest {
         var randomUuidAsString = UUID.randomUUID().toString();
         var nhsApiKey = "nhs-api-key";
         var oauthEndpoint = "oauth-endpoint";
-        var kid = "some-kid";
         var algorithm = Algorithm.none();
         var patientSearchConfig = mock(PatientSearchConfig.class);
 
         when(patientSearchConfig.nhsApiKey()).thenReturn(nhsApiKey);
         when(patientSearchConfig.nhsOauthEndpoint()).thenReturn(oauthEndpoint);
-        when(patientSearchConfig.kid()).thenReturn(kid);
         when(patientSearchConfig.pdsFhirAuthPrivateTokenSigningAlgorithm()).thenReturn(algorithm);
 
         var jwtBuilder = new SignedJwtBuilder(clock, patientSearchConfig);

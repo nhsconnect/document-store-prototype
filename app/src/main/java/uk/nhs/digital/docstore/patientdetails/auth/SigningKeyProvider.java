@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.patientdetails.auth;
 import com.amazonaws.util.Base64;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import uk.nhs.digital.docstore.config.Environment;
+import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -47,6 +48,10 @@ public class SigningKeyProvider implements RSAKeyProvider {
 
     @Override
     public String getPrivateKeyId() {
-        return environment.getEnvVar("KID", "dev-B80F3393-0430-4459-9223-A792AABF813E");
+        try {
+            return environment.getEnvVar("KID");
+        } catch (MissingEnvironmentVariableException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
