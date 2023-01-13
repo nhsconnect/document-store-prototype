@@ -74,7 +74,7 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.findByRole("button", { name: "Continue" }).click();
 
         cy.url().should("eq", baseUrl + "/search/patient-trace");
-        cy.findByRole("textbox", { name: "NHS number" }).type(nhsNumber);
+        cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.findByRole("button", { name: "Next" }).click();
