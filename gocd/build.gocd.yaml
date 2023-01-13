@@ -65,6 +65,10 @@ common:
           stage: build
           job: backend
           source: jars
+      - fetch:
+          stage: build
+          job: authoriser
+          source: jars
       - exec:
           command: dojo
           arguments:
