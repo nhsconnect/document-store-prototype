@@ -1,11 +1,11 @@
-import { Button, ErrorSummary, Fieldset, Input, SummaryList, WarningCallout } from "nhsuk-react-components";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
-import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
+import {Button, ErrorSummary, Fieldset, Input, WarningCallout} from "nhsuk-react-components";
+import React, {useState} from "react";
+import {useForm} from "react-hook-form";
+import {useNavigate} from "react-router";
+import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
-import moment from "moment";
+import PatientSummary from "../components/PatientSummary";
 
 const states = {
     IDLE: "idle",
@@ -42,10 +42,6 @@ export const PatientTracePage = ({ nextPage, title }) => {
             }
             setSubmissionState(states.FAILED);
         }
-    };
-
-    const getFormattedDateOfBirth = (dateOfBirth) => {
-        return moment(dateOfBirth).format("Do MMMM YYYY");
     };
 
     const onNextClicked = () => {
@@ -104,24 +100,7 @@ export const PatientTracePage = ({ nextPage, title }) => {
                 <>
                     <h1>Verify patient details</h1>
                     <p>NHS number {patientDetails.nhsNumber}</p>
-                    <SummaryList>
-                        <SummaryList.Row>
-                            <SummaryList.Key>Surname</SummaryList.Key>
-                            <SummaryList.Value>{patientDetails.familyName}</SummaryList.Value>
-                        </SummaryList.Row>
-                        <SummaryList.Row>
-                            <SummaryList.Key>First name</SummaryList.Key>
-                            <SummaryList.Value>{patientDetails.givenName?.map((name) => `${name} `)}</SummaryList.Value>
-                        </SummaryList.Row>
-                        <SummaryList.Row>
-                            <SummaryList.Key>Date of birth</SummaryList.Key>
-                            <SummaryList.Value>{getFormattedDateOfBirth(patientDetails.birthDate)}</SummaryList.Value>
-                        </SummaryList.Row>
-                        <SummaryList.Row>
-                            <SummaryList.Key>Postcode</SummaryList.Key>
-                            <SummaryList.Value>{patientDetails.postalCode}</SummaryList.Value>
-                        </SummaryList.Row>
-                    </SummaryList>
+                    <PatientSummary patientDetails={patientDetails} />
                     <p>
                         Ensure these patient details match the electronic health records and attachments you are about
                         to upload.

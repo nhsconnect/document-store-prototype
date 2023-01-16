@@ -10,6 +10,7 @@ import {formatSize} from "../utils/utils";
 import {documentUploadStates as stateNames, documentUploadSteps} from "../enums/documentUploads";
 import UploadSummary from "../components/UploadSummary";
 import useApi from "../apiClients/useApi";
+import PatientSummary from "../components/PatientSummary";
 
 const uploadStateMessages = {
     [stateNames.SELECTED]: "Waiting...",
@@ -78,6 +79,7 @@ const UploadDocumentPage = ({ nextPagePath }) => {
                             Upload documents
                         </Fieldset.Legend>
                         <p>NHS number {patientDetails?.nhsNumber}</p>
+                        <PatientSummary patientDetails={patientDetails} />
                         <DocumentsInput control={control} />
                     </Fieldset>
                     <Button type="submit" disabled={formState.isSubmitting}>
