@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export function setUrlHostToLocalHost(url) {
     const development = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
     if (development) {
@@ -38,3 +40,10 @@ export function downloadFile(url, filename) {
 
     downloadLink.click();
 }
+
+export const getFormattedDate = (date) => {
+    if (!date) {
+        return "Invalid date";
+    }
+    return moment(date).format("Do MMMM YYYY");
+};

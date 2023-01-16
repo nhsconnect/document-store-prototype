@@ -1,23 +1,31 @@
-import { render, waitFor, within, screen } from "@testing-library/react";
+import {render, screen, waitFor, within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { nanoid } from "nanoid/non-secure";
+import {nanoid} from "nanoid/non-secure";
 import UploadSummary from "./UploadSummary";
-import { documentUploadStates } from "../enums/documentUploads";
-import { formatSize } from "../utils/utils";
+import {documentUploadStates} from "../enums/documentUploads";
+import {formatSize, getFormattedDate} from "../utils/utils";
 
 describe("The upload summary component", () => {
-    it("confirms the NHS number that the records have been uploaded for", () => {
-        const nhsNumber = "12345";
-        render(<UploadSummary nhsNumber={nhsNumber} documents={[]}></UploadSummary>);
+    const patientData = {
+        birthDate: "2003-01-22",
+        familyName: "Smith",
+        givenName: ["Jane"],
+        nhsNumber: "9234567801",
+        postalCode: "LS1 6AE",
+    };
 
-        expect(screen.getByText(`Summary of uploaded documents for patient number ${nhsNumber}`));
+    it("displays patient details for the records that have been uploaded", () => {
+        render(<UploadSummary patientDetails={patientData} documents={[]}></UploadSummary>);
+
+        expect(screen.getByText("Upload Summary")).toBeInTheDocument();
+        expect(screen.getByText(`NHS number ${patientData.nhsNumber}`)).toBeInTheDocument();
     });
 
     it("displays a collapsible list of the successfully uploaded files", async () => {
         const files = [makeTextFile("one", 100), makeTextFile("two", 101)];
         const documents = files.map((file) => makeDocument(file, documentUploadStates.SUCCEEDED));
 
-        render(<UploadSummary nhsNumber={"12345"} documents={documents}></UploadSummary>);
+        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
 
         toggleSuccessfulUploads();
 
@@ -41,12 +49,12 @@ describe("The upload summary component", () => {
             makeDocument(files[1], documentUploadStates.FAILED),
         ];
 
-        render(<UploadSummary nhsNumber={"12345"} documents={documents}></UploadSummary>);
+        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
 
         toggleSuccessfulUploads();
 
         expect(await screen.findByRole("table")).toBeVisible();
-
+        expect(screen.queryByText("All documents have been successfully uploaded")).not.toBeInTheDocument();
         expect(within(screen.getByRole("table")).getByText(files[0].name)).toBeVisible();
 
         expect(within(screen.getByRole("table")).queryByText(files[1].name)).not.toBeInTheDocument();
@@ -55,7 +63,7 @@ describe("The upload summary component", () => {
     it("does not display the successful uploads list when all of the documents failed to upload", () => {
         const files = [makeTextFile("one", 100)];
 
-        render(<UploadSummary nhsNumber={"12345"} documents={files}></UploadSummary>);
+        render(<UploadSummary patientDetails={patientData} documents={files}></UploadSummary>);
 
         expect(screen.queryByText("Successfully uploaded documents")).not.toBeInTheDocument();
     });
@@ -64,9 +72,12 @@ describe("The upload summary component", () => {
         const files = [makeTextFile("one", 100)];
         const documents = [makeDocument(files[0], documentUploadStates.SUCCEEDED)];
 
-        render(<UploadSummary nhsNumber={"12345"} documents={documents}></UploadSummary>);
+        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
 
         expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+        expect(
+            screen.getByText("All documents have been successfully uploaded on " + getFormattedDate(new Date()))
+        ).toBeInTheDocument();
     });
 
     it("displays an alert if some of the documents failed to upload successfully", () => {
@@ -76,7 +87,7 @@ describe("The upload summary component", () => {
             makeDocument(files[1], documentUploadStates.FAILED),
         ];
 
-        render(<UploadSummary nhsNumber={"12345"} documents={documents}></UploadSummary>);
+        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
 
         expect(screen.getByRole("alert")).toBeInTheDocument();
     });
@@ -85,7 +96,7 @@ describe("The upload summary component", () => {
         const files = [makeTextFile("one", 100), makeTextFile("two", 101)];
         const documents = files.map((file) => makeDocument(file, documentUploadStates.FAILED));
 
-        render(<UploadSummary nhsNumber={"12345"} documents={documents}></UploadSummary>);
+        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
 
         files.forEach((file) => {
             expect(within(screen.getByRole("alert")).getByText(file.name)).toBeInTheDocument();

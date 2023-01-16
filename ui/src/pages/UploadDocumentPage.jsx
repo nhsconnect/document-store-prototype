@@ -78,7 +78,6 @@ const UploadDocumentPage = ({ nextPagePath }) => {
                         <Fieldset.Legend headingLevel={"h1"} isPageHeading>
                             Upload documents
                         </Fieldset.Legend>
-                        <p>NHS number {patientDetails?.nhsNumber}</p>
                         <PatientSummary patientDetails={patientDetails} />
                         <DocumentsInput control={control} />
                     </Fieldset>
@@ -118,13 +117,13 @@ const UploadDocumentPage = ({ nextPagePath }) => {
             )}
             {uploadStep === documentUploadSteps.COMPLETE && (
                 <>
-                    <UploadSummary documents={documents} nhsNumber={patientDetails?.nhsNumber}></UploadSummary>
+                    <UploadSummary documents={documents} patientDetails={patientDetails}></UploadSummary>
                     <Button
                         onClick={() => {
                             navigate(nextPagePath);
                         }}
                     >
-                        Finish
+                        Start Again
                     </Button>
                 </>
             )}

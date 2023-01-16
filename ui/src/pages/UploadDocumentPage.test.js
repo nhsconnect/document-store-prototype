@@ -1,9 +1,9 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import {render, screen, waitFor, within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { act } from "react-dom/test-utils";
+import {act} from "react-dom/test-utils";
 import useApi from "../apiClients/useApi";
-import { documentUploadStates } from "../enums/documentUploads";
-import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
+import {documentUploadStates} from "../enums/documentUploads";
+import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
 import UploadDocumentPage from "./UploadDocumentPage";
 
 jest.mock("../apiClients/useApi");
@@ -166,8 +166,6 @@ describe("UploadDocumentPage", () => {
                 expect(screen.getByText("Upload Summary")).toBeInTheDocument();
             });
 
-            expect(screen.getByText(`Summary of uploaded documents for patient number ${nhsNumber}`));
-
             userEvent.click(screen.getByLabelText("Show successfully uploaded documents"));
 
             expect(await screen.findByText(documentTwo.name)).toBeInTheDocument();
@@ -176,7 +174,7 @@ describe("UploadDocumentPage", () => {
             expect(screen.getByText("Some of your documents could not be uploaded")).toBeInTheDocument();
             expect(within(screen.getByRole("alert")).getByText(documentOne.name)).toBeInTheDocument();
 
-            userEvent.click(screen.getByRole("button", { name: "Finish" }));
+            userEvent.click(screen.getByRole("button", { name: "Start Again" }));
 
             expect(mockNavigate).toHaveBeenCalledWith(nextPagePath);
         });

@@ -99,7 +99,6 @@ export const PatientTracePage = ({ nextPage, title }) => {
             ) : (
                 <>
                     <h1>Verify patient details</h1>
-                    <p>NHS number {patientDetails.nhsNumber}</p>
                     <PatientSummary patientDetails={patientDetails} />
                     <p>
                         Ensure these patient details match the electronic health records and attachments you are about

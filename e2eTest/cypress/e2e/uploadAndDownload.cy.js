@@ -1,5 +1,5 @@
 import * as path from "path";
-import { logAccessibilityViolations } from "../support/utils";
+import {logAccessibilityViolations} from "../support/utils";
 
 describe("uploads, downloads, and deletes docs", () => {
     beforeEach(() => {
@@ -58,7 +58,7 @@ describe("uploads, downloads, and deletes docs", () => {
             name: "Successfully uploaded documents",
         }).within(() => cy.findAllByRole("row").should("have.length", 3));
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
-        cy.findByRole("button", { name: "Finish" }).click();
+        cy.findByRole("button", { name: "Start Again" }).click();
 
         cy.url().should("eq", Cypress.config("baseUrl") + "/home");
         cy.visit("/");

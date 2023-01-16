@@ -1,4 +1,4 @@
-import { downloadFile, formatSize, setUrlHostToLocalHost } from "./utils";
+import {downloadFile, formatSize, getFormattedDate, setUrlHostToLocalHost} from "./utils";
 
 describe("utils", () => {
     describe("setUrlHostToLocalHost utility", () => {
@@ -86,6 +86,15 @@ describe("utils", () => {
             downloadFile("some-url", filename);
 
             expect(link.download).toEqual(filename);
+        });
+    });
+
+    describe("getFormattedDate", () => {
+        it("returns 'Invalid date' if date is null", () => {
+            expect(getFormattedDate(null)).toEqual("Invalid date");
+        });
+        it("returns correctly formatted date when date is valid", () => {
+            expect(getFormattedDate("2000-10-20")).toEqual("20th October 2000");
         });
     });
 });
