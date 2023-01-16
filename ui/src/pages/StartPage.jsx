@@ -1,7 +1,7 @@
 import React from "react";
-import { ButtonLink } from "nhsuk-react-components";
+import {ButtonLink} from "nhsuk-react-components";
 
-const StartPage = () => {
+export default function StartPage() {
     return (
         <>
             <h1>Document Store</h1>
@@ -12,9 +12,7 @@ const StartPage = () => {
             </ul>
             <h2 className="nhsuk-heading-m">Before you start</h2>
             <p>You can only use this service if you have a valid CIS2 account</p>
-            <ButtonLink href={"/home"}>Start now</ButtonLink>
+            <ButtonLink href="/home">Start now</ButtonLink>
         </>
     );
 };
-
-export default StartPage;
