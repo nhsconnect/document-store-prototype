@@ -7,7 +7,7 @@ import useApi from "../apiClients/useApi";
 jest.mock("../apiClients/useApi");
 const mockSetNhsNumber = jest.fn();
 jest.mock("../providers/NhsNumberProvider", () => ({
-    useNhsNumberProviderContext: () => ["1112223334", mockSetNhsNumber],
+    useNhsNumberProviderContext: () => ["9000000009", mockSetNhsNumber],
 }));
 const fakeNhsNumber = "9000000009";
 const patientData = {
@@ -68,7 +68,7 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(screen.queryByText(patientData.postalCode)).toBeInTheDocument();
+            expect(screen.queryByText(patientData.familyName)).toBeInTheDocument();
         });
     });
 
@@ -91,12 +91,20 @@ describe("PatientTracePage", () => {
         await waitFor(() => {
             expect(screen.queryByText(`${patientData.givenName[0]}`)).toBeInTheDocument();
         });
+
+        expect(screen.getByText("Verify patient details")).toBeInTheDocument();
+        expect(screen.getByText(`NHS number ${patientData.nhsNumber}`)).toBeInTheDocument();
         expect(screen.queryByText(`${patientData.familyName}`)).toBeInTheDocument();
-        expect(screen.queryByText(`${patientData.birthDate}`)).toBeInTheDocument();
         expect(screen.queryByText(`${patientData.postalCode}`)).toBeInTheDocument();
+        expect(screen.queryByText("22nd October 2010")).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Next" })).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Search" })).not.toBeInTheDocument();
-        expect(screen.getByRole("textbox", { name: "Enter NHS number" })).toHaveAttribute("readonly");
+        expect(screen.queryByRole("textbox", { name: "Enter NHS number" })).not.toBeInTheDocument();
+        expect(
+            screen.getByText(
+                "Ensure these patient details match the electronic health records and attachments you are about to upload."
+            )
+        );
         expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 

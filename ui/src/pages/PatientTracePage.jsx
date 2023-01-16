@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
+import moment from "moment";
 
 const states = {
     IDLE: "idle",
@@ -26,7 +27,7 @@ export const PatientTracePage = ({ nextPage, title }) => {
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [patientDetails, setPatientDetails] = useState({});
     const [statusCode, setStatusCode] = useState(null);
-    const [, setNhsNumber] = useNhsNumberProviderContext();
+    const [nhsNumber, setNhsNumber] = useNhsNumberProviderContext();
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
@@ -36,6 +37,7 @@ export const PatientTracePage = ({ nextPage, title }) => {
             const response = await client.getPatientDetails(data.nhsNumber);
             setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
+            setNhsNumber(getValues("nhsNumber"));
         } catch (e) {
             if (e.response?.status) {
                 setStatusCode(e.response.status);
@@ -44,82 +46,91 @@ export const PatientTracePage = ({ nextPage, title }) => {
         }
     };
 
+    const getFormattedDateOfBirth = (dateOfBirth) => {
+        return moment(dateOfBirth).format("Do MMMM YYYY");
+    };
+
     const onNextClicked = () => {
-        setNhsNumber(getValues("nhsNumber"));
         navigate(nextPage);
     };
 
     return (
         <>
             <BackButton />
-            <form onSubmit={handleSubmit(doSubmit)} noValidate>
-                {submissionState === states.FAILED && statusCode !== 404 && (
-                    <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
-                        <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
-                        <ErrorSummary.Body>
-                            {statusCode === 400 ? (
-                                <p>The NHS number provided is invalid. Please Retry.</p>
-                            ) : (
-                                <p>Technical error - Please retry.</p>
-                            )}
-                        </ErrorSummary.Body>
-                    </ErrorSummary>
-                )}
-                <Fieldset>
-                    <Fieldset.Legend headingLevel={"h1"} isPageHeading>
-                        {title}
-                    </Fieldset.Legend>
-                    <Input
-                        id={"nhs-number-input"}
-                        name="nhsNumber"
-                        label="Enter NHS number"
-                        hint={
-                            "Please search patient's record you wish to upload by 10 digit NHS number. For example, 4857773456."
-                        }
-                        error={formState.errors.nhsNumber?.message}
-                        type="text"
-                        {...nhsNumberProps}
-                        inputRef={nhsNumberRef}
-                        readOnly={submissionState === states.SUCCEEDED}
-                    />
-                </Fieldset>
-                {submissionState === states.SEARCHING && (
-                    <p>
-                        <progress aria-label={"Loading..."} />
-                    </p>
-                )}
-                {submissionState === states.SUCCEEDED && (
+            {submissionState !== states.SUCCEEDED ? (
+                <form onSubmit={handleSubmit(doSubmit)} noValidate>
+                    {submissionState === states.FAILED && statusCode !== 404 && (
+                        <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
+                            <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
+                            <ErrorSummary.Body>
+                                {statusCode === 400 ? (
+                                    <p>The NHS number provided is invalid. Please Retry.</p>
+                                ) : (
+                                    <p>Technical error - Please retry.</p>
+                                )}
+                            </ErrorSummary.Body>
+                        </ErrorSummary>
+                    )}
+                    <Fieldset>
+                        <Fieldset.Legend headingLevel={"h1"} isPageHeading>
+                            {title}
+                        </Fieldset.Legend>
+                        <Input
+                            id={"nhs-number-input"}
+                            name="nhsNumber"
+                            label="Enter NHS number"
+                            hint={
+                                "Please search patient's record you wish to upload by 10 digit NHS number. For example, 4857773456."
+                            }
+                            error={formState.errors.nhsNumber?.message}
+                            type="text"
+                            {...nhsNumberProps}
+                            inputRef={nhsNumberRef}
+                            readOnly={submissionState === states.SUCCEEDED}
+                        />
+                    </Fieldset>
+                    {submissionState === states.SEARCHING && (
+                        <p>
+                            <progress aria-label={"Loading..."} />
+                        </p>
+                    )}
+                    {submissionState === states.FAILED && statusCode === 404 && (
+                        <WarningCallout>
+                            <WarningCallout.Label>Patient Not Found</WarningCallout.Label>
+                            <p>Please verify NHS number again.</p>
+                        </WarningCallout>
+                    )}
+                    <Button type="submit">Search</Button>
+                </form>
+            ) : (
+                <>
+                    <h1>Verify patient details</h1>
+                    <p>NHS number {nhsNumber}</p>
                     <SummaryList>
                         <SummaryList.Row>
-                            <SummaryList.Key>Family Name</SummaryList.Key>
+                            <SummaryList.Key>Surname</SummaryList.Key>
                             <SummaryList.Value>{patientDetails.familyName}</SummaryList.Value>
                         </SummaryList.Row>
                         <SummaryList.Row>
-                            <SummaryList.Key>Given Name</SummaryList.Key>
+                            <SummaryList.Key>First name</SummaryList.Key>
                             <SummaryList.Value>{patientDetails.givenName?.map((name) => `${name} `)}</SummaryList.Value>
                         </SummaryList.Row>
                         <SummaryList.Row>
-                            <SummaryList.Key>DoB</SummaryList.Key>
-                            <SummaryList.Value>{patientDetails.birthDate}</SummaryList.Value>
+                            <SummaryList.Key>Date of birth</SummaryList.Key>
+                            <SummaryList.Value>{getFormattedDateOfBirth(patientDetails.birthDate)}</SummaryList.Value>
                         </SummaryList.Row>
                         <SummaryList.Row>
                             <SummaryList.Key>Postcode</SummaryList.Key>
                             <SummaryList.Value>{patientDetails.postalCode}</SummaryList.Value>
                         </SummaryList.Row>
                     </SummaryList>
-                )}
-
-                {submissionState === states.FAILED && statusCode === 404 && (
-                    <WarningCallout>
-                        <WarningCallout.Label>Patient Not Found</WarningCallout.Label>
-                        <p>Please verify NHS number again.</p>
-                    </WarningCallout>
-                )}
-                {(submissionState === states.IDLE ||
-                    submissionState === states.FAILED ||
-                    submissionState === states.SEARCHING) && <Button type="submit">Search</Button>}
-            </form>
-            {submissionState === states.SUCCEEDED && <Button onClick={onNextClicked}>Next</Button>}
+                    <p>
+                        Ensure these patient details match the electronic health records and attachments you are about
+                        to upload.
+                    </p>
+                    <Button onClick={onNextClicked}>Next</Button>
+                </>
+            )}
         </>
     );
 };
