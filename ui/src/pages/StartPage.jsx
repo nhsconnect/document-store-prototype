@@ -1,5 +1,5 @@
 import React from "react";
-import {ButtonLink} from "nhsuk-react-components";
+import { ButtonLink } from "nhsuk-react-components";
 
 export default function StartPage() {
     return (

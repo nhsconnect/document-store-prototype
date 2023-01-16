@@ -1,4 +1,4 @@
-import {render, screen} from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import StartPage from "./StartPage";
 
 describe("<StartPage/>", () => {
