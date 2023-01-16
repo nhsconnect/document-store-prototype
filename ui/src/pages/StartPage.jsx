@@ -22,8 +22,10 @@ export default function StartPage() {
                 If there is an issue with the service please contact the{" "}
                 <a href="https://digital.nhs.uk/about-nhs-digital/contact-us">NHS Digital National Service Desk</a>.
             </p>
-            <h2 className="nhsuk-heading-m">Before you start</h2>
-            <p>You can only use this service if you have a valid CIS2 account</p>
+            <h2>Before you start</h2>
+            <ul>
+                <li>You can only use this service if vou have a valid NHS smartcard.</li>
+            </ul>
             <ButtonLink href="/home">Start now</ButtonLink>
         </>
     );

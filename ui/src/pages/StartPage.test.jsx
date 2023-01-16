@@ -26,11 +26,12 @@ describe("<StartPage/>", () => {
         );
     });
 
-    it("renders a 'before you start' heading", () => {
+    it("renders a 'Before you start' section", () => {
         render(<StartPage />);
 
         expect(screen.getByRole("heading", { name: "Before you start" })).toBeInTheDocument();
-        expect(screen.getByText("You can only use this service if you have a valid CIS2 account")).toBeInTheDocument();
+        expect(screen.getByRole("list")).toBeInTheDocument();
+        expect(screen.getByRole("listitem")).toHaveTextContent(/valid NHS smartcard/);
     });
 
     it("renders a button link with an href to /home", () => {
