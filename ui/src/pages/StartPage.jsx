@@ -18,6 +18,10 @@ export default function StartPage() {
                 PCSE should use this service to search for and download patient records where there has been an access
                 request for an inactive patient health record.
             </p>
+            <p>
+                If there is an issue with the service please contact the{" "}
+                <a href="https://digital.nhs.uk/about-nhs-digital/contact-us">NHS Digital National Service Desk</a>.
+            </p>
             <h2 className="nhsuk-heading-m">Before you start</h2>
             <p>You can only use this service if you have a valid CIS2 account</p>
             <ButtonLink href="/home">Start now</ButtonLink>

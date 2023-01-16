@@ -8,12 +8,22 @@ describe("<StartPage/>", () => {
         expect(screen.getByRole("heading", { name: "Inactive Patient Record Administration" })).toBeInTheDocument();
     });
 
-    it("renders info about the service", () => {
+    it("renders service info", () => {
         render(<StartPage />);
 
         expect(screen.getByText(/When a patient is inactive/)).toBeInTheDocument();
         expect(screen.getByText(/General Practice Staff/)).toBeInTheDocument();
         expect(screen.getByText(/PCSE should use this service/)).toBeInTheDocument();
+    });
+
+    it("renders service issue guidance with a link to service desk", () => {
+        render(<StartPage />);
+
+        expect(screen.getByText(/If there is an issue/)).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /National Service Desk/ })).toHaveAttribute(
+            "href",
+            "https://digital.nhs.uk/about-nhs-digital/contact-us"
+        );
     });
 
     it("renders a 'before you start' heading", () => {
