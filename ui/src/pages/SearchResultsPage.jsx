@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button, ErrorMessage, Fieldset, Input, Table } from "nhsuk-react-components";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
-import { useNavigate } from "react-router";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
+import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-components";
+import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
+import {useNavigate} from "react-router";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
-import { downloadFile } from "../utils/utils";
-import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
+import {downloadFile} from "../utils/utils";
+import {useDeleteDocumentsResponseProviderContext} from "../providers/DeleteDocumentsResponseProvider";
 
 const states = {
     INITIAL: "initial",
@@ -22,12 +22,12 @@ const SearchResultsPage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
-    const [nhsNumber] = useNhsNumberProviderContext();
+    const [patientDetails] = usePatientDetailsProviderContext();
     const [deleteDocumentsResponse] = useDeleteDocumentsResponseProviderContext();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!nhsNumber) {
+        if (!patientDetails?.nhsNumber) {
             navigate("/search/patient-trace");
             return;
         }
@@ -35,7 +35,7 @@ const SearchResultsPage = () => {
             setSubmissionState(states.PENDING);
             setSearchResults([]);
             try {
-                const results = await client.findByNhsNumber(nhsNumber);
+                const results = await client.findByNhsNumber(patientDetails.nhsNumber);
                 results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
                 setSearchResults(results);
                 setSubmissionState(states.SUCCEEDED);
@@ -47,14 +47,14 @@ const SearchResultsPage = () => {
 
         // Todo: Remove the suppression when we provide a client to the dependency array that remains stable between renders
         // eslint-disable-next-line
-    }, [nhsNumber, navigate, setSubmissionState, setSearchResults]);
+    }, [patientDetails, navigate, setSubmissionState, setSearchResults]);
 
     const downloadAll = async () => {
         setDownloadState(states.PENDING);
         try {
-            const preSignedUrl = await client.getPresignedUrlForZip(nhsNumber);
+            const preSignedUrl = await client.getPresignedUrlForZip(patientDetails.nhsNumber);
 
-            downloadFile(preSignedUrl, `patient-record-${nhsNumber}`);
+            downloadFile(preSignedUrl, `patient-record-${patientDetails.nhsNumber}`);
 
             setDownloadState(states.SUCCEEDED);
         } catch (e) {
@@ -80,7 +80,7 @@ const SearchResultsPage = () => {
                     label="Find by NHS number"
                     {...nhsNumberProps}
                     inputRef={nhsNumberRef}
-                    value={nhsNumber}
+                    value={patientDetails?.nhsNumber}
                     readOnly
                 />
                 {submissionState === states.PENDING && (

@@ -2,7 +2,7 @@ import { Button, ErrorSummary, Fieldset, Input, SummaryList, WarningCallout } fr
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
 import moment from "moment";
@@ -16,7 +16,7 @@ const states = {
 
 export const PatientTracePage = ({ nextPage, title }) => {
     const client = useApi();
-    const { register, formState, getValues, handleSubmit } = useForm();
+    const { register, formState, handleSubmit } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
         required: "Please enter a 10 digit NHS number",
         pattern: {
@@ -25,9 +25,8 @@ export const PatientTracePage = ({ nextPage, title }) => {
         },
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
-    const [patientDetails, setPatientDetails] = useState({});
     const [statusCode, setStatusCode] = useState(null);
-    const [nhsNumber, setNhsNumber] = useNhsNumberProviderContext();
+    const [patientDetails, setPatientDetails] = usePatientDetailsProviderContext();
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
@@ -37,7 +36,6 @@ export const PatientTracePage = ({ nextPage, title }) => {
             const response = await client.getPatientDetails(data.nhsNumber);
             setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
-            setNhsNumber(getValues("nhsNumber"));
         } catch (e) {
             if (e.response?.status) {
                 setStatusCode(e.response.status);
@@ -105,7 +103,7 @@ export const PatientTracePage = ({ nextPage, title }) => {
             ) : (
                 <>
                     <h1>Verify patient details</h1>
-                    <p>NHS number {nhsNumber}</p>
+                    <p>NHS number {patientDetails.nhsNumber}</p>
                     <SummaryList>
                         <SummaryList.Row>
                             <SummaryList.Key>Surname</SummaryList.Key>

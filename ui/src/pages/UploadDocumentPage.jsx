@@ -1,13 +1,13 @@
-import { Button, Fieldset, Input, Table } from "nhsuk-react-components";
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import {Button, Fieldset, Table} from "nhsuk-react-components";
+import React, {useEffect} from "react";
+import {useForm} from "react-hook-form";
+import {useNavigate} from "react-router";
 import produce from "immer";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
 import BackButton from "../components/BackButton";
 import DocumentsInput from "../components/DocumentsInput";
-import { formatSize } from "../utils/utils";
-import { documentUploadStates as stateNames, documentUploadSteps } from "../enums/documentUploads";
+import {formatSize} from "../utils/utils";
+import {documentUploadStates as stateNames, documentUploadSteps} from "../enums/documentUploads";
 import UploadSummary from "../components/UploadSummary";
 import useApi from "../apiClients/useApi";
 
@@ -24,18 +24,18 @@ const UploadDocumentPage = ({ nextPagePath }) => {
     const client = useApi();
     const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
     const documents = watch("documents");
-    const [nhsNumber] = useNhsNumberProviderContext();
+    const [patientDetails] = usePatientDetailsProviderContext();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!nhsNumber) {
+        if (!patientDetails?.nhsNumber) {
             navigate("/upload/patient-trace");
         }
-    }, [nhsNumber, navigate]);
+    }, [patientDetails, navigate]);
 
     const doSubmit = async (data) => {
         const doUpload = async (document) => {
-            await client.uploadDocument(document.file, nhsNumber, (state, progress) => {
+            await client.uploadDocument(document.file, patientDetails?.nhsNumber, (state, progress) => {
                 setValue(
                     "documents",
                     produce(getValues("documents"), (draft) => {
@@ -77,14 +77,7 @@ const UploadDocumentPage = ({ nextPagePath }) => {
                         <Fieldset.Legend headingLevel={"h1"} isPageHeading>
                             Upload documents
                         </Fieldset.Legend>
-                        <Input
-                            id={"nhs-number-input"}
-                            label="NHS number"
-                            name="nhsNumber"
-                            type="text"
-                            value={nhsNumber}
-                            readOnly
-                        />
+                        <p>NHS number {patientDetails?.nhsNumber}</p>
                         <DocumentsInput control={control} />
                     </Fieldset>
                     <Button type="submit" disabled={formState.isSubmitting}>
@@ -123,7 +116,7 @@ const UploadDocumentPage = ({ nextPagePath }) => {
             )}
             {uploadStep === documentUploadSteps.COMPLETE && (
                 <>
-                    <UploadSummary documents={documents} nhsNumber={nhsNumber}></UploadSummary>
+                    <UploadSummary documents={documents} nhsNumber={patientDetails?.nhsNumber}></UploadSummary>
                     <Button
                         onClick={() => {
                             navigate(nextPagePath);

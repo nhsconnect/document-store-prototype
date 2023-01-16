@@ -3,12 +3,12 @@ import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 import useApi from "../apiClients/useApi";
 import { documentUploadStates } from "../enums/documentUploads";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import UploadDocumentPage from "./UploadDocumentPage";
 
 jest.mock("../apiClients/useApi");
-jest.mock("../providers/NhsNumberProvider", () => ({
-    useNhsNumberProviderContext: jest.fn(),
+jest.mock("../providers/PatientDetailsProvider", () => ({
+    usePatientDetailsProviderContext: jest.fn(),
 }));
 const mockNavigate = jest.fn();
 jest.mock("react-router", () => ({
@@ -23,19 +23,25 @@ describe("UploadDocumentPage", () => {
     const nextPagePath = "/next";
 
     describe("when there is an NHS number", () => {
-        const nhsNumber = "1112223334";
+        const nhsNumber = "9000000009";
+        const patientData = {
+            birthDate: "2010-10-22",
+            familyName: "Smith",
+            givenName: ["Jane"],
+            nhsNumber: nhsNumber,
+            postalCode: "LS1 6AE",
+        };
+
         beforeEach(() => {
             jest.resetAllMocks();
-            useNhsNumberProviderContext.mockReturnValue([nhsNumber, jest.fn()]);
+            usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
         });
 
         it("renders the page", () => {
             render(<UploadDocumentPage nextPagePath={nextPagePath} />);
 
             expect(screen.getByRole("heading", { name: "Upload documents" })).toBeInTheDocument();
-            expect(nhsNumberField()).toBeInTheDocument();
-            expect(nhsNumberField()).toHaveValue(nhsNumber);
-            expect(nhsNumberField()).toHaveAttribute("readonly");
+            expect(screen.getByText(`NHS number ${nhsNumber}`)).toBeInTheDocument();
             expect(screen.getByLabelText("Select file(s)")).toBeInTheDocument();
             expect(uploadButton()).toBeInTheDocument();
             expect(mockNavigate).not.toHaveBeenCalled();
@@ -178,7 +184,7 @@ describe("UploadDocumentPage", () => {
 
     describe("when there is NOT an NHS number", () => {
         beforeEach(() => {
-            useNhsNumberProviderContext.mockReturnValue([undefined, jest.fn()]);
+            usePatientDetailsProviderContext.mockReturnValue([undefined, jest.fn()]);
         });
         it("redirects to patient trace page when the NHS number is NOT available", () => {
             render(<UploadDocumentPage />);
@@ -214,10 +220,6 @@ function uploadForm() {
 
 function uploadButton() {
     return screen.getByText("Upload");
-}
-
-function nhsNumberField() {
-    return screen.getByLabelText("NHS number");
 }
 
 const getProgressBar = (document) => screen.getByRole("progressbar", { name: `Uploading ${document.name}` });

@@ -8,7 +8,7 @@ import Authenticator from "./components/Authenticator/Authenticator";
 import HomePage from "./pages/HomePage";
 import Layout from "./components/layout";
 import FeatureToggleProvider from "./providers/FeatureToggleProvider";
-import { NhsNumberProvider } from "./providers/NhsNumberProvider";
+import { PatientDetailsProvider } from "./providers/PatientDetailsProvider";
 import { DeleteDocumentsResponseProvider } from "./providers/DeleteDocumentsResponseProvider";
 import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
@@ -37,9 +37,9 @@ const AppRoutes = () => {
                 <Route
                     path="/search"
                     element={
-                        <NhsNumberProvider>
+                        <PatientDetailsProvider>
                             <Outlet />
-                        </NhsNumberProvider>
+                        </PatientDetailsProvider>
                     }
                 >
                     <Route
@@ -74,9 +74,9 @@ const AppRoutes = () => {
                 <Route
                     path="/upload"
                     element={
-                        <NhsNumberProvider>
+                        <PatientDetailsProvider>
                             <Outlet />
-                        </NhsNumberProvider>
+                        </PatientDetailsProvider>
                     }
                 >
                     <Route

@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { Button, Fieldset, Radios } from "nhsuk-react-components";
+import React, {useEffect, useState} from "react";
+import {Button, Fieldset, Radios} from "nhsuk-react-components";
 import BackButton from "../components/BackButton";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
 import useApi from "../apiClients/useApi";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
-import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
+import {useForm} from "react-hook-form";
+import {useNavigate} from "react-router";
+import {useDeleteDocumentsResponseProviderContext} from "../providers/DeleteDocumentsResponseProvider";
 
 const DeleteDocumentsConfirmationPage = () => {
     const client = useApi();
     const { register, handleSubmit } = useForm();
     let navigate = useNavigate();
-    const [nhsNumber] = useNhsNumberProviderContext();
+    const [patientDetails] = usePatientDetailsProviderContext();
     const [patientName, setPatientName] = useState([]);
     const { ref: trxRef, ...trxProps } = register("trx");
     const [, setDeleteDocumentsResponseState] = useDeleteDocumentsResponseProviderContext();
 
     useEffect(() => {
         async function fetchPatientDetails() {
-            if (nhsNumber) {
-                const response = await client.getPatientDetails(nhsNumber);
+            if (patientDetails?.nhsNumber) {
+                const response = await client.getPatientDetails(patientDetails.nhsNumber);
                 setPatientName([response.result.patientDetails.givenName, response.result.patientDetails.familyName]);
             }
         }
@@ -28,12 +28,12 @@ const DeleteDocumentsConfirmationPage = () => {
 
         // Todo: Remove the suppression when we provide a client to the dependency array that remains stable between renders
         // eslint-disable-next-line
-    }, [nhsNumber, setPatientName]);
+    }, [patientDetails, setPatientName]);
 
     const doSubmit = async (data) => {
         if (data.trx === "yes") {
             try {
-                const response = await client.deleteAllDocuments(nhsNumber);
+                const response = await client.deleteAllDocuments(patientDetails?.nhsNumber);
                 if (response === "successfully deleted") {
                     setDeleteDocumentsResponseState("successful");
                     navigate("/search/results");
@@ -54,7 +54,7 @@ const DeleteDocumentsConfirmationPage = () => {
                     <Fieldset.Legend isPageHeading>Delete health records and attachments</Fieldset.Legend>
                     <Fieldset.Legend size="m">
                         Are you sure you want to permanently delete all files for patient {patientName[1]}{" "}
-                        {patientName[0]} NHS number {nhsNumber} ?
+                        {patientName[0]} NHS number {patientDetails?.nhsNumber} ?
                     </Fieldset.Legend>
                     <Radios name="delete-documents-action">
                         <Radios.Radio id="yes" value="yes" inputRef={trxRef} {...trxProps}>

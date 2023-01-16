@@ -3,20 +3,24 @@ import userEvent from "@testing-library/user-event";
 import { PatientTracePage } from "./PatientTracePage";
 import * as ReactRouter from "react-router";
 import useApi from "../apiClients/useApi";
+import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 
-jest.mock("../apiClients/useApi");
-const mockSetNhsNumber = jest.fn();
-jest.mock("../providers/NhsNumberProvider", () => ({
-    useNhsNumberProviderContext: () => ["9000000009", mockSetNhsNumber],
-}));
 const fakeNhsNumber = "9000000009";
 const patientData = {
     birthDate: "2010-10-22",
     familyName: "Smith",
     givenName: ["Jane"],
-    nhsNumber: fakeNhsNumber,
+    nhsNumber: "9000000009",
     postalCode: "LS1 6AE",
 };
+
+jest.mock("../apiClients/useApi");
+const mockSetPatientDetails = jest.fn();
+
+jest.mock("../providers/PatientDetailsProvider", () => ({
+    usePatientDetailsProviderContext: jest.fn(),
+}));
+
 const patientDetailsResponse = {
     result: {
         patientDetails: patientData,
@@ -35,6 +39,7 @@ describe("PatientTracePage", () => {
     beforeEach(() => {
         useNavigateSpy = jest.spyOn(ReactRouter, "useNavigate");
         useNavigateSpy.mockImplementation(() => mockNavigate);
+        usePatientDetailsProviderContext.mockReturnValue([patientData, mockSetPatientDetails]);
     });
 
     it("renders the page", () => {
@@ -129,7 +134,7 @@ describe("PatientTracePage", () => {
         clickNext();
 
         await waitFor(() => {
-            expect(mockSetNhsNumber).toBeCalledWith(fakeNhsNumber);
+            expect(mockSetPatientDetails).toBeCalledWith(patientData);
         });
     });
 

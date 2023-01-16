@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import DeleteDocumentsConfirmationPage from "./DeleteDocumentsConfirmationPage";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import useApi from "../apiClients/useApi";
 import userEvent from "@testing-library/user-event";
 import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
@@ -12,8 +12,8 @@ jest.mock("../apiClients/useApi");
 jest.mock("react-router", () => ({
     useNavigate: () => mockNavigate,
 }));
-jest.mock("../providers/NhsNumberProvider", () => ({
-    useNhsNumberProviderContext: jest.fn(),
+jest.mock("../providers/PatientDetailsProvider", () => ({
+    usePatientDetailsProviderContext: jest.fn(),
 }));
 jest.mock("../providers/DeleteDocumentsResponseProvider", () => ({
     useDeleteDocumentsResponseProviderContext: jest.fn(),
@@ -42,7 +42,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                 },
             };
         });
-        useNhsNumberProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
+        usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
         useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         render(<DeleteDocumentsConfirmationPage />);
         expect(
@@ -70,7 +70,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                 },
             };
         });
-        useNhsNumberProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
+        usePatientDetailsProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
         useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         render(<DeleteDocumentsConfirmationPage />);
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
@@ -90,7 +90,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                     deleteAllDocuments: () => "successfully deleted",
                 };
             });
-            useNhsNumberProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
+            usePatientDetailsProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
             useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
             expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
@@ -115,7 +115,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                     },
                 };
             });
-            useNhsNumberProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
+            usePatientDetailsProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
             useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
             expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
@@ -140,7 +140,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                 getPatientDetails: () => patientDetailsResponse,
             };
         });
-        useNhsNumberProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
+        usePatientDetailsProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
         useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         render(<DeleteDocumentsConfirmationPage />);
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();

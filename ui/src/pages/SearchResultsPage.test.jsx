@@ -1,15 +1,15 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
-import { Factory } from "fishery";
+import {render, screen, waitFor, within} from "@testing-library/react";
+import {Factory} from "fishery";
 import useApi from "../apiClients/useApi";
-import { useNhsNumberProviderContext } from "../providers/NhsNumberProvider";
+import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
-import { downloadFile } from "../utils/utils";
-import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
+import {downloadFile} from "../utils/utils";
+import {useDeleteDocumentsResponseProviderContext} from "../providers/DeleteDocumentsResponseProvider";
 
 jest.mock("../apiClients/useApi");
-jest.mock("../providers/NhsNumberProvider", () => ({
-    useNhsNumberProviderContext: jest.fn(),
+jest.mock("../providers/PatientDetailsProvider", () => ({
+    usePatientDetailsProviderContext: jest.fn(),
 }));
 jest.mock("../providers/DeleteDocumentsResponseProvider", () => ({
     useDeleteDocumentsResponseProviderContext: jest.fn(),
@@ -30,10 +30,17 @@ const searchResultFactory = Factory.define(() => ({
 describe("<SearchResultsPage />", () => {
     describe("when there is an NHS number", () => {
         const nhsNumber = "1112223334";
+        const patientData = {
+            birthDate: "2010-10-22",
+            familyName: "Smith",
+            givenName: ["Jane"],
+            nhsNumber: nhsNumber,
+            postalCode: "LS1 6AE",
+        };
         const deleteDocumentsResponse = "";
 
         beforeEach(() => {
-            useNhsNumberProviderContext.mockReturnValue([nhsNumber, jest.fn()]);
+            usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
             useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         });
 
@@ -291,7 +298,7 @@ describe("<SearchResultsPage />", () => {
 
     describe("when there is NOT an NHS number", () => {
         beforeEach(() => {
-            useNhsNumberProviderContext.mockReturnValue([undefined, jest.fn()]);
+            usePatientDetailsProviderContext.mockReturnValue([undefined, jest.fn()]);
             useDeleteDocumentsResponseProviderContext.mockReturnValue(["", jest.fn()]);
         });
 
