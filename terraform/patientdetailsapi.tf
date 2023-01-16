@@ -79,3 +79,7 @@ resource "aws_iam_role_policy" "lambda_get_parameter_policy" {
     ]
   })
 }
+
+locals {
+  search_patient_details_invocation_arn = "arn:aws:execute-api:${var.region}:${var.account_id}:${aws_api_gateway_rest_api.lambda_api.id}/${var.api_gateway_stage}/${module.patient_details_endpoint.http_method}${aws_api_gateway_resource.patient_details_collection_resource.path}"
+}

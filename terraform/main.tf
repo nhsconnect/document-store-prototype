@@ -166,4 +166,22 @@ resource "aws_lambda_function" "authoriser" {
 
   source_code_hash = filebase64sha256(var.authoriser_lambda_jar_filename)
 
+  environment {
+    variables = {
+      AUTH_CONFIG = jsonencode({
+        allowedResourcesForPCSEUsers = [
+          local.search_patient_details_invocation_arn,
+          local.search_document_reference_invocation_arn,
+          local.get_document_reference_invocation_arn,
+          local.get_document_manifest_invocation_arn,
+          local.delete_document_reference_invocation_arn
+        ],
+        allowedResourcesForClinicalUsers = [
+          local.search_patient_details_invocation_arn,
+          local.create_document_reference_invocation_arn,
+        ]
+      })
+    }
+  }
+
 }

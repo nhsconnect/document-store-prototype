@@ -24,3 +24,7 @@ resource "aws_api_gateway_integration" "lambda_integration" {
   type                    = "AWS_PROXY"
   uri                     = var.lambda_arn
 }
+
+output http_method {
+  value = var.http_method
+}

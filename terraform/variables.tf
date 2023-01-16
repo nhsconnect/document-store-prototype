@@ -7,6 +7,10 @@ variable "region" {
   default = "eu-west-2"
 }
 
+variable "account_id" {
+  type = string
+}
+
 variable "cloud_only_service_instances" {
   type    = number
   default = 1

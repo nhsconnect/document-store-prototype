@@ -52,3 +52,7 @@ resource "aws_lambda_permission" "api_gateway_permission_for_document_manifest" 
   # within the API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
+
+locals {
+  get_document_manifest_invocation_arn = "arn:aws:execute-api:${var.region}:${var.account_id}:${aws_api_gateway_rest_api.lambda_api.id}/${var.api_gateway_stage}/${module.document_manifest_endpoint.http_method}${aws_api_gateway_resource.document_manifest_resource.path}"
+}

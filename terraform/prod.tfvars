@@ -1,4 +1,5 @@
 environment                          = "prod"
+account_id                           = "487224344892"
 cognito_domain_prefix                = "prod-"
 cognito_oidc_providers               = ["COGNITO"]
 cognito_cis2_provider_oidc_issuer    = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc"
