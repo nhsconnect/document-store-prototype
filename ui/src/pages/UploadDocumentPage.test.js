@@ -1,4 +1,4 @@
-import {render, screen, waitFor, within} from "@testing-library/react";
+import {render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {act} from "react-dom/test-utils";
 import useApi from "../apiClients/useApi";
@@ -166,13 +166,14 @@ describe("UploadDocumentPage", () => {
                 expect(screen.getByText("Upload Summary")).toBeInTheDocument();
             });
 
-            userEvent.click(screen.getByLabelText("Show successfully uploaded documents"));
+            userEvent.click(screen.getByLabelText("View successfully uploaded documents"));
 
             expect(await screen.findByText(documentTwo.name)).toBeInTheDocument();
             expect(screen.getByText(documentThree.name)).toBeInTheDocument();
 
-            expect(screen.getByText("Some of your documents could not be uploaded")).toBeInTheDocument();
-            expect(within(screen.getByRole("alert")).getByText(documentOne.name)).toBeInTheDocument();
+            expect(screen.getByText("Some of your documents failed to upload")).toBeInTheDocument();
+            expect(screen.getByRole("table", { name: "Failed uploads" })).toBeInTheDocument();
+            expect(screen.getByText("If you want to upload another patient's health record")).toBeInTheDocument();
 
             userEvent.click(screen.getByRole("button", { name: "Start Again" }));
 

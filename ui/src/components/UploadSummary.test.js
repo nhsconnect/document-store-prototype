@@ -19,6 +19,7 @@ describe("The upload summary component", () => {
 
         expect(screen.getByText("Upload Summary")).toBeInTheDocument();
         expect(screen.getByText(`NHS number ${patientData.nhsNumber}`)).toBeInTheDocument();
+        expect(screen.getByText("Before you close this page")).toBeInTheDocument();
     });
 
     it("displays a collapsible list of the successfully uploaded files", async () => {
@@ -29,7 +30,7 @@ describe("The upload summary component", () => {
 
         toggleSuccessfulUploads();
 
-        expect(await screen.findByRole("table")).toBeInTheDocument();
+        expect(await screen.findByRole("table", { name: "Successfully uploaded documents" })).toBeInTheDocument();
         files.forEach((file) => {
             expect(screen.getByText(file.name)).toBeVisible();
             expect(screen.getByText(formatSize(file.size))).toBeVisible();
@@ -38,7 +39,7 @@ describe("The upload summary component", () => {
         toggleSuccessfulUploads();
 
         await waitFor(() => {
-            expect(screen.getByRole("table")).not.toBeVisible();
+            expect(screen.getByRole("table", { name: "Successfully uploaded documents" })).not.toBeVisible();
         });
     });
 
@@ -53,19 +54,25 @@ describe("The upload summary component", () => {
 
         toggleSuccessfulUploads();
 
-        expect(await screen.findByRole("table")).toBeVisible();
+        expect(await screen.findByRole("table", { name: "Successfully uploaded documents" })).toBeVisible();
         expect(screen.queryByText("All documents have been successfully uploaded")).not.toBeInTheDocument();
-        expect(within(screen.getByRole("table")).getByText(files[0].name)).toBeVisible();
+        expect(
+            within(screen.getByRole("table", { name: "Successfully uploaded documents" })).getByText(files[0].name)
+        ).toBeVisible();
 
-        expect(within(screen.getByRole("table")).queryByText(files[1].name)).not.toBeInTheDocument();
+        expect(
+            within(screen.getByRole("table", { name: "Successfully uploaded documents" })).queryByText(files[1].name)
+        ).not.toBeInTheDocument();
     });
 
     it("does not display the successful uploads list when all of the documents failed to upload", () => {
         const files = [makeTextFile("one", 100)];
+        const documents = [makeDocument(files[0], documentUploadStates.FAILED)];
 
-        render(<UploadSummary patientDetails={patientData} documents={files}></UploadSummary>);
+        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
 
-        expect(screen.queryByText("Successfully uploaded documents")).not.toBeInTheDocument();
+        expect(screen.queryByText("View successfully uploaded documents")).not.toBeInTheDocument();
+        expect(screen.getByText("Some of your documents failed to upload")).toBeInTheDocument();
     });
 
     it("does not display an alert if all the documents were uploaded successfully", () => {
@@ -92,20 +99,22 @@ describe("The upload summary component", () => {
         expect(screen.getByRole("alert")).toBeInTheDocument();
     });
 
-    it("renders the name of each document that failed to upload inside an alert", () => {
+    it("renders the name of each document that failed to upload inside a table", () => {
         const files = [makeTextFile("one", 100), makeTextFile("two", 101)];
         const documents = files.map((file) => makeDocument(file, documentUploadStates.FAILED));
 
         render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
 
+        expect(screen.getByRole("table", { name: "Failed uploads" })).toBeInTheDocument();
         files.forEach((file) => {
-            expect(within(screen.getByRole("alert")).getByText(file.name)).toBeInTheDocument();
+            expect(screen.getByText(file.name)).toBeVisible();
+            expect(screen.getByText(formatSize(file.size))).toBeVisible();
         });
     });
 });
 
 const toggleSuccessfulUploads = () => {
-    userEvent.click(screen.getByLabelText("Show successfully uploaded documents"));
+    userEvent.click(screen.getByLabelText("View successfully uploaded documents"));
 };
 
 const makeDocument = (file, uploadStatus) => {

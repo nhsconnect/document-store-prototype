@@ -118,6 +118,7 @@ const UploadDocumentPage = ({ nextPagePath }) => {
             {uploadStep === documentUploadSteps.COMPLETE && (
                 <>
                     <UploadSummary documents={documents} patientDetails={patientDetails}></UploadSummary>
+                    <p style={{ fontWeight: "600" }}>{"If you want to upload another patient's health record"}</p>
                     <Button
                         onClick={() => {
                             navigate(nextPagePath);
