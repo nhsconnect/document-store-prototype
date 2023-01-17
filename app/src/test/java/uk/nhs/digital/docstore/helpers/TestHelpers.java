@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore;
+package uk.nhs.digital.docstore.helpers;
 
 import java.io.File;
 import java.io.IOException;

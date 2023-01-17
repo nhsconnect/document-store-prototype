@@ -5,7 +5,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.NHSDocumentReference;
-import uk.nhs.digital.docstore.TestHelpers;
+import uk.nhs.digital.docstore.helpers.TestHelpers;
 import uk.nhs.digital.docstore.exceptions.InvalidCodingCodeException;
 import uk.nhs.digital.docstore.exceptions.MissingRequiredValueException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedCodingSystemException;

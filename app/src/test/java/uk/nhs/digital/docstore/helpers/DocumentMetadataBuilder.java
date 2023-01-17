@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.data;
+package uk.nhs.digital.docstore.helpers;
 
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 
