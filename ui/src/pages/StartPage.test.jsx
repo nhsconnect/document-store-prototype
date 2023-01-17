@@ -29,7 +29,7 @@ describe("<StartPage/>", () => {
     it("renders a 'Before you start' section", () => {
         render(<StartPage />);
 
-        expect(screen.getByRole("heading", { name: "Before You Start:" })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Before You Start" })).toBeInTheDocument();
         expect(screen.getByText(/valid NHS smartcard/)).toBeInTheDocument();
     });
 
