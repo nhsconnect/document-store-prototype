@@ -93,8 +93,11 @@ describe("utils", () => {
         it("returns 'Invalid date' if date is null", () => {
             expect(getFormattedDate(null)).toEqual("Invalid date");
         });
+        it("returns 'Invalid date' if date is not valid", () => {
+            expect(getFormattedDate("201405")).toEqual("Invalid date");
+        });
         it("returns correctly formatted date when date is valid", () => {
-            expect(getFormattedDate("2000-10-20")).toEqual("20th October 2000");
+            expect(getFormattedDate("20001020")).toEqual("20 October 2000");
         });
     });
 });

@@ -101,7 +101,7 @@ describe("PatientTracePage", () => {
         expect(screen.getByText(`NHS number ${patientData.nhsNumber}`)).toBeInTheDocument();
         expect(screen.queryByText(`${patientData.familyName}`)).toBeInTheDocument();
         expect(screen.queryByText(`${patientData.postalCode}`)).toBeInTheDocument();
-        expect(screen.queryByText("22nd October 2010")).toBeInTheDocument();
+        expect(screen.queryByText("22 October 2010")).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Next" })).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Search" })).not.toBeInTheDocument();
         expect(screen.queryByRole("textbox", { name: "Enter NHS number" })).not.toBeInTheDocument();

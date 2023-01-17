@@ -16,7 +16,7 @@ describe("Patient Summary test", () => {
         expect(screen.getByText(`NHS number ${patientData.nhsNumber}`)).toBeInTheDocument();
         expect(screen.getByText(patientData.postalCode)).toBeInTheDocument();
         expect(screen.getByText(patientData.familyName)).toBeInTheDocument();
-        expect(screen.getByText("22nd January 2003")).toBeInTheDocument();
+        expect(screen.getByText("22 January 2003")).toBeInTheDocument();
         expect(screen.getByText(patientData.givenName[0])).toBeInTheDocument();
     });
 });

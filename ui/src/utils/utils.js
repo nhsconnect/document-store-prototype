@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 
 export function setUrlHostToLocalHost(url) {
     const development = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
@@ -42,8 +42,8 @@ export function downloadFile(url, filename) {
 }
 
 export const getFormattedDate = (date) => {
-    if (!date) {
+    if (!date || (typeof date === "string" && date.length < 8)) {
         return "Invalid date";
     }
-    return moment(date).format("Do MMMM YYYY");
+    return dayjs(date).format("D MMMM YYYY");
 };
