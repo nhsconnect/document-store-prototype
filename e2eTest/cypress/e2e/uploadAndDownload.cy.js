@@ -1,5 +1,5 @@
 import * as path from "path";
-import {logAccessibilityViolations} from "../support/utils";
+import { logAccessibilityViolations } from "../support/utils";
 
 describe("uploads, downloads, and deletes docs", () => {
     beforeEach(() => {

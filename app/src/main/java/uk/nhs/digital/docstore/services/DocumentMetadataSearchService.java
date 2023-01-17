@@ -10,10 +10,11 @@ import uk.nhs.digital.docstore.documentmanifest.CreateDocumentManifestByNhsNumbe
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class DocumentMetadataSearchService {
-    private static final Logger logger = LoggerFactory.getLogger(CreateDocumentManifestByNhsNumberHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDocumentManifestByNhsNumberHandler.class);
     private final DocumentMetadataStore metadataStore;
 
     public DocumentMetadataSearchService(DocumentMetadataStore metadataStore) {
@@ -22,8 +23,14 @@ public class DocumentMetadataSearchService {
 
     public List<DocumentMetadata> findMetadataByNhsNumber(String nhsNumber, Map<String, String> requestHeaders) {
         var userEmail = getEmail(requestHeaders);
-        logger.info(userEmail + "searched for documents with NHS number ending " + obfuscate(nhsNumber));
-        return metadataStore.findByNhsNumber(nhsNumber);
+        LOGGER.info(userEmail + " searched for documents with NHS number ending " + obfuscate(nhsNumber));
+
+        var documentMetadataList = metadataStore.findByNhsNumber(nhsNumber);
+
+        return documentMetadataList
+                .stream()
+                .filter(documentMetadata -> documentMetadata.getDeleted() == null)
+                .collect(Collectors.toList());
     }
 
     private String obfuscate(String string) {
@@ -34,7 +41,7 @@ public class DocumentMetadataSearchService {
         String authorizationHeader = headers.getOrDefault("Authorization", headers.get("authorization"));
 
         if (authorizationHeader.isEmpty()) {
-            logger.warn("Empty authorization header");
+            LOGGER.warn("Empty authorization header");
             return "[unknown]";
         }
         String token = authorizationHeader.replaceFirst("^[Bb]earer\\s+", "");

@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toList;
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
     private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
@@ -50,27 +50,26 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
-
         Tracer.setMDCContext(context);
+        LOGGER.debug("API Gateway event received - processing starts");
 
-        logger.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
 
-        logger.debug("Querying DynamoDB");
+        LOGGER.debug("Querying DynamoDB");
         Bundle bundle;
+
         try {
             var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
             var documentMetadata = searchService.findMetadataByNhsNumber(nhsNumber, requestEvent.getHeaders());
+            var documents = documentMetadata.stream().map(Document::new).collect(toList());
 
-            var documents = documentMetadata.stream().map(Document::new).filter(document -> document.getDeleted() == null).collect(toList());
-
-            logger.debug("Generating response contents");
+            LOGGER.debug("Generating response contents");
             bundle = bundleMapper.toBundle(documents);
         } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);
         }
 
-        logger.debug("Processing finished - about to return the response");
+        LOGGER.debug("Processing finished - about to return the response");
         var body = jsonParser.encodeResourceToString(bundle);
         return apiConfig.getApiGatewayResponse(200, body, "GET", null);
     }

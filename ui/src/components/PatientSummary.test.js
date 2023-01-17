@@ -1,4 +1,4 @@
-import {render, screen} from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import PatientSummary from "./PatientSummary";
 import React from "react";
 

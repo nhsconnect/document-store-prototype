@@ -1,6 +1,6 @@
 import React from "react";
-import {SummaryList} from "nhsuk-react-components";
-import {getFormattedDate} from "../utils/utils";
+import { SummaryList } from "nhsuk-react-components";
+import { getFormattedDate } from "../utils/utils";
 
 const PatientSummary = ({ patientDetails }) => {
     return (

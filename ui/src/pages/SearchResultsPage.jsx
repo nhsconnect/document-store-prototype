@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
-import {Button, ErrorMessage, Fieldset, Input, Table} from "nhsuk-react-components";
-import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
-import {useNavigate} from "react-router";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Button, ErrorMessage, Fieldset, Input, Table } from "nhsuk-react-components";
+import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
+import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
-import {downloadFile} from "../utils/utils";
-import {useDeleteDocumentsResponseProviderContext} from "../providers/DeleteDocumentsResponseProvider";
+import { downloadFile } from "../utils/utils";
+import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
 
 const states = {
     INITIAL: "initial",

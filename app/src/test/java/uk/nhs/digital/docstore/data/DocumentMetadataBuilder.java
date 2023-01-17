@@ -12,43 +12,61 @@ public class DocumentMetadataBuilder {
     private final String location;
     private final String contentType;
     private final Boolean uploaded;
+    private final String deleted;
 
     public static DocumentMetadataBuilder theMetadata() {
-        String id = randomAlphabetic(10);
-        String nhsNumber = randomNumeric(11);
-        String location = String.format(
-                "s3://%s/%s",
-                randomAlphabetic(6),
-                randomAlphabetic(10));
-        return new DocumentMetadataBuilder(id, nhsNumber, location, "text/plain", null);
+        var id = randomAlphabetic(10);
+        var nhsNumber = randomNumeric(11);
+        var location = String.format("s3://%s/%s", randomAlphabetic(6), randomAlphabetic(10));
+
+        return new DocumentMetadataBuilder(
+                id,
+                nhsNumber,
+                location,
+                "text/plain",
+                null,
+                null
+        );
     }
 
-    private DocumentMetadataBuilder(String id, String nhsNumber, String location, String contentType, Boolean uploaded) {
+    private DocumentMetadataBuilder(
+            String id,
+            String nhsNumber,
+            String location,
+            String contentType,
+            Boolean uploaded,
+            String deleted
+    ) {
         this.id = id;
         this.nhsNumber = nhsNumber;
         this.location = location;
         this.contentType = contentType;
         this.uploaded = uploaded;
+        this.deleted = deleted;
     }
 
     public DocumentMetadataBuilder withId(String id) {
-        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded);
+        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded, deleted);
     }
 
     public DocumentMetadataBuilder withNhsNumber(String nhsNumber) {
-        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded);
+        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded, deleted);
     }
 
     public DocumentMetadataBuilder withLocation(String location) {
-        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded);
+        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded, deleted);
     }
 
     public DocumentMetadataBuilder withContentType(String contentType) {
-        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded);
+        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded, deleted);
     }
 
     public DocumentMetadataBuilder withDocumentUploaded(Boolean uploaded) {
-        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded);
+        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded, deleted);
+    }
+
+    public DocumentMetadataBuilder withDeleted(String deleted) {
+        return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded, deleted);
     }
 
     public DocumentMetadata build() {
@@ -58,6 +76,7 @@ public class DocumentMetadataBuilder {
         metadata.setLocation(location);
         metadata.setContentType(contentType);
         metadata.setDocumentUploaded(uploaded);
+        metadata.setDeleted(deleted);
         return metadata;
     }
 }

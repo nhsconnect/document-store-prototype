@@ -1,11 +1,11 @@
-import {render, screen, waitFor, within} from "@testing-library/react";
-import {Factory} from "fishery";
+import { render, screen, waitFor, within } from "@testing-library/react";
+import { Factory } from "fishery";
 import useApi from "../apiClients/useApi";
-import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
+import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
-import {downloadFile} from "../utils/utils";
-import {useDeleteDocumentsResponseProviderContext} from "../providers/DeleteDocumentsResponseProvider";
+import { downloadFile } from "../utils/utils";
+import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
 
 jest.mock("../apiClients/useApi");
 jest.mock("../providers/PatientDetailsProvider", () => ({

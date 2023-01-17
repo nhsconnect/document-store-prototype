@@ -1,6 +1,6 @@
-import {Details, ErrorSummary, Table, WarningCallout} from "nhsuk-react-components";
-import {documentUploadStates} from "../enums/documentUploads";
-import {formatSize, getFormattedDate} from "../utils/utils";
+import { Details, ErrorSummary, Table, WarningCallout } from "nhsuk-react-components";
+import { documentUploadStates } from "../enums/documentUploads";
+import { formatSize, getFormattedDate } from "../utils/utils";
 import PatientSummary from "./PatientSummary";
 import React from "react";
 

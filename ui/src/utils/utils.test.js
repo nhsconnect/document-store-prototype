@@ -1,4 +1,4 @@
-import {downloadFile, formatSize, getFormattedDate, setUrlHostToLocalHost} from "./utils";
+import { downloadFile, formatSize, getFormattedDate, setUrlHostToLocalHost } from "./utils";
 
 describe("utils", () => {
     describe("setUrlHostToLocalHost utility", () => {
