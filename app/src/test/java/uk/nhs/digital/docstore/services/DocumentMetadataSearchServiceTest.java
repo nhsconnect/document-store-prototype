@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.nhs.digital.docstore.data.DocumentMetadataBuilder.theMetadata;
+import static uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder.theMetadata;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentMetadataSearchServiceTest {
