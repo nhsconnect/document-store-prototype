@@ -21,7 +21,7 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.disableSameSiteCookieRestrictions();
 
         cy.visit("/");
-        cy.title().should("eq", "Document Store");
+        cy.title().should("eq", "Inactive Patient Record Administration");
         cy.findByRole("button", { name: "Start now" }).click();
 
         if (oidcProvider === "cis2devoidc") {

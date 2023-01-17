@@ -1,7 +1,7 @@
 const Meta = ({ description, title }) => {
     return (
         <>
-            <title>{title} - NHS Document Store Prototype</title>
+            <title>{title} - Inactive Patient Record Administration</title>
             <meta name="description" content={description} />
         </>
     );
