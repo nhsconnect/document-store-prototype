@@ -29,9 +29,8 @@ describe("<StartPage/>", () => {
     it("renders a 'Before you start' section", () => {
         render(<StartPage />);
 
-        expect(screen.getByRole("heading", { name: "Before you start" })).toBeInTheDocument();
-        expect(screen.getByRole("list")).toBeInTheDocument();
-        expect(screen.getByRole("listitem")).toHaveTextContent(/valid NHS smartcard/);
+        expect(screen.getByRole("heading", { name: "Before You Start:" })).toBeInTheDocument();
+        expect(screen.getByText(/valid NHS smartcard/)).toBeInTheDocument();
     });
 
     it("renders a button link with an href to /home", () => {
