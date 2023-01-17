@@ -19,6 +19,11 @@ data "aws_ssm_parameter" "pds_fhir_endpoint" {
 }
 
 data "aws_ssm_parameter" "pds_fhir_kid" {
-name  = "/prs/${var.environment}/user-input/pds-fhir-kid"
-count = var.cloud_only_service_instances
+  name  = "/prs/${var.environment}/user-input/pds-fhir-kid"
+  count = var.cloud_only_service_instances
+}
+
+data "aws_ssm_parameter" "splunk_trusted_principal" {
+  name  = "/prs/user-input/external/splunk-trusted-principal"
+  count = var.cloud_only_service_instances
 }
