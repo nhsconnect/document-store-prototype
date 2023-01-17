@@ -14,7 +14,7 @@ const states = {
     FAILED: "failed",
 };
 
-export const PatientTracePage = ({ nextPage, title }) => {
+export const PatientTracePage = ({ nextPage }) => {
     const client = useApi();
     const { register, formState, handleSubmit } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
@@ -67,7 +67,7 @@ export const PatientTracePage = ({ nextPage, title }) => {
                     )}
                     <Fieldset>
                         <Fieldset.Legend headingLevel={"h1"} isPageHeading>
-                            {title}
+                            Search for patient
                         </Fieldset.Legend>
                         <Input
                             id={"nhs-number-input"}
@@ -100,10 +100,12 @@ export const PatientTracePage = ({ nextPage, title }) => {
                 <>
                     <h1>Verify patient details</h1>
                     <PatientSummary patientDetails={patientDetails} />
-                    <p>
-                        Ensure these patient details match the electronic health records and attachments you are about
-                        to upload.
-                    </p>
+                    {nextPage?.includes("upload") && (
+                        <p>
+                            Ensure these patient details match the electronic health records and attachments you are
+                            about to upload.
+                        </p>
+                    )}
                     <Button onClick={onNextClicked}>Next</Button>
                 </>
             )}

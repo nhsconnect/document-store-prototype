@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button, ErrorMessage, Fieldset, Input, Table } from "nhsuk-react-components";
+import { Button, ErrorMessage, Fieldset, Table } from "nhsuk-react-components";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
 import { downloadFile } from "../utils/utils";
 import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
+import PatientSummary from "../components/PatientSummary";
 
 const states = {
     INITIAL: "initial",
@@ -17,8 +17,6 @@ const states = {
 
 const SearchResultsPage = () => {
     const client = useApi();
-    const { register } = useForm();
-    const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber");
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
@@ -72,17 +70,9 @@ const SearchResultsPage = () => {
             <BackButton />
             <Fieldset>
                 <Fieldset.Legend headingLevel="h1" isPageHeading>
-                    Download and view a stored document
+                    Download electronic health records and attachments
                 </Fieldset.Legend>
-                <Input
-                    id="nhs-number-input"
-                    name="nhsNumber"
-                    label="Find by NHS number"
-                    {...nhsNumberProps}
-                    inputRef={nhsNumberRef}
-                    value={patientDetails?.nhsNumber}
-                    readOnly
-                />
+                <PatientSummary patientDetails={patientDetails} />
                 {submissionState === states.PENDING && (
                     <p>
                         <progress aria-label="Loading..." />
@@ -96,7 +86,6 @@ const SearchResultsPage = () => {
                 <>
                     {searchResults.length > 0 && (
                         <>
-                            <p>You can choose to download all files for this patient</p>
                             <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING}>
                                 {downloadState === states.PENDING
                                     ? "Downloading All Documents..."
@@ -124,7 +113,7 @@ const SearchResultsPage = () => {
                             <p>
                                 Only use this option if you have a valid reason to permanently delete all available
                                 documents for this patient. For example, if the retention period of these documents has
-                                been reached
+                                been reached.
                             </p>
 
                             <Button type="button" secondary onClick={goToDeleteDocumentsConfirmationPage}>
@@ -138,7 +127,7 @@ const SearchResultsPage = () => {
                         </>
                     )}
                     {(searchResults.length === 0 || deleteDocumentsResponse === "successful") && (
-                        <p>There are no records associated with this patient to delete or download</p>
+                        <p>There are no records associated with this patient to delete or download.</p>
                     )}
                 </>
             )}

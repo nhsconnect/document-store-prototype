@@ -49,13 +49,12 @@ describe("<SearchResultsPage />", () => {
 
             expect(
                 screen.getByRole("heading", {
-                    name: "Download and view a stored document",
+                    name: "Download electronic health records and attachments",
                 })
             ).toBeInTheDocument();
-            expect(nhsNumberField()).toBeInTheDocument();
-            expect(nhsNumberField()).toHaveValue(nhsNumber);
-            expect(nhsNumberField()).toHaveAttribute("readonly");
             expect(searchButton()).not.toBeInTheDocument();
+            expect(screen.getByText(`NHS number ${patientData.nhsNumber}`)).toBeInTheDocument();
+            expect(screen.getByText(patientData.familyName)).toBeInTheDocument();
             expect(mockNavigate).not.toHaveBeenCalled();
             expect(startAgainLink()).toBeInTheDocument();
         });
@@ -78,7 +77,7 @@ describe("<SearchResultsPage />", () => {
 
             expect(screen.getByRole("progressbar", { name: "Loading..." })).toBeInTheDocument();
             expect(
-                await screen.findByText("There are no records associated with this patient to delete or download")
+                await screen.findByText("There are no records associated with this patient to delete or download.")
             ).toBeInTheDocument();
         });
 
@@ -142,7 +141,7 @@ describe("<SearchResultsPage />", () => {
 
             await waitFor(() => {
                 expect(
-                    screen.getByText("There are no records associated with this patient to delete or download")
+                    screen.getByText("There are no records associated with this patient to delete or download.")
                 ).toBeInTheDocument();
             });
             expect(screen.queryByRole("button", { name: "Download All Documents" })).not.toBeInTheDocument();
@@ -309,10 +308,6 @@ describe("<SearchResultsPage />", () => {
         });
     });
 });
-
-function nhsNumberField() {
-    return screen.getByLabelText("Find by NHS number");
-}
 
 function searchButton() {
     return screen.queryByRole("button", { name: "Search" });

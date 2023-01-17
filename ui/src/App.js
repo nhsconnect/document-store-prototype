@@ -44,13 +44,7 @@ const AppRoutes = () => {
                 >
                     <Route
                         path="/search/patient-trace"
-                        element={
-                            <PatientTracePage
-                                client={client}
-                                nextPage={"/search/results"}
-                                title={"Download and view a stored document"}
-                            />
-                        }
+                        element={<PatientTracePage client={client} nextPage={"/search/results"} />}
                     />
                     <Route
                         path="/search/results"
@@ -81,13 +75,7 @@ const AppRoutes = () => {
                 >
                     <Route
                         path="/upload/patient-trace"
-                        element={
-                            <PatientTracePage
-                                client={client}
-                                nextPage={"/upload/submit"}
-                                title={"Search for patient"}
-                            />
-                        }
+                        element={<PatientTracePage client={client} nextPage={"/upload/submit"} />}
                     />
                     <Route
                         path="/upload/submit"

@@ -43,9 +43,9 @@ describe("PatientTracePage", () => {
     });
 
     it("renders the page", () => {
-        render(<PatientTracePage title={"My test title"} />);
+        render(<PatientTracePage />);
 
-        expect(screen.getByRole("heading", { name: "My test title" })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Search for patient" })).toBeInTheDocument();
         expect(screen.queryByText("Enter NHS number")).toBeInTheDocument();
         expect(
             screen.queryByText(
@@ -105,11 +105,6 @@ describe("PatientTracePage", () => {
         expect(screen.queryByRole("button", { name: "Next" })).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Search" })).not.toBeInTheDocument();
         expect(screen.queryByRole("textbox", { name: "Enter NHS number" })).not.toBeInTheDocument();
-        expect(
-            screen.getByText(
-                "Ensure these patient details match the electronic health records and attachments you are about to upload."
-            )
-        );
         expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     });
 
@@ -161,6 +156,62 @@ describe("PatientTracePage", () => {
         await waitFor(() => {
             expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
         });
+    });
+
+    it("displays text specific to upload path if user has selected upload", async () => {
+        const expectedNextPage = "upload";
+        useApi.mockImplementation(() => {
+            return {
+                getPatientDetails: (nhsNumber) => {
+                    if (nhsNumber === fakeNhsNumber) {
+                        return patientDetailsResponse;
+                    }
+                },
+            };
+        });
+
+        render(<PatientTracePage nextPage={expectedNextPage} />);
+
+        enterNhsNumber(fakeNhsNumber);
+        startSearch();
+        await waitFor(() => {
+            expect(nextButton()).toBeInTheDocument();
+        });
+        clickNext();
+
+        expect(
+            screen.getByText(
+                "Ensure these patient details match the electronic health records and attachments you are about to upload."
+            )
+        );
+    });
+
+    it("doesn't displays text specific to upload path if user has selected download", async () => {
+        const expectedNextPage = "download";
+        useApi.mockImplementation(() => {
+            return {
+                getPatientDetails: (nhsNumber) => {
+                    if (nhsNumber === fakeNhsNumber) {
+                        return patientDetailsResponse;
+                    }
+                },
+            };
+        });
+
+        render(<PatientTracePage nextPage={expectedNextPage} />);
+
+        enterNhsNumber(fakeNhsNumber);
+        startSearch();
+        await waitFor(() => {
+            expect(nextButton()).toBeInTheDocument();
+        });
+        clickNext();
+
+        expect(
+            screen.queryByText(
+                "Ensure these patient details match the electronic health records and attachments you are about to upload."
+            )
+        ).not.toBeInTheDocument();
     });
 
     it("displays a loading spinner when the patient's details are being requested", async () => {
