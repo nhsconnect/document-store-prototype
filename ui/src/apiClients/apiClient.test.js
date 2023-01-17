@@ -69,12 +69,8 @@ describe("apiClient", () => {
                     },
                 ],
             };
-            const postMock = jest.fn(async (baseUrl, path, { onUploadProgress }) => {
+            const postMock = jest.fn(async () => {
                 return new Promise((resolve) => {
-                    setTimeout(() => {
-                        onUploadProgress();
-                    }, 1);
-
                     setTimeout(() => {
                         resolve(metadataResponseBody);
                     }, 2);
@@ -146,8 +142,7 @@ describe("apiClient", () => {
                 document,
                 expect.anything()
             );
-            expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.WAITING, 0);
-            expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.STORING_METADATA, 0);
+            expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.UPLOADING, 0);
             expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.UPLOADING, 50);
             expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.SUCCEEDED, 100);
         });

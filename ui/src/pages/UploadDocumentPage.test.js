@@ -1,9 +1,9 @@
-import {render, screen, waitFor} from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {act} from "react-dom/test-utils";
+import { act } from "react-dom/test-utils";
 import useApi from "../apiClients/useApi";
-import {documentUploadStates} from "../enums/documentUploads";
-import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
+import { documentUploadStates } from "../enums/documentUploads";
+import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import UploadDocumentPage from "./UploadDocumentPage";
 
 jest.mock("../apiClients/useApi");
@@ -86,7 +86,7 @@ describe("UploadDocumentPage", () => {
                 expect(uploadButton()).toBeDisabled();
             });
 
-            triggerUploadStateChange(documentOne, documentUploadStates.WAITING, 0);
+            triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 0);
 
             await waitFor(() => {
                 expect(uploadForm()).not.toBeInTheDocument();
@@ -94,28 +94,14 @@ describe("UploadDocumentPage", () => {
 
             await waitFor(() => {
                 expect(getProgressBarValue(documentOne)).toEqual(0);
-                expect(getProgressBarMessage(documentOne).textContent).toContain("Waiting");
+                expect(getProgressBarMessage(documentOne).textContent).toContain("Uploading");
             });
 
-            triggerUploadStateChange(documentTwo, documentUploadStates.WAITING, 0);
+            triggerUploadStateChange(documentTwo, documentUploadStates.UPLOADING, 0);
 
             await waitFor(() => {
                 expect(getProgressBarValue(documentTwo)).toEqual(0);
-                expect(getProgressBarMessage(documentTwo).textContent).toContain("Waiting");
-            });
-
-            triggerUploadStateChange(documentTwo, documentUploadStates.STORING_METADATA, 0);
-
-            await waitFor(() => {
-                expect(getProgressBarValue(documentTwo)).toEqual(0);
-                expect(getProgressBarMessage(documentTwo).textContent).toContain("metadata");
-            });
-
-            triggerUploadStateChange(documentOne, documentUploadStates.STORING_METADATA, 0);
-
-            await waitFor(() => {
-                expect(getProgressBarValue(documentOne)).toEqual(0);
-                expect(getProgressBarMessage(documentOne).textContent).toContain("metadata");
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("Uploading");
             });
 
             triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 10);
@@ -143,11 +129,11 @@ describe("UploadDocumentPage", () => {
 
             await waitFor(() => {
                 expect(getProgressBarValue(documentTwo)).toEqual(100);
-                expect(getProgressBarMessage(documentTwo).textContent).toContain("successful");
+                expect(getProgressBarMessage(documentTwo).textContent).toContain("Uploaded");
             });
 
             // Make sure document three is waiting, otherwise the "upload step" will move to complete once one and two have succeeded and failed
-            triggerUploadStateChange(documentThree, documentUploadStates.WAITING, 0);
+            triggerUploadStateChange(documentThree, documentUploadStates.UPLOADING, 0);
             triggerUploadStateChange(documentOne, documentUploadStates.FAILED, 0);
 
             await waitFor(() => {

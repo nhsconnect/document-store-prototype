@@ -55,7 +55,7 @@ class ApiClient {
             created: "2021-07-11T16:57:30+01:00",
         };
 
-        onUploadStateChange(documentUploadStates.WAITING, 0);
+        onUploadStateChange(documentUploadStates.UPLOADING, 0);
 
         const requestHeaders = {
             Accept: "application/fhir+json",
@@ -66,9 +66,6 @@ class ApiClient {
             const response = await this.api.post("doc-store-api", "/DocumentReference", {
                 body: requestBody,
                 headers: requestHeaders,
-                onUploadProgress: () => {
-                    onUploadStateChange(documentUploadStates.STORING_METADATA, 0);
-                },
             });
 
             const url = response.content[0].attachment.url;

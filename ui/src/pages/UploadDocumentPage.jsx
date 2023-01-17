@@ -1,23 +1,21 @@
-import {Button, Fieldset, Table} from "nhsuk-react-components";
-import React, {useEffect} from "react";
-import {useForm} from "react-hook-form";
-import {useNavigate} from "react-router";
+import { Button, Fieldset, Table } from "nhsuk-react-components";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import produce from "immer";
-import {usePatientDetailsProviderContext} from "../providers/PatientDetailsProvider";
+import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import BackButton from "../components/BackButton";
 import DocumentsInput from "../components/DocumentsInput";
-import {formatSize} from "../utils/utils";
-import {documentUploadStates as stateNames, documentUploadSteps} from "../enums/documentUploads";
+import { formatSize } from "../utils/utils";
+import { documentUploadStates as stateNames, documentUploadSteps } from "../enums/documentUploads";
 import UploadSummary from "../components/UploadSummary";
 import useApi from "../apiClients/useApi";
 import PatientSummary from "../components/PatientSummary";
 
 const uploadStateMessages = {
     [stateNames.SELECTED]: "Waiting...",
-    [stateNames.WAITING]: "Waiting...",
-    [stateNames.STORING_METADATA]: "Storing document metadata...",
-    [stateNames.UPLOADING]: "Uploading document...",
-    [stateNames.SUCCEEDED]: "Upload successful",
+    [stateNames.UPLOADING]: "Uploading...",
+    [stateNames.SUCCEEDED]: "Uploaded",
     [stateNames.FAILED]: "Upload failed",
 };
 
