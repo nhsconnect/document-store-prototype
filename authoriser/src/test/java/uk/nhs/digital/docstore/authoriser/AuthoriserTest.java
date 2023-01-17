@@ -43,7 +43,7 @@ class AuthoriserTest {
                 .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString());
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
-                .withVersion("some-version")
+                .withVersion(IamPolicyResponse.VERSION_2012_10_17)
                 .withStatement(pcseAllowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
                 .build();
 
@@ -86,7 +86,7 @@ class AuthoriserTest {
                 .withClaim("associatedorgs", associatedOrgsClaim.toString());
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
-                .withVersion("some-version")
+                .withVersion(IamPolicyResponse.VERSION_2012_10_17)
                 .withStatement(clinicalAllowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
                 .build();
 

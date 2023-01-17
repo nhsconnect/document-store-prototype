@@ -6,7 +6,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayCustomAuthorizerEv
 import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.nhs.digital.docstore.authoriser.models.AssociatedOrganisations;
 import uk.nhs.digital.docstore.authoriser.models.RbacRoles;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEvent, IamPolicyResponse> {
     private final AuthConfig authConfig;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private final String GENERAL_ADMIN_ROLE_NAME = "General administrator";
     private final String GENERAL_ADMIN_ORG_CODE = "X4S4L";
@@ -75,12 +74,8 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
 
     private static IamPolicyResponse.PolicyDocument getPolicyDocument(List<String> allowedResources) {
         return IamPolicyResponse.PolicyDocument.builder()
-                .withVersion("some-version")
+                .withVersion(IamPolicyResponse.VERSION_2012_10_17)
                 .withStatement(allowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
                 .build();
-    }
-
-    private boolean isValidGeneralAdmin(String claimedRoleName, String claimedAssociatedOrg) {
-        return claimedRoleName.equals(GENERAL_ADMIN_ROLE_NAME) && claimedAssociatedOrg.equals(GENERAL_ADMIN_ORG_CODE);
     }
 }
