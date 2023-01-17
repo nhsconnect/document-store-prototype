@@ -1,17 +1,17 @@
 resource "aws_sqs_queue" "sensitive_audit" {
-  name = "sensitive-audit"
+  name                      = "${var.environment}-sensitive-audit"
   message_retention_seconds = 1209600
-  sqs_managed_sse_enabled = true
+  sqs_managed_sse_enabled   = true
 }
 
 resource "aws_iam_role_policy" "sensitive_audit" {
-  name = "send_audit_messages_policy"
-  role = aws_iam_role.lambda_execution_role.id
-  policy    = jsonencode({
-    "Version": "2012-10-17",
+  name   = "send_audit_messages_policy"
+  role   = aws_iam_role.lambda_execution_role.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
     "Statement" : [
       {
-        "Sid": "PublishMessages"
+        "Sid" : "PublishMessages"
         "Effect" : "Allow",
         "Action" : [
           "sqs:SendMessage",
