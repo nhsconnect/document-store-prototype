@@ -10,7 +10,6 @@ import uk.nhs.digital.docstore.documentmanifest.CreateDocumentManifestByNhsNumbe
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 public class DocumentMetadataSearchService {
@@ -25,12 +24,7 @@ public class DocumentMetadataSearchService {
         var userEmail = getEmail(requestHeaders);
         LOGGER.info(userEmail + " searched for documents with NHS number ending " + obfuscate(nhsNumber));
 
-        var documentMetadataList = metadataStore.findByNhsNumber(nhsNumber);
-
-        return documentMetadataList
-                .stream()
-                .filter(documentMetadata -> documentMetadata.getDeleted() == null)
-                .collect(Collectors.toList());
+        return metadataStore.findByNhsNumber(nhsNumber);
     }
 
     private String obfuscate(String string) {

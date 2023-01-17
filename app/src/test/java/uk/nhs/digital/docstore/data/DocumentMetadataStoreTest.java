@@ -1,32 +1,59 @@
 package uk.nhs.digital.docstore.data;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
 
-@Disabled
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder.theMetadata;
+
+@ExtendWith(MockitoExtension.class)
 class DocumentMetadataStoreTest {
-    private DocumentMetadataStore store;
+    @Mock
+    private DynamoDBMapper dynamoDBMapper;
+    @Mock
+    private PaginatedQueryList<DocumentMetadata> documentMetadataPaginatedQueryList;
+
+    private DocumentMetadataStore documentMetadataStore;
 
     @BeforeEach
     void setUp() {
-        store = new DocumentMetadataStore();
+        documentMetadataStore = new DocumentMetadataStore(dynamoDBMapper);
     }
 
     @Test
     void returnsDocumentReferenceWithMatchingId() {
-        var documentReference = store.getById("1234");
+        var id = "1234";
+        var documentMetadata = theMetadata().withId(id).build();
 
-        assertThat(documentReference.getId()).isEqualTo("1234");
+        when(dynamoDBMapper.load(DocumentMetadata.class, id)).thenReturn(documentMetadata);
+        var documentReference = documentMetadataStore.getById(id);
+
+        assertThat(documentReference.getId()).isEqualTo(id);
     }
 
     @Test
-    void returnsDifferentDocumentReferencesForDifferentIds() {
-        var documentReference = store.getById("5678");
+    void returnsNonDeletedDocumentMetadataListByNhsNumber() {
+        var nhsNumber = "9000000009";
+        var documentMetadata = theMetadata().withNhsNumber(nhsNumber).withDeleted(null).build();
+        var softDeletedDocumentMetadata = theMetadata().withNhsNumber(nhsNumber).withDeleted("2023-01-17T09:45:59.457620Z").build();
+        var documentMetadataList = List.of(documentMetadata, softDeletedDocumentMetadata);
 
-        assertThat(documentReference.getId()).isEqualTo("5678");
+        when(dynamoDBMapper.query(eq(DocumentMetadata.class), any())).thenReturn(documentMetadataPaginatedQueryList);
+        when(documentMetadataPaginatedQueryList.stream()).thenReturn(documentMetadataList.stream());
+        var actualDocumentMetadataList = documentMetadataStore.findByNhsNumber(nhsNumber);
+
+        assertThat(actualDocumentMetadataList).doesNotContain(softDeletedDocumentMetadata);
     }
 }

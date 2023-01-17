@@ -81,17 +81,4 @@ class DocumentMetadataSearchServiceTest {
 
         assertThat(testLogAppender.findLoggedEvent("documents with NHS number ending 7890")).isNotNull();
     }
-
-    @Test
-    void filtersSoftDeletedDocuments() {
-        var nhsNumber = "9000000009";
-        var documentMetadata = theMetadata().withNhsNumber(nhsNumber).withDeleted(null).build();
-        var softDeletedDocumentMetadata = theMetadata().withNhsNumber(nhsNumber).withDeleted("2023-01-17T09:45:59.457620Z").build();
-        var documentMetadataList = List.of(documentMetadata, softDeletedDocumentMetadata);
-
-        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(documentMetadataList);
-        var filteredDocumentMetadata = searchService.findMetadataByNhsNumber(nhsNumber, headers);
-
-        assertThat(filteredDocumentMetadata).doesNotContain(softDeletedDocumentMetadata);
-    }
 }

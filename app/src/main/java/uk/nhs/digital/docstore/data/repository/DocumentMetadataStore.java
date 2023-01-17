@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DocumentMetadataStore extends DynamoDbConnection {
 
@@ -38,13 +39,19 @@ public class DocumentMetadataStore extends DynamoDbConnection {
     }
 
     public List<DocumentMetadata> findByNhsNumber(String nhsNumber) {
-        return mapper.query(
+        var metadataPaginatedQueryList = mapper.query(
                 DocumentMetadata.class,
                 new DynamoDBQueryExpression<DocumentMetadata>()
                         .withIndexName("NhsNumberIndex")
                         .withKeyConditionExpression("NhsNumber = :nhsNumber")
                         .withExpressionAttributeValues(Map.of(":nhsNumber", new AttributeValue(nhsNumber)))
-                        .withConsistentRead(false));
+                        .withConsistentRead(false)
+        );
+
+        return metadataPaginatedQueryList
+                .stream()
+                .filter(documentMetadata -> documentMetadata.getDeleted() == null)
+                .collect(Collectors.toList());
     }
 
     public DocumentMetadata save(DocumentMetadata documentMetadata) {
@@ -54,13 +61,14 @@ public class DocumentMetadataStore extends DynamoDbConnection {
         mapper.save(documentMetadata);
         return documentMetadata;
     }
-    public List<DocumentMetadata> deleteAndSave(List<DocumentMetadata> documentMetadataList){
-        List<DocumentMetadata>  metadataList = new ArrayList<>();
-       documentMetadataList.forEach(documentMetadata -> {
-           documentMetadata.setDeleted(Instant.now().toString());
-           metadataList.add(this.save(documentMetadata));
-       }
-       );
-       return metadataList;
+
+    public List<DocumentMetadata> deleteAndSave(List<DocumentMetadata> documentMetadataList) {
+        List<DocumentMetadata> metadataList = new ArrayList<>();
+        documentMetadataList.forEach(documentMetadata -> {
+                    documentMetadata.setDeleted(Instant.now().toString());
+                    metadataList.add(this.save(documentMetadata));
+                }
+        );
+        return metadataList;
     }
 }
