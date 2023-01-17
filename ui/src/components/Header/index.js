@@ -8,7 +8,7 @@ export const HeaderContainer = () => {
             <Header.Container>
                 <Header.Logo href="/" />
                 <Header.ServiceName data-testid="header-service-name" href="/">
-                    Document Store
+                    Inactive Patient Record Administration
                 </Header.ServiceName>
                 <Header.Content>
                     <Authenticator.LogOut />

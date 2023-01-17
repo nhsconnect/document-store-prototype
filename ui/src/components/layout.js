@@ -2,15 +2,11 @@ import React from "react";
 import Header from "./Header";
 import "./layout.scss";
 import { Footer } from "nhsuk-react-components";
-import { PhaseBanner } from "./PhaseBanner";
 
 const Layout = ({ children }) => {
     return (
         <>
             <Header />
-            <PhaseBanner tag={"ALPHA"}>
-                {"This site is under construction. Content and structure are subject to change."}
-            </PhaseBanner>
             <div
                 style={{
                     margin: `0 auto`,
