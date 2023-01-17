@@ -15,6 +15,8 @@ const states = {
     FAILED: "failed",
 };
 
+const boldText = { fontWeight: "600" };
+
 const SearchResultsPage = () => {
     const client = useApi();
     const [searchResults, setSearchResults] = useState([]);
@@ -94,7 +96,10 @@ const SearchResultsPage = () => {
                             {downloadState === states.FAILED && (
                                 <ErrorMessage>Failed to download, please retry.</ErrorMessage>
                             )}
-                            <Table caption="List of documents available to download">
+                            {downloadState === states.SUCCEEDED && (
+                                <p style={boldText}>All documents have been successfully downloaded.</p>
+                            )}
+                            <Table caption="List of documents available">
                                 <Table.Head>
                                     <Table.Row>
                                         <Table.Cell>Filename</Table.Cell>
@@ -127,7 +132,7 @@ const SearchResultsPage = () => {
                         </>
                     )}
                     {(searchResults.length === 0 || deleteDocumentsResponse === "successful") && (
-                        <p>There are no records associated with this patient to delete or download.</p>
+                        <p style={boldText}>There are no documents available for this patient.</p>
                     )}
                 </>
             )}

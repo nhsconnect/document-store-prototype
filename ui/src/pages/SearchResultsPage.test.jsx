@@ -76,9 +76,7 @@ describe("<SearchResultsPage />", () => {
             render(<SearchResultsPage />);
 
             expect(screen.getByRole("progressbar", { name: "Loading..." })).toBeInTheDocument();
-            expect(
-                await screen.findByText("There are no records associated with this patient to delete or download.")
-            ).toBeInTheDocument();
+            expect(await screen.findByText("There are no documents available for this patient.")).toBeInTheDocument();
         });
 
         it("displays search results when there are results", async () => {
@@ -88,7 +86,7 @@ describe("<SearchResultsPage />", () => {
             }));
             render(<SearchResultsPage />);
 
-            expect(await screen.findByText("List of documents available to download")).toBeInTheDocument();
+            expect(await screen.findByText("List of documents available")).toBeInTheDocument();
             const documentDescriptionElement = screen.getByText(searchResult.description);
             expect(documentDescriptionElement).toBeInTheDocument();
             expect(screen.getByText(searchResult.indexed.toLocaleString())).toBeInTheDocument();
@@ -122,7 +120,7 @@ describe("<SearchResultsPage />", () => {
             render(<SearchResultsPage />);
 
             await waitFor(() => {
-                expect(screen.getByText("List of documents available to download")).toBeInTheDocument();
+                expect(screen.getByText("List of documents available")).toBeInTheDocument();
             });
 
             const tableBody = document.querySelector("tbody");
@@ -140,9 +138,7 @@ describe("<SearchResultsPage />", () => {
             render(<SearchResultsPage />);
 
             await waitFor(() => {
-                expect(
-                    screen.getByText("There are no records associated with this patient to delete or download.")
-                ).toBeInTheDocument();
+                expect(screen.getByText("There are no documents available for this patient.")).toBeInTheDocument();
             });
             expect(screen.queryByRole("button", { name: "Download All Documents" })).not.toBeInTheDocument();
             expect(screen.queryByRole("button", { name: "Delete All Documents" })).not.toBeInTheDocument();
@@ -173,7 +169,7 @@ describe("<SearchResultsPage />", () => {
             render(<SearchResultsPage />);
 
             await waitFor(() => {
-                expect(screen.getByText("List of documents available to download")).toBeInTheDocument();
+                expect(screen.getByText("List of documents available")).toBeInTheDocument();
             });
 
             userEvent.click(screen.getByRole("button", { name: "Download All Documents" }));
@@ -187,6 +183,7 @@ describe("<SearchResultsPage />", () => {
             });
 
             expect(screen.queryByText("Failed to download, please retry.")).not.toBeInTheDocument();
+            expect(screen.queryByText("All documents have been successfully downloaded.")).toBeInTheDocument();
         });
 
         it("downloads the file", async () => {
@@ -217,7 +214,7 @@ describe("<SearchResultsPage />", () => {
             }));
             render(<SearchResultsPage />);
             await waitFor(() => {
-                expect(screen.getByText("List of documents available to download")).toBeInTheDocument();
+                expect(screen.getByText("List of documents available")).toBeInTheDocument();
             });
             userEvent.click(screen.getByRole("button", { name: "Download All Documents" }));
             await waitFor(() => {
