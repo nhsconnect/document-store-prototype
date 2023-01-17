@@ -89,11 +89,11 @@ const UploadSummary = ({ patientDetails, documents }) => {
                 <ul>
                     <li>
                         {
-                            "We recommend that you take a screenshot for this summary page and attach it to the patient's record"
+                            "We recommend that you take a screenshot of this summary page and attach it to the patient's record"
                         }
                     </li>
                     <li>
-                        When you have finished uploading documents for this patient and they are deducted from you
+                        When you have finished uploading documents for this patient and they are deducted from your
                         practice, please delete any temporary files created for upload on your computer
                     </li>
                 </ul>
