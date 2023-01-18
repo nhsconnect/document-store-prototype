@@ -6,7 +6,7 @@ const config = {
         providerId: "%oidc-provider-id%",
         oauth: {
             domain: "https://%cognito-domain%",
-            scope: ["openid"],
+            scope: ["openid", "nationalrbacaccess", "associatedorgs"],
             redirectSignIn: "%cognito-redirect-signin%",
             redirectSignOut: "%cognito-redirect-signout%",
             responseType: "code",
