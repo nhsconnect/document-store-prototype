@@ -25,6 +25,8 @@ fileignoreconfig:
   checksum: 0ffd9edf7fb95a26dbd5db3ae6c6b9684ffc92683ca005d0a97cf0ed0483f801
 - filename: app/src/main/java/uk/nhs/digital/docstore/DeleteDocumentReferenceHandler.java
   checksum: 712ca4e85254158c04fa9f2b1bf90035aae7140a5692444238a1a6dc64abdb92
+- filename: ui/src/pages/UploadDocumentPage.jsx
+  checksum: 5ef764f51b40d8aeb41cff59652ffdc2be593a337ba0936bfad8be50b8d44d83
 version: ""
 scopeconfig:
   - scope: node

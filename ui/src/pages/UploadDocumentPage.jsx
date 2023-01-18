@@ -85,38 +85,42 @@ const UploadDocumentPage = ({ nextPagePath }) => {
                 </form>
             )}
             {uploadStep === documentUploadSteps.UPLOADING && (
-            <><h1>Your documents are uploading</h1>
-                <Table responsive caption="Your documents are uploading"
-                captionProps={{
-                className: "nhsuk-u-visually-hidden"
-                }}>
-                    <Table.Head role="rowgroup">
-                        <Table.Row>
-                            <Table.Cell>File Name</Table.Cell>
-                            <Table.Cell>File Size</Table.Cell>
-                            <Table.Cell>File Upload Progress</Table.Cell>
-                        </Table.Row>
-                    </Table.Head>
-                    <Table.Body>
-                        {documents.map((document) => (
-                            <Table.Row key={document.id}>
-                                <Table.Cell>{document.file.name}</Table.Cell>
-                                <Table.Cell>{formatSize(document.file.size)}</Table.Cell>
-                                <Table.Cell>
-                                    <progress
-                                        aria-label={`Uploading ${document.file.name}`}
-                                        max="100"
-                                        value={document.progress}
-                                    ></progress>
-                                    <p role="status" aria-label={`${document.file.name} upload status`}>
-                                        {uploadStateMessages[document.state]}
-                                    </p>
-                                </Table.Cell>
+                <>
+                    <h1>Your documents are uploading</h1>
+                    <Table
+                        responsive
+                        caption="Your documents are uploading"
+                        captionProps={{
+                            className: "nhsuk-u-visually-hidden",
+                        }}
+                    >
+                        <Table.Head role="rowgroup">
+                            <Table.Row>
+                                <Table.Cell>File Name</Table.Cell>
+                                <Table.Cell>File Size</Table.Cell>
+                                <Table.Cell>File Upload Progress</Table.Cell>
                             </Table.Row>
-                        ))}
-                    </Table.Body>
-                </Table></>
-
+                        </Table.Head>
+                        <Table.Body>
+                            {documents.map((document) => (
+                                <Table.Row key={document.id}>
+                                    <Table.Cell>{document.file.name}</Table.Cell>
+                                    <Table.Cell>{formatSize(document.file.size)}</Table.Cell>
+                                    <Table.Cell>
+                                        <progress
+                                            aria-label={`Uploading ${document.file.name}`}
+                                            max="100"
+                                            value={document.progress}
+                                        ></progress>
+                                        <p role="status" aria-label={`${document.file.name} upload status`}>
+                                            {uploadStateMessages[document.state]}
+                                        </p>
+                                    </Table.Cell>
+                                </Table.Row>
+                            ))}
+                        </Table.Body>
+                    </Table>
+                </>
             )}
             {uploadStep === documentUploadSteps.COMPLETE && (
                 <>
