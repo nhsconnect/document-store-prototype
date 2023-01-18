@@ -90,7 +90,7 @@ export const PatientTracePage = ({ nextPage }) => {
                     )}
                     {submissionState === states.FAILED && statusCode === 404 && (
                         <WarningCallout>
-                            <WarningCallout.Label>Patient Not Found</WarningCallout.Label>
+                            <WarningCallout.Label headingLevel={"h2"}>Patient Not Found</WarningCallout.Label>
                             <p>Please verify NHS number again.</p>
                         </WarningCallout>
                     )}
