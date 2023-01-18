@@ -206,7 +206,8 @@
         "iam:ListRolePolicies",
         "iam:PassRole",
         "iam:PutRolePolicy",
-        "iam:CreatePolicy"
+        "iam:CreatePolicy",
+        "iam:GetPolicy"
       ],
       "Resource": "*"
     },
