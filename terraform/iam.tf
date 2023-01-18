@@ -46,3 +46,9 @@ resource "aws_iam_role_policy" "sensitive_audit" {
     ]
   })
 }
+
+resource "aws_iam_role" "splunk_sqs_forwarder" {
+  name               = "SplunkSqsForwarder"
+  description        = "Role to allow ARF to integrate with Splunk"
+  assume_role_policy = data.aws_iam_policy_document.splunk_trust_policy.json
+}
