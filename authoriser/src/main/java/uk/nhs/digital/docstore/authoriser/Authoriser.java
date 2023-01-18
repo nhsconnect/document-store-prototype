@@ -14,6 +14,7 @@ import uk.nhs.digital.docstore.authoriser.models.AssociatedOrganisations;
 import uk.nhs.digital.docstore.authoriser.models.RbacRoles;
 
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,10 +24,10 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
     private final Algorithm algorithm;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private final String GENERAL_ADMIN_ROLE_NAME = "General administrator";
-    private final String GENERAL_ADMIN_ORG_CODE = "X4S4L";
-    private final String ASSOCIATED_ORG = "associatedorgs";
-    private final String RBAC_ROLES = "nationalrbacaccess";
+    public final static String GENERAL_ADMIN_ROLE_NAME = "General administrator";
+    public final static String GENERAL_ADMIN_ORG_CODE = "X4S4L";
+    public final static String ASSOCIATED_ORG = "associatedorgs";
+    public final static String RBAC_ROLES = "nationalrbacaccess";
 
     public Authoriser(AuthConfig authConfig, Algorithm algorithm) {
         this.authConfig = authConfig;
@@ -65,21 +66,26 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             var iamPolicy = new IamPolicyResponse();
             iamPolicy.setPrincipalId(decodedJWT.getSubject());
 
+            // Mapping claims to models
             var claimedAssociatedOrg = mapper.readValue(decodedJWT.getClaim(ASSOCIATED_ORG).asString(), AssociatedOrganisations.class);
             var rbacroles = mapper.readValue(decodedJWT.getClaim(RBAC_ROLES).asString(), RbacRoles.class);
+
+            // Get a list of tertiary role codes
             var clinicalRoles = Arrays.stream(ClinicalAdmin.values()).map(ClinicalAdmin::getClinicalRoleCode).collect(Collectors.toList());
 
+            // Taking models and building a resource list
+            var allowedResources = new ArrayList<String>();
+
             if (claimedAssociatedOrg.containsOrganisation(GENERAL_ADMIN_ORG_CODE)) {
-                var pcseAllowedResources = authConfig.getAllowedResourcesForPCSEUsers();
-
-                var policyDocument = getPolicyDocument(pcseAllowedResources);
-                iamPolicy.setPolicyDocument(policyDocument);
-            } else if (rbacroles.containsAnyTertiaryRole(clinicalRoles)) {
-                var clinicalAllowedResources = authConfig.getAllowedResourcesForClinicalUsers();
-
-                var policyDocument = getPolicyDocument(clinicalAllowedResources);
-                iamPolicy.setPolicyDocument(policyDocument);
+                allowedResources.addAll(authConfig.getAllowedResourcesForPCSEUsers());
             }
+
+            if (rbacroles.containsAnyTertiaryRole(clinicalRoles)) {
+                allowedResources.addAll(authConfig.getAllowedResourcesForClinicalUsers());
+            }
+
+            var policyDocument = getPolicyDocument(allowedResources);
+            iamPolicy.setPolicyDocument(policyDocument);
             return iamPolicy;
         } catch (NullPointerException e) {
             throw e;
