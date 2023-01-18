@@ -85,7 +85,11 @@ const UploadDocumentPage = ({ nextPagePath }) => {
                 </form>
             )}
             {uploadStep === documentUploadSteps.UPLOADING && (
-                <Table responsive caption="Your documents are uploading">
+            <><h1>Your documents are uploading</h1>
+                <Table responsive caption="Your documents are uploading"
+                captionProps={{
+                className: "nhsuk-u-visually-hidden"
+                }}>
                     <Table.Head role="rowgroup">
                         <Table.Row>
                             <Table.Cell>File Name</Table.Cell>
@@ -111,7 +115,8 @@ const UploadDocumentPage = ({ nextPagePath }) => {
                             </Table.Row>
                         ))}
                     </Table.Body>
-                </Table>
+                </Table></>
+
             )}
             {uploadStep === documentUploadSteps.COMPLETE && (
                 <>
