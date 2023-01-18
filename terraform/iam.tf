@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "splunk_trust_policy" {
   }
 }
 
-data "aws_iam_policy_document" "splunk_access_policy" {
+data "aws_iam_policy_document" "splunk_access_policy_document" {
   statement {
     effect  = "Allow"
     actions = [
@@ -51,4 +51,14 @@ resource "aws_iam_role" "splunk_sqs_forwarder" {
   name               = "SplunkSqsForwarder"
   description        = "Role to allow ARF to integrate with Splunk"
   assume_role_policy = data.aws_iam_policy_document.splunk_trust_policy.json
+}
+
+resource "aws_iam_policy" "splunk_access_policy" {
+  name   = "splunk_access_policy"
+  policy = data.aws_iam_policy_document.splunk_access_policy_document.json
+}
+
+resource "aws_iam_role_policy_attachment" "splunk_access_policy_attachment" {
+  role       = aws_iam_role.splunk_sqs_forwarder.name
+  policy_arn = aws_iam_policy.splunk_access_policy.arn
 }
