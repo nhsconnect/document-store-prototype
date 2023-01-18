@@ -23,9 +23,10 @@ class AuthoriserTest {
                 pcseAllowedResources,
                 clinicalAllowedResources
         );
+        var algorithm = Algorithm.none();
 
         var event = new APIGatewayCustomAuthorizerEvent();
-        var handler = new Authoriser(authConfig);
+        var handler = new Authoriser(authConfig, algorithm);
 
         var associatedOrgsClaim = new JSONObject();
         var organisations = List.of(Map.of("org_code", "X4S4L"));
@@ -50,7 +51,7 @@ class AuthoriserTest {
         var expectedResponse = new IamPolicyResponse();
         expectedResponse.setPolicyDocument(expectedPolicyDocument);
 
-        event.setAuthorizationToken(token.sign(Algorithm.none()));
+        event.setAuthorizationToken(token.sign(algorithm));
 
         var response = handler.handleRequest(event, null);
 
@@ -66,9 +67,10 @@ class AuthoriserTest {
                 pcseAllowedResources,
                 clinicalAllowedResources
         );
+        var algorithm = Algorithm.none();
 
         var event = new APIGatewayCustomAuthorizerEvent();
-        var handler = new Authoriser(authConfig);
+        var handler = new Authoriser(authConfig, algorithm);
 
         var nationalRbAccessClaim = new JSONObject();
         var roles = List.of(Map.of("role_code", "S0010:G0020:R8008"));
@@ -93,7 +95,7 @@ class AuthoriserTest {
         var expectedResponse = new IamPolicyResponse();
         expectedResponse.setPolicyDocument(expectedPolicyDocument);
 
-        event.setAuthorizationToken(token.sign(Algorithm.none()));
+        event.setAuthorizationToken(token.sign(algorithm));
 
         var response = handler.handleRequest(event, null);
 

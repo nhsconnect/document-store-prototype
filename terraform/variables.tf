@@ -142,3 +142,8 @@ variable "sqs_endpoint" {
   type    = string
   default = ""
 }
+
+variable "cognito_key_id" {
+  type    = string
+  default = ""
+}

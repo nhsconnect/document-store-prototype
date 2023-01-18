@@ -4,18 +4,23 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayCustomAuthorizerEvent;
 import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.nhs.digital.docstore.authoriser.models.AssociatedOrganisations;
 import uk.nhs.digital.docstore.authoriser.models.RbacRoles;
 
+import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEvent, IamPolicyResponse> {
     private final AuthConfig authConfig;
+    private final Algorithm algorithm;
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final String GENERAL_ADMIN_ROLE_NAME = "General administrator";
@@ -23,12 +28,13 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
     private final String ASSOCIATED_ORG = "associatedorgs";
     private final String RBAC_ROLES = "nationalrbacaccess";
 
-    public Authoriser(AuthConfig authConfig) {
+    public Authoriser(AuthConfig authConfig, Algorithm algorithm) {
         this.authConfig = authConfig;
+        this.algorithm = algorithm;
     }
 
     public Authoriser() {
-        this(readAuthConfig());
+        this(readAuthConfig(), getSignatureVerificationAlgorithm());
     }
 
     private static AuthConfig readAuthConfig() {
@@ -36,6 +42,16 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
         try {
             return objectMapper.readValue(System.getenv("AUTH_CONFIG"), AuthConfig.class);
         } catch (JsonProcessingException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private static Algorithm getSignatureVerificationAlgorithm() {
+        var jwkProvider = new JwkProviderBuilder(System.getenv("COGNITO_PUBLIC_KEY_URL")).build();
+        try {
+            var jwk = jwkProvider.get(System.getenv("COGNITO_KEY_ID"));
+            return Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey());
+        } catch (JwkException exception) {
             throw new RuntimeException(exception);
         }
     }

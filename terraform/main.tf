@@ -10,11 +10,11 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.region
+  region = var.region
 
   skip_credentials_validation = var.disable_aws_remote_checks
   skip_requesting_account_id  = var.disable_aws_remote_checks
-  s3_use_path_style         = var.disable_aws_remote_checks
+  s3_use_path_style           = var.disable_aws_remote_checks
   skip_metadata_api_check     = var.disable_aws_remote_checks
 
   endpoints {
@@ -103,7 +103,7 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   type          = "COGNITO_USER_POOLS"
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   provider_arns = var.cloud_only_service_instances > 0 ? [
-    for pool_arn in aws_cognito_user_pool.pool[*].arn :pool_arn
+  for pool_arn in aws_cognito_user_pool.pool[*].arn :pool_arn
   ] : [
     ""
   ]
@@ -181,7 +181,8 @@ resource "aws_lambda_function" "authoriser" {
           local.create_document_reference_invocation_arn,
         ]
       })
+      COGNITO_PUBLIC_KEY_URL = var.cloud_only_service_instances > 0 ? "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.pool[0].id}/.well-known/jwks.json" : ""
+      COGNITO_KEY_ID = var.cognito_key_id
     }
   }
-
 }
