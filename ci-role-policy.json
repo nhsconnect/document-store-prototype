@@ -208,7 +208,8 @@
         "iam:PutRolePolicy",
         "iam:CreatePolicy",
         "iam:GetPolicy",
-        "iam:GetPolicyVersion"
+        "iam:GetPolicyVersion",
+        "iam:ListPolicyVersions"
       ],
       "Resource": "*"
     },
