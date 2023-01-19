@@ -6,7 +6,7 @@ const config = {
         providerId: "COGNITO",
         oauth: {
             domain: "https://doc-store-user-pool.auth.eu-west-2.amazoncognito.com",
-            scope: ["openid"],
+            scope: ["openid", "associatedorgs", "nationalrbacaccess"],
             redirectSignIn: "http://localhost:3000/cis2-auth-callback",
             redirectSignOut: "http://localhost:3000",
             responseType: "grant",
