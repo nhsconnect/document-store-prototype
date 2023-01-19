@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import ErrorPage from "./ErrorPage";
+import ServiceError from "./ServiceError";
 
-describe("ErrorPage", () => {
-    it("should render the page", () => {
-        render(<ErrorPage />);
+describe("ServiceError", () => {
+    it("should render the component", () => {
+        render(<ServiceError />);
 
         expect(screen.getByText("Sorry, there is a problem with the service")).toBeInTheDocument();
     });
