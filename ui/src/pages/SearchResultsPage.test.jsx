@@ -268,28 +268,6 @@ describe("<SearchResultsPage />", () => {
                 expect(mockNavigate).toHaveBeenCalledWith("/search/results/delete-documents-confirmation");
             });
         });
-        describe("when user clicks on Delete All button and successfully navigate to confirmation page and choose Yes", () => {
-            it("should display error message next to Delete All Documents Button when failed to delete the documents", async () => {
-                const searchResult = searchResultFactory.build();
-                const deleteDocumentsResponse = "unsuccessful";
-                useApi.mockImplementation(() => ({
-                    findByNhsNumber: () => [searchResult],
-                }));
-                useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
-
-                render(<SearchResultsPage />);
-                await waitFor(() => {
-                    expect(screen.getByRole("button", { name: "Delete All Documents" })).toBeInTheDocument();
-                });
-                userEvent.click(screen.getByRole("button", { name: "Delete All Documents" }));
-
-                await waitFor(() => {
-                    expect(
-                        screen.getByText("There has been an issue deleting these records, please try again later.")
-                    ).toBeInTheDocument();
-                });
-            });
-        });
     });
 
     describe("when there is NOT an NHS number", () => {

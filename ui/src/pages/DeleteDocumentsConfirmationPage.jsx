@@ -1,39 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import BackButton from "../components/BackButton";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import useApi from "../apiClients/useApi";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
+import ServiceError from "../components/ServiceError";
+
+const states = {
+    IDLE: "idle",
+    DELETING: "deleting",
+    SUCCEEDED: "succeeded",
+    FAILED: "failed",
+};
 
 const DeleteDocumentsConfirmationPage = () => {
     const client = useApi();
     const { register, handleSubmit } = useForm();
     let navigate = useNavigate();
     const [patientDetails] = usePatientDetailsProviderContext();
+    const [submissionState, setSubmissionState] = useState(states.IDLE);
     const { ref: trxRef, ...trxProps } = register("trx");
-    const [, setDeleteDocumentsResponseState] = useDeleteDocumentsResponseProviderContext();
 
     const doSubmit = async (data) => {
         if (data.trx === "yes") {
+            setSubmissionState(states.DELETING);
             try {
                 const response = await client.deleteAllDocuments(patientDetails.nhsNumber);
                 if (response === "successfully deleted") {
-                    setDeleteDocumentsResponseState("successful");
+                    setSubmissionState(states.SUCCEEDED);
                     navigate("/search/results");
                 }
             } catch (error) {
-                setDeleteDocumentsResponseState("unsuccessful");
-                navigate("/search/results");
+                setSubmissionState(states.FAILED);
             }
+        } else {
+            navigate("/search/results");
         }
-        navigate("/search/results");
     };
 
     return (
         <>
             <BackButton />
+            {submissionState === states.FAILED && (
+                <ServiceError message={"There has been an issue deleting these records, please try again later."} />
+            )}
             <form onSubmit={handleSubmit(doSubmit)}>
                 <Fieldset>
                     <Fieldset.Legend isPageHeading>Delete health records and attachments</Fieldset.Legend>

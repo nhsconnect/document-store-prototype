@@ -88,7 +88,6 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         });
 
         it('should navigate to search results page with delete documents response as "unsuccessful" when api call throws an error ', async () => {
-            const deleteDocumentsResponse = "unsuccessful";
             useApi.mockImplementation(() => {
                 return {
                     deleteAllDocuments: () => {
@@ -97,20 +96,19 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                 };
             });
             usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
-            useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
             expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
             userEvent.click(screen.getByRole("radio", { name: "Yes" }));
+
             expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
-            await waitFor(() => {
-                userEvent.click(screen.getByRole("button", { name: "Continue" }));
-            });
-            expect(() => {
-                useApi().deleteAllDocuments();
-            }).toThrow();
+
+            userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
             await waitFor(() => {
-                expect(mockNavigate).toHaveBeenCalledWith("/search/results");
+                expect(
+                    screen.getByText("There has been an issue deleting these records, please try again later.")
+                ).toBeInTheDocument();
+                expect(mockNavigate).not.toHaveBeenCalled();
             });
         });
     });

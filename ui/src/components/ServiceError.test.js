@@ -6,5 +6,14 @@ describe("ServiceError", () => {
         render(<ServiceError />);
 
         expect(screen.getByText("Sorry, there is a problem with the service")).toBeInTheDocument();
+        expect(screen.getByText("Try again later.")).toBeInTheDocument();
+    });
+
+    it("should display the error message if there is one", () => {
+        const message = "Error message";
+        render(<ServiceError message={message} />);
+
+        expect(screen.getByText("Sorry, there is a problem with the service")).toBeInTheDocument();
+        expect(screen.getByText(message)).toBeInTheDocument();
     });
 });

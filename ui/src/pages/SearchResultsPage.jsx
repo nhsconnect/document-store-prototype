@@ -5,7 +5,6 @@ import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
 import { downloadFile } from "../utils/utils";
-import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
 import PatientSummary from "../components/PatientSummary";
 
 const states = {
@@ -23,7 +22,6 @@ const SearchResultsPage = () => {
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
     const [patientDetails] = usePatientDetailsProviderContext();
-    const [deleteDocumentsResponse] = useDeleteDocumentsResponseProviderContext();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -124,14 +122,9 @@ const SearchResultsPage = () => {
                             <Button type="button" secondary onClick={goToDeleteDocumentsConfirmationPage}>
                                 Delete All Documents
                             </Button>
-                            {deleteDocumentsResponse === "unsuccessful" && (
-                                <ErrorMessage>
-                                    There has been an issue deleting these records, please try again later.
-                                </ErrorMessage>
-                            )}
                         </>
                     )}
-                    {(searchResults.length === 0 || deleteDocumentsResponse === "successful") && (
+                    {searchResults.length === 0 && (
                         <p style={boldText}>There are no documents available for this patient.</p>
                     )}
                 </>
