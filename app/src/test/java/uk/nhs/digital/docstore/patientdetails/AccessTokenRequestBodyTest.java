@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.patientdetails;
 
-import org.junit.jupiter.api.Test;
+import
+        org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

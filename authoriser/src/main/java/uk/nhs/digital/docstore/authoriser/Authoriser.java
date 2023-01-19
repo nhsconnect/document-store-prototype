@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEvent, IamPolicyResponse> {
     private final AuthConfig authConfig;
     private final Algorithm algorithm;
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     public final static String GENERAL_ADMIN_ROLE_NAME = "General administrator";
@@ -64,11 +65,13 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             var decodedJWT = JWT.decode(authorizationHeader);
 
             var iamPolicy = new IamPolicyResponse();
+
             iamPolicy.setPrincipalId(decodedJWT.getSubject());
 
             // Mapping claims to models
-            var claimedAssociatedOrg = mapper.readValue(decodedJWT.getClaim(ASSOCIATED_ORG).asString(), AssociatedOrganisations.class);
-            var rbacroles = mapper.readValue(decodedJWT.getClaim(RBAC_ROLES).asString(), RbacRoles.class);
+            var claimsMapper = new AccessTokenClaimMapper(decodedJWT);
+            var claimedAssociatedOrg = claimsMapper.deserialiseClaim(ASSOCIATED_ORG, AssociatedOrganisations.class);
+            var rbacRoles = claimsMapper.deserialiseClaim(RBAC_ROLES, RbacRoles.class);
 
             // Get a list of tertiary role codes
             var clinicalRoles = Arrays.stream(ClinicalAdmin.values()).map(ClinicalAdmin::getClinicalRoleCode).collect(Collectors.toList());
@@ -80,7 +83,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
                 allowedResources.addAll(authConfig.getAllowedResourcesForPCSEUsers());
             }
 
-            if (rbacroles.containsAnyTertiaryRole(clinicalRoles)) {
+            if (rbacRoles.containsAnyTertiaryRole(clinicalRoles)) {
                 allowedResources.addAll(authConfig.getAllowedResourcesForClinicalUsers());
             }
 
@@ -89,7 +92,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             return iamPolicy;
         } catch (NullPointerException e) {
             throw e;
-        } catch (JsonProcessingException e) {
+        } catch (InvalidAccessTokenException e) {
             throw new RuntimeException(e);
         }
     }

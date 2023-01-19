@@ -150,6 +150,7 @@ class AuthoriserTest {
         assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
     }
 
+    @Test
     void shouldDenyAllWhenTokenSignatureVerificationFails() {
         var pcseAllowedResources = List.of("api-gateway-invocation-arn-1", "api-gateway-invocation-arn-2");
         var clinicalAllowedResources = List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
