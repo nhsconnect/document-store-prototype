@@ -20,14 +20,6 @@
       ]
     },
     {
-      "Sid": "AllowCloudWatch",
-      "Effect": "Allow",
-      "Action": [
-        "cloudwatch:PutMetricAlarm"
-      ],
-      "Resource": "*"
-    },
-    {
       "Sid": "AllowCognito",
       "Effect": "Allow",
       "Action": [
