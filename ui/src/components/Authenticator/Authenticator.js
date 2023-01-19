@@ -1,6 +1,7 @@
-import { ButtonLink, ErrorSummary } from "nhsuk-react-components";
+import { ErrorSummary } from "nhsuk-react-components";
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router";
+
+import { Link } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 
 const Authenticator = {};
@@ -33,20 +34,20 @@ const Protected = ({ children }) => {
 };
 Authenticator.Protected = Protected;
 
+const linkStyle = { color: "#FFFFFF", position: "absolute", right: 0, top: 0, minWidth: 150 };
+
 const LogOut = () => {
     const { isAuthenticated, removeUser } = useAuth();
-    const navigate = useNavigate();
 
     const signOut = () => {
         removeUser();
-        navigate("/");
     };
 
     if (isAuthenticated) {
         return (
-            <ButtonLink secondary onClick={() => signOut()}>
+            <Link to="/" onClick={() => signOut()} style={linkStyle}>
                 Log Out
-            </ButtonLink>
+            </Link>
         );
     }
     return null;

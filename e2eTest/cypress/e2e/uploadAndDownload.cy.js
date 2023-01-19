@@ -99,7 +99,7 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.url().should("eq", baseUrl + "/search/results");
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
 
-        cy.findByRole("button", { name: "Log Out" }).click();
+        cy.findByRole("link", { name: "Log Out" }).click();
         cy.url().should("eq", baseUrl + "/");
     });
 });
