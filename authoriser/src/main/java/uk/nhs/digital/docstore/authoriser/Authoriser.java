@@ -88,7 +88,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             iamPolicy.setPolicyDocument(policyDocument);
             return iamPolicy;
         } catch (NullPointerException e) {
-            throw new RuntimeException(e);
+            throw e;
         } catch (InvalidAccessTokenException | InvalidJWTException e) {
             throw new RuntimeException(e);
         }
