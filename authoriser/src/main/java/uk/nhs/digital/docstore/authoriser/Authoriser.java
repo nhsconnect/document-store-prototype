@@ -23,8 +23,6 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
     private final AuthConfig authConfig;
     private final Algorithm algorithm;
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
     public final static String GENERAL_ADMIN_ROLE_NAME = "General administrator";
     public final static String GENERAL_ADMIN_ORG_CODE = "X4S4L";
     public final static String ASSOCIATED_ORG = "associatedorgs";
@@ -61,11 +59,10 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
     @Override
     public IamPolicyResponse handleRequest(APIGatewayCustomAuthorizerEvent input, Context context) {
         try {
-            var authorizationHeader = input.getAuthorizationToken();
-            var decodedJWT = JWT.decode(authorizationHeader);
+            var jwtValidator = new JWTValidator(input.getAuthorizationToken(), algorithm);
+            var decodedJWT = jwtValidator.verify();
 
             var iamPolicy = new IamPolicyResponse();
-
             iamPolicy.setPrincipalId(decodedJWT.getSubject());
 
             // Mapping claims to models
@@ -92,7 +89,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             return iamPolicy;
         } catch (NullPointerException e) {
             throw e;
-        } catch (InvalidAccessTokenException e) {
+        } catch (InvalidAccessTokenException | InvalidJWTException e) {
             throw new RuntimeException(e);
         }
     }

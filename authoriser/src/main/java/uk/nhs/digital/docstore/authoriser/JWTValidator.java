@@ -15,8 +15,12 @@ public class JWTValidator {
         this.algorithm = algorithm;
     }
 
-    public DecodedJWT verify() {
-        JWTVerifier verifier = JWT.require(algorithm).build();
-        return verifier.verify(jwt);
+    public DecodedJWT verify() throws InvalidJWTException {
+        try {
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            return verifier.verify(jwt);
+        } catch (Exception e) {
+            throw new InvalidJWTException();
+        }
     }
 }
