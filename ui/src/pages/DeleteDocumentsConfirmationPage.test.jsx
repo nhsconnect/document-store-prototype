@@ -80,6 +80,10 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
             expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
             userEvent.click(screen.getByRole("button", { name: "Continue" }));
             await waitFor(() => {
+                expect(screen.getByRole("progressbar")).toBeInTheDocument();
+                expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
+            });
+            await waitFor(() => {
                 expect(useApi().deleteAllDocuments()).toBe("successfully deleted");
             });
             await waitFor(() => {

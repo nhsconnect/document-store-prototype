@@ -62,7 +62,15 @@ const DeleteDocumentsConfirmationPage = () => {
                         </Radios.Radio>
                     </Radios>
                 </Fieldset>
-                <Button type={"submit"}>Continue</Button>
+                {submissionState === states.DELETING && (
+                    <>
+                        <progress aria-label={"Deleting..."} role={"progressbar"} />
+                        <p role="status" aria-label={"Deleting..."}>
+                            Deleting...
+                        </p>
+                    </>
+                )}
+                <Button type={"submit"} disabled={submissionState === states.DELETING}>Continue</Button>
             </form>
         </>
     );
