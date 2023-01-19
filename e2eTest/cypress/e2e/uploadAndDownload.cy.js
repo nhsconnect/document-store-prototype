@@ -8,7 +8,7 @@ describe("uploads, downloads, and deletes docs", () => {
 
     it("searches for a patient, uploads, downloads, and then deletes docs", () => {
         const baseUrl = Cypress.config("baseUrl");
-        const nhsNumber = Cypress.env("environment") === "local" ? "9000000009" : "9449305552";
+        const nhsNumber = Cypress.env("REACT_APP_ENV") === "local" ? "9000000009" : "9449305552";
         const username = Cypress.env("username");
         const password = Cypress.env("password");
         const oidcProvider = Cypress.env("oidc_provider");
@@ -22,6 +22,8 @@ describe("uploads, downloads, and deletes docs", () => {
 
         cy.visit("/");
         cy.title().should("eq", "Inactive Patient Record Administration");
+        cy.injectAxe();
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Start now" }).click();
 
         if (oidcProvider === "cis2devoidc") {
@@ -53,6 +55,7 @@ describe("uploads, downloads, and deletes docs", () => {
 
         cy.url().should("eq", baseUrl + "/upload/submit");
         cy.get("input[type=file]").selectFile(uploadedFilePathNames);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Upload" }).click();
         cy.findByRole("table", {
             name: "Successfully uploaded documents",
@@ -61,22 +64,13 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.findByRole("button", { name: "Start Again" }).click();
 
         cy.url().should("eq", Cypress.config("baseUrl") + "/home");
-        cy.visit("/");
-        cy.findByRole("button", { name: "Start now" }).click();
 
-        cy.url().should("eq", baseUrl + "/home");
-        cy.injectAxe();
-        // Todo: Replace cy.wait() with a guard to wait until React has completed it's initial render(s)
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(500);
         cy.findByRole("radio", { name: /Download/ }).check();
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Continue" }).click();
 
         cy.url().should("eq", baseUrl + "/search/patient-trace");
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Next" }).click();
 
         cy.url().should("eq", baseUrl + "/search/results");
@@ -88,16 +82,15 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.findByRole("button", { name: "Delete All Documents" }).click();
         cy.url().should("eq", baseUrl + "/search/results/delete-documents-confirmation");
         cy.findByRole("radio", { name: "No" }).should("be.checked").and("have.value", "no");
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Continue" }).click();
         cy.url().should("eq", baseUrl + "/search/results");
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
 
         cy.findByRole("button", { name: "Delete All Documents" }).click();
         cy.url().should("eq", baseUrl + "/search/results/delete-documents-confirmation");
         cy.findByRole("radio", { name: "Yes" }).check();
         cy.findByRole("button", { name: "Continue" }).click();
         cy.url().should("eq", baseUrl + "/search/results");
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
 
         cy.findByRole("link", { name: "Log Out" }).click();
         cy.url().should("eq", baseUrl + "/");
