@@ -42,13 +42,13 @@ describe("uploads, downloads, and deletes docs", () => {
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(500);
         cy.findByRole("radio", { name: /Upload/ }).check();
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Continue" }).click();
 
         cy.url().should("eq", baseUrl + "/upload/patient-trace");
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Next" }).click();
 
         cy.url().should("eq", baseUrl + "/upload/submit");
@@ -57,7 +57,7 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.findByRole("table", {
             name: "Successfully uploaded documents",
         }).within(() => cy.findAllByRole("row").should("have.length", 3));
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Start Again" }).click();
 
         cy.url().should("eq", Cypress.config("baseUrl") + "/home");
@@ -70,34 +70,34 @@ describe("uploads, downloads, and deletes docs", () => {
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(500);
         cy.findByRole("radio", { name: /Download/ }).check();
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Continue" }).click();
 
         cy.url().should("eq", baseUrl + "/search/patient-trace");
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Next" }).click();
 
         cy.url().should("eq", baseUrl + "/search/results");
         cy.readFile(downloadedDocumentPath).should("not.exist");
         cy.findByRole("button", { name: "Download All Documents" }).click();
         cy.readFile(downloadedDocumentPath).should("exist");
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
 
         cy.findByRole("button", { name: "Delete All Documents" }).click();
         cy.url().should("eq", baseUrl + "/search/results/delete-documents-confirmation");
         cy.findByRole("radio", { name: "No" }).should("be.checked").and("have.value", "no");
         cy.findByRole("button", { name: "Continue" }).click();
         cy.url().should("eq", baseUrl + "/search/results");
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
 
         cy.findByRole("button", { name: "Delete All Documents" }).click();
         cy.url().should("eq", baseUrl + "/search/results/delete-documents-confirmation");
         cy.findByRole("radio", { name: "Yes" }).check();
         cy.findByRole("button", { name: "Continue" }).click();
         cy.url().should("eq", baseUrl + "/search/results");
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
 
         cy.findByRole("link", { name: "Log Out" }).click();
         cy.url().should("eq", baseUrl + "/");
