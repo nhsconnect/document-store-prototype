@@ -27,21 +27,9 @@ const patientData = {
     nhsNumber: fakeNhsNumber,
     postalCode: "LS1 6AE",
 };
-const patientDetailsResponse = {
-    result: {
-        patientDetails: patientData,
-    },
-};
 
 describe("<DeleteDocumentsConfirmationPage />", () => {
     it("renders the page", async () => {
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: () => {
-                    return patientDetailsResponse;
-                },
-            };
-        });
         usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
         useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         render(<DeleteDocumentsConfirmationPage />);
@@ -53,7 +41,9 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         await waitFor(() => {
             expect(
                 screen.getByText(
-                    `Are you sure you want to permanently delete all files for patient ${patientDetailsResponse.result.patientDetails.familyName} ${patientDetailsResponse.result.patientDetails.givenName[0]} NHS number ${patientDetailsResponse.result.patientDetails.nhsNumber} ?`
+                    `Are you sure you want to permanently delete all files for patient ${patientData.givenName.join(
+                        " "
+                    )} ${patientData.familyName} NHS number ${patientData.nhsNumber} ?`
                 )
             ).toBeInTheDocument();
         });
@@ -63,14 +53,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
     });
 
     it('should navigate to SearchResultsPage when user choose radio button "NO" and click on continue button', async () => {
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: () => {
-                    return patientDetailsResponse;
-                },
-            };
-        });
-        usePatientDetailsProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
+        usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
         useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         render(<DeleteDocumentsConfirmationPage />);
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
@@ -86,11 +69,10 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
             const deleteDocumentsResponse = "successful";
             useApi.mockImplementation(() => {
                 return {
-                    getPatientDetails: () => patientDetailsResponse,
                     deleteAllDocuments: () => "successfully deleted",
                 };
             });
-            usePatientDetailsProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
+            usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
             useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
             expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
@@ -109,13 +91,12 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
             const deleteDocumentsResponse = "unsuccessful";
             useApi.mockImplementation(() => {
                 return {
-                    getPatientDetails: () => patientDetailsResponse,
                     deleteAllDocuments: () => {
                         throw new Error();
                     },
                 };
             });
-            usePatientDetailsProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
+            usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
             useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
             expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
@@ -135,12 +116,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
     });
 
     it("should navigate to search results page when user choose No and clicks continue", async () => {
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: () => patientDetailsResponse,
-            };
-        });
-        usePatientDetailsProviderContext.mockReturnValue([fakeNhsNumber, jest.fn()]);
+        usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
         useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         render(<DeleteDocumentsConfirmationPage />);
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
