@@ -244,36 +244,6 @@ describe("apiClient", () => {
         });
     });
 
-    describe("getPresignedUrl()", () => {
-        test("returns a presigned url associated with the document id ", async () => {
-            const getMock = jest.fn(() => {
-                return responseBody;
-            });
-            const api = { get: getMock };
-            const apiClient = new ApiClient(api, user);
-            const id = 12345;
-            const requestHeaders = {
-                Accept: "application/fhir+json",
-                Authorization: `Bearer ${token}`,
-            };
-            const retrieveUrl = "retrieve-url";
-            const responseBody = {
-                docStatus: "final",
-                content: [{ attachment: { url: retrieveUrl } }],
-            };
-            const returnedPresignedUrl = await apiClient.getPresignedUrl(id);
-
-            expect(getMock).toHaveBeenCalledWith(
-                "doc-store-api",
-                "/DocumentReference/" + id,
-                expect.objectContaining({
-                    headers: requestHeaders,
-                })
-            );
-            expect(returnedPresignedUrl).toStrictEqual(responseBody.content[0].attachment);
-        });
-    });
-
     describe("getPresignedUrlForZip()", () => {
         test("returns a presigned url associated with zip of all documents related to an nhs number ", async () => {
             const getMock = jest.fn(() => {
@@ -341,15 +311,6 @@ describe("apiClient", () => {
                 })
             );
             expect(returnedDeleteResult).toStrictEqual(expectedResponse.result.message);
-        });
-
-        it("throws an error if the response does not contain a message", async () => {
-            const delMock = jest.fn().mockReturnValue({ result: {} });
-            const api = { del: delMock };
-            const apiClient = new ApiClient(api, user);
-            const expectedError = new Error("No message found in the data result");
-
-            await expect(apiClient.deleteAllDocuments("1234567890")).rejects.toThrow(expectedError);
         });
     });
 });

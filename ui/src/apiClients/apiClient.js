@@ -95,23 +95,8 @@ class ApiClient {
                 "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
             },
         });
-        if (data) {
-            return data;
-        }
-    }
 
-    async getPresignedUrl(id) {
-        const data = await this.api.get("doc-store-api", "/DocumentReference/" + id, {
-            headers: {
-                Accept: "application/fhir+json",
-                Authorization: `Bearer ${this.user.id_token}`,
-            },
-        });
-
-        if (data?.docStatus === "final") {
-            return data.content[0].attachment;
-        }
-        throw new Error("No url received");
+        return data;
     }
 
     async getPresignedUrlForZip(nhsNumber) {
@@ -125,11 +110,7 @@ class ApiClient {
             },
         });
 
-        if (data.result?.url) {
-            return setUrlHostToLocalHost(data.result.url);
-        }
-
-        throw new Error("No url received");
+        return setUrlHostToLocalHost(data.result.url);
     }
 
     async deleteAllDocuments(nhsNumber) {
@@ -143,10 +124,7 @@ class ApiClient {
             },
         });
 
-        if (data.result?.message) {
-            return data.result.message;
-        }
-        throw new Error("No message found in the data result");
+        return data.result.message;
     }
 }
 
