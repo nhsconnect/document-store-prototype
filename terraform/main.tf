@@ -168,28 +168,21 @@ resource "aws_lambda_function" "authoriser" {
 
   environment {
     variables = {
-      AUTH_CONFIG = jsonencode([
-        {
-          resource = local.search_patient_details_invocation_arn
-          permissions = {
-            clinical_role = "ALLOW"
-            ADMIN_ROLE = "DENY"
-          }
-        }
-#        allowedResourcesForPCSEUsers = [
-#          local.search_patient_details_invocation_arn,
-#          local.search_document_reference_invocation_arn,
-#          local.get_document_reference_invocation_arn,
-#          local.get_document_manifest_invocation_arn,
-#          local.delete_document_reference_invocation_arn
-#        ],
-#        allowedResourcesForClinicalUsers = [
-#          local.search_patient_details_invocation_arn,
-#          local.create_document_reference_invocation_arn,
-#        ]
-      ])
+      AUTH_CONFIG = jsonencode({
+        allowedResourcesForPCSEUsers = [
+          local.search_patient_details_invocation_arn,
+          local.search_document_reference_invocation_arn,
+          local.get_document_reference_invocation_arn,
+          local.get_document_manifest_invocation_arn,
+          local.delete_document_reference_invocation_arn
+        ],
+        allowedResourcesForClinicalUsers = [
+          local.search_patient_details_invocation_arn,
+          local.create_document_reference_invocation_arn,
+        ]
+      })
       COGNITO_PUBLIC_KEY_URL = var.cloud_only_service_instances > 0 ? "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.pool[0].id}/.well-known/jwks.json" : ""
-      COGNITO_KEY_ID = var.cognito_key_id
+      COGNITO_KEY_ID         = var.cognito_key_id
     }
   }
 }
