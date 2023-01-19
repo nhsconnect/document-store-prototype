@@ -17,6 +17,7 @@ import StartPage from "./pages/StartPage";
 import AuthenticationCallbackRouter from "./components/Authenticator/AuthenticationCallbackRouter";
 import AuthProvider from "./components/Authenticator/AuthProvider";
 import DeleteDocumentsConfirmationPage from "./pages/DeleteDocumentsConfirmationPage";
+import ErrorPage from "./pages/ErrorPage";
 
 Amplify.configure({ API: config.API });
 
@@ -26,6 +27,7 @@ const AppRoutes = () => {
         <Routes>
             <Route element={<StartPage />} path={"/"} />
             <Route element={<AuthenticationCallbackRouter />} path={"cis2-auth-callback"} />
+            <Route element={<ErrorPage />} path={"/error"} />
             <Route
                 element={
                     <Authenticator.Protected>
