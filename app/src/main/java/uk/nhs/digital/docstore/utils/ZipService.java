@@ -2,6 +2,8 @@ package uk.nhs.digital.docstore.utils;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 
@@ -14,6 +16,7 @@ import java.util.zip.ZipOutputStream;
 import static java.util.zip.Deflater.DEFLATED;
 
 public class ZipService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZipService.class);
     private final DocumentStore documentStore;
 
     public ZipService() {
@@ -30,8 +33,11 @@ public class ZipService {
         var zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
         zipOutputStream.setLevel(DEFLATED);
 
+        LOGGER.debug("Zipping documents...");
+
         for (DocumentMetadata metadata : documentMetadataList) {
             if (metadata.isDocumentUploaded()){
+                LOGGER.debug("Document ID: "+ metadata.getId()+ ", S3 location: "+ metadata.getLocation());
                 zipOutputStream.putNextEntry(new ZipEntry(metadata.getDescription()));
 
                 IOUtils.copy(documentStore.getObjectFromS3(metadata), zipOutputStream);

@@ -47,9 +47,6 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         Tracer.setMDCContext(context);
 
-        LOGGER.debug(context.toString());
-        LOGGER.debug(requestEvent.toString());
-
         LOGGER.debug("API Gateway event received - processing starts");
         var searchParameters = queryParametersFrom(requestEvent);
 
