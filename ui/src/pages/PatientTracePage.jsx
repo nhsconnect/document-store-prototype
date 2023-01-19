@@ -84,9 +84,12 @@ export const PatientTracePage = ({ nextPage }) => {
                         />
                     </Fieldset>
                     {submissionState === states.SEARCHING && (
-                        <p>
-                            <progress aria-label={"Loading..."} />
-                        </p>
+                        <>
+                            <progress aria-label={"Searching..."} role={"progressbar"} />
+                            <p role="status" aria-label={"Searching..."}>
+                                Searching...
+                            </p>
+                        </>
                     )}
                     {submissionState === states.FAILED && statusCode === 404 && (
                         <WarningCallout>
