@@ -18,7 +18,22 @@ resource "aws_cloudwatch_metric_alarm" "document_uploaded_event_handler_error" {
   alarm_description = "Triggers when an error has occurred in DocumentUploadedEventHandler."
   namespace         = "AWS/Lambda"
   dimensions        = {
-    FunctionName = aws_lambda_function.document_uploaded_lambda.function_name
+    FunctionName = [aws_lambda_function.document_uploaded_lambda.function_name]
+  }
+  metric_name         = "Errors"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = "0"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Sum"
+}
+
+resource "aws_cloudwatch_metric_alarm" "search_patient_details_handler_error" {
+  alarm_name        = "prs-${var.environment}-search-patient-details-handler-error"
+  alarm_description = "Triggers when an error has occurred in SearchPatientDetailsHandler."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = [aws_lambda_function.search_patient_details_lambda.function_name]
   }
   metric_name         = "Errors"
   comparison_operator = "GreaterThanThreshold"
