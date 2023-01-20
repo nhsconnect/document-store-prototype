@@ -64,7 +64,7 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
   provider_type = "OIDC"
 
   provider_details = {
-    authorize_scopes          = "openid"
+    authorize_scopes          = "openid associatedorgs nationalrbacaccess"
     client_id                 = var.cognito_cis2_provider_client_id
     client_secret             = var.cognito_cis2_provider_client_secret
     oidc_issuer               = var.cognito_cis2_provider_oidc_issuer
