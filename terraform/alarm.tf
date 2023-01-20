@@ -13,6 +13,21 @@ resource "aws_cloudwatch_metric_alarm" "sensitive_index_age_of_oldest_message" {
   statistic           = "Maximum"
 }
 
+resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
+  alarm_name        = "prs-${var.environment}-doc-store-api-5xx-error"
+  alarm_description = "Triggers when a 5xx status code has been returned by the DocStoreAPI."
+  namespace         = "AWS/ApiGateway"
+  dimensions        = {
+    ApiName = aws_api_gateway_rest_api.lambda_api.name
+  }
+  metric_name         = "5XXError"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = "0"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Sum"
+}
+
 resource "aws_cloudwatch_metric_alarm" "search_patient_details_handler_error" {
   alarm_name        = "prs-${var.environment}-search-patient-details-handler-error"
   alarm_description = "Triggers when an error has occurred in SearchPatientDetailsHandler."
