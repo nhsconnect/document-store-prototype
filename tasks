@@ -226,7 +226,7 @@ tf_plan)
 tf_apply)
   assume_ci_role
   tf_init
-  terraform apply -replace=aws_cognito_user_pool.pool tfplan
+  terraform apply -replace=aws_cognito_user_pool.pool[0] tfplan
   ;;
 deploy-ui)
   get_terraform_output terraform_output.json
