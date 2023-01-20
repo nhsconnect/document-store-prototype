@@ -6,6 +6,7 @@ import { usePatientDetailsProviderContext } from "../providers/PatientDetailsPro
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
 import PatientSummary from "../components/PatientSummary";
+import SimpleProgressBar from "../components/SimpleProgressBar";
 
 const states = {
     IDLE: "idle",
@@ -84,12 +85,7 @@ export const PatientTracePage = ({ nextPage }) => {
                         />
                     </Fieldset>
                     {submissionState === states.SEARCHING && (
-                        <>
-                            <progress aria-label={"Searching..."} role={"progressbar"} />
-                            <p role="status" aria-label={"Searching..."}>
-                                Searching...
-                            </p>
-                        </>
+                        <SimpleProgressBar status="Searching..."></SimpleProgressBar>
                     )}
                     {submissionState === states.FAILED && statusCode === 404 && (
                         <WarningCallout>

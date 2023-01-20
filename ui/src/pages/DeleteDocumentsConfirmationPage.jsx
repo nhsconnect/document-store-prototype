@@ -6,6 +6,7 @@ import useApi from "../apiClients/useApi";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import ServiceError from "../components/ServiceError";
+import SimpleProgressBar from "../components/SimpleProgressBar";
 
 const states = {
     IDLE: "idle",
@@ -62,15 +63,10 @@ const DeleteDocumentsConfirmationPage = () => {
                         </Radios.Radio>
                     </Radios>
                 </Fieldset>
-                {submissionState === states.DELETING && (
-                    <>
-                        <progress aria-label={"Deleting..."} role={"progressbar"} />
-                        <p role="status" aria-label={"Deleting..."}>
-                            Deleting...
-                        </p>
-                    </>
-                )}
-                <Button type={"submit"} disabled={submissionState === states.DELETING}>Continue</Button>
+                {submissionState === states.DELETING && <SimpleProgressBar status="Deleting..."></SimpleProgressBar>}
+                <Button type={"submit"} disabled={submissionState === states.DELETING}>
+                    Continue
+                </Button>
             </form>
         </>
     );

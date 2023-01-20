@@ -6,6 +6,7 @@ import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
 import { downloadFile } from "../utils/utils";
 import PatientSummary from "../components/PatientSummary";
+import SimpleProgressBar from "../components/SimpleProgressBar";
 
 const states = {
     INITIAL: "initial",
@@ -73,11 +74,7 @@ const SearchResultsPage = () => {
                     Download electronic health records and attachments
                 </Fieldset.Legend>
                 <PatientSummary patientDetails={patientDetails} />
-                {submissionState === states.PENDING && (
-                    <p>
-                        <progress aria-label="Loading..." />
-                    </p>
-                )}
+                {submissionState === states.PENDING && <SimpleProgressBar status="Loading..."></SimpleProgressBar>}
             </Fieldset>
             {submissionState === states.FAILED && (
                 <p>Sorry, the search failed due to an internal error. Please try again.</p>
