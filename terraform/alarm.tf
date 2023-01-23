@@ -149,7 +149,7 @@ resource "aws_cloudwatch_metric_alarm" "document_uploaded_event_handler_duration
 }
 
 resource "aws_cloudwatch_metric_alarm" "create_document_manifest_by_nhs_number_handler_error" {
-  alarm_name        = "prs-${var.environment}-create_document_manifest_by_nhs_number_handler_error"
+  alarm_name        = "prs-${var.environment}-create-document-manifest-by-nhs-number-handler-error"
   alarm_description = "Triggers when an error has occurred in CreateDocumentManifestByNhsNumberHandler."
   namespace         = "AWS/Lambda"
   dimensions        = {
@@ -209,7 +209,7 @@ resource "aws_cloudwatch_metric_alarm" "document_reference_search_handler_durati
 }
 
 resource "aws_cloudwatch_metric_alarm" "retrieve_document_reference_handler_error" {
-  alarm_name        = "prs-${var.environment}-retrieve_document_reference_handler_error"
+  alarm_name        = "prs-${var.environment}-retrieve-document-reference-handler-error"
   alarm_description = "Triggers when an error has occurred in RetrieveDocumentReferenceHandler."
   namespace         = "AWS/Lambda"
   dimensions        = {
@@ -239,7 +239,7 @@ resource "aws_cloudwatch_metric_alarm" "retrieve_document_reference_handler_dura
 }
 
 resource "aws_cloudwatch_metric_alarm" "delete_document_reference_handler_error" {
-  alarm_name        = "prs-${var.environment}-delete_document_reference_handler_error"
+  alarm_name        = "prs-${var.environment}-delete-document-reference-handler-error"
   alarm_description = "Triggers when an error has occurred in DeleteDocumentReferenceHandler."
   namespace         = "AWS/Lambda"
   dimensions        = {
