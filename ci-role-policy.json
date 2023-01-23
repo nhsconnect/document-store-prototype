@@ -40,7 +40,8 @@
         "cognito-identity:DeleteIdentities",
         "cognito-identity:GetOpenIdToken",
         "cognito-identity:DescribeIdentity",
-        "cognito-identity:GetCredentialsForIdentity"
+        "cognito-identity:GetCredentialsForIdentity",
+        "cognito-identity:AddCustomAttributes"
       ],
       "Resource": "*"
     },
@@ -100,7 +101,8 @@
         "cognito-idp:CreateIdentityProvider",
         "cognito-idp:DeleteIdentityProvider",
         "cognito-idp:DescribeIdentityProvider",
-        "cognito-idp:UpdateIdentityProvider"
+        "cognito-idp:UpdateIdentityProvider",
+        "cognito-identity:AddCustomAttributes"
       ],
       "Resource": "*"
     },

@@ -84,5 +84,9 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
     attributes_request_method = "GET"
   }
 
+  attribute_mapping = {
+    nhsid_user_orgs = "nhsid_user_orgs"
+  }
+
   count = var.cloud_only_service_instances
 }
