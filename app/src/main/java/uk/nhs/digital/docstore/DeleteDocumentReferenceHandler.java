@@ -25,7 +25,6 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
     private final DocumentMetadataStore documentMetadataStore;
     private final DocumentDeletionService documentDeletionService;
 
-    private final CommonUtils utils = new CommonUtils();
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     @SuppressWarnings("unused")
@@ -55,7 +54,8 @@ public class DeleteDocumentReferenceHandler implements RequestHandler<APIGateway
         LOGGER.debug("API Gateway event received - processing starts");
 
         try {
-            var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
+            var nhsNumberSearchParameterForm = new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
+            var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
             var documentMetadataList = documentMetadataStore.findByNhsNumber(nhsNumber);
 
             if (documentMetadataList != null) {

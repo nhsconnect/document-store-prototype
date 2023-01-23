@@ -8,6 +8,7 @@ import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -29,14 +30,14 @@ public class DocumentReferenceService {
         this.clock = clock;
     }
 
-    public DocumentMetadata save(DocumentMetadata documentMetadata) throws JsonProcessingException {
+    public DocumentMetadata save(DocumentMetadata documentMetadata) throws JsonProcessingException, IllFormedPatentDetailsException {
         documentMetadata = metadataStore.save(documentMetadata);
         sensitiveIndex.publish(new CreateDocumentMetadataAuditMessage(documentMetadata));
 
         return documentMetadata;
     }
 
-    public void markDocumentUploaded(String location) throws JsonProcessingException {
+    public void markDocumentUploaded(String location) throws JsonProcessingException, IllFormedPatentDetailsException {
         var metadata = metadataStore.getByLocation(location);
         if (metadata != null) {
             metadata.setDocumentUploaded(true);

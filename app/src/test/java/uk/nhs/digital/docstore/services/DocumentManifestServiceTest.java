@@ -9,8 +9,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.DownloadAllPatientRecordsAuditMessage;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
+import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -36,8 +38,8 @@ class DocumentManifestServiceTest {
     }
 
     @Test
-    void shouldSendAuditMessage() throws JsonProcessingException {
-        var nhsNumber = "9123456780";
+    void shouldSendAuditMessage() throws JsonProcessingException, IllFormedPatentDetailsException {
+        var nhsNumber = new NhsNumber("9123456780");
         var metadata = new DocumentMetadata();
         metadata.setContentType("pdf");
         metadata.setDescription("doc title");

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
+import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
@@ -36,7 +37,6 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
     private final String dbTimeToLive;
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
-    private final CommonUtils utils = new CommonUtils();
 
     @SuppressWarnings("unused")
     public CreateDocumentManifestByNhsNumberHandler() {
@@ -74,13 +74,11 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
         LOGGER.debug("API Gateway event received - processing starts");
 
         try {
-            var nhsNumber = utils.getNhsNumberFrom(requestEvent.getQueryStringParameters());
-            var documentMetadataList = metadataSearchService.findMetadataByNhsNumber(
-                    nhsNumber,
-                    requestEvent.getHeaders()
-            );
+            var nhsNumberSearchParameterForm = new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
+            var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
+            var documentMetadataList = metadataSearchService.findMetadataByNhsNumber(nhsNumber);
             var documentPath = "tmp/" + CommonUtils.generateRandomUUIDString();
-            var fileName = "patient-record-" + nhsNumber + ".zip";
+            var fileName = "patient-record-" + nhsNumber.getValue() + ".zip";
 
             var zipInputStream = zipService.zipDocuments(documentMetadataList);
             documentStore.addDocument(documentPath, zipInputStream);

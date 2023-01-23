@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
 
 import java.util.List;
@@ -15,14 +16,14 @@ import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Patient {
-    private String id;
+    private NhsNumber id;
     private String birthDate;
     private List<Address> addresses;
     private List<Name> names;
 
     private static final Logger logger = LoggerFactory.getLogger(Patient.class);
 
-    public Patient(@JsonProperty("id")String id,
+    public Patient(@JsonProperty("id") NhsNumber id,
                    @JsonProperty("birthDate")String birthDate,
                    @JsonProperty("address")List<Address> addresses,
                    @JsonProperty("name")List<Name> names) {
@@ -32,7 +33,7 @@ public class Patient {
         this.names = names;
     }
 
-    public String getId() {
+    public NhsNumber getId() {
         return id;
     }
 

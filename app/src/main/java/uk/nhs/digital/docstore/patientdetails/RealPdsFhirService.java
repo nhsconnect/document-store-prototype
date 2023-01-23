@@ -8,6 +8,7 @@ import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
 
@@ -32,7 +33,7 @@ public class RealPdsFhirService implements PdsFhirService {
         this.authService = authService;
     }
 
-    public Patient fetchPatientDetails(String nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException {
+    public Patient fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException {
         var accessToken = authService.retrieveAccessToken();
 
         var pdsResponse = makeRequestWithPdsAndSendAuditMessage(accessToken, nhsNumber);
@@ -48,7 +49,7 @@ public class RealPdsFhirService implements PdsFhirService {
         return handleResponse(pdsResponse, nhsNumber);
     }
 
-    private Patient handleResponse(HttpResponse<String> pdsResponse, String nhsNumber) {
+    private Patient handleResponse(HttpResponse<String> pdsResponse, NhsNumber nhsNumber) {
         var statusCode = pdsResponse.statusCode();
 
         if (pdsResponse.statusCode() == 200) {
@@ -66,9 +67,9 @@ public class RealPdsFhirService implements PdsFhirService {
         throw new RuntimeException("Got an error when requesting patient from PDS: " + statusCode);
     }
 
-    private HttpResponse<String> makeRequestWithPdsAndSendAuditMessage(String accessToken, String nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException {
+    private HttpResponse<String> makeRequestWithPdsAndSendAuditMessage(String accessToken, NhsNumber nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException {
         LOGGER.info("Confirming NHS number with PDS adaptor at " + patientSearchConfig.pdsFhirRootUri());
-        var path = "Patient/" + nhsNumber;
+        var path = "Patient/" + nhsNumber.getValue();
         var response = httpClient.get(patientSearchConfig.pdsFhirRootUri(), path, accessToken);
         sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, response.statusCode()));
 

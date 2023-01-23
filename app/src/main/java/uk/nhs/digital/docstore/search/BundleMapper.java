@@ -6,12 +6,12 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DocumentReference;
-import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.InstantType;
-import org.hl7.fhir.r4.model.Reference;
 import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.NHSDocumentReference;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -20,13 +20,14 @@ import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FIN
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
 class BundleMapper {
-    private static final String NHS_NUMBER_SYSTEM_ID = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
 
-    public Bundle toBundle(List<Document> documents) {
-        var entries = documents.stream()
-                .map(this::toBundleEntries)
-                .collect(toList());
+    public Bundle toBundle(List<Document> documents) throws IllFormedPatentDetailsException {
+        var entries = new ArrayList<BundleEntryComponent>();
+        for (Document document : documents) {
+            BundleEntryComponent bundleEntryComponent = toBundleEntries(document);
+            entries.add(bundleEntryComponent);
+        }
 
         return new Bundle()
                 .setTotal(entries.size())
@@ -34,13 +35,13 @@ class BundleMapper {
                 .setEntry(entries);
     }
 
-    private BundleEntryComponent toBundleEntries(Document document) {
+    private BundleEntryComponent toBundleEntries(Document document) throws IllFormedPatentDetailsException {
         return new BundleEntryComponent()
                 .setFullUrl("/DocumentReference/" + document.getReferenceId())
                 .setResource(toDocumentReference(document));
     }
 
-    private DocumentReference toDocumentReference(Document document) {
+    private DocumentReference toDocumentReference(Document document) throws IllFormedPatentDetailsException {
 
         var type = new CodeableConcept()
                 .setCoding(document.getType()
@@ -53,10 +54,7 @@ class BundleMapper {
         return (DocumentReference) new NHSDocumentReference()
                 .setCreated(new DateTimeType(document.getCreated()))
                 .setIndexed(new InstantType(document.getIndexed()))
-                .setSubject(new Reference()
-                        .setIdentifier(new Identifier()
-                                .setSystem(NHS_NUMBER_SYSTEM_ID)
-                                .setValue(document.getNhsNumber())))
+                .setNhsNumber(document.getNhsNumber())
                 .setType(type)
                 .setDocStatus(document.isUploaded() ? FINAL : PRELIMINARY)
                 .setDescription(document.getDescription())

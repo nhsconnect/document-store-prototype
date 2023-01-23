@@ -2,6 +2,8 @@ package uk.nhs.digital.docstore.patientdetails.fhirdtos;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PatientTest {
     @Test
-    public void getCurrentUsualNameShouldGetCurrentUsualName() {
+    public void getCurrentUsualNameShouldGetCurrentUsualName() throws IllFormedPatentDetailsException {
         var currentUsualName = new Name(new Period(
                 LocalDate.now().minusYears(1),
                 null), "usual", List.of("given name3"), "family name3");
@@ -25,7 +27,7 @@ public class PatientTest {
                 LocalDate.now().minusYears(1)), "usual", List.of("given name2"), "family name2"));
         names.add(currentUsualName);
 
-        Patient patient = new Patient("testId", null, null, names);
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, null, names);
 
         var result = patient.getCurrentUsualName();
         assertThat(result.isPresent()).isTrue();
@@ -33,39 +35,39 @@ public class PatientTest {
     }
 
     @Test
-    public void getCurrentUsualNameReturnsEmptyWhenPatientDoesNotHaveNames() {
-        Patient patient = new Patient("testId", null, null, null);
+    public void getCurrentUsualNameReturnsEmptyWhenPatientDoesNotHaveNames() throws IllFormedPatentDetailsException {
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, null, null);
         assertThat(patient.getCurrentUsualName().isEmpty()).isTrue();
     }
 
     @Test
-    public void getCurrentUsualNameReturnsEmptyWhenPatientHasEmptyNames() {
-        Patient patient = new Patient("testId", null, null, List.of());
+    public void getCurrentUsualNameReturnsEmptyWhenPatientHasEmptyNames() throws IllFormedPatentDetailsException {
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, null, List.of());
         assertThat(patient.getCurrentUsualName().isEmpty()).isTrue();
     }
 
     @Test
-    public void getCurrentUsualNameReturnsEmptyWhenPatientDoesNotHaveUsualName() {
+    public void getCurrentUsualNameReturnsEmptyWhenPatientDoesNotHaveUsualName() throws IllFormedPatentDetailsException {
         var currentNickName = new Name(new Period(
                 LocalDate.now().minusYears(1),
                 null), "nickname", List.of("given name3"), "family name3");
 
-        Patient patient = new Patient("testId", null, null,  List.of(currentNickName));
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, null,  List.of(currentNickName));
         assertThat(patient.getCurrentUsualName().isEmpty()).isTrue();
     }
 
     @Test
-    public void getCurrentUsualNameReturnsEmptyWhenPatientDoesNotHaveCurrentName() {
+    public void getCurrentUsualNameReturnsEmptyWhenPatientDoesNotHaveCurrentName() throws IllFormedPatentDetailsException {
         var oldName = new Name(new Period(
                 LocalDate.now().minusYears(2),
                 LocalDate.now().minusYears(1)), "usual", List.of("given name3"), "family name3");
 
-        Patient patient = new Patient("testId", null, null, List.of(oldName));
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, null, List.of(oldName));
         assertThat(patient.getCurrentUsualName().isEmpty()).isTrue();
     }
 
     @Test
-    public void getCurrentHomeAddressReturnsAMatchingAddress() {
+    public void getCurrentHomeAddressReturnsAMatchingAddress() throws IllFormedPatentDetailsException {
         var currentHomeAddress = new Address(
                 new Period(
                         LocalDate.now().minusYears(1),
@@ -75,25 +77,25 @@ public class PatientTest {
                 "home"
         );
 
-        Patient patient = new Patient("testId", null, List.of(currentHomeAddress), null);
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, List.of(currentHomeAddress), null);
         assertThat(patient.getCurrentHomeAddress().isPresent()).isTrue();
         assertThat(patient.getCurrentHomeAddress().get()).isEqualTo(currentHomeAddress);
     }
 
     @Test
-    public void getCurrentHomeAddressReturnsEmptyWhenAddressesIsNull() {
-        Patient patient = new Patient("testId", null, null, null);
+    public void getCurrentHomeAddressReturnsEmptyWhenAddressesIsNull() throws IllFormedPatentDetailsException {
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, null, null);
         assertThat(patient.getCurrentHomeAddress().isEmpty()).isTrue();
     }
 
     @Test
-    public void getCurrentHomeAddressReturnsEmptyWhenAddressesIsEmpty() {
-        Patient patient = new Patient("testId", null, List.of(), null);
+    public void getCurrentHomeAddressReturnsEmptyWhenAddressesIsEmpty() throws IllFormedPatentDetailsException {
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, List.of(), null);
         assertThat(patient.getCurrentHomeAddress().isEmpty()).isTrue();
     }
 
     @Test
-    public void getCurrentHomeAddressReturnsEmptyWhenNoHomeAddress() {
+    public void getCurrentHomeAddressReturnsEmptyWhenNoHomeAddress() throws IllFormedPatentDetailsException {
         var currentBillingAddress = new Address(
                 new Period(
                         LocalDate.now().minusYears(1),
@@ -103,12 +105,12 @@ public class PatientTest {
                 "billing"
         );
 
-        Patient patient = new Patient("testId", null, List.of(currentBillingAddress), null);
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, List.of(currentBillingAddress), null);
         assertThat(patient.getCurrentHomeAddress().isEmpty()).isTrue();
     }
 
     @Test
-    public void getCurrentHomeAddressReturnsEmptyWhenNoCurrentAddress() {
+    public void getCurrentHomeAddressReturnsEmptyWhenNoCurrentAddress() throws IllFormedPatentDetailsException {
         var currentBillingAddress = new Address(
                 new Period(
                         LocalDate.now().minusYears(2),
@@ -118,7 +120,7 @@ public class PatientTest {
                 "home"
         );
 
-        Patient patient = new Patient("testId", null, List.of(currentBillingAddress), null);
+        Patient patient = new Patient(new NhsNumber("9876543210"), null, List.of(currentBillingAddress), null);
         assertThat(patient.getCurrentHomeAddress().isEmpty()).isTrue();
     }
 
@@ -155,7 +157,7 @@ public class PatientTest {
 
         var patientDetails = Patient.parseFromJson(pdsResponse);
 
-        assertThat(patientDetails.getId()).isEqualTo(nhsNumber);
+        assertThat(patientDetails.getId().getValue()).isEqualTo(nhsNumber);
         assertThat(patientDetails.getBirthDate()).isEqualTo(birthDate);
         assertThat(patientDetails.getCurrentUsualName().isPresent()).isTrue();
         assertThat(patientDetails.getCurrentUsualName().get().getGiven()).isEqualTo(givenName);
@@ -165,8 +167,8 @@ public class PatientTest {
     }
 
     @Test
-    void canCreatePatientDetailsFromFhirPatient(){
-        var nhsNumber = "9876543210";
+    void canCreatePatientDetailsFromFhirPatient() throws IllFormedPatentDetailsException {
+        var nhsNumber = new NhsNumber("9876543210");
         var familyName = "Doe";
         var givenName = List.of("Jane");
         var postalCode = "LS1 6AE";

@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
 
 import java.util.List;
@@ -9,10 +10,10 @@ public class ClientPatientDetailsDto {
     private final String familyName;
     private final String birthDate;
     private final String postalCode;
-    private final String nhsNumber;
+    private final NhsNumber nhsNumber;
 
     public ClientPatientDetailsDto(List<String> givenName, String familyName, String birthDate, String postalCode,
-                                   String nhsNumber) {
+                                   NhsNumber nhsNumber) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.birthDate = birthDate;
@@ -37,7 +38,7 @@ public class ClientPatientDetailsDto {
     }
 
     public String getNhsNumber() {
-        return nhsNumber;
+        return nhsNumber.getValue();
     }
 
     public static ClientPatientDetailsDto fromPatientDetails(PatientDetails patientDetails) {

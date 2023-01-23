@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.DeletedAllDocumentsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.util.List;
 
@@ -34,8 +36,8 @@ class DocumentDeletionServiceTest {
     }
 
     @Test
-    void sendsAuditMessage() throws JsonProcessingException {
-        var nhsNumber = "0123456789";
+    void sendsAuditMessage() throws JsonProcessingException, IllFormedPatentDetailsException {
+        var nhsNumber = new NhsNumber("0123456789");
         var documentMetadataList = List.of(new DocumentMetadata());
         var expectedAuditMessage = new DeletedAllDocumentsAuditMessage(nhsNumber, documentMetadataList);
 

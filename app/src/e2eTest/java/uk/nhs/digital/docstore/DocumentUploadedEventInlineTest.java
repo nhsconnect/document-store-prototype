@@ -10,9 +10,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 import java.util.List;
@@ -50,11 +52,11 @@ public class DocumentUploadedEventInlineTest {
     }
 
     @Test
-    void sendsAuditMessageToSqsWhenThereAreRecords() throws JsonProcessingException {
+    void sendsAuditMessageToSqsWhenThereAreRecords() throws JsonProcessingException, IllFormedPatentDetailsException {
         var id = "some-id";
         var fileName = "some-file-name";
         var fileType = "some-file-type";
-        var nhsNumber = "1234567890";
+        var nhsNumber = new NhsNumber("1234567890");
 
         when(s3Event.getRecords()).thenReturn(List.of(s3EventNotificationRecord));
         when(s3EventNotificationRecord.getS3()).thenReturn(s3Entity);
@@ -66,10 +68,10 @@ public class DocumentUploadedEventInlineTest {
         verify(auditPublisher).publish(any(DocumentUploadedAuditMessage.class));
     }
 
-    private DocumentMetadata createMetadata(String id, String nhsNumber, String fileName, String fileType) {
+    private DocumentMetadata createMetadata(String id, NhsNumber nhsNumber, String fileName, String fileType) {
         var metadata = new DocumentMetadata();
         metadata.setId(id);
-        metadata.setNhsNumber(nhsNumber);
+        metadata.setNhsNumber(nhsNumber.getValue());
         metadata.setDescription(fileName);
         metadata.setContentType(fileType);
         return metadata;

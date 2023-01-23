@@ -14,12 +14,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.DownloadAllPatientRecordsAuditMessage;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
 import uk.nhs.digital.docstore.documentmanifest.CreateDocumentManifestByNhsNumberHandler;
-import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentManifestService;
 
 import java.net.MalformedURLException;
@@ -61,8 +63,8 @@ public class CreateDocumentManifestInlineTest {
     }
 
     @Test
-    void uploadsZipOfAllDocsAndSavesMetadataForGivenNhsNumber() throws MalformedURLException {
-        var nhsNumber = "9000000009";
+    void uploadsZipOfAllDocsAndSavesMetadataForGivenNhsNumber() throws MalformedURLException, IllFormedPatentDetailsException {
+        var nhsNumber = new NhsNumber("9000000009");
         var presignedUrl = "http://presigned-url";
         var metadataList = List.of(createMetadata("some document"), createMetadata("another document"));
         var requestEvent = createRequestEvent(nhsNumber);
@@ -73,15 +75,15 @@ public class CreateDocumentManifestInlineTest {
         doNothing().when(dynamoDbMapper).save(any());
         var responseEvent = createDocumentManifestByNhsNumberHandler.handleRequest(requestEvent, context);
 
-        var responseUrl = JsonPath.<String>read(responseEvent.getBody(), "$.result.url");
         assertThat(responseEvent.getStatusCode()).isEqualTo(200);
         assertThat(responseEvent.getHeaders().get("Content-Type")).isEqualTo("application/fhir+json");
+        var responseUrl = JsonPath.<String>read(responseEvent.getBody(), "$.result.url");
         assertThat(responseUrl).isEqualTo(presignedUrl);
     }
 
     @Test
-    void sendsAuditMessageAfterZipIsUploadedSuccessfully() throws MalformedURLException, JsonProcessingException {
-        var nhsNumber = "9000000009";
+    void sendsAuditMessageAfterZipIsUploadedSuccessfully() throws MalformedURLException, JsonProcessingException, IllFormedPatentDetailsException {
+        var nhsNumber = new NhsNumber("9000000009");
         var presignedUrl = "http://presigned-url";
         var requestEvent = createRequestEvent(nhsNumber);
         var metadataList = List.of(createMetadata("some document"));
@@ -95,11 +97,11 @@ public class CreateDocumentManifestInlineTest {
         verify(auditPublisher).publish(any(DownloadAllPatientRecordsAuditMessage.class));
     }
 
-    private APIGatewayProxyRequestEvent createRequestEvent(String nhsNumber) {
+    private APIGatewayProxyRequestEvent createRequestEvent(NhsNumber nhsNumber) {
         HashMap<String, String> headers = new HashMap<>();
         HashMap<String, String> parameters = new HashMap<>();
         headers.put("Authorization", "Bearer " + JWT.create().withClaim("email", "").sign(none()));
-        parameters.put("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|" + nhsNumber);
+        parameters.put("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|" + nhsNumber.getValue());
 
         return new APIGatewayProxyRequestEvent().withQueryStringParameters(parameters).withHeaders(headers);
     }

@@ -12,9 +12,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
+import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Address;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Name;
@@ -58,11 +60,11 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException, MissingEnvironmentVariableException {
+    void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
         LocalDate periodStart = LocalDate.now().minusYears(1);
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
-        var nhsNumber = "9000000009";
+        NhsNumber nhsNumber = new NhsNumber("9000000009");
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 200);
         var accessToken = "token";
 
@@ -71,7 +73,7 @@ class RealPdsFhirServiceTest {
         when(authService.retrieveAccessToken()).thenReturn(accessToken);
         pdsFhirClient.fetchPatientDetails(nhsNumber);
 
-        verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
+        verify(httpClient).get(any(), contains(nhsNumber.getValue()), eq(accessToken));
         verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
@@ -84,10 +86,10 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException, MissingEnvironmentVariableException {
+    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
-        var nhsNumber = "9000000000";
+        var nhsNumber = new NhsNumber("9000000000");
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 400);
         var accessToken = "token";
 
@@ -95,7 +97,7 @@ class RealPdsFhirServiceTest {
         when(authService.retrieveAccessToken()).thenReturn(accessToken);
         assertThrows(InvalidResourceIdException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber));
 
-        verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
+        verify(httpClient).get(any(), contains(nhsNumber.getValue()), eq(accessToken));
         verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
@@ -108,10 +110,10 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException, MissingEnvironmentVariableException {
+    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
-        var nhsNumber = "9111231130";
+        var nhsNumber = new NhsNumber("9111231130");
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 404);
         var accessToken = "token";
 
@@ -120,7 +122,7 @@ class RealPdsFhirServiceTest {
 
         assertThrows(PatientNotFoundException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Patient does not exist for given NHS number.");
 
-        verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
+        verify(httpClient).get(any(), contains(nhsNumber.getValue()), eq(accessToken));
         verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
@@ -133,10 +135,10 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException, MissingEnvironmentVariableException {
+    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
-        var nhsNumber = "9111231130";
+        var nhsNumber = new NhsNumber("9111231130");
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 500);
         var accessToken = "token";
 
@@ -144,7 +146,7 @@ class RealPdsFhirServiceTest {
         when(authService.retrieveAccessToken()).thenReturn(accessToken);
         assertThrows(RuntimeException.class, () -> pdsFhirClient.fetchPatientDetails(nhsNumber), "Got an error when requesting patient from PDS: 500");
 
-        verify(httpClient).get(any(), contains(nhsNumber), eq(accessToken));
+        verify(httpClient).get(any(), contains(nhsNumber.getValue()), eq(accessToken));
         verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
@@ -156,11 +158,11 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesCallToGetAccessTokenTwiceIfTokenHasExpired() throws MissingEnvironmentVariableException, JsonProcessingException {
+    void makesCallToGetAccessTokenTwiceIfTokenHasExpired() throws MissingEnvironmentVariableException, JsonProcessingException, IllFormedPatentDetailsException {
         LocalDate periodStart = LocalDate.now().minusYears(1);
 
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
-        var nhsNumber = "9000000009";
+        var nhsNumber = new NhsNumber("9000000009");
         var accessToken = "token";
         Period period = new Period(periodStart, null);
         var expectedPatient = new Patient(nhsNumber, "Test", List.of(new Address(period, "EX1 2EX", "home")), List.of(new Name(period, "usual", List.of("Jane"), "Doe")));
@@ -177,7 +179,7 @@ class RealPdsFhirServiceTest {
         assertThat(patient).usingRecursiveComparison().isEqualTo(expectedPatient);
     }
 
-    private String getJSONPatientDetails(String nhsNumber, String periodStart) {
+    private String getJSONPatientDetails(NhsNumber nhsNumber, String periodStart) {
 
         var jsonPeriod = new JSONObject()
                 .put("start", periodStart)
@@ -196,7 +198,7 @@ class RealPdsFhirServiceTest {
                 .put("name", List.of(jsonName))
                 .put("birthDate", "Test")
                 .put("address", List.of(jsonAddress))
-                .put("id", nhsNumber).toString();
+                .put("id", nhsNumber.getValue()).toString();
     }
 
     private static class StubPdsResponse implements HttpResponse<String> {

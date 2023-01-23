@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Void> {
@@ -42,8 +43,8 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
 
                 documentReferenceService.markDocumentUploaded(location);
             }
-        } catch (JsonProcessingException jsonProcessingException) {
-            LOGGER.error(jsonProcessingException.getMessage(), jsonProcessingException);
+        } catch (JsonProcessingException | IllFormedPatentDetailsException exception) {
+            LOGGER.error(exception.getMessage(), exception);
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage(), exception);
             throw exception;

@@ -12,10 +12,8 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DocumentReference.DocumentReferenceContentComponent;
-import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.OperationOutcome;
-import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +22,8 @@ import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
@@ -110,7 +110,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
                         .setContentType(metadata.getContentType()));
     }
 
-    private Resource createResourceFromMetadata(DocumentMetadata metadata, DocumentReferenceContentComponent content) {
+    private Resource createResourceFromMetadata(DocumentMetadata metadata, DocumentReferenceContentComponent content) throws IllFormedPatentDetailsException {
         var type = new CodeableConcept()
                 .setCoding(metadata.getType()
                         .stream()
@@ -122,10 +122,7 @@ public class RetrieveDocumentReferenceHandler implements RequestHandler<APIGatew
         return new NHSDocumentReference()
                 .setCreated(new DateTimeType(metadata.getCreated()))
                 .setIndexed(new InstantType(metadata.getIndexed()))
-                .setSubject(new Reference()
-                        .setIdentifier(new Identifier()
-                                .setSystem("https://fhir.nhs.uk/Id/nhs-number")
-                                .setValue(metadata.getNhsNumber())))
+                .setNhsNumber(new NhsNumber(metadata.getNhsNumber()))
                 .addContent(content)
                 .setType(type)
                 .setDocStatus(metadata.isDocumentUploaded() ? FINAL : PRELIMINARY)

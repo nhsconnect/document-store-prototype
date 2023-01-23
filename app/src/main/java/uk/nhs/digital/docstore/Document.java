@@ -1,6 +1,8 @@
 package uk.nhs.digital.docstore;
 
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.util.List;
 
@@ -15,8 +17,8 @@ public class Document {
         return metadata.getId();
     }
 
-    public String getNhsNumber() {
-        return metadata.getNhsNumber();
+    public NhsNumber getNhsNumber() throws IllFormedPatentDetailsException {
+        return new NhsNumber(metadata.getNhsNumber());
     }
 
     public String getContentType() {

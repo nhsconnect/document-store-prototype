@@ -14,6 +14,7 @@ import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -36,10 +37,10 @@ public class DocumentReferenceServiceTest {
     private ArgumentCaptor<AuditMessage> auditMessageCaptor;
 
     @Test
-    public void savesDocumentMetadataWithAuditing() throws JsonProcessingException {
+    public void savesDocumentMetadataWithAuditing() throws JsonProcessingException, IllFormedPatentDetailsException {
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setId("1");
-        documentMetadata.setNhsNumber("1234");
+        documentMetadata.setNhsNumber("1234567890");
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setCreated(DateTimeType.now().asStringValue());
@@ -62,12 +63,13 @@ public class DocumentReferenceServiceTest {
     }
 
     @Test
-    public void marksDocumentsUploadedWithAuditing() throws JsonProcessingException {
+    public void marksDocumentsUploadedWithAuditing() throws JsonProcessingException, IllFormedPatentDetailsException {
         var location = "test.url";
         var clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
         var now = Instant.now(clock);
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setId("2");
+        documentMetadata.setNhsNumber("1234567890");
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setIndexed(now.toString());
@@ -90,7 +92,7 @@ public class DocumentReferenceServiceTest {
     }
 
     @Test
-    public void doesNotMarkDocumentAsUploadedWhenMetadataIsNull() throws JsonProcessingException {
+    public void doesNotMarkDocumentAsUploadedWhenMetadataIsNull() throws JsonProcessingException, IllFormedPatentDetailsException {
         var location = "test.url";
         var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, Clock.systemUTC());
 

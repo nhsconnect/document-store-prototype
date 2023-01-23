@@ -7,10 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -22,8 +23,6 @@ class DocumentMetadataSearchServiceTest {
 
     @Mock
     private DocumentMetadataStore metadataStore;
-
-    private final Map<String, String> headers = Map.of("Authorization", "Bearer " + JWT);
     
     private DocumentMetadataSearchService searchService;
 
@@ -33,12 +32,12 @@ class DocumentMetadataSearchServiceTest {
     }
 
     @Test
-    void supportsDifferentIdentifierSyntax() {
-        var nhsNumber = "1234567890";
+    void supportsDifferentIdentifierSyntax() throws IllFormedPatentDetailsException {
+        var nhsNumber = new NhsNumber("1234567890");
         var metadataTemplate = theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(true);
         
         when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of(metadataTemplate.build()));
-        List<DocumentMetadata> documents = searchService.findMetadataByNhsNumber(nhsNumber, headers);
+        List<DocumentMetadata> documents = searchService.findMetadataByNhsNumber(nhsNumber);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -46,12 +45,12 @@ class DocumentMetadataSearchServiceTest {
     }
 
     @Test
-    void supportsDifferentSearchSyntax() {
-        var nhsNumber = "9000000009";
+    void supportsDifferentSearchSyntax() throws IllFormedPatentDetailsException {
+        var nhsNumber = new NhsNumber("9000000009");
         var metadataTemplate = theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(true);
         
         when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of(metadataTemplate.build()));
-        List<DocumentMetadata> documents = searchService.findMetadataByNhsNumber(nhsNumber, headers);
+        List<DocumentMetadata> documents = searchService.findMetadataByNhsNumber(nhsNumber);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -59,12 +58,12 @@ class DocumentMetadataSearchServiceTest {
     }
 
     @Test
-    void omitsPreSignedUrlIfDocumentIsNotAvailable() {
-        var nhsNumber = "9000000009";
+    void omitsPreSignedUrlIfDocumentIsNotAvailable() throws IllFormedPatentDetailsException {
+        var nhsNumber = new NhsNumber("9000000009");
         var metadataTemplate = theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(false);
         
         when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of(metadataTemplate.build()));
-        List<DocumentMetadata> documents = searchService.findMetadataByNhsNumber(nhsNumber, headers);
+        List<DocumentMetadata> documents = searchService.findMetadataByNhsNumber(nhsNumber);
 
         assertThat(documents)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -72,13 +71,13 @@ class DocumentMetadataSearchServiceTest {
     }
 
     @Test
-    void logsTheSearchActionObfuscatingPii() {
+    void logsTheSearchActionObfuscatingPii() throws IllFormedPatentDetailsException {
         var testLogAppender = TestLogAppender.addTestLogAppender();
-        var nhsNumber = "1234567890";
+        var nhsNumber = new NhsNumber("1234567890");
         
         when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of());
-        searchService.findMetadataByNhsNumber(nhsNumber, headers);
+        searchService.findMetadataByNhsNumber(nhsNumber);
 
-        assertThat(testLogAppender.findLoggedEvent("documents with NHS number ending 7890")).isNotNull();
+        assertThat(testLogAppender.findLoggedEvent("Searched for documents with NHS number 123 *** ****")).isNotNull();
     }
 }

@@ -1,8 +1,10 @@
 package uk.nhs.digital.docstore;
 
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,10 +35,10 @@ public class NHSNumberSearchParameterForm {
         isValid = true;
     }
 
-    public String getNhsNumber() {
+    public NhsNumber getNhsNumber() throws IllFormedPatentDetailsException {
         if (!isValid){
             validate();
         }
-        return matcher.group("identifier");
+        return new NhsNumber(matcher.group("identifier"));
     }
 }

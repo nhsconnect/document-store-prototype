@@ -1,16 +1,13 @@
 package uk.nhs.digital.docstore.audit.message;
 
-public class SearchPatientDetailsAuditMessage extends BaseAuditMessage implements AuditMessage {
-    private final String nhsNumber;
+import uk.nhs.digital.docstore.model.NhsNumber;
+
+public class SearchPatientDetailsAuditMessage extends PatientRelatedAuditMessage implements AuditMessage {
     private final int pdsResponseStatus;
 
-    public SearchPatientDetailsAuditMessage(String nhsNumber, int pdsResponseStatus) {
-        this.nhsNumber = nhsNumber;
+    public SearchPatientDetailsAuditMessage(NhsNumber nhsNumber, int pdsResponseStatus) {
+        super(nhsNumber);
         this.pdsResponseStatus = pdsResponseStatus;
-    }
-
-    public String getNhsNumber() {
-        return nhsNumber;
     }
 
     @SuppressWarnings("unused")

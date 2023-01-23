@@ -3,12 +3,13 @@ package uk.nhs.digital.docstore.exceptions;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR;
 import static org.hl7.fhir.r4.model.OperationOutcome.IssueType.CODEINVALID;
 
 public class InvalidResourceIdException extends RuntimeException implements OperationOutcomeIssuable {
-    public InvalidResourceIdException(String nhsNumber) {
+    public InvalidResourceIdException(NhsNumber nhsNumber) {
         super(String.format("invalid nhs number: '%s'", nhsNumber));
     }
 

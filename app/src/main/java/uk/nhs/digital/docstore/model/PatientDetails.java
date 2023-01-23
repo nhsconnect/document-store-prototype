@@ -7,10 +7,10 @@ public class PatientDetails {
     private final String familyName;
     private final String birthDate;
     private final String postalCode;
-    private final String nhsNumber;
+    private final NhsNumber nhsNumber;
 
     public PatientDetails(List<String> givenName, String familyName, String birthDate, String postalCode,
-                          String nhsNumber) {
+                          NhsNumber nhsNumber) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.birthDate = birthDate;
@@ -34,7 +34,7 @@ public class PatientDetails {
         return postalCode;
     }
 
-    public String getNhsNumber() {
+    public NhsNumber getNhsNumber() {
         return nhsNumber;
     }
 }

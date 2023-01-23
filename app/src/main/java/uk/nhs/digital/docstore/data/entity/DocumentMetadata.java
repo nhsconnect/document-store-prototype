@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import org.hl7.fhir.r4.model.Coding;
 import uk.nhs.digital.docstore.NHSDocumentReference;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 
 import java.util.List;
 
@@ -111,9 +112,9 @@ public class DocumentMetadata {
         this.type = type;
     }
 
-    public static DocumentMetadata from(NHSDocumentReference reference, String documentLocation) {
+    public static DocumentMetadata from(NHSDocumentReference reference, String documentLocation) throws IllFormedPatentDetailsException {
         var documentMetadata = new DocumentMetadata();
-        documentMetadata.setNhsNumber(reference.getSubject().getIdentifier().getValue());
+        documentMetadata.setNhsNumber(reference.getNhsNumber().getValue());
         documentMetadata.setContentType(reference.getContent().get(0).getAttachment().getContentType());
         documentMetadata.setLocation(documentLocation);
         documentMetadata.setDocumentUploaded(false);

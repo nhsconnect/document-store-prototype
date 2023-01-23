@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
 import java.time.Instant;
@@ -38,13 +39,13 @@ public class DocumentMetadataStore extends DynamoDbConnection {
         return items.size() > 0 ? items.get(0) : null;
     }
 
-    public List<DocumentMetadata> findByNhsNumber(String nhsNumber) {
+    public List<DocumentMetadata> findByNhsNumber(NhsNumber nhsNumber) {
         var metadataPaginatedQueryList = mapper.query(
                 DocumentMetadata.class,
                 new DynamoDBQueryExpression<DocumentMetadata>()
                         .withIndexName("NhsNumberIndex")
                         .withKeyConditionExpression("NhsNumber = :nhsNumber")
-                        .withExpressionAttributeValues(Map.of(":nhsNumber", new AttributeValue(nhsNumber)))
+                        .withExpressionAttributeValues(Map.of(":nhsNumber", new AttributeValue(nhsNumber.getValue())))
                         .withConsistentRead(false)
         );
 

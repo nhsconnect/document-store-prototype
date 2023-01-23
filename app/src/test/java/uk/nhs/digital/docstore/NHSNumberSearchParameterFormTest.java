@@ -1,14 +1,17 @@
 package uk.nhs.digital.docstore;
 
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NHSNumberSearchParameterFormTest {
 
@@ -56,10 +59,10 @@ public class NHSNumberSearchParameterFormTest {
     }
 
     @Test
-    void returnNhsNumberReturnsNhsNumberIfSubjectIdentifierIsValid() {
+    void returnNhsNumberReturnsNhsNumberIfSubjectIdentifierIsValid() throws IllFormedPatentDetailsException {
         Map<String, String> searchParameters =  Map.of("subject:identifier","https://fhir.nhs.uk/Id/nhs-number|9000000009");
         NHSNumberSearchParameterForm nhsNumberSearchParameterForm = new NHSNumberSearchParameterForm(searchParameters);
 
-        assertEquals(nhsNumberSearchParameterForm.getNhsNumber(), "9000000009");
+        assertTrue(nhsNumberSearchParameterForm.getNhsNumber().equals(new NhsNumber("9000000009")));
     }
 }

@@ -1,6 +1,8 @@
 package uk.nhs.digital.docstore.helpers;
 
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
@@ -8,20 +10,20 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 @SuppressWarnings("unused")
 public class DocumentMetadataBuilder {
     private final String id;
-    private final String nhsNumber;
+    private final NhsNumber nhsNumber;
     private final String location;
     private final String contentType;
     private final Boolean uploaded;
     private final String deleted;
 
-    public static DocumentMetadataBuilder theMetadata() {
+    public static DocumentMetadataBuilder theMetadata() throws IllFormedPatentDetailsException {
         var id = randomAlphabetic(10);
-        var nhsNumber = randomNumeric(11);
+        var nhsNumber = randomNumeric(10);
         var location = String.format("s3://%s/%s", randomAlphabetic(6), randomAlphabetic(10));
 
         return new DocumentMetadataBuilder(
                 id,
-                nhsNumber,
+                new NhsNumber(nhsNumber),
                 location,
                 "text/plain",
                 null,
@@ -31,7 +33,7 @@ public class DocumentMetadataBuilder {
 
     private DocumentMetadataBuilder(
             String id,
-            String nhsNumber,
+            NhsNumber nhsNumber,
             String location,
             String contentType,
             Boolean uploaded,
@@ -49,7 +51,7 @@ public class DocumentMetadataBuilder {
         return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded, deleted);
     }
 
-    public DocumentMetadataBuilder withNhsNumber(String nhsNumber) {
+    public DocumentMetadataBuilder withNhsNumber(NhsNumber nhsNumber) {
         return new DocumentMetadataBuilder(id, nhsNumber, location, contentType, uploaded, deleted);
     }
 
@@ -72,7 +74,7 @@ public class DocumentMetadataBuilder {
     public DocumentMetadata build() {
         var metadata = new DocumentMetadata();
         metadata.setId(id);
-        metadata.setNhsNumber(nhsNumber);
+        metadata.setNhsNumber(nhsNumber.getValue());
         metadata.setLocation(location);
         metadata.setContentType(contentType);
         metadata.setDocumentUploaded(uploaded);
