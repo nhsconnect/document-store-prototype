@@ -1,6 +1,6 @@
 resource "aws_cloudwatch_metric_alarm" "sensitive_index_age_of_oldest_message" {
   alarm_name        = "prs-${var.environment}-sensitive-index-age-of-oldest-message"
-  alarm_description = "Triggers when a message has been in the sensitive-index SQS queue for more than 10 mins."
+  alarm_description = "Triggers when a message has been in the sensitive-index SQS queue for more than 10 minutes."
   namespace         = "AWS/SQS"
   dimensions        = {
     QueueName = aws_sqs_queue.sensitive_audit.name
@@ -43,6 +43,21 @@ resource "aws_cloudwatch_metric_alarm" "search_patient_details_handler_error" {
   statistic           = "Sum"
 }
 
+resource "aws_cloudwatch_metric_alarm" "search_patient_details_handler_duration" {
+  alarm_name        = "prs-${var.environment}-search-patient-details-handler-duration"
+  alarm_description = "Triggers when duration of SearchPatientDetailsHandler Lambda exceeds 80% of timeout."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.search_patient_details_lambda.function_name
+  }
+  metric_name         = "Duration"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "12"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
+}
+
 resource "aws_cloudwatch_metric_alarm" "document_uploaded_event_handler_error" {
   alarm_name        = "prs-${var.environment}-document-uploaded-event-handler-error"
   alarm_description = "Triggers when an error has occurred in DocumentUploadedEventHandler."
@@ -58,12 +73,27 @@ resource "aws_cloudwatch_metric_alarm" "document_uploaded_event_handler_error" {
   statistic           = "Sum"
 }
 
+resource "aws_cloudwatch_metric_alarm" "document_uploaded_event_handler_duration" {
+  alarm_name        = "prs-${var.environment}-document-uploaded-event-handler-duration"
+  alarm_description = "Triggers when duration of DocumentUploadedEventHandler Lambda exceeds 80% of timeout."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.document_uploaded_lambda.function_name
+  }
+  metric_name         = "Duration"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "12"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
+}
+
 resource "aws_cloudwatch_metric_alarm" "create_document_manifest_by_nhs_number_handler_error" {
   alarm_name        = "prs-${var.environment}-create_document_manifest_by_nhs_number_handler_error"
   alarm_description = "Triggers when an error has occurred in CreateDocumentManifestByNhsNumberHandler."
   namespace         = "AWS/Lambda"
   dimensions        = {
-    FunctionName = aws_lambda_function.create_doc_ref_lambda.function_name
+    FunctionName = aws_lambda_function.document_manifest_lambda.function_name
   }
   metric_name         = "Errors"
   comparison_operator = "GreaterThanThreshold"
@@ -71,6 +101,21 @@ resource "aws_cloudwatch_metric_alarm" "create_document_manifest_by_nhs_number_h
   period              = "300"
   evaluation_periods  = "1"
   statistic           = "Sum"
+}
+
+resource "aws_cloudwatch_metric_alarm" "create_document_manifest_by_nhs_number_handler_duration" {
+  alarm_name        = "prs-${var.environment}-create-document-manifest-by-nhs-number-handler-duration"
+  alarm_description = "Triggers when duration of CreateDocumentManifestByNhsNumberHandler Lambda exceeds 80% of timeout."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.document_manifest_lambda.function_name
+  }
+  metric_name         = "Duration"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "12"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
 }
 
 resource "aws_cloudwatch_metric_alarm" "retrieve_document_reference_handler_error" {
@@ -88,6 +133,21 @@ resource "aws_cloudwatch_metric_alarm" "retrieve_document_reference_handler_erro
   statistic           = "Sum"
 }
 
+resource "aws_cloudwatch_metric_alarm" "retrieve_document_reference_handler_duration" {
+  alarm_name        = "prs-${var.environment}-retrieve-document-reference-handler-duration"
+  alarm_description = "Triggers when duration of RetrieveDocumentReferenceHandler Lambda exceeds 80% of timeout."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.get_doc_ref_lambda.function_name
+  }
+  metric_name         = "Duration"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "12"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
+}
+
 resource "aws_cloudwatch_metric_alarm" "delete_document_reference_handler_error" {
   alarm_name        = "prs-${var.environment}-delete_document_reference_handler_error"
   alarm_description = "Triggers when an error has occurred in DeleteDocumentReferenceHandler."
@@ -101,4 +161,19 @@ resource "aws_cloudwatch_metric_alarm" "delete_document_reference_handler_error"
   period              = "300"
   evaluation_periods  = "1"
   statistic           = "Sum"
+}
+
+resource "aws_cloudwatch_metric_alarm" "delete_document_reference_handler_duration" {
+  alarm_name        = "prs-${var.environment}-delete-document-reference-handler-duration"
+  alarm_description = "Triggers when duration of DeleteDocumentReferenceHandler Lambda exceeds 80% of timeout."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.delete_doc_ref_lambda.function_name
+  }
+  metric_name         = "Duration"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "12"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
 }
