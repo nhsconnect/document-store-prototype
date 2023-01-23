@@ -147,3 +147,31 @@ variable "cognito_key_id" {
   type    = string
   default = ""
 }
+
+variable "lambdas" {
+  type    = map(object({ function_name = string }))
+  default = {
+    authoriser                     = { function_name = "Authoriser" }
+    search_patient-details-handler = {
+      function_name = "SearchPatientDetailsHandler"
+    }
+    create-document-reference-handler = {
+      function_name = "CreateDocumentReferenceHandler"
+    }
+    document-uploaded-event-handler = {
+      function_name = "DocumentUploadedEventHandler"
+    }
+    create-document-manifest-by-nhs-number-handler = {
+      function_name = "CreateDocumentManifestByNhsNumberHandler"
+    }
+    document-reference-search-handler = {
+      function_name = "DocumentReferenceSearchHandler"
+    }
+    retrieve-document-reference-handler = {
+      function_name = "RetrieveDocumentReferenceHandler"
+    }
+    delete-document-reference-handler = {
+      function_name = "DeleteDocumentReferenceHandler"
+    }
+  }
+}
