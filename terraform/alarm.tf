@@ -30,21 +30,21 @@ resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
 
 resource "aws_cloudwatch_metric_alarm" "lambda_error" {
   for_each = {
-    "authoriser" = aws_lambda_function.authoriser.function_name
-    "search_patient_details_handler" = aws_lambda_function.search_patient_details_lambda.function_name
-    "create-document-reference-handler" = aws_lambda_function.create_doc_ref_lambda.function_name
-    "document-uploaded-event-handler" = aws_lambda_function.document_uploaded_lambda.function_name
+    "authoriser"                                     = aws_lambda_function.authoriser.function_name
+    "search_patient-details-handler"                 = aws_lambda_function.search_patient_details_lambda.function_name
+    "create-document-reference-handler"              = aws_lambda_function.create_doc_ref_lambda.function_name
+    "document-uploaded-event-handler"                = aws_lambda_function.document_uploaded_lambda.function_name
     "create-document-manifest-by-nhs-number-handler" = aws_lambda_function.document_manifest_lambda.function_name
-    "document-reference-search-handler" = aws_lambda_function.doc_ref_search_lambda.function_name
-    "retrieve-document-reference-handler" = aws_lambda_function.get_doc_ref_lambda.function_name
-    "delete-document-reference-handler" = aws_lambda_function.delete_doc_ref_lambda.function_name
+    "document-reference-search-handler"              = aws_lambda_function.doc_ref_search_lambda.function_name
+    "retrieve-document-reference-handler"            = aws_lambda_function.get_doc_ref_lambda.function_name
+    "delete-document-reference-handler"              = aws_lambda_function.delete_doc_ref_lambda.function_name
   }
   alarm_name        = "prs-${var.environment}-${each.key}-error"
   alarm_description = "Triggers when an error has occurred in ${each.value}."
   dimensions        = {
     FunctionName = each.value
   }
-  namespace         = "AWS/Lambda"
+  namespace           = "AWS/Lambda"
   metric_name         = "Errors"
   comparison_operator = "GreaterThanThreshold"
   threshold           = "0"
