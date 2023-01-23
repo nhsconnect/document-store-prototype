@@ -102,7 +102,7 @@
         "cognito-idp:DeleteIdentityProvider",
         "cognito-idp:DescribeIdentityProvider",
         "cognito-idp:UpdateIdentityProvider",
-        "cognito-identity:AddCustomAttributes"
+        "cognito-idp:AddCustomAttributes"
       ],
       "Resource": "*"
     },
