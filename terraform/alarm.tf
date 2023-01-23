@@ -28,6 +28,36 @@ resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
   statistic           = "Sum"
 }
 
+resource "aws_cloudwatch_metric_alarm" "authoriser_error" {
+  alarm_name        = "prs-${var.environment}-authoriser-error"
+  alarm_description = "Triggers when an error has occurred in Authoriser."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.authoriser.function_name
+  }
+  metric_name         = "Errors"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = "0"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Sum"
+}
+
+resource "aws_cloudwatch_metric_alarm" "authoriser_duration" {
+  alarm_name        = "prs-${var.environment}-authoriser-duration"
+  alarm_description = "Triggers when duration of Authoriser Lambda exceeds 80% of timeout."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.authoriser.function_name
+  }
+  metric_name         = "Duration"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "12"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
+}
+
 resource "aws_cloudwatch_metric_alarm" "search_patient_details_handler_error" {
   alarm_name        = "prs-${var.environment}-search-patient-details-handler-error"
   alarm_description = "Triggers when an error has occurred in SearchPatientDetailsHandler."
@@ -49,6 +79,36 @@ resource "aws_cloudwatch_metric_alarm" "search_patient_details_handler_duration"
   namespace         = "AWS/Lambda"
   dimensions        = {
     FunctionName = aws_lambda_function.search_patient_details_lambda.function_name
+  }
+  metric_name         = "Duration"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "12"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
+}
+
+resource "aws_cloudwatch_metric_alarm" "create_document_reference_handler_error" {
+  alarm_name        = "prs-${var.environment}-create-document-reference-handler-error"
+  alarm_description = "Triggers when an error has occurred in CreateDocumentReferenceHandler."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.create_doc_ref_lambda.function_name
+  }
+  metric_name         = "Errors"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = "0"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Sum"
+}
+
+resource "aws_cloudwatch_metric_alarm" "create_document_reference_handler_duration" {
+  alarm_name        = "prs-${var.environment}-create-document-reference-handler-duration"
+  alarm_description = "Triggers when duration of CreateDocumentReferenceHandler Lambda exceeds 80% of timeout."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.create_doc_ref_lambda.function_name
   }
   metric_name         = "Duration"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -109,6 +169,36 @@ resource "aws_cloudwatch_metric_alarm" "create_document_manifest_by_nhs_number_h
   namespace         = "AWS/Lambda"
   dimensions        = {
     FunctionName = aws_lambda_function.document_manifest_lambda.function_name
+  }
+  metric_name         = "Duration"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "12"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
+}
+
+resource "aws_cloudwatch_metric_alarm" "document_reference_search_handler_error" {
+  alarm_name        = "prs-${var.environment}-document-reference-search-handler-error"
+  alarm_description = "Triggers when an error has occurred in DocumentReferenceSearchHandler."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.doc_ref_search_lambda.function_name
+  }
+  metric_name         = "Errors"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = "0"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Sum"
+}
+
+resource "aws_cloudwatch_metric_alarm" "document_reference_search_handler_duration" {
+  alarm_name        = "prs-${var.environment}-document-reference-search-handler-duration"
+  alarm_description = "Triggers when duration of DocumentReferenceSearchHandler Lambda exceeds 80% of timeout."
+  namespace         = "AWS/Lambda"
+  dimensions        = {
+    FunctionName = aws_lambda_function.doc_ref_search_lambda.function_name
   }
   metric_name         = "Duration"
   comparison_operator = "GreaterThanOrEqualToThreshold"
