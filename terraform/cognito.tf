@@ -13,15 +13,6 @@ resource "aws_cognito_user_pool" "pool" {
     require_symbols   = true
   }
   count = var.cloud_only_service_instances
-
-  schema {
-    name                     = "nhsid_user_orgs"
-    attribute_data_type      = "String"
-    mutable                  = false
-    required                 = false
-    developer_only_attribute = false
-    string_attribute_constraints {}
-  }
 }
 
 resource "aws_cognito_user_pool_client" "client" {
@@ -82,10 +73,6 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
     attributes_url            = var.cognito_cis2_provider_attributes_url
     jwks_uri                  = var.cognito_cis2_provider_jwks_uri
     attributes_request_method = "GET"
-  }
-
-  attribute_mapping = {
-    nhsid_user_orgs = "custom:nhsid_user_orgs"
   }
 
   count = var.cloud_only_service_instances
