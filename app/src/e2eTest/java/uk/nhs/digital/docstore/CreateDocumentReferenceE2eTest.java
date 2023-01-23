@@ -22,12 +22,10 @@ import java.util.function.Predicate;
 
 import static java.net.http.HttpClient.newHttpClient;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.time.Duration.ofMillis;
-import static java.time.Duration.ofSeconds;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.waitAtMost;
-import static uk.nhs.digital.docstore.helpers.BaseUriHelper.*;
+import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getAwsHost;
+import static uk.nhs.digital.docstore.helpers.BaseUriHelper.getBaseUri;
 
 public class CreateDocumentReferenceE2eTest {
     @SuppressWarnings("HttpUrlsUsage")
@@ -86,27 +84,6 @@ public class CreateDocumentReferenceE2eTest {
                 .build();
         var documentUploadResponse = getResponseFor(documentUploadRequest);
         assertThat(documentUploadResponse.statusCode()).isEqualTo(200);
-
-        var retrieveDocumentReferenceRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentReference/" + id))
-                .GET()
-                .build();
-        HttpResponse<String> retrievedDocumentReferenceResponse = waitAtMost(ofSeconds(50))
-                .pollDelay(ofMillis(500))
-                .pollInterval(ofSeconds(1))
-                .until(() -> getResponseFor(retrieveDocumentReferenceRequest), documentIsFinal());
-        assertThatJson(retrievedDocumentReferenceResponse.body())
-                .inPath("$.indexed")
-                .isString();
-
-        System.out.println("retrieve document reference body: " + retrievedDocumentReferenceResponse.body());
-        String preSignedUrl = JsonPath.<String>read(retrievedDocumentReferenceResponse.body(), "$.content[0].attachment.url")
-                .replace(PRESIGNED_URL_REFERENCE_HOST, getAwsHost());
-        var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
-                .GET()
-                .timeout(ofSeconds(2))
-                .build();
-        var documentResponse = getResponseFor(documentRequest);
-        assertThat(documentResponse.body()).isEqualTo("hello");
     }
 
     @Test

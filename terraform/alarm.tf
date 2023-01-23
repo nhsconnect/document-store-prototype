@@ -86,10 +86,6 @@ locals {
       function_name = aws_lambda_function.doc_ref_search_lambda.function_name
       timeout       = aws_lambda_function.doc_ref_search_lambda.timeout
     }
-    retrieve_document_reference_handler = {
-      function_name = aws_lambda_function.get_doc_ref_lambda.function_name
-      timeout       = aws_lambda_function.get_doc_ref_lambda.timeout
-    }
     delete_document_reference_handler = {
       function_name = aws_lambda_function.delete_doc_ref_lambda.function_name
       timeout       = aws_lambda_function.delete_doc_ref_lambda.timeout

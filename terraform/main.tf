@@ -80,7 +80,6 @@ resource "aws_api_gateway_deployment" "api_deploy" {
   triggers = {
     redeployment = sha1(jsonencode([
       aws_api_gateway_rest_api.lambda_api.body,
-      module.get_doc_ref_endpoint,
       module.create_doc_ref_endpoint,
       module.search_doc_ref_endpoint,
       module.delete_doc_ref_endpoint,
@@ -88,7 +87,6 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       module.document_manifest_endpoint,
       module.patient_details_collection_preflight,
       module.doc_ref_collection_preflight,
-      module.get_doc_ref_preflight,
       module.document_manifest_preflight,
       aws_api_gateway_resource.doc_ref_collection_resource,
       aws_api_gateway_resource.patient_details_collection_resource,
@@ -172,7 +170,6 @@ resource "aws_lambda_function" "authoriser" {
         allowedResourcesForPCSEUsers = [
           local.search_patient_details_invocation_arn,
           local.search_document_reference_invocation_arn,
-          local.get_document_reference_invocation_arn,
           local.get_document_manifest_invocation_arn,
           local.delete_document_reference_invocation_arn
         ],
