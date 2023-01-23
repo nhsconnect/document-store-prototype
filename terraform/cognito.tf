@@ -13,6 +13,24 @@ resource "aws_cognito_user_pool" "pool" {
     require_symbols   = true
   }
   count = var.cloud_only_service_instances
+
+  schema {
+    name                     = "nhsid_user_orgs"
+    attribute_data_type      = "String"
+    mutable                  = false
+    required                 = false
+    developer_only_attribute = false
+    string_attribute_constraints {}
+  }
+
+  schema {
+    name                     = "nhsid_nrbac_roles"
+    attribute_data_type      = "String"
+    mutable                  = false
+    required                 = false
+    developer_only_attribute = false
+    string_attribute_constraints {}
+  }
 }
 
 resource "aws_cognito_user_pool_client" "client" {
@@ -23,13 +41,19 @@ resource "aws_cognito_user_pool_client" "client" {
   count = var.cloud_only_service_instances
 
   allowed_oauth_flows_user_pool_client = true
-  explicit_auth_flows                  = ["ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
+  explicit_auth_flows                  = [
+    "ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"
+  ]
   allowed_oauth_flows                  = ["code", "implicit"]
   allowed_oauth_scopes                 = ["openid"]
   supported_identity_providers         = var.cognito_oidc_providers
-  callback_urls                        = concat(var.cognito_cis2_client_callback_urls, ["https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"])
+  callback_urls                        = concat(var.cognito_cis2_client_callback_urls, [
+    "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
+  ])
   default_redirect_uri                 = "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
-  logout_urls                          = concat(["https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com"], var.cognito_cis2_client_signout_urls)
+  logout_urls                          = concat([
+    "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com"
+  ], var.cognito_cis2_client_signout_urls)
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
@@ -73,6 +97,11 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
     attributes_url            = var.cognito_cis2_provider_attributes_url
     jwks_uri                  = var.cognito_cis2_provider_jwks_uri
     attributes_request_method = "GET"
+  }
+
+  attribute_mapping = {
+    nhsid_user_orgs   = "custom:nhsid_user_orgs"
+    nhsid_nrbac_roles = "custom:nhsid_nrbac_roles"
   }
 
   count = var.cloud_only_service_instances
