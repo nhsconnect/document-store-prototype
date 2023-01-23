@@ -172,7 +172,7 @@ resource "aws_cloudwatch_metric_alarm" "create_document_manifest_by_nhs_number_h
   }
   metric_name         = "Duration"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  threshold           = "12"
+  threshold           = "48"
   period              = "300"
   evaluation_periods  = "1"
   statistic           = "Maximum"
@@ -232,7 +232,7 @@ resource "aws_cloudwatch_metric_alarm" "retrieve_document_reference_handler_dura
   }
   metric_name         = "Duration"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  threshold           = "12"
+  threshold           = "20"
   period              = "300"
   evaluation_periods  = "1"
   statistic           = "Maximum"
