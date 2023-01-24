@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.model.NhsNumber;
@@ -34,7 +35,7 @@ public class RealPdsFhirService implements PdsFhirService {
         this.authService = authService;
     }
 
-    public PatientDetails fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException {
+    public PatientDetails fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
         var accessToken = authService.retrieveAccessToken();
 
         var pdsResponse = makeRequestWithPdsAndSendAuditMessage(accessToken, nhsNumber);
@@ -50,7 +51,7 @@ public class RealPdsFhirService implements PdsFhirService {
         return handleResponse(pdsResponse, nhsNumber);
     }
 
-    private PatientDetails handleResponse(HttpResponse<String> pdsResponse, NhsNumber nhsNumber) {
+    private PatientDetails handleResponse(HttpResponse<String> pdsResponse, NhsNumber nhsNumber) throws IllFormedPatentDetailsException {
         var statusCode = pdsResponse.statusCode();
 
         if (pdsResponse.statusCode() == 200) {

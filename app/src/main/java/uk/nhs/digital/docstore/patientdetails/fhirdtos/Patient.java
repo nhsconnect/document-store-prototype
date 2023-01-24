@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
 
@@ -16,14 +17,14 @@ import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Patient {
-    private NhsNumber id;
+    private String id;
     private String birthDate;
     private List<Address> addresses;
     private List<Name> names;
 
     private static final Logger logger = LoggerFactory.getLogger(Patient.class);
 
-    public Patient(@JsonProperty("id") NhsNumber id,
+    public Patient(@JsonProperty("id") String id,
                    @JsonProperty("birthDate")String birthDate,
                    @JsonProperty("address")List<Address> addresses,
                    @JsonProperty("name")List<Name> names) {
@@ -33,7 +34,7 @@ public class Patient {
         this.names = names;
     }
 
-    public NhsNumber getId() {
+    public String getId() {
         return id;
     }
 
@@ -92,7 +93,7 @@ public class Patient {
         }
     }
 
-    public PatientDetails parse(){
+    public PatientDetails parse() throws IllFormedPatentDetailsException {
         var name = this.getCurrentUsualName();
         var address = this.getCurrentHomeAddress();
         return new PatientDetails(
@@ -100,7 +101,7 @@ public class Patient {
                 name.map(Name::getFamily).orElse(null),
                 this.getBirthDate(),
                 address.map(Address::getPostalCode).orElse(null),
-                this.getId()
+                new NhsNumber(this.getId())
         );
     }
 }

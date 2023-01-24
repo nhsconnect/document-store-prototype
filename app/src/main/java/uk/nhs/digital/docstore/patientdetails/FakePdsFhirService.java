@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.patientdetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
@@ -21,16 +22,16 @@ public class FakePdsFhirService implements PdsFhirService {
         this.sensitiveIndex = sensitiveIndex;
     }
 
-    public PatientDetails fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException {
+    public PatientDetails fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException, IllFormedPatentDetailsException {
         var currentPeriod = new Period(LocalDate.now().minusYears(1), null);
-
-        switch (nhsNumber.getValue()) {
+        var nhsNumberValue = nhsNumber.getValue();
+        switch (nhsNumberValue) {
             case "9000000025":
                 var restrictedPatientName = new Name(currentPeriod, "usual", List.of("Janet"), "Smythe");
 
                 sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, 200));
 
-                return new Patient(nhsNumber, "2010-10-22", null, List.of(restrictedPatientName)).parse();
+                return new Patient(nhsNumberValue, "2010-10-22", null, List.of(restrictedPatientName)).parse();
             case "9111231130":
                 sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, 500));
 
@@ -41,7 +42,7 @@ public class FakePdsFhirService implements PdsFhirService {
 
                 sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, 200));
 
-                return new Patient(nhsNumber, "2010-10-22", List.of(defaultAddress), List.of(defaultName)).parse();
+                return new Patient(nhsNumberValue, "2010-10-22", List.of(defaultAddress), List.of(defaultName)).parse();
         }
     }
 }
