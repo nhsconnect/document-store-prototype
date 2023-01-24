@@ -334,7 +334,9 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(screen.getByText("The NHS number provided is invalid. Please check the number you have entered.")).toBeInTheDocument();
+            expect(
+                screen.getByText("The NHS number provided is invalid. Please check the number you have entered.")
+            ).toBeInTheDocument();
         });
     });
 });

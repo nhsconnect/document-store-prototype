@@ -57,16 +57,21 @@ export const PatientTracePage = ({ nextPage }) => {
             {submissionState !== states.SUCCEEDED ? (
                 <form onSubmit={handleSubmit(doSubmit)} noValidate>
                     {submissionState === states.FAILED && statusCode !== 404 && (
-                        <>{statusCode === 400 ? (
-                            <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
-                            <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
-                            <ErrorSummary.Body>
-                            <p>The NHS number provided is invalid. Please check the number you have entered.</p>
-                            </ErrorSummary.Body>
-                        </ErrorSummary>
-                        ):(
-                            <ServiceError></ServiceError>
-                        )}</>
+                        <>
+                            {statusCode === 400 ? (
+                                <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
+                                    <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
+                                    <ErrorSummary.Body>
+                                        <p>
+                                            The NHS number provided is invalid. Please check the number you have
+                                            entered.
+                                        </p>
+                                    </ErrorSummary.Body>
+                                </ErrorSummary>
+                            ) : (
+                                <ServiceError></ServiceError>
+                            )}
+                        </>
                     )}
                     <Fieldset>
                         <Fieldset.Legend headingLevel={"h1"} isPageHeading>
