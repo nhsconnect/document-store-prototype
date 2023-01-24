@@ -7,6 +7,8 @@ import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
 import PatientSummary from "../components/PatientSummary";
 import SimpleProgressBar from "../components/SimpleProgressBar";
+import ServiceError from "../components/ServiceError";
+// import ServiceError from "../components/ServiceError";
 
 const states = {
     IDLE: "idle",
@@ -55,16 +57,16 @@ export const PatientTracePage = ({ nextPage }) => {
             {submissionState !== states.SUCCEEDED ? (
                 <form onSubmit={handleSubmit(doSubmit)} noValidate>
                     {submissionState === states.FAILED && statusCode !== 404 && (
-                        <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
+                        <>{statusCode === 400 ? (
+                            <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
                             <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
                             <ErrorSummary.Body>
-                                {statusCode === 400 ? (
-                                    <p>The NHS number provided is invalid. Please Retry.</p>
-                                ) : (
-                                    <p>Technical error - Please retry.</p>
-                                )}
+                            <p>The NHS number provided is invalid. Please check the number you have entered.</p>
                             </ErrorSummary.Body>
                         </ErrorSummary>
+                        ):(
+                            <ServiceError></ServiceError>
+                        )}</>
                     )}
                     <Fieldset>
                         <Fieldset.Legend headingLevel={"h1"} isPageHeading>

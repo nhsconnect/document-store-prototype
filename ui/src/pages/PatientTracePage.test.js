@@ -286,7 +286,7 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(screen.getByText("Technical error - Please retry.")).toBeInTheDocument();
+            expect(screen.getByText("Try again later.")).toBeInTheDocument();
         });
         expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Search" })).toBeInTheDocument();
@@ -334,7 +334,7 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(screen.getByText("The NHS number provided is invalid. Please Retry.")).toBeInTheDocument();
+            expect(screen.getByText("The NHS number provided is invalid. Please check the number you have entered.")).toBeInTheDocument();
         });
     });
 });

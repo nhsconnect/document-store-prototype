@@ -77,7 +77,7 @@ describe("Authenticator", () => {
         render(<Authenticator.Errors />);
 
         await waitFor(() => {
-            expect(screen.queryByText("Technical error - Please retry")).toBeInTheDocument();
+            expect(screen.queryByText("Sorry, we can't log you in at the moment. Please try again later.")).toBeInTheDocument();
         });
     });
 
