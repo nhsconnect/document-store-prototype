@@ -27,7 +27,7 @@ resource "aws_cognito_user_pool" "pool" {
   }
 
   schema {
-    name                     = "custom:nhsid_nrbac_roles"
+    name                     = "nhsid_nrbac_roles"
     attribute_data_type      = "String"
     mutable                  = false
     required                 = false
