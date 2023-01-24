@@ -26,6 +26,19 @@ resource "aws_cognito_user_pool" "pool" {
     }
   }
 
+  schema {
+    name                     = "custom:nhsid_nrbac_roles"
+    attribute_data_type      = "String"
+    mutable                  = false
+    required                 = false
+    developer_only_attribute = false
+
+    string_attribute_constraints {
+      min_length = 1
+      max_length = 256
+    }
+  }
+
   count = var.cloud_only_service_instances
 }
 
@@ -97,6 +110,7 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
 
   attribute_mapping = {
     nhsid_user_orgs   = "custom:nhsid_user_orgs"
+    nhsid_nrbac_roles = "custom:nhsid_nrbac_roles"
   }
 
   count = var.cloud_only_service_instances
