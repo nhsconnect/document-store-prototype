@@ -60,33 +60,8 @@ resource "aws_cloudwatch_metric_alarm" "lambda_duration" {
   statistic           = "Maximum"
 }
 
-resource "aws_cloudwatch_log_metric_filter" "authoriser_memory_provisioned_log_metric_filter" {
-  name           = "prs_${var.environment}_authoriser_memory_provisioned_log_metric_filter"
-  log_group_name = "/aws/lambda/${aws_lambda_function.authoriser.function_name}"
-  pattern        = "filter @type = \"REPORT\" | stats max(@memorySize / 1024 / 1024) as memoryProvisionedMB"
-  metric_transformation {
-    name      = "MemoryProvisioned"
-    namespace = local.custom_metric_namespace
-    value     = "$memoryProvisionedMB"
-  }
-  count = var.cloud_only_service_instances
-}
-
-resource "aws_cloudwatch_log_metric_filter" "authoriser_memory_used_log_metric_filter" {
-  name           = "prs_${var.environment}_authoriser_memory_used_log_metric_filter"
-  log_group_name = "/aws/lambda/${aws_lambda_function.authoriser.function_name}"
-  pattern        = "filter @type = \"REPORT\" | stats max(@maxMemoryUsed / 1024 / 1024) as memoryUsedMB"
-  metric_transformation {
-    name      = "MemoryUsed"
-    namespace = local.custom_metric_namespace
-    value     = "$memoryUsedMB"
-  }
-  count = var.cloud_only_service_instances
-}
-
 locals {
-  custom_metric_namespace = "CustomMetrics"
-  lambdas                 = {
+  lambdas = {
     authoriser = {
       function_name = aws_lambda_function.authoriser.function_name
       timeout       = aws_lambda_function.authoriser.timeout
