@@ -1,7 +1,6 @@
 package uk.nhs.digital.docstore.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.hl7.fhir.r4.model.DateTimeType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -14,7 +13,10 @@ import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.helpers.DocumentBuilder;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -32,25 +34,34 @@ public class DocumentReferenceServiceTest {
     private AuditPublisher auditPublisher;
     @Mock
     private DocumentMetadataStore documentMetadataStore;
+    @Mock
+    private DocumentMetadataSerialiser serialiser;
 
     @Captor
     private ArgumentCaptor<AuditMessage> auditMessageCaptor;
 
     @Test
-    public void savesDocumentMetadataWithAuditing() throws JsonProcessingException, IllFormedPatentDetailsException {
+    public void savesDocumentMetadataWithAuditing() throws JsonProcessingException, IllFormedPatientDetailsException {
+        var clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setId("1");
         documentMetadata.setNhsNumber("1234567890");
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
-        documentMetadata.setCreated(DateTimeType.now().asStringValue());
-        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher);
-        var expectedSensitiveAuditMessage = new CreateDocumentMetadataAuditMessage(documentMetadata);
+        documentMetadata.setDocumentUploaded(false);
+        documentMetadata.setCreated(Instant.now().toString());
 
+        var document = DocumentBuilder.baseDocumentBuilder().build();
+
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, clock, serialiser);
+        var expectedSensitiveAuditMessage = new CreateDocumentMetadataAuditMessage(document);
+
+        when(serialiser.fromDocumentModel(document)).thenReturn(documentMetadata);
         when(documentMetadataStore.save(documentMetadata)).thenReturn(documentMetadata);
-        var actualDocumentMetadata = documentReferenceService.save(documentMetadata);
+        when(serialiser.toDocumentModel(documentMetadata)).thenReturn(document);
 
-        verify(documentMetadataStore).save(documentMetadata);
+        var savedDocument = documentReferenceService.save(document);
+
         verify(auditPublisher).publish(auditMessageCaptor.capture());
         var actualSensitiveAuditMessage = auditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
@@ -59,12 +70,12 @@ public class DocumentReferenceServiceTest {
                 .isEqualTo(expectedSensitiveAuditMessage);
         assertThat(actualSensitiveAuditMessage.getTimestamp())
                 .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
-        assertThat(actualDocumentMetadata).isEqualTo(documentMetadata);
+        assertThat(savedDocument).isEqualTo(document);
     }
 
     @Test
-    public void marksDocumentsUploadedWithAuditing() throws JsonProcessingException, IllFormedPatentDetailsException {
-        var location = "test.url";
+    public void marksDocumentsUploadedWithAuditing() throws JsonProcessingException, IllFormedPatientDetailsException {
+        var location = new DocumentLocation("s3://test/url");
         var clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
         var now = Instant.now(clock);
         var documentMetadata = new DocumentMetadata();
@@ -73,10 +84,14 @@ public class DocumentReferenceServiceTest {
         documentMetadata.setDescription("Document Title");
         documentMetadata.setContentType("pdf");
         documentMetadata.setIndexed(now.toString());
-        var expectedSensitiveAuditMessage = new DocumentUploadedAuditMessage(documentMetadata);
-        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, clock);
+
+        var document = DocumentBuilder.baseDocumentBuilder().build();
+
+        var expectedSensitiveAuditMessage = new DocumentUploadedAuditMessage(document);
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, clock, serialiser);
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(documentMetadata);
+        when(serialiser.toDocumentModel(documentMetadata)).thenReturn(document);
         documentReferenceService.markDocumentUploaded(location);
 
         verify(auditPublisher).publish(auditMessageCaptor.capture());
@@ -92,9 +107,9 @@ public class DocumentReferenceServiceTest {
     }
 
     @Test
-    public void doesNotMarkDocumentAsUploadedWhenMetadataIsNull() throws JsonProcessingException, IllFormedPatentDetailsException {
-        var location = "test.url";
-        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, Clock.systemUTC());
+    public void doesNotMarkDocumentAsUploadedWhenMetadataIsNull() throws JsonProcessingException, IllFormedPatientDetailsException {
+        var location = new DocumentLocation("s3://test/url");
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, Clock.systemUTC(), serialiser);
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(null);
         documentReferenceService.markDocumentUploaded(location);

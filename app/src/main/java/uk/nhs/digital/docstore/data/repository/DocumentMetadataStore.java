@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
@@ -19,7 +20,7 @@ public class DocumentMetadataStore extends DynamoDbConnection {
     public DocumentMetadataStore() {
         super();
     }
-
+    //TODO: Consider changing DocumentMetadata to Document
     public DocumentMetadataStore(DynamoDBMapper dynamodbMapper) {
         super(dynamodbMapper);
     }
@@ -28,13 +29,13 @@ public class DocumentMetadataStore extends DynamoDbConnection {
         return mapper.load(DocumentMetadata.class, id);
     }
 
-    public DocumentMetadata getByLocation(String location) {
+    public DocumentMetadata getByLocation(DocumentLocation location) {
         List<DocumentMetadata> items = mapper.scan(
                 DocumentMetadata.class,
                 new DynamoDBScanExpression()
                         .withFilterExpression("#loc = :location")
                         .withExpressionAttributeNames(Map.of("#loc", "Location"))
-                        .withExpressionAttributeValues(Map.of(":location", new AttributeValue(location)))
+                        .withExpressionAttributeValues(Map.of(":location", new AttributeValue(location.toString())))
                         .withConsistentRead(false));
         return items.size() > 0 ? items.get(0) : null;
     }

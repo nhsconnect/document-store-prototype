@@ -1,6 +1,6 @@
 package uk.nhs.digital.docstore.model;
 
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 
 import java.util.regex.Pattern;
 
@@ -8,11 +8,11 @@ public class NhsNumber {
     private static final Pattern PATTERN = Pattern.compile("^[0-9]{10}$");
     private final String value;
 
-    public NhsNumber(String value) throws IllFormedPatentDetailsException {
+    public NhsNumber(String value) throws IllFormedPatientDetailsException {
         if (PATTERN.matcher(value).find()) {
             this.value = value;
         } else {
-            throw new IllFormedPatentDetailsException("Invalid NHS Number");
+            throw new IllFormedPatientDetailsException("Invalid NHS Number");
         }
     }
 

@@ -4,13 +4,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import org.hl7.fhir.r4.model.Coding;
-import uk.nhs.digital.docstore.NHSDocumentReference;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @DynamoDBTable(tableName = "DocumentReferenceMetadata")
 @SuppressWarnings("unused")
@@ -110,21 +105,6 @@ public class DocumentMetadata {
 
     public void setType(List<String> type) {
         this.type = type;
-    }
-
-    public static DocumentMetadata from(NHSDocumentReference reference, String documentLocation) throws IllFormedPatentDetailsException {
-        var documentMetadata = new DocumentMetadata();
-        documentMetadata.setNhsNumber(reference.getNhsNumber().getValue());
-        documentMetadata.setContentType(reference.getContent().get(0).getAttachment().getContentType());
-        documentMetadata.setLocation(documentLocation);
-        documentMetadata.setDocumentUploaded(false);
-        documentMetadata.setDescription(reference.getDescription());
-        documentMetadata.setCreated(reference.getCreated().asStringValue());
-        documentMetadata.setType(reference.getType().getCoding()
-                .stream()
-                .map(Coding::getCode)
-                .collect(toList()));
-        return documentMetadata;
     }
 
     @Override

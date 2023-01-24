@@ -7,9 +7,9 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.InstantType;
-import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.NHSDocumentReference;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.model.Document;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRE
 class BundleMapper {
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
 
-    public Bundle toBundle(List<Document> documents) throws IllFormedPatentDetailsException {
+    public Bundle toBundle(List<Document> documents) throws IllFormedPatientDetailsException {
         var entries = new ArrayList<BundleEntryComponent>();
         for (Document document : documents) {
             BundleEntryComponent bundleEntryComponent = toBundleEntries(document);
@@ -35,13 +35,13 @@ class BundleMapper {
                 .setEntry(entries);
     }
 
-    private BundleEntryComponent toBundleEntries(Document document) throws IllFormedPatentDetailsException {
+    private BundleEntryComponent toBundleEntries(Document document) throws IllFormedPatientDetailsException {
         return new BundleEntryComponent()
                 .setFullUrl("/DocumentReference/" + document.getReferenceId())
                 .setResource(toDocumentReference(document));
     }
 
-    private DocumentReference toDocumentReference(Document document) throws IllFormedPatentDetailsException {
+    private DocumentReference toDocumentReference(Document document) throws IllFormedPatientDetailsException {
 
         var type = new CodeableConcept()
                 .setCoding(document.getType()
@@ -52,8 +52,8 @@ class BundleMapper {
                         .collect(toList()));
 
         return (DocumentReference) new NHSDocumentReference()
-                .setCreated(new DateTimeType(document.getCreated()))
-                .setIndexed(new InstantType(document.getIndexed()))
+                .setCreated(new DateTimeType(document.getCreated().toString()))
+                .setIndexed(new InstantType(document.getIndexed().toString()))
                 .setNhsNumber(document.getNhsNumber())
                 .setType(type)
                 .setDocStatus(document.isUploaded() ? FINAL : PRELIMINARY)

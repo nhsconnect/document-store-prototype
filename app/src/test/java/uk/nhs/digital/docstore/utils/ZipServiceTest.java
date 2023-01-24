@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.DocumentStore;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.helpers.DocumentBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,23 +34,14 @@ class ZipServiceTest {
         var s3Object = new S3ObjectInputStream(new ByteArrayInputStream(new byte[10]), new HttpGet());
         when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
 
-        var metadataList = getDocumentMetadataList();
+        var documentList =  List.of(DocumentBuilder.baseDocumentBuilder().build());
 
-        var result = zipService.zipDocuments(metadataList);
+        var result = zipService.zipDocuments(documentList);
 
         var fileNames = listZipEntryNames(result);
 
         assertThat(fileNames.size()).isEqualTo(1);
-        assertThat(fileNames.get(0)).isEqualTo(metadataList.get(0).getDescription());
-    }
-
-    private List<DocumentMetadata> getDocumentMetadataList() {
-        var metadata = new DocumentMetadata();
-        metadata.setDescription("File.pdf");
-        metadata.setLocation("location");
-        metadata.setDocumentUploaded(true);
-
-        return List.of(metadata);
+        assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getDescription());
     }
 
     public ArrayList<Object> listZipEntryNames(ByteArrayInputStream inputStream) throws IOException {

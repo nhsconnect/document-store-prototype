@@ -7,10 +7,9 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -42,23 +41,20 @@ public class DocumentStore {
         this.bucketName = bucketName;
     }
 
-    public URL generatePreSignedUrl(DocumentDescriptor descriptor) {
-        return client.generatePresignedUrl(descriptor.bucket, descriptor.path, getExpirationDate());
-    }
-
-    public URL generatePreSignedUrlForZip(DocumentDescriptor descriptor, String filename) {
-        var generatePresignedUrlRequest = new GeneratePresignedUrlRequest(descriptor.bucket, descriptor.path)
+    public URL generatePreSignedUrlForZip(DocumentLocation documentLocation, String filename) {
+        var generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, documentLocation.getPath())
                 .withExpiration(getExpirationDate())
                 .withResponseHeaders(new ResponseHeaderOverrides().withContentDisposition("attachment; filename=" + filename));
         return client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
-    public S3ObjectInputStream getObjectFromS3(DocumentMetadata metadata) {
-        return client.getObject(bucketName, DocumentDescriptor.from(metadata).getPath()).getObjectContent();
+    public S3ObjectInputStream getObjectFromS3(DocumentLocation documentLocation) {
+        return client.getObject(bucketName, documentLocation.getPath()).getObjectContent();
     }
 
-    public void addDocument(String documentKey, InputStream documentValue) {
+    public DocumentLocation addDocument(String documentKey, InputStream documentValue) {
         client.putObject(bucketName, documentKey, documentValue, new ObjectMetadata());
+        return new DocumentLocation(String.format("s3://%s/%s", bucketName, documentKey));
     }
 
     private Date getExpirationDate() {
@@ -67,26 +63,7 @@ public class DocumentStore {
         return Date.from(expirationDate);
     }
 
-    public static class DocumentDescriptor {
-        private final String bucket;
-        private final String path;
-
-        public DocumentDescriptor(String bucket, String path) {
-            this.bucket = bucket;
-            this.path = path;
-        }
-
-        public String toLocation() {
-            return "s3://" + bucket + "/" + path;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public static DocumentDescriptor from(DocumentMetadata metadata) {
-            URI location = URI.create(metadata.getLocation());
-            return new DocumentDescriptor(location.getHost(), location.getPath().substring(1));
-        }
+    public void deleteObjectAtLocation(DocumentLocation location) {
+        client.deleteObject(bucketName, location.getPath());
     }
 }

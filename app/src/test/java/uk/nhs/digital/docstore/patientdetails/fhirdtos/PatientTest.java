@@ -2,7 +2,7 @@ package uk.nhs.digital.docstore.patientdetails.fhirdtos;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Postcode;
 
 import java.time.LocalDate;
@@ -167,7 +167,7 @@ public class PatientTest {
     }
 
     @Test
-    void canCreatePatientDetailsFromFhirPatient() throws IllFormedPatentDetailsException {
+    void canCreatePatientDetailsFromFhirPatient() throws IllFormedPatientDetailsException {
         var nhsNumber = "9876543210";
         var familyName = "Doe";
         var givenName = List.of("Jane");

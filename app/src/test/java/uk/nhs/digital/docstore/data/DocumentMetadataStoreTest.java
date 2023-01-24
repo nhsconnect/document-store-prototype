@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.util.List;
@@ -35,7 +35,7 @@ class DocumentMetadataStoreTest {
     }
 
     @Test
-    void returnsDocumentReferenceWithMatchingId() throws IllFormedPatentDetailsException {
+    void returnsDocumentReferenceWithMatchingId() throws IllFormedPatientDetailsException {
         var id = "1234";
         var documentMetadata = theMetadata().withId(id).build();
 
@@ -46,7 +46,7 @@ class DocumentMetadataStoreTest {
     }
 
     @Test
-    void returnsNonDeletedDocumentMetadataListByNhsNumber() throws IllFormedPatentDetailsException {
+    void returnsNonDeletedDocumentMetadataListByNhsNumber() throws IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("9000000009");
         var documentMetadata = theMetadata().withNhsNumber(nhsNumber).withDeleted(null).build();
         var softDeletedDocumentMetadata = theMetadata().withNhsNumber(nhsNumber).withDeleted("2023-01-17T09:45:59.457620Z").build();

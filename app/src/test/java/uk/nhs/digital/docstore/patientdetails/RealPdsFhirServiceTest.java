@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
@@ -58,7 +58,7 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
+    void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatientDetailsException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         NhsNumber nhsNumber = new NhsNumber("9000000009");
@@ -85,7 +85,7 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
+    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns400() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatientDetailsException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = new NhsNumber("9000000000");
@@ -109,7 +109,7 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
+    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturns404() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatientDetailsException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = new NhsNumber("9111231130");
@@ -134,7 +134,7 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
+    void makesObservedCallToPdsAndThrowExceptionWhenPdsFhirReturnsAnyOtherErrorCode() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatientDetailsException {
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = new NhsNumber("9111231130");
@@ -157,7 +157,7 @@ class RealPdsFhirServiceTest {
     }
 
     @Test
-    void makesCallToGetAccessTokenTwiceIfTokenHasExpired() throws MissingEnvironmentVariableException, JsonProcessingException, IllFormedPatentDetailsException {
+    void makesCallToGetAccessTokenTwiceIfTokenHasExpired() throws MissingEnvironmentVariableException, JsonProcessingException, IllFormedPatientDetailsException {
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = new NhsNumber("9000000009");
         var accessToken = "token";

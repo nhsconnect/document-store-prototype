@@ -17,10 +17,11 @@ import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.create.CreateDocumentReferenceRequestValidator;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.filestorage.GeneratePresignedUrlRequestFactory;
-import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.Document;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
@@ -48,7 +49,11 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
     private final GeneratePresignedUrlRequestFactory requestFactory = new GeneratePresignedUrlRequestFactory(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
 
     public CreateDocumentReferenceHandler() {
-        this(new ApiConfig(), new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher()), CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION));
+        this(
+                new ApiConfig(),
+                new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher(), new DocumentMetadataSerialiser()),
+                CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION)
+        );
     }
 
     public CreateDocumentReferenceHandler(ApiConfig apiConfig, DocumentReferenceService documentReferenceService, AmazonS3 s3client) {
@@ -61,7 +66,7 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-        DocumentMetadata savedDocumentMetadata;
+        Document savedDocument;
         URL presignedS3Url;
 
         Tracer.setMDCContext(context);
@@ -73,18 +78,20 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
             var inputDocumentReference = jsonParser.parseResource(NHSDocumentReference.class, input.getBody());
             requestValidator.validate(inputDocumentReference);
 
+            var document = inputDocumentReference.parse();
+
             String s3ObjectKey = CommonUtils.generateRandomUUIDString();
             var s3Location = "s3://" + System.getenv("DOCUMENT_STORE_BUCKET_NAME") + "/" + s3ObjectKey;
-            var metadata = DocumentMetadata.from(inputDocumentReference, s3Location);
+            document.setLocation(new DocumentLocation(s3Location));
 
             LOGGER.debug("Saving DocumentReference to DynamoDB");
             var uploadRequest = requestFactory.makeDocumentUploadRequest(s3ObjectKey);
             presignedS3Url = s3client.generatePresignedUrl(uploadRequest);
-            savedDocumentMetadata = documentReferenceService.save(metadata);
+            savedDocument = documentReferenceService.save(document);
 
             LOGGER.debug("Generating response body");
             var type = new CodeableConcept()
-                    .setCoding(savedDocumentMetadata.getType()
+                    .setCoding(savedDocument.getType()
                             .stream()
                             .map(code -> new Coding()
                                     .setCode(code)
@@ -92,21 +99,21 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
                             .collect(toList()));
 
             var resource = new NHSDocumentReference()
-                    .setCreated(new DateTimeType(savedDocumentMetadata.getCreated()))
-                    .setNhsNumber(new NhsNumber(savedDocumentMetadata.getNhsNumber()))
+                    .setCreated(new DateTimeType(savedDocument.getCreated().toString()))
+                    .setNhsNumber(savedDocument.getNhsNumber())
                     .addContent(new NHSDocumentReference.DocumentReferenceContentComponent()
                             .setAttachment(new Attachment()
                                     .setUrl(presignedS3Url.toString())
-                                    .setContentType(savedDocumentMetadata.getContentType())))
+                                    .setContentType(savedDocument.getContentType())))
                     .setType(type)
-                    .setDocStatus(savedDocumentMetadata.isDocumentUploaded() ? FINAL : PRELIMINARY)
-                    .setDescription(savedDocumentMetadata.getDescription())
-                    .setId(savedDocumentMetadata.getId());
+                    .setDocStatus(savedDocument.isUploaded() ? FINAL : PRELIMINARY)
+                    .setDescription(savedDocument.getDescription())
+                    .setId(savedDocument.getReferenceId());
 
             var resourceAsJson = jsonParser.encodeResourceToString(resource);
 
             LOGGER.debug("Processing finished - about to return the response");
-            return apiConfig.getApiGatewayResponse(201, resourceAsJson, "POST", "DocumentReference/" + savedDocumentMetadata.getId());
+            return apiConfig.getApiGatewayResponse(201, resourceAsJson, "POST", "DocumentReference/" + savedDocument.getReferenceId());
 
         } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);

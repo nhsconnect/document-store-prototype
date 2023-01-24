@@ -11,9 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
+import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public class CreateDocumentReferenceInlineTest {
     public void setUp() {
         handler = new CreateDocumentReferenceHandler(
                 new StubbedApiConfig("http://ui-url"),
-                new DocumentReferenceService(new DocumentMetadataStore(dynamoDBMapper), auditPublisher),
+                new DocumentReferenceService(new DocumentMetadataStore(dynamoDBMapper), auditPublisher, new DocumentMetadataSerialiser()),
                 s3Client
         );
         requestBuilder = new RequestEventBuilder();

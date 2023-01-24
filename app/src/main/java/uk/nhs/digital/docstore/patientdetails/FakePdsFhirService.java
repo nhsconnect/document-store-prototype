@@ -3,7 +3,7 @@ package uk.nhs.digital.docstore.patientdetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
@@ -22,7 +22,7 @@ public class FakePdsFhirService implements PdsFhirService {
         this.sensitiveIndex = sensitiveIndex;
     }
 
-    public PatientDetails fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException, IllFormedPatentDetailsException {
+    public PatientDetails fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException, IllFormedPatientDetailsException {
         var currentPeriod = new Period(LocalDate.now().minusYears(1), null);
         var nhsNumberValue = nhsNumber.getValue();
         switch (nhsNumberValue) {

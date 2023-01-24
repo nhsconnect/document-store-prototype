@@ -20,7 +20,8 @@ import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
 import uk.nhs.digital.docstore.documentmanifest.CreateDocumentManifestByNhsNumberHandler;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentManifestService;
 
@@ -63,10 +64,14 @@ public class CreateDocumentManifestInlineTest {
     }
 
     @Test
-    void uploadsZipOfAllDocsAndSavesMetadataForGivenNhsNumber() throws MalformedURLException, IllFormedPatentDetailsException {
+    void uploadsZipOfAllDocsAndSavesMetadataForGivenNhsNumber() throws MalformedURLException, IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("9000000009");
         var presignedUrl = "http://presigned-url";
-        var metadataList = List.of(createMetadata("some document"), createMetadata("another document"));
+        var metadataBuilder = DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true);
+        var metadataList = List.of(
+                metadataBuilder.withDescription("Some document").build(),
+                metadataBuilder.withDescription("another document").build()
+        );
         var requestEvent = createRequestEvent(nhsNumber);
 
         when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
@@ -82,11 +87,11 @@ public class CreateDocumentManifestInlineTest {
     }
 
     @Test
-    void sendsAuditMessageAfterZipIsUploadedSuccessfully() throws MalformedURLException, JsonProcessingException, IllFormedPatentDetailsException {
+    void sendsAuditMessageAfterZipIsUploadedSuccessfully() throws MalformedURLException, JsonProcessingException, IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("9000000009");
         var presignedUrl = "http://presigned-url";
         var requestEvent = createRequestEvent(nhsNumber);
-        var metadataList = List.of(createMetadata("some document"));
+        var metadataList = List.of(DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true).build());
 
         when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
         when(s3Client.getObject(anyString(), anyString())).thenReturn(new S3Object());

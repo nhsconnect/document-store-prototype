@@ -1,6 +1,6 @@
 package uk.nhs.digital.docstore;
 
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
@@ -35,7 +35,7 @@ public class NHSNumberSearchParameterForm {
         isValid = true;
     }
 
-    public NhsNumber getNhsNumber() throws IllFormedPatentDetailsException {
+    public NhsNumber getNhsNumber() throws IllFormedPatientDetailsException {
         if (!isValid){
             validate();
         }

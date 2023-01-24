@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
 import uk.nhs.digital.docstore.model.Postcode;
@@ -94,7 +94,7 @@ public class Patient {
         }
     }
 
-    public PatientDetails parse() throws IllFormedPatentDetailsException {
+    public PatientDetails parse() throws IllFormedPatientDetailsException {
         var name = this.getCurrentUsualName();
         var currentHomeAddress = this.getCurrentHomeAddress();
         return new PatientDetails(

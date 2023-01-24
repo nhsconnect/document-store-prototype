@@ -8,22 +8,34 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.DocumentStore;
 import uk.nhs.digital.docstore.audit.message.DeletedAllDocumentsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.helpers.DocumentBuilder;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder.theMetadata;
 
 
 @ExtendWith(MockitoExtension.class)
 class DocumentDeletionServiceTest {
     @Mock
     AuditPublisher splunkPublisher;
+    @Mock
+    DocumentStore documentStore;
+    @Mock
+    DocumentMetadataStore metadataStore;
+    @Mock
+    DocumentMetadataSerialiser serialiser;
+
 
     @Captor
     private ArgumentCaptor<DeletedAllDocumentsAuditMessage> auditMessageArgumentCaptor;
@@ -32,17 +44,25 @@ class DocumentDeletionServiceTest {
 
     @BeforeEach
     void setUp() {
-        documentDeletionService = new DocumentDeletionService(splunkPublisher);
+        documentDeletionService = new DocumentDeletionService(splunkPublisher, documentStore, metadataStore, serialiser);
     }
 
     @Test
-    void sendsAuditMessage() throws JsonProcessingException, IllFormedPatentDetailsException {
+    void shouldDeleteAllDocumentsForPatientAndSendAuditMessage() throws IllFormedPatientDetailsException, JsonProcessingException {
         var nhsNumber = new NhsNumber("0123456789");
-        var documentMetadataList = List.of(new DocumentMetadata());
-        var expectedAuditMessage = new DeletedAllDocumentsAuditMessage(nhsNumber, documentMetadataList);
+        var document = DocumentBuilder.baseDocumentBuilder().build();
+        var documentList = List.of(document);
+        var expectedAuditMessage = new DeletedAllDocumentsAuditMessage(nhsNumber, documentList);
+        var metadata = theMetadata().build();
+        var metadataList = List.of(metadata);
 
-        documentDeletionService.audit(nhsNumber, documentMetadataList);
+        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
+        when(metadataStore.deleteAndSave(metadataList)).thenReturn(metadataList);
+        when(serialiser.toDocumentModel(metadata)).thenReturn(document);
 
+        documentDeletionService.deleteAllDocumentsForPatient(nhsNumber);
+
+        verify(documentStore).deleteObjectAtLocation(document.getLocation());
         verify(splunkPublisher).publish(auditMessageArgumentCaptor.capture());
         var actualAuditMessage = auditMessageArgumentCaptor.getValue();
         assertThat(actualAuditMessage.getDescription()).isEqualTo("Deleted documents");
@@ -51,4 +71,5 @@ class DocumentDeletionServiceTest {
                 .comparingOnlyFields("nhsNumber", "fileMetadataList")
                 .isEqualTo(expectedAuditMessage);
     }
+
 }

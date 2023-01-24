@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.helpers.DocumentBuilder;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
+import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.util.List;
@@ -23,55 +25,32 @@ class DocumentMetadataSearchServiceTest {
 
     @Mock
     private DocumentMetadataStore metadataStore;
+    @Mock
+    private DocumentMetadataSerialiser serialiser;
     
     private DocumentMetadataSearchService searchService;
 
     @BeforeEach
     void setUp() {
-        searchService = new DocumentMetadataSearchService(metadataStore);
+        searchService = new DocumentMetadataSearchService(metadataStore, serialiser);
     }
 
     @Test
-    void supportsDifferentIdentifierSyntax() throws IllFormedPatentDetailsException {
+    void findMatchingDocumentMetadataObjectsAndSerialisesToDocuments() throws IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("1234567890");
-        var metadataTemplate = theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(true);
+        var metadata = theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(true).build();
+        var document = DocumentBuilder.baseDocumentBuilder().build();
         
-        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of(metadataTemplate.build()));
-        List<DocumentMetadata> documents = searchService.findMetadataByNhsNumber(nhsNumber);
+        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of(metadata));
+        when(serialiser.toDocumentModel(metadata)).thenReturn(document);
 
-        assertThat(documents)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(metadataTemplate.build());
+        List<Document> documents = searchService.findMetadataByNhsNumber(nhsNumber);
+
+        assertThat(documents.get(0)).isEqualTo(document);
     }
 
     @Test
-    void supportsDifferentSearchSyntax() throws IllFormedPatentDetailsException {
-        var nhsNumber = new NhsNumber("9000000009");
-        var metadataTemplate = theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(true);
-        
-        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of(metadataTemplate.build()));
-        List<DocumentMetadata> documents = searchService.findMetadataByNhsNumber(nhsNumber);
-
-        assertThat(documents)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(metadataTemplate.build());
-    }
-
-    @Test
-    void omitsPreSignedUrlIfDocumentIsNotAvailable() throws IllFormedPatentDetailsException {
-        var nhsNumber = new NhsNumber("9000000009");
-        var metadataTemplate = theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(false);
-        
-        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of(metadataTemplate.build()));
-        List<DocumentMetadata> documents = searchService.findMetadataByNhsNumber(nhsNumber);
-
-        assertThat(documents)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(metadataTemplate.build());
-    }
-
-    @Test
-    void logsTheSearchActionObfuscatingPii() throws IllFormedPatentDetailsException {
+    void logsTheSearchActionObfuscatingPii() throws IllFormedPatientDetailsException {
         var testLogAppender = TestLogAppender.addTestLogAppender();
         var nhsNumber = new NhsNumber("1234567890");
         

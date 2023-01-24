@@ -1,6 +1,6 @@
 package uk.nhs.digital.docstore.audit;
 
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.model.Document;
 
 public class FileMetadata {
     private final String id;
@@ -25,7 +25,7 @@ public class FileMetadata {
         return fileType;
     }
 
-    public static FileMetadata fromDocumentMetadata(DocumentMetadata documentMetadata){
-        return new FileMetadata(documentMetadata.getId(), documentMetadata.getDescription(), documentMetadata.getContentType());
+    public static FileMetadata fromDocument(Document document){
+        return new FileMetadata(document.getReferenceId(), document.getDescription(), document.getContentType());
     }
 }

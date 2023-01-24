@@ -1,7 +1,7 @@
 package uk.nhs.digital.docstore;
 
 import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.exceptions.InvalidSubjectIdentifierException;
 import uk.nhs.digital.docstore.exceptions.MissingSearchParametersException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedSubjectIdentifierSystemException;
@@ -59,7 +59,7 @@ public class NHSNumberSearchParameterFormTest {
     }
 
     @Test
-    void returnNhsNumberReturnsNhsNumberIfSubjectIdentifierIsValid() throws IllFormedPatentDetailsException {
+    void returnNhsNumberReturnsNhsNumberIfSubjectIdentifierIsValid() throws IllFormedPatientDetailsException {
         Map<String, String> searchParameters =  Map.of("subject:identifier","https://fhir.nhs.uk/Id/nhs-number|9000000009");
         NHSNumberSearchParameterForm nhsNumberSearchParameterForm = new NHSNumberSearchParameterForm(searchParameters);
 

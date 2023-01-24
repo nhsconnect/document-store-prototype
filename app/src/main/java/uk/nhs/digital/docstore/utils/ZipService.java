@@ -5,7 +5,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.DocumentStore;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.model.Document;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -28,19 +28,19 @@ public class ZipService {
         this.documentStore = documentStore;
     }
 
-    public ByteArrayInputStream zipDocuments(List<DocumentMetadata> documentMetadataList) throws IOException {
+    public ByteArrayInputStream zipDocuments(List<Document> documentList) throws IOException {
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
         zipOutputStream.setLevel(DEFLATED);
 
         LOGGER.debug("Zipping documents...");
 
-        for (DocumentMetadata metadata : documentMetadataList) {
-            if (metadata.isDocumentUploaded()){
-                LOGGER.debug("Document ID: "+ metadata.getId()+ ", S3 location: "+ metadata.getLocation());
-                zipOutputStream.putNextEntry(new ZipEntry(metadata.getDescription()));
+        for (Document document : documentList) {
+            if (document.isUploaded()){
+                LOGGER.debug("Document ID: "+ document.getReferenceId()+ ", S3 location: "+ document.getLocation());
+                zipOutputStream.putNextEntry(new ZipEntry(document.getDescription()));
 
-                IOUtils.copy(documentStore.getObjectFromS3(metadata), zipOutputStream);
+                IOUtils.copy(documentStore.getObjectFromS3(document.getLocation()), zipOutputStream);
 
                 zipOutputStream.closeEntry();
             }

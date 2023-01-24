@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Void> {
@@ -20,7 +22,7 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
 
     @SuppressWarnings("unused")
     public DocumentUploadedEventHandler() {
-        this(new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher()));
+        this(new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher(), new DocumentMetadataSerialiser()));
     }
 
     public DocumentUploadedEventHandler(DocumentReferenceService documentReferenceService) {
@@ -41,9 +43,9 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
                 var objectKey = s3.getObject().getKey();
                 var location = String.format("s3://%s/%s", bucketName, objectKey);
 
-                documentReferenceService.markDocumentUploaded(location);
+                documentReferenceService.markDocumentUploaded(new DocumentLocation(location));
             }
-        } catch (JsonProcessingException | IllFormedPatentDetailsException exception) {
+        } catch (JsonProcessingException | IllFormedPatientDetailsException exception) {
             LOGGER.error(exception.getMessage(), exception);
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage(), exception);

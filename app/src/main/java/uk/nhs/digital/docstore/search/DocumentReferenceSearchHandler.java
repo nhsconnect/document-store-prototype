@@ -10,16 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-import uk.nhs.digital.docstore.Document;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 
 import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
-import static java.util.stream.Collectors.toList;
 
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -44,7 +43,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         this.fhirContext.setPerformanceOptions(DEFERRED_MODEL_SCANNING);
 
         DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-        this.searchService = new DocumentMetadataSearchService(metadataStore);
+        this.searchService = new DocumentMetadataSearchService(metadataStore, new DocumentMetadataSerialiser());
     }
 
     @Override
@@ -60,8 +59,7 @@ public class DocumentReferenceSearchHandler implements RequestHandler<APIGateway
         try {
             var nhsNumberSearchParameterForm = new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
             var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
-            var documentMetadata = searchService.findMetadataByNhsNumber(nhsNumber);
-            var documents = documentMetadata.stream().map(Document::new).collect(toList());
+            var documents = searchService.findMetadataByNhsNumber(nhsNumber);
 
             LOGGER.debug("Generating response contents");
             bundle = bundleMapper.toBundle(documents);

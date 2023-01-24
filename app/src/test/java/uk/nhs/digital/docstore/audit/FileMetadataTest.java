@@ -1,27 +1,37 @@
 package uk.nhs.digital.docstore.audit;
 
 import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.model.Document;
+import uk.nhs.digital.docstore.model.NhsNumber;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 class FileMetadataTest {
     @Test
-    public void shouldCreateFileMetadataFromDocumentMetadata() {
-        var documentMetadataId = "2";
+    public void shouldCreateFileMetadataFromDocumentMetadata() throws IllFormedPatientDetailsException {
+        var documentId = "2";
         var documentTitle = "Document Title";
         var contentType = "pdf";
 
-        var documentMetadata = new DocumentMetadata();
-        documentMetadata.setId(documentMetadataId);
-        documentMetadata.setDescription(documentTitle);
-        documentMetadata.setContentType(contentType);
+        var document = new Document(
+                documentId,
+                new NhsNumber("0123456789"),
+                contentType,
+                null,
+                documentTitle,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
 
-        var fileMetadata = FileMetadata.fromDocumentMetadata(documentMetadata);
+        var fileMetadata = FileMetadata.fromDocument(document);
 
         assertThat(fileMetadata.getFileName()).isEqualTo(documentTitle);
-        assertThat(fileMetadata.getId()).isEqualTo(documentMetadataId);
+        assertThat(fileMetadata.getId()).isEqualTo(documentId);
         assertThat(fileMetadata.getFileType()).isEqualTo(contentType);
     }
 

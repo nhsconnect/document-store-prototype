@@ -17,6 +17,8 @@ import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.entity.DocumentZipTrace;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentManifestService;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
@@ -65,7 +67,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
         this.documentManifestService = documentManifestService;
         this.dbTimeToLive = dbTimeToLive;
 
-        metadataSearchService = new DocumentMetadataSearchService(metadataStore);
+        metadataSearchService = new DocumentMetadataSearchService(metadataStore, new DocumentMetadataSerialiser());
         zipService = new ZipService(documentStore);
     }
 
@@ -81,13 +83,15 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
             var fileName = "patient-record-" + nhsNumber.getValue() + ".zip";
 
             var zipInputStream = zipService.zipDocuments(documentMetadataList);
-            documentStore.addDocument(documentPath, zipInputStream);
-            var descriptor = new DocumentStore.DocumentDescriptor(System.getenv("DOCUMENT_STORE_BUCKET_NAME"), documentPath);
-            zipTraceStore.save(getDocumentZipTrace(descriptor.toLocation()));
-            var preSignedUrl = documentStore.generatePreSignedUrlForZip(descriptor, fileName);
-            documentManifestService.audit(nhsNumber, documentMetadataList);
-            var responseBody = getJsonBody(preSignedUrl.toString());
 
+            var documentLocation = documentStore.addDocument(documentPath, zipInputStream);
+
+            zipTraceStore.save(getDocumentZipTrace(documentLocation));
+
+            var preSignedUrl = documentStore.generatePreSignedUrlForZip(documentLocation, fileName);
+            documentManifestService.audit(nhsNumber, documentMetadataList);
+
+            var responseBody = getJsonBody(preSignedUrl.toString());
             return apiConfig.getApiGatewayResponse(200, responseBody, "GET", null);
         } catch (Exception exception) {
             return errorResponseGenerator.errorResponse(exception);
@@ -96,13 +100,13 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
         }
     }
 
-    private DocumentZipTrace getDocumentZipTrace(String location) {
+    private DocumentZipTrace getDocumentZipTrace(DocumentLocation location) {
         long timeToLive = Long.parseLong(dbTimeToLive);
         var expDate = Instant.now().plus(timeToLive, ChronoUnit.DAYS);
         var documentZipTrace = new DocumentZipTrace();
         documentZipTrace.setCorrelationId(Tracer.getCorrelationId());
         documentZipTrace.setCreatedAt(Instant.now().toString());
-        documentZipTrace.setLocation(location);
+        documentZipTrace.setLocation(location.toString());
         documentZipTrace.setExpiryDate(expDate.getEpochSecond());
 
         return documentZipTrace;

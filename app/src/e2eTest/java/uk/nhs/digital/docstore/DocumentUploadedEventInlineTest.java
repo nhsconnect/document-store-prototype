@@ -11,10 +11,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
-import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 import java.util.List;
@@ -22,6 +21,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder.theMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class DocumentUploadedEventInlineTest {
@@ -46,34 +46,21 @@ public class DocumentUploadedEventInlineTest {
 
     @BeforeEach
     void setUp() {
-        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher);
+        var documentReferenceService = new DocumentReferenceService(documentMetadataStore, auditPublisher, new DocumentMetadataSerialiser());
 
         documentUploadedEventHandler = new DocumentUploadedEventHandler(documentReferenceService);
     }
 
     @Test
-    void sendsAuditMessageToSqsWhenThereAreRecords() throws JsonProcessingException, IllFormedPatentDetailsException {
-        var id = "some-id";
-        var fileName = "some-file-name";
-        var fileType = "some-file-type";
-        var nhsNumber = new NhsNumber("1234567890");
+    void sendsAuditMessageToSqsWhenThereAreRecords() throws JsonProcessingException, IllFormedPatientDetailsException {
 
         when(s3Event.getRecords()).thenReturn(List.of(s3EventNotificationRecord));
         when(s3EventNotificationRecord.getS3()).thenReturn(s3Entity);
         when(s3Entity.getBucket()).thenReturn(s3BucketEntity);
         when(s3Entity.getObject()).thenReturn(s3ObjectEntity);
-        when(documentMetadataStore.getByLocation(any())).thenReturn(createMetadata(id, nhsNumber, fileName, fileType));
+        when(documentMetadataStore.getByLocation(any())).thenReturn(theMetadata().build());
         documentUploadedEventHandler.handleRequest(s3Event, context);
 
         verify(auditPublisher).publish(any(DocumentUploadedAuditMessage.class));
-    }
-
-    private DocumentMetadata createMetadata(String id, NhsNumber nhsNumber, String fileName, String fileType) {
-        var metadata = new DocumentMetadata();
-        metadata.setId(id);
-        metadata.setNhsNumber(nhsNumber.getValue());
-        metadata.setDescription(fileName);
-        metadata.setContentType(fileType);
-        return metadata;
     }
 }

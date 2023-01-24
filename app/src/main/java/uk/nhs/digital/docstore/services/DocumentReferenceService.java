@@ -6,9 +6,11 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
 import uk.nhs.digital.docstore.audit.message.DocumentUploadedAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.model.Document;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -19,25 +21,32 @@ public class DocumentReferenceService {
     private final DocumentMetadataStore metadataStore;
     private final AuditPublisher sensitiveIndex;
     private final Clock clock;
+    private final DocumentMetadataSerialiser serialiser;
 
-    public DocumentReferenceService(DocumentMetadataStore store, AuditPublisher sensitiveIndex) {
-        this(store, sensitiveIndex, Clock.systemUTC());
+    public DocumentReferenceService(DocumentMetadataStore store, AuditPublisher sensitiveIndex, DocumentMetadataSerialiser serialiser) {
+        this(store, sensitiveIndex, Clock.systemUTC(), serialiser);
     }
 
-    public DocumentReferenceService(DocumentMetadataStore documentMetadataStore, AuditPublisher sensitiveIndex, Clock clock) {
+    public DocumentReferenceService(
+            DocumentMetadataStore documentMetadataStore,
+            AuditPublisher sensitiveIndex,
+            Clock clock,
+            DocumentMetadataSerialiser serialiser
+            ) {
         this.metadataStore = documentMetadataStore;
         this.sensitiveIndex = sensitiveIndex;
         this.clock = clock;
+        this.serialiser = serialiser;
     }
 
-    public DocumentMetadata save(DocumentMetadata documentMetadata) throws JsonProcessingException, IllFormedPatentDetailsException {
-        documentMetadata = metadataStore.save(documentMetadata);
-        sensitiveIndex.publish(new CreateDocumentMetadataAuditMessage(documentMetadata));
+    public Document save(Document document) throws JsonProcessingException, IllFormedPatientDetailsException {
+        var documentMetadata = metadataStore.save(serialiser.fromDocumentModel(document));
+        sensitiveIndex.publish(new CreateDocumentMetadataAuditMessage(document));
 
-        return documentMetadata;
+        return serialiser.toDocumentModel(documentMetadata);
     }
 
-    public void markDocumentUploaded(String location) throws JsonProcessingException, IllFormedPatentDetailsException {
+    public void markDocumentUploaded(DocumentLocation location) throws JsonProcessingException, IllFormedPatientDetailsException {
         var metadata = metadataStore.getByLocation(location);
         if (metadata != null) {
             metadata.setDocumentUploaded(true);
@@ -45,7 +54,7 @@ public class DocumentReferenceService {
 
             LOGGER.debug("Updating DocumentReference {} to uploaded", metadata.getId());
             metadataStore.save(metadata);
-            sensitiveIndex.publish(new DocumentUploadedAuditMessage(metadata));
+            sensitiveIndex.publish(new DocumentUploadedAuditMessage(serialiser.toDocumentModel(metadata)));
         }
     }
 }
