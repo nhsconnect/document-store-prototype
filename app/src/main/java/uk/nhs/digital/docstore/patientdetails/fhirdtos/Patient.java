@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
+import uk.nhs.digital.docstore.model.Postcode;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,10 +18,10 @@ import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Patient {
-    private String id;
-    private String birthDate;
-    private List<Address> addresses;
-    private List<Name> names;
+    private final String id;
+    private final String birthDate;
+    private final List<Address> addresses;
+    private final List<Name> names;
 
     private static final Logger logger = LoggerFactory.getLogger(Patient.class);
 
@@ -95,12 +96,12 @@ public class Patient {
 
     public PatientDetails parse() throws IllFormedPatentDetailsException {
         var name = this.getCurrentUsualName();
-        var address = this.getCurrentHomeAddress();
+        var currentHomeAddress = this.getCurrentHomeAddress();
         return new PatientDetails(
                 name.map(Name::getGiven).orElse(null),
                 name.map(Name::getFamily).orElse(null),
                 this.getBirthDate(),
-                address.map(Address::getPostalCode).orElse(null),
+                currentHomeAddress.map((address) -> new Postcode(address.getPostalCode())).orElse(null),
                 new NhsNumber(this.getId())
         );
     }

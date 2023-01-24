@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.patientdetails.fhirdtos;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatentDetailsException;
+import uk.nhs.digital.docstore.model.Postcode;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -184,7 +185,7 @@ public class PatientTest {
         assertThat(patientDetails.getBirthDate()).isEqualTo(birthDate);
         assertThat(patientDetails.getFamilyName()).isEqualTo(familyName);
         assertThat(patientDetails.getGivenName()).isEqualTo(givenName);
-        assertThat(patientDetails.getPostalCode()).isEqualTo(postalCode);
+        assertThat(patientDetails.getPostalCode()).isEqualTo(new Postcode(postalCode));
         assertThat(patientDetails.getNhsNumber().getValue()).isEqualTo(nhsNumber);
     }
 }
