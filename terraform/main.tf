@@ -137,7 +137,7 @@ resource "aws_iam_role" "authoriser_execution_role" {
     Version   = "2012-10-17"
     Statement = [
       {
-        Action    = ["sts:AssumeRole", "iam:UpdateAssumeRolePolicy"]
+        Action    = "sts:AssumeRole"
         Effect    = "Allow"
         Sid       = ""
         Principal = {
