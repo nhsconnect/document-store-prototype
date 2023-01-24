@@ -25,6 +25,7 @@ provider "aws" {
     lambda     = var.aws_endpoint
     s3         = var.aws_endpoint
     sqs        = var.aws_endpoint
+    logs       = var.aws_endpoint
   }
 }
 
@@ -101,7 +102,7 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   type          = "COGNITO_USER_POOLS"
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   provider_arns = var.cloud_only_service_instances > 0 ? [
-  for pool_arn in aws_cognito_user_pool.pool[*].arn :pool_arn
+    for pool_arn in aws_cognito_user_pool.pool[*].arn :pool_arn
   ] : [
     ""
   ]
