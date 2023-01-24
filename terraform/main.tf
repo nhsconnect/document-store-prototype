@@ -178,7 +178,7 @@ resource "aws_lambda_function" "authoriser" {
           local.create_document_reference_invocation_arn,
         ]
       })
-      COGNITO_PUBLIC_KEY_URL = var.cloud_only_service_instances > 0 ? "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.pool[0].id}/.well-known/jwks.json" : ""
+      COGNITO_PUBLIC_KEY_URL = var.cloud_only_service_instances > 0 ? "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.pool[0].id}" : ""
       COGNITO_KEY_ID         = var.cognito_key_id
     }
   }
