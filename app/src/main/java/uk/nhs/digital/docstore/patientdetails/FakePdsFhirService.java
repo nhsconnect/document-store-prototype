@@ -5,6 +5,7 @@ import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.PatientDetails;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Address;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Name;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
@@ -20,7 +21,7 @@ public class FakePdsFhirService implements PdsFhirService {
         this.sensitiveIndex = sensitiveIndex;
     }
 
-    public Patient fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException {
+    public PatientDetails fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException {
         var currentPeriod = new Period(LocalDate.now().minusYears(1), null);
 
         switch (nhsNumber.getValue()) {
@@ -29,7 +30,7 @@ public class FakePdsFhirService implements PdsFhirService {
 
                 sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, 200));
 
-                return new Patient(nhsNumber, "2010-10-22", null, List.of(restrictedPatientName));
+                return new Patient(nhsNumber, "2010-10-22", null, List.of(restrictedPatientName)).parse();
             case "9111231130":
                 sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, 500));
 
@@ -40,7 +41,7 @@ public class FakePdsFhirService implements PdsFhirService {
 
                 sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, 200));
 
-                return new Patient(nhsNumber, "2010-10-22", List.of(defaultAddress), List.of(defaultName));
+                return new Patient(nhsNumber, "2010-10-22", List.of(defaultAddress), List.of(defaultName)).parse();
         }
     }
 }

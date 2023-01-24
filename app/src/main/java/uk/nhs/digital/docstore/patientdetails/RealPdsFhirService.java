@@ -9,6 +9,7 @@ import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.PatientDetails;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
 
@@ -33,7 +34,7 @@ public class RealPdsFhirService implements PdsFhirService {
         this.authService = authService;
     }
 
-    public Patient fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException {
+    public PatientDetails fetchPatientDetails(NhsNumber nhsNumber) throws JsonProcessingException, MissingEnvironmentVariableException {
         var accessToken = authService.retrieveAccessToken();
 
         var pdsResponse = makeRequestWithPdsAndSendAuditMessage(accessToken, nhsNumber);
@@ -49,11 +50,12 @@ public class RealPdsFhirService implements PdsFhirService {
         return handleResponse(pdsResponse, nhsNumber);
     }
 
-    private Patient handleResponse(HttpResponse<String> pdsResponse, NhsNumber nhsNumber) {
+    private PatientDetails handleResponse(HttpResponse<String> pdsResponse, NhsNumber nhsNumber) {
         var statusCode = pdsResponse.statusCode();
 
         if (pdsResponse.statusCode() == 200) {
-            return Patient.parseFromJson(pdsResponse.body());
+            var fhirPatient = Patient.parseFromJson(pdsResponse.body());
+            return fhirPatient.parse();
         }
 
         if (statusCode == 400) {

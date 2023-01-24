@@ -56,9 +56,8 @@ public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayPro
             var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
                     ? new FakePdsFhirService(sensitiveIndex)
                     : new RealPdsFhirService(patientSearchConfig, sensitiveIndex, authService);
-            var fhirPatient = pdsFhirClient.fetchPatientDetails(nhsNumber);
+            var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
-            var patientDetails = fhirPatient.parse();
             LOGGER.debug("Generating response body");
             var json = convertToJson(patientDetails);
             var body = getBody(json);

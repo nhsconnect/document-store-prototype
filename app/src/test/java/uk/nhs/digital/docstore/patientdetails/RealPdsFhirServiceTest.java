@@ -17,11 +17,8 @@ import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
 import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.PatientDetails;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
-import uk.nhs.digital.docstore.patientdetails.fhirdtos.Address;
-import uk.nhs.digital.docstore.patientdetails.fhirdtos.Name;
-import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
-import uk.nhs.digital.docstore.patientdetails.fhirdtos.Period;
 
 import javax.net.ssl.SSLSession;
 import java.net.URI;
@@ -61,19 +58,20 @@ class RealPdsFhirServiceTest {
 
     @Test
     void makesObservedCallToPdsAndReturnPatientDetailsWhenPdsFhirReturns200() throws JsonProcessingException, MissingEnvironmentVariableException, IllFormedPatentDetailsException {
-        LocalDate periodStart = LocalDate.now().minusYears(1);
         var testLogappender = TestLogAppender.addTestLogAppender();
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         NhsNumber nhsNumber = new NhsNumber("9000000009");
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 200);
         var accessToken = "token";
+        var expectedPatient = new PatientDetails(List.of("Jane"), "Doe","Test", "EX1 2EX", nhsNumber);
 
         when(httpClient.get(any(), any(), eq(accessToken)))
-                .thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber, periodStart.toString())));
+                .thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
         when(authService.retrieveAccessToken()).thenReturn(accessToken);
-        pdsFhirClient.fetchPatientDetails(nhsNumber);
+        var patient = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
         verify(httpClient).get(any(), contains(nhsNumber.getValue()), eq(accessToken));
+        assertThat(patient).usingRecursiveComparison().isEqualTo(expectedPatient);
         verify(splunkPublisher).publish(sensitiveAuditMessageCaptor.capture());
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
@@ -159,16 +157,13 @@ class RealPdsFhirServiceTest {
 
     @Test
     void makesCallToGetAccessTokenTwiceIfTokenHasExpired() throws MissingEnvironmentVariableException, JsonProcessingException, IllFormedPatentDetailsException {
-        LocalDate periodStart = LocalDate.now().minusYears(1);
-
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = new NhsNumber("9000000009");
         var accessToken = "token";
-        Period period = new Period(periodStart, null);
-        var expectedPatient = new Patient(nhsNumber, "Test", List.of(new Address(period, "EX1 2EX", "home")), List.of(new Name(period, "usual", List.of("Jane"), "Doe")));
+        var expectedPatient = new PatientDetails(List.of("Jane"), "Doe","Test", "EX1 2EX", nhsNumber);
 
         when(httpClient.get(any(), any(), eq(accessToken)))
-                .thenReturn(new StubPdsResponse(401, "some error"), new StubPdsResponse(200, getJSONPatientDetails(nhsNumber, periodStart.toString())));
+                .thenReturn(new StubPdsResponse(401, "some error"), new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
         when(authService.retrieveAccessToken()).thenReturn(accessToken);
         when(authService.getNewAccessToken()).thenReturn(accessToken);
 
@@ -179,10 +174,9 @@ class RealPdsFhirServiceTest {
         assertThat(patient).usingRecursiveComparison().isEqualTo(expectedPatient);
     }
 
-    private String getJSONPatientDetails(NhsNumber nhsNumber, String periodStart) {
-
+    private String getJSONPatientDetails(NhsNumber nhsNumber) {
         var jsonPeriod = new JSONObject()
-                .put("start", periodStart)
+                .put("start", LocalDate.now().minusYears(1))
                 .put("end", JSONObject.NULL);
         var jsonName = new JSONObject()
                 .put("period", jsonPeriod)
