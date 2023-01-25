@@ -227,7 +227,9 @@
       "Sid": "AllowLogs",
       "Effect": "Allow",
       "Action": [
-        "logs:PutMetricFilter"
+        "logs:PutMetricFilter",
+        "logs:DescribeMetricFilters",
+        "logs:DeleteMetricFilter"
       ],
       "Resource": "*"
     },
