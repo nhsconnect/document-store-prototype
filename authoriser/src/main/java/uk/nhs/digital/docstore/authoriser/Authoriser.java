@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayCustomAuthorizerEvent;
 import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
+import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.nhs.digital.docstore.authoriser.models.AssociatedOrganisations;
 import uk.nhs.digital.docstore.authoriser.models.RbacRoles;
 
+import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +48,12 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
 
     private static Algorithm getSignatureVerificationAlgorithm() {
         var jwkProvider = new JwkProviderBuilder(System.getenv("COGNITO_PUBLIC_KEY_URL")).build();
-        return Algorithm.RSA256((RSAKeyProvider) jwkProvider);
+        try {
+            var jwk = jwkProvider.get(System.getenv("COGNITO_KEY_ID"));
+            return Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey());
+        } catch (JwkException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     @Override

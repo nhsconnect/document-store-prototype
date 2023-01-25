@@ -8,5 +8,5 @@ cognito_cis2_provider_attributes_url = "https://am.nhsdev.auth-ptl.cis2.spineser
 cognito_cis2_provider_jwks_uri       = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/connect/jwk_uri"
 cognito_cis2_client_callback_urls    = ["http://localhost:3000/cis2-auth-callback"]
 cognito_cis2_client_signout_urls     = ["http://localhost:3000"]
-cognito_key_id                       = "VOK8uFevVXm8h8zOJmWYpiSEqEbDKsYw/lAux4LLjAM="
+cognito_key_id                       = "g7GVNIEWuoUCEHuDTXf57irHI1tIMBB+FYHQvTIdstM="
 pds_fhir_is_stubbed                  = "false"
