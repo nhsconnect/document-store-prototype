@@ -60,10 +60,28 @@ resource "aws_cloudwatch_metric_alarm" "lambda_duration" {
   statistic           = "Maximum"
 }
 
+resource "aws_cloudwatch_metric_alarm" "authoriser_memory" {
+  alarm_name        = "prs_${var.environment}_${local.lambdas.authoriser.function_name}_memory"
+  alarm_description = "Triggers when max memory usage of Authoriser exceeds 80% of provisioned memory."
+  depends_on        = [
+    aws_cloudwatch_log_metric_filter.authoriser_max_memory_used_log_metric_filter
+  ]
+  dimensions = {
+    FunctionName = local.lambdas.authoriser.function_name
+  }
+  threshold           = local.lambdas.authoriser.memory_size * 0.8
+  namespace           = "AWS/Lambda"
+  metric_name         = "MaxMemoryUsed"
+  comparison_operator = "GreaterThanThreshold"
+  period              = "300"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
+}
+
 resource "aws_cloudwatch_log_metric_filter" "authoriser_max_memory_used_log_metric_filter" {
   name           = "prs_${var.environment}_authoriser_max_memory_used_log_metric_filter"
   log_group_name = "/aws/lambda/${local.lambdas.authoriser.function_name}"
-  pattern        = local.lambda_metric_filter_pattern
+  pattern        = "[report_name=\"REPORT\", request_id_name=\"RequestId:\", request_id_value, duration_name=\"Duration:\", duration_value, duration_unit=\"ms\", billed_duration_name_1=\"Billed\", billed_duration_name_2=\"Duration:\", billed_duration_value, billed_duration_unit=\"ms\", memory_size_name_1=\"Memory\", memory_size_name_2=\"Size:\", memory_size_value, memory_size_unit=\"MB\", max_memory_used_name_1=\"Max\", max_memory_used_name_2=\"Memory\", max_memory_used_name_3=\"Used:\", max_memory_used_value, ...]"
   metric_transformation {
     name      = "MaxMemoryUsed"
     namespace = "prs_${var.environment}/Lambda/${local.lambdas.authoriser.function_name}"
@@ -72,48 +90,42 @@ resource "aws_cloudwatch_log_metric_filter" "authoriser_max_memory_used_log_metr
   count = var.cloud_only_service_instances
 }
 
-resource "aws_cloudwatch_log_metric_filter" "authoriser_memory_size_log_metric_filter" {
-  name           = "prs_${var.environment}_authoriser_memory_size_log_metric_filter"
-  log_group_name = "/aws/lambda/${local.lambdas.authoriser.function_name}"
-  pattern        = local.lambda_metric_filter_pattern
-  metric_transformation {
-    name      = "MemorySize"
-    namespace = "prs_${var.environment}/Lambda/${local.lambdas.authoriser.function_name}"
-    value     = "$memory_size_value"
-  }
-  count = var.cloud_only_service_instances
-}
-
 locals {
-  lambda_metric_filter_pattern = "[report_name=\"REPORT\", request_id_name=\"RequestId:\", request_id_value, duration_name=\"Duration:\", duration_value, duration_unit=\"ms\", billed_duration_name_1=\"Billed\", billed_duration_name_2=\"Duration:\", billed_duration_value, billed_duration_unit=\"ms\", memory_size_name_1=\"Memory\", memory_size_name_2=\"Size:\", memory_size_value, memory_size_unit=\"MB\", max_memory_used_name_1=\"Max\", max_memory_used_name_2=\"Memory\", max_memory_used_name_3=\"Used:\", max_memory_used_value, max_memory_used_unit=\"MB\", init_duration_name_1=\"Init\", init_duration_name_2=\"Duration:\", init_duration_value, init_duration_unit=\"ms\"]"
-  lambdas                      = {
+  lambdas = {
     authoriser = {
       function_name = aws_lambda_function.authoriser.function_name
       timeout       = aws_lambda_function.authoriser.timeout
+      memory_size   = aws_lambda_function.authoriser.memory_size
     }
     search_patient_details_handler = {
       function_name = aws_lambda_function.search_patient_details_lambda.function_name
       timeout       = aws_lambda_function.search_patient_details_lambda.timeout
+      memory_size   = aws_lambda_function.search_patient_details_lambda.memory_size
     }
     create_document_reference_handler = {
       function_name = aws_lambda_function.create_doc_ref_lambda.function_name
       timeout       = aws_lambda_function.create_doc_ref_lambda.timeout
+      memory_size   = aws_lambda_function.create_doc_ref_lambda.memory_size
     }
     document_uploaded_event_handler = {
       function_name = aws_lambda_function.document_uploaded_lambda.function_name
       timeout       = aws_lambda_function.document_uploaded_lambda.timeout
+      memory_size   = aws_lambda_function.document_uploaded_lambda.memory_size
     }
     create_document_manifest_by_nhs_number_handler = {
       function_name = aws_lambda_function.document_manifest_lambda.function_name
       timeout       = aws_lambda_function.document_manifest_lambda.timeout
+      memory_size   = aws_lambda_function.document_manifest_lambda.memory_size
     }
     document_reference_search_handler = {
       function_name = aws_lambda_function.doc_ref_search_lambda.function_name
       timeout       = aws_lambda_function.doc_ref_search_lambda.timeout
+      memory_size   = aws_lambda_function.doc_ref_search_lambda.memory_size
     }
     delete_document_reference_handler = {
       function_name = aws_lambda_function.delete_doc_ref_lambda.function_name
       timeout       = aws_lambda_function.delete_doc_ref_lambda.timeout
+      memory_size   = aws_lambda_function.delete_doc_ref_lambda.memory_size
     }
   }
 }
