@@ -24,11 +24,12 @@ public class JWTValidator {
         try {
 
             LOGGER.debug("Verify JWT " + jwt );
-            LOGGER.debug("Verify JWT Algorithm" + algorithm );
+            LOGGER.debug("Verify JWT Algorithm" + algorithm.getName() + " " +algorithm.getSigningKeyId() );
             JWTVerifier verifier = JWT.require(algorithm).build();
             LOGGER.debug("Verify JWT Algorithm verify" + verifier );
             return verifier.verify(jwt);
         } catch (Exception e) {
+            LOGGER.debug("Exception Message" + e );
             throw new InvalidJWTException();
         }
     }
