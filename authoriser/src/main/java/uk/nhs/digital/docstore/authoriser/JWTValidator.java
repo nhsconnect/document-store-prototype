@@ -4,8 +4,13 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JWTValidator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JWTValidator.class);
+
     private final String jwt;
 
     private final Algorithm algorithm;
@@ -17,7 +22,11 @@ public class JWTValidator {
 
     public DecodedJWT verify() throws InvalidJWTException {
         try {
+
+            LOGGER.debug("Verify JWT " + jwt );
+            LOGGER.debug("Verify JWT Algorithm" + algorithm );
             JWTVerifier verifier = JWT.require(algorithm).build();
+            LOGGER.debug("Verify JWT Algorithm verify" + verifier );
             return verifier.verify(jwt);
         } catch (Exception e) {
             throw new InvalidJWTException();

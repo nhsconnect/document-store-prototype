@@ -7,9 +7,10 @@ import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.RSAKeyProvider;
+import org.slf4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.models.AssociatedOrganisations;
 import uk.nhs.digital.docstore.authoriser.models.RbacRoles;
 
@@ -20,6 +21,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEvent, IamPolicyResponse> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Authoriser.class);
+
     private final AuthConfig authConfig;
     private final Algorithm algorithm;
 
@@ -59,6 +63,9 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
     @Override
     public IamPolicyResponse handleRequest(APIGatewayCustomAuthorizerEvent input, Context context) {
         try {
+
+            LOGGER.debug("Authoriser handle funtion started");
+
             var jwtValidator = new JWTValidator(input.getAuthorizationToken(), algorithm);
             var decodedJWT = jwtValidator.verify();
 
