@@ -12,7 +12,6 @@ public class JWTValidator {
     private static final Logger LOGGER = LoggerFactory.getLogger(JWTValidator.class);
 
     private final String jwt;
-
     private final Algorithm algorithm;
 
     public JWTValidator(String jwt, Algorithm algorithm) {
@@ -22,14 +21,16 @@ public class JWTValidator {
 
     public DecodedJWT verify() throws InvalidJWTException {
         try {
+            LOGGER.debug("Verify JWT " + jwt);
+            LOGGER.debug("Verify JWT Algorithm" + algorithm.getName() + " " + algorithm.getSigningKeyId());
 
-            LOGGER.debug("Verify JWT " + jwt );
-            LOGGER.debug("Verify JWT Algorithm" + algorithm.getName() + " " +algorithm.getSigningKeyId() );
-            JWTVerifier verifier = JWT.require(algorithm).build();
-            LOGGER.debug("Verify JWT Algorithm verify" + verifier );
+            var publicKey = Environment.get("COGNITO_PUBLIC_KEY_URL");
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(publicKey).build();
+
+            LOGGER.debug("Verify JWT Algorithm verify" + verifier);
             return verifier.verify(jwt);
         } catch (Exception e) {
-            LOGGER.debug("Exception Message" + e );
+            LOGGER.debug("Exception Message" + e);
             throw new InvalidJWTException();
         }
     }

@@ -6,6 +6,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Map;
@@ -18,136 +20,154 @@ class AuthoriserTest {
 
     @Test
     void shouldHandleRequestWhenTokenIsValidForPCSEStaff() {
-        var pcseAllowedResources = List.of("api-gateway-invocation-arn-1", "api-gateway-invocation-arn-2");
-        var clinicalAllowedResources = List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
-        var authConfig = new AuthConfig(
-                pcseAllowedResources,
-                clinicalAllowedResources
-        );
-        var algorithm = Algorithm.none();
+        try (MockedStatic<Environment> env = Mockito.mockStatic(Environment.class)) {
+            String issuer = "some-issuer";
+            env.when(() -> Environment.get("COGNITO_PUBLIC_KEY_URL")).thenReturn(issuer);
 
-        var event = new APIGatewayCustomAuthorizerEvent();
-        var handler = new Authoriser(authConfig, algorithm);
+            var pcseAllowedResources = List.of("api-gateway-invocation-arn-1", "api-gateway-invocation-arn-2");
+            var clinicalAllowedResources = List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
+            var authConfig = new AuthConfig(
+                    pcseAllowedResources,
+                    clinicalAllowedResources
+            );
+            var algorithm = Algorithm.none();
 
-        var associatedOrgsClaim = new JSONObject();
-        var organisations = List.of(Map.of("org_code", "X4S4L"));
+            var event = new APIGatewayCustomAuthorizerEvent();
+            var handler = new Authoriser(authConfig, algorithm);
 
-        var nationalRbAccessClaim = new JSONObject();
-        var roles = List.of(Map.of("role_code", "some-role-codes"));
+            var associatedOrgsClaim = new JSONObject();
+            var organisations = List.of(Map.of("org_code", "X4S4L"));
 
-        associatedOrgsClaim.put("nhsid_user_orgs", organisations);
-        nationalRbAccessClaim.put("nhsid_nrbac_roles", roles);
+            var nationalRbAccessClaim = new JSONObject();
+            var roles = List.of(Map.of("role_code", "some-role-codes"));
 
-        String principalId = "some-principal-id";
-        var token = JWT.create()
-                .withSubject(principalId)
-                .withClaim("associatedorgs", associatedOrgsClaim.toString())
-                .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString());
+            associatedOrgsClaim.put("nhsid_user_orgs", organisations);
+            nationalRbAccessClaim.put("nhsid_nrbac_roles", roles);
 
-        var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
-                .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(pcseAllowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
-                .build();
+            String principalId = "some-principal-id";
+            var token = JWT.create()
+                    .withSubject(principalId)
+                    .withIssuer(issuer)
+                    .withClaim("associatedorgs", associatedOrgsClaim.toString())
+                    .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString());
 
-        var expectedResponse = new IamPolicyResponse();
-        expectedResponse.setPolicyDocument(expectedPolicyDocument);
+            var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
+                    .withVersion(IamPolicyResponse.VERSION_2012_10_17)
+                    .withStatement(pcseAllowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
+                    .build();
 
-        event.setAuthorizationToken(token.sign(algorithm));
+            var expectedResponse = new IamPolicyResponse();
+            expectedResponse.setPolicyDocument(expectedPolicyDocument);
 
-        var response = handler.handleRequest(event, null);
+            event.setAuthorizationToken(token.sign(algorithm));
 
-        assertThat(response.getPrincipalId()).isEqualTo(principalId);
-        assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
+            var response = handler.handleRequest(event, null);
+
+            assertThat(response.getPrincipalId()).isEqualTo(principalId);
+            assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
+        }
     }
 
     @Test
     void shouldHandleRequestWhenTokenIsValidForGpStaff() {
-        var pcseAllowedResources = List.of("api-gateway-invocation-arn-1", "api-gateway-invocation-arn-2");
-        var clinicalAllowedResources = List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
-        var authConfig = new AuthConfig(
-                pcseAllowedResources,
-                clinicalAllowedResources
-        );
-        var algorithm = Algorithm.none();
+        try (MockedStatic<Environment> env = Mockito.mockStatic(Environment.class)) {
+            String issuer = "some-issuer";
+            env.when(() -> Environment.get("COGNITO_PUBLIC_KEY_URL")).thenReturn(issuer);
 
-        var event = new APIGatewayCustomAuthorizerEvent();
-        var handler = new Authoriser(authConfig, algorithm);
+            var pcseAllowedResources = List.of("api-gateway-invocation-arn-1", "api-gateway-invocation-arn-2");
+            var clinicalAllowedResources = List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
+            var authConfig = new AuthConfig(
+                    pcseAllowedResources,
+                    clinicalAllowedResources
+            );
+            var algorithm = Algorithm.none();
 
-        var nationalRbAccessClaim = new JSONObject();
-        var roles = List.of(Map.of("role_code", "S0010:G0020:R8008"));
+            var event = new APIGatewayCustomAuthorizerEvent();
+            var handler = new Authoriser(authConfig, algorithm);
 
-        var associatedOrgsClaim = new JSONObject();
-        var organisations = List.of(Map.of("org_code", "some-other-code"));
+            var nationalRbAccessClaim = new JSONObject();
+            var roles = List.of(Map.of("role_code", "S0010:G0020:R8008"));
 
-        nationalRbAccessClaim.put("nhsid_nrbac_roles", roles);
-        associatedOrgsClaim.put("nhsid_user_orgs", organisations);
+            var associatedOrgsClaim = new JSONObject();
+            var organisations = List.of(Map.of("org_code", "some-other-code"));
 
-        String principalId = "some-principal-id";
-        var token = JWT.create()
-                .withSubject(principalId)
-                .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString())
-                .withClaim("associatedorgs", associatedOrgsClaim.toString());
+            nationalRbAccessClaim.put("nhsid_nrbac_roles", roles);
+            associatedOrgsClaim.put("nhsid_user_orgs", organisations);
 
-        var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
-                .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(clinicalAllowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
-                .build();
+            String principalId = "some-principal-id";
+            var token = JWT.create()
+                    .withSubject(principalId)
+                    .withIssuer(issuer)
+                    .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString())
+                    .withClaim("associatedorgs", associatedOrgsClaim.toString());
 
-        var expectedResponse = new IamPolicyResponse();
-        expectedResponse.setPolicyDocument(expectedPolicyDocument);
+            var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
+                    .withVersion(IamPolicyResponse.VERSION_2012_10_17)
+                    .withStatement(clinicalAllowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
+                    .build();
 
-        event.setAuthorizationToken(token.sign(algorithm));
+            var expectedResponse = new IamPolicyResponse();
+            expectedResponse.setPolicyDocument(expectedPolicyDocument);
 
-        var response = handler.handleRequest(event, null);
+            event.setAuthorizationToken(token.sign(algorithm));
 
-        assertThat(response.getPrincipalId()).isEqualTo(principalId);
-        assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
+            var response = handler.handleRequest(event, null);
+
+            assertThat(response.getPrincipalId()).isEqualTo(principalId);
+            assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
+        }
     }
 
     @Test
     void shouldHandleRequestWhenTokenIsValidForPCSEStaffAndGpStaff() {
-        var pcseAllowedResources = List.of("api-gateway-invocation-arn-1", "api-gateway-invocation-arn-2");
-        var clinicalAllowedResources = List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
-        var authConfig = new AuthConfig(
-                pcseAllowedResources,
-                clinicalAllowedResources
-        );
-        var algorithm = Algorithm.none();
+        try (MockedStatic<Environment> env = Mockito.mockStatic(Environment.class)) {
+            String issuer = "some-issuer";
+            env.when(() -> Environment.get("COGNITO_PUBLIC_KEY_URL")).thenReturn(issuer);
 
-        var event = new APIGatewayCustomAuthorizerEvent();
-        var handler = new Authoriser(authConfig, algorithm);
+            var pcseAllowedResources = List.of("api-gateway-invocation-arn-1", "api-gateway-invocation-arn-2");
+            var clinicalAllowedResources = List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
+            var authConfig = new AuthConfig(
+                    pcseAllowedResources,
+                    clinicalAllowedResources
+            );
+            var algorithm = Algorithm.none();
 
-        var associatedOrgsClaim = new JSONObject();
-        var organisations = List.of(Map.of("org_code", "X4S4L"));
+            var event = new APIGatewayCustomAuthorizerEvent();
+            var handler = new Authoriser(authConfig, algorithm);
 
-        var nationalRbAccessClaim = new JSONObject();
-        var roles = List.of(Map.of("role_code", "S0010:G0020:R8008"));
+            var associatedOrgsClaim = new JSONObject();
+            var organisations = List.of(Map.of("org_code", "X4S4L"));
 
-        associatedOrgsClaim.put("nhsid_user_orgs", organisations);
-        nationalRbAccessClaim.put("nhsid_nrbac_roles", roles);
+            var nationalRbAccessClaim = new JSONObject();
+            var roles = List.of(Map.of("role_code", "S0010:G0020:R8008"));
 
-        String principalId = "some-principal-id";
-        var token = JWT.create()
-                .withSubject(principalId)
-                .withClaim("associatedorgs", associatedOrgsClaim.toString())
-                .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString());
+            associatedOrgsClaim.put("nhsid_user_orgs", organisations);
+            nationalRbAccessClaim.put("nhsid_nrbac_roles", roles);
 
-        var allResources = Stream.concat(pcseAllowedResources.stream(), clinicalAllowedResources.stream()).collect(Collectors.toList());
+            String principalId = "some-principal-id";
+            var token = JWT.create()
+                    .withSubject(principalId)
+                    .withIssuer(issuer)
+                    .withClaim("associatedorgs", associatedOrgsClaim.toString())
+                    .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString());
 
-        var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
-                .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(allResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
-                .build();
+            var allResources = Stream.concat(pcseAllowedResources.stream(), clinicalAllowedResources.stream()).collect(Collectors.toList());
 
-        var expectedResponse = new IamPolicyResponse();
-        expectedResponse.setPolicyDocument(expectedPolicyDocument);
+            var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
+                    .withVersion(IamPolicyResponse.VERSION_2012_10_17)
+                    .withStatement(allResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
+                    .build();
 
-        event.setAuthorizationToken(token.sign(algorithm));
+            var expectedResponse = new IamPolicyResponse();
+            expectedResponse.setPolicyDocument(expectedPolicyDocument);
 
-        var response = handler.handleRequest(event, null);
+            event.setAuthorizationToken(token.sign(algorithm));
 
-        assertThat(response.getPrincipalId()).isEqualTo(principalId);
-        assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
+            var response = handler.handleRequest(event, null);
+
+            assertThat(response.getPrincipalId()).isEqualTo(principalId);
+            assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
+        }
     }
 
     @Test
