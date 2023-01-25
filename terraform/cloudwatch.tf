@@ -66,7 +66,7 @@ resource "aws_cloudwatch_log_metric_filter" "authoriser_max_memory_used_log_metr
   pattern        = local.lambda_metric_filter_pattern
   metric_transformation {
     name      = "MaxMemoryUsed"
-    namespace = "prs_${var.environment}/${local.lambdas.authoriser.function_name}"
+    namespace = "prs_${var.environment}/Lambda/${local.lambdas.authoriser.function_name}"
     value     = "$max_memory_used_value"
   }
   count = var.cloud_only_service_instances
@@ -78,7 +78,7 @@ resource "aws_cloudwatch_log_metric_filter" "authoriser_memory_size_log_metric_f
   pattern        = local.lambda_metric_filter_pattern
   metric_transformation {
     name      = "MemorySize"
-    namespace = "prs_${var.environment}/${local.lambdas.authoriser.function_name}"
+    namespace = "prs_${var.environment}/Lambda/${local.lambdas.authoriser.function_name}"
     value     = "$memory_size_value"
   }
   count = var.cloud_only_service_instances
