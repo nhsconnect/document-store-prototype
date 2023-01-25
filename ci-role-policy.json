@@ -20,6 +20,15 @@
       ]
     },
     {
+      "Sid": "AllowApiGateway",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:*",
+        "apigateway:PATCH"
+      ],
+      "Resource": "*"
+    },
+    {
       "Sid": "AllowCloudWatch",
       "Effect": "Allow",
       "Action": [
@@ -147,6 +156,36 @@
       ]
     },
     {
+      "Sid": "AllowExecuteApi",
+      "Effect": "Allow",
+      "Action": [
+        "execute-api:Invoke"
+      ],
+      "Resource": "arn:aws:execute-api:*:*:*"
+    },
+    {
+      "Sid": "AllowIam",
+      "Effect": "Allow",
+      "Action": [
+        "iam:AttachRolePolicy",
+        "iam:CreateRole",
+        "iam:DeleteRolePolicy",
+        "iam:GetRole",
+        "iam:GetRolePolicy",
+        "iam:*InstanceProfile*",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:PassRole",
+        "iam:PutRolePolicy",
+        "iam:CreatePolicy",
+        "iam:GetPolicy",
+        "iam:GetPolicyVersion",
+        "iam:ListPolicyVersions",
+        "iam:DeletePolicy"
+      ],
+      "Resource": "*"
+    },
+    {
       "Sid": "AllowLambda",
       "Effect": "Allow",
       "Action": [
@@ -185,41 +224,10 @@
       ]
     },
     {
-      "Sid": "AllowApiGateway",
+      "Sid": "AllowLogs",
       "Effect": "Allow",
       "Action": [
-        "apigateway:*",
-        "apigateway:PATCH"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "AllowExecuteApi",
-      "Effect": "Allow",
-      "Action": [
-        "execute-api:Invoke"
-      ],
-      "Resource": "arn:aws:execute-api:*:*:*"
-    },
-    {
-      "Sid": "AllowIam",
-      "Effect": "Allow",
-      "Action": [
-        "iam:AttachRolePolicy",
-        "iam:CreateRole",
-        "iam:DeleteRolePolicy",
-        "iam:GetRole",
-        "iam:GetRolePolicy",
-        "iam:*InstanceProfile*",
-        "iam:ListAttachedRolePolicies",
-        "iam:ListRolePolicies",
-        "iam:PassRole",
-        "iam:PutRolePolicy",
-        "iam:CreatePolicy",
-        "iam:GetPolicy",
-        "iam:GetPolicyVersion",
-        "iam:ListPolicyVersions",
-        "iam:DeletePolicy"
+        "logs:PutMetricFilter"
       ],
       "Resource": "*"
     },
@@ -229,13 +237,6 @@
       "Action": [
         "ssm:GetParameters",
         "ssm:GetParameter"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:*"
       ],
       "Resource": "*"
     },
@@ -251,6 +252,14 @@
         "sqs:SetQueueAttributes",
         "sqs:TagQueue",
         "sqs:UntagQueue"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowS3",
+      "Effect": "Allow",
+      "Action": [
+        "s3:*"
       ],
       "Resource": "*"
     }
