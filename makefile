@@ -1,7 +1,7 @@
 default: help
 
 .PHONY: pre-push
-pre-push: format-node-projects lint-node-projects test-ui test-app test-e2e ## Format & lint Node projects & run unit & E2E tests. Todo: BE formatting, linting, & integration tests.
+pre-push: format-node-projects lint-node-projects test-ui test-app test-app-integration test-e2e ## Format & lint Node projects & run unit, integration, & E2E tests. Todo: BE formatting & linting
 
 .PHONY: format-node-projects
 format-node-projects: format-ui format-e2e-test ## Format Prettier-compatible files for Node projects
@@ -36,6 +36,10 @@ test-app: ## Run /app unit tests (no logs)
 .PHONY: test-app-with-logs
 test-app-with-logs: ## Run /app unit tests (with logs)
 	./gradlew test --rerun-tasks --info
+
+.PHONY: test-app-integration
+test-app-integration: ## Run /app integration tests
+	./gradlew e2eTest
 
 .PHONY: test-e2e
 test-e2e: ## Run E2E test (without visible browser)
