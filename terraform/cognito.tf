@@ -43,7 +43,7 @@ resource "aws_cognito_user_pool" "pool" {
 }
 
 resource "aws_cognito_user_pool_client" "client" {
-  name = "doc-store-user-pool-client"
+  name             = "doc-store-user-pool-client"
   write_attributes = ["custom:nhsid_user_orgs", "custom:nhsid_nrbac_roles"]
 
   user_pool_id = aws_cognito_user_pool.pool[0].id
@@ -54,14 +54,14 @@ resource "aws_cognito_user_pool_client" "client" {
   explicit_auth_flows                  = [
     "ALLOW_ADMIN_USER_PASSWORD_AUTH", "ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"
   ]
-  allowed_oauth_flows                  = ["code", "implicit"]
-  allowed_oauth_scopes                 = ["openid"]
-  supported_identity_providers         = var.cognito_oidc_providers
-  callback_urls                        = concat(var.cognito_cis2_client_callback_urls, [
+  allowed_oauth_flows          = ["code", "implicit"]
+  allowed_oauth_scopes         = ["openid"]
+  supported_identity_providers = var.cognito_oidc_providers
+  callback_urls                = concat(var.cognito_cis2_client_callback_urls, [
     "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
   ])
-  default_redirect_uri                 = "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
-  logout_urls                          = concat([
+  default_redirect_uri = "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
+  logout_urls          = concat([
     "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com"
   ], var.cognito_cis2_client_signout_urls)
 }
@@ -110,8 +110,8 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
   }
 
   attribute_mapping = {
-    nhsid_user_orgs   = "nhsid_user_orgs"
-    nhsid_nrbac_roles = "nhsid_nrbac_roles"
+    "custom:nhsid_user_orgs"   = "nhsid_user_orgs"
+    "custom:nhsid_nrbac_roles" = "nhsid_nrbac_roles"
   }
 
   count = var.cloud_only_service_instances
