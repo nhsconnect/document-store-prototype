@@ -44,7 +44,7 @@ resource "aws_cognito_user_pool" "pool" {
 
 resource "aws_cognito_user_pool_client" "client" {
   name = "doc-store-user-pool-client"
-  write_attributes = ["nhsid_user_orgs", "nhsid_nrbac_roles"]
+  write_attributes = ["custom:nhsid_user_orgs", "custom:nhsid_nrbac_roles"]
 
   user_pool_id = aws_cognito_user_pool.pool[0].id
 
