@@ -16,26 +16,26 @@ resource "aws_cognito_user_pool" "pool" {
   schema {
     name                     = "nhsid_user_orgs"
     attribute_data_type      = "String"
-    mutable                  = false
+    mutable                  = true
     required                 = false
     developer_only_attribute = false
 
     string_attribute_constraints {
       min_length = 1
-      max_length = 256
+      max_length = 2048
     }
   }
 
   schema {
     name                     = "nhsid_nrbac_roles"
     attribute_data_type      = "String"
-    mutable                  = false
+    mutable                  = true
     required                 = false
     developer_only_attribute = false
 
     string_attribute_constraints {
       min_length = 1
-      max_length = 256
+      max_length = 2048
     }
   }
 
@@ -44,6 +44,7 @@ resource "aws_cognito_user_pool" "pool" {
 
 resource "aws_cognito_user_pool_client" "client" {
   name = "doc-store-user-pool-client"
+  write_attributes = ["nhsid_user_orgs", "nhsid_nrbac_roles"]
 
   user_pool_id = aws_cognito_user_pool.pool[0].id
 
