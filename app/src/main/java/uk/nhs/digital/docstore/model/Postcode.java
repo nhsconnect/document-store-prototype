@@ -1,5 +1,8 @@
 package uk.nhs.digital.docstore.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Postcode {
     private final String value;
 
@@ -12,18 +15,13 @@ public class Postcode {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Postcode postcode = (Postcode) o;
-        return postcode.value.equals(this.value);
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
