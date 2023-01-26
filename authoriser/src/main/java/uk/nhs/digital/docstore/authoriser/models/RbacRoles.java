@@ -9,7 +9,7 @@ import java.util.List;
 public class RbacRoles {
     private List<Role> roles;
 
-    public RbacRoles(@JsonProperty("nhsid_nrbac_roles") List<Role> roles) {
+    public RbacRoles(@JsonProperty("custom:nhsid_nrbac_roles") List<Role> roles) {
         this.roles = roles;
     }
 

@@ -35,8 +35,8 @@ class AuthoriserTest {
         var nationalRbAccessClaim = new JSONObject();
         var roles = List.of(Map.of("role_code", "some-role-codes"));
 
-        associatedOrgsClaim.put("nhsid_user_orgs", organisations);
-        nationalRbAccessClaim.put("nhsid_nrbac_roles", roles);
+        associatedOrgsClaim.put("custom:nhsid_user_orgs", organisations);
+        nationalRbAccessClaim.put("custom:nhsid_nrbac_roles", roles);
 
         String principalId = "some-principal-id";
         var token = JWT.create()
@@ -79,8 +79,8 @@ class AuthoriserTest {
         var associatedOrgsClaim = new JSONObject();
         var organisations = List.of(Map.of("org_code", "some-other-code"));
 
-        nationalRbAccessClaim.put("nhsid_nrbac_roles", roles);
-        associatedOrgsClaim.put("nhsid_user_orgs", organisations);
+        nationalRbAccessClaim.put("custom:nhsid_nrbac_roles", roles);
+        associatedOrgsClaim.put("custom:nhsid_user_orgs", organisations);
 
         String principalId = "some-principal-id";
         var token = JWT.create()
@@ -123,8 +123,8 @@ class AuthoriserTest {
         var nationalRbAccessClaim = new JSONObject();
         var roles = List.of(Map.of("role_code", "S0010:G0020:R8008"));
 
-        associatedOrgsClaim.put("nhsid_user_orgs", organisations);
-        nationalRbAccessClaim.put("nhsid_nrbac_roles", roles);
+        associatedOrgsClaim.put("custom:nhsid_user_orgs", organisations);
+        nationalRbAccessClaim.put("custom:nhsid_nrbac_roles", roles);
 
         String principalId = "some-principal-id";
         var token = JWT.create()

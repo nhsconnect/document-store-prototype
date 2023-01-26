@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 public class AccessTokenClaimMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JWTValidator.class);
-
     private final DecodedJWT jwt;
-
     private final ObjectMapper mapper = new ObjectMapper();
 
     public AccessTokenClaimMapper(DecodedJWT jwt) {

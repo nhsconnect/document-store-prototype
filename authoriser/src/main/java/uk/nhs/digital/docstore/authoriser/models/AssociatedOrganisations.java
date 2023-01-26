@@ -9,7 +9,7 @@ import java.util.List;
 public class AssociatedOrganisations {
     private List<Organisation> organisations;
 
-    public AssociatedOrganisations(@JsonProperty("nhsid_user_orgs") List<Organisation> organisations) {
+    public AssociatedOrganisations(@JsonProperty("custom:nhsid_user_orgs") List<Organisation> organisations) {
         this.organisations = organisations;
     }
 
