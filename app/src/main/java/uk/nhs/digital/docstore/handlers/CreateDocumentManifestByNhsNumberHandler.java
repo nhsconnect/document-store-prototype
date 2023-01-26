@@ -80,7 +80,6 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
             var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
             var documentMetadataList = metadataSearchService.findMetadataByNhsNumber(nhsNumber);
             var documentPath = "tmp/" + CommonUtils.generateRandomUUIDString();
-            var fileName = "patient-record-" + nhsNumber.getValue() + ".zip";
 
             var zipInputStream = zipService.zipDocuments(documentMetadataList);
 
@@ -88,7 +87,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
 
             zipTraceStore.save(getDocumentZipTrace(documentLocation));
 
-            var preSignedUrl = documentStore.generatePreSignedUrlForZip(documentLocation, fileName);
+            var preSignedUrl = documentStore.generatePreSignedUrlForZip(documentLocation);
             documentManifestService.audit(nhsNumber, documentMetadataList);
 
             var responseBody = getJsonBody(preSignedUrl.toString());

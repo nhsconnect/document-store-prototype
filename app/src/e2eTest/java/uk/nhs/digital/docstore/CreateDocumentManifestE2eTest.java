@@ -37,11 +37,10 @@ public class CreateDocumentManifestE2eTest {
     private static final int DEFAULT_PORT = 4566;
     private static final String CODE_VALUE = "185361000000102";
 
-    private final Map<String, String> document1 = Map.of("description","uploaded document 1","s3Key","key1","content","content 1");
-    private final Map<String, String> document2 = Map.of("description","uploaded document 2","s3Key","key2","content","content 2");
-    private final Map<String, String> document3 = Map.of("description","uploaded document 3","s3Key","key3","content","content 3");
+    private final Map<String, String> document1 = Map.of("description", "uploaded document 1", "s3Key", "key1", "content", "content 1");
+    private final Map<String, String> document2 = Map.of("description", "uploaded document 2", "s3Key", "key2", "content", "content 2");
+    private final Map<String, String> document3 = Map.of("description", "uploaded document 3", "s3Key", "key3", "content", "content 3");
 
-    private AwsS3Helper awsS3Helper;
     private AmazonDynamoDB dynamoDbClient;
 
     @BeforeEach
@@ -49,7 +48,7 @@ public class CreateDocumentManifestE2eTest {
         var baseUri = String.format(BASE_URI_TEMPLATE, getAwsHost(), DEFAULT_PORT);
         var awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
 
-        awsS3Helper = new AwsS3Helper(awsEndpointConfiguration);
+        AwsS3Helper awsS3Helper = new AwsS3Helper(awsEndpointConfiguration);
 
         dynamoDbClient = AmazonDynamoDBClientBuilder.standard()
                 .withEndpointConfiguration(awsEndpointConfiguration)
@@ -97,21 +96,20 @@ public class CreateDocumentManifestE2eTest {
 
         awsS3Helper.addDocument(awsS3Helper.getDocumentStoreBucketName(), document1.get("s3Key"), document1.get("content"));
         awsS3Helper.addDocument(awsS3Helper.getDocumentStoreBucketName(), document2.get("s3Key"), document2.get("content"));
-        awsS3Helper.addDocument(awsS3Helper.getDocumentStoreBucketName(),document3.get("s3Key"), document3.get("content"));
+        awsS3Helper.addDocument(awsS3Helper.getDocumentStoreBucketName(), document3.get("s3Key"), document3.get("content"));
     }
 
     @Test
     void shouldGetDocumentsByNhsNumberAndUploadZipToS3AndSaveMetadata() throws IOException, InterruptedException {
         var nhsNumber = "9000000009";
-        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentManifest?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C"+nhsNumber))
+        var searchRequest = HttpRequest.newBuilder(getBaseUri().resolve("DocumentManifest?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C" + nhsNumber))
                 .GET()
                 .header("Authorization", createBearerToken())
                 .build();
         var searchResponse = newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString());
-        var responseUrl =  JsonPath.<String>read(searchResponse.body(), "$.result.url");
+        var responseUrl = JsonPath.<String>read(searchResponse.body(), "$.result.url");
 
         assertThat(searchResponse.statusCode()).isEqualTo(200);
-        assertThat(responseUrl).contains(nhsNumber);
 
         var preSignedUrl = responseUrl.replace(BaseUriHelper.PRESIGNED_URL_REFERENCE_HOST, getAwsHost());
         var documentRequest = HttpRequest.newBuilder(URI.create(preSignedUrl))
@@ -166,6 +164,7 @@ public class CreateDocumentManifestE2eTest {
                 .sign(none());
         return "Bearer " + jwt;
     }
+
     public static String getAwsHost() {
         return resolveContainerHost("localstack");
     }
