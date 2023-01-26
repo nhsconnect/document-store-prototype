@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.search;
+package uk.nhs.digital.docstore;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -7,7 +7,6 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.InstantType;
-import uk.nhs.digital.docstore.NHSDocumentReference;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 
@@ -19,7 +18,7 @@ import static org.hl7.fhir.r4.model.Bundle.BundleType.SEARCHSET;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
-class BundleMapper {
+public class BundleMapper {
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
 
     public Bundle toBundle(List<Document> documents) throws IllFormedPatientDetailsException {
@@ -53,7 +52,7 @@ class BundleMapper {
 
         return (DocumentReference) new NHSDocumentReference()
                 .setCreated(new DateTimeType(document.getCreated().toString()))
-                .setIndexed(new InstantType(document.getIndexed().toString()))
+                .setIndexed(document.isUploaded() ? new InstantType(document.getIndexed().toString()) : null)
                 .setNhsNumber(document.getNhsNumber())
                 .setType(type)
                 .setDocStatus(document.isUploaded() ? FINAL : PRELIMINARY)

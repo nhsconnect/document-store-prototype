@@ -3,7 +3,7 @@ package uk.nhs.digital.docstore.patientdetails.auth;
 import com.amazonaws.util.Base64;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import uk.nhs.digital.docstore.config.Environment;
-import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
+import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;

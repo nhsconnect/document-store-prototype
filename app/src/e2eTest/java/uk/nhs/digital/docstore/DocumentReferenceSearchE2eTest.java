@@ -57,12 +57,15 @@ public class DocumentReferenceSearchE2eTest {
                 "DocumentUploaded", new AttributeValue().withBOOL(true),
                 "Description", new AttributeValue("uploaded document"),
                 "Created", new AttributeValue("2021-11-04T15:57:30Z"),
+                "Indexed", new AttributeValue("2021-12-04T15:57:30Z"),
                 "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
                 "ID", new AttributeValue("2345"),
                 "NhsNumber", new AttributeValue("9000000009"),
                 "Location", new AttributeValue(String.format("s3://%s/%s", aws.getDocumentStoreBucketName(), "somewhere")),
                 "Content-Type", new AttributeValue("application/pdf"),
+                "Description", new AttributeValue("document upload in progress"),
+                "Created", new AttributeValue("2021-11-04T15:57:30Z"),
                 "DocumentUploaded", new AttributeValue().withBOOL(false),
                 "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
         dynamoDbClient.putItem("DocumentReferenceMetadata", Map.of(
@@ -74,6 +77,7 @@ public class DocumentReferenceSearchE2eTest {
                 "Description", new AttributeValue("uploaded document"),
                 "Created", new AttributeValue("2021-11-04T15:57:30Z"),
                 "Deleted", new AttributeValue("2021-12-04T15:57:30Z"),
+                "Indexed", new AttributeValue("2021-12-04T15:57:30Z"),
                 "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
 
 
@@ -108,14 +112,14 @@ public class DocumentReferenceSearchE2eTest {
 
         var searchResponse = newHttpClient().send(searchRequest, BodyHandlers.ofString(UTF_8));
 
-//        assertThat(searchResponse.statusCode()).isEqualTo(200);
-//        assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
-//        assertThatJson(searchResponse.body())
-//                .whenIgnoringPaths("$.meta", "$.entry[*].resource.meta", "$.entry[*].resource.indexed")
-//                .isEqualTo(expectedSearchResponse);
-//        assertThatJson(searchResponse.body())
-//                .inPath("$.entry[0].resource.indexed")
-//                .isString();
+        assertThat(searchResponse.statusCode()).isEqualTo(200);
+        assertThat(searchResponse.headers().firstValue("Content-Type")).contains("application/fhir+json");
+        assertThatJson(searchResponse.body())
+                .whenIgnoringPaths("$.meta", "$.entry[*].resource.meta", "$.entry[*].resource.indexed")
+                .isEqualTo(expectedSearchResponse);
+        assertThatJson(searchResponse.body())
+                .inPath("$.entry[0].resource.indexed")
+                .isString();
     }
 
     @Test

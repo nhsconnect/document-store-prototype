@@ -6,7 +6,7 @@ import com.amazonaws.services.simplesystemsmanagement.model.Parameter;
 import com.amazonaws.services.simplesystemsmanagement.model.PutParameterRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
+import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;

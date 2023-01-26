@@ -1,5 +1,7 @@
 package uk.nhs.digital.docstore.config;
 
+import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
+
 public class Environment {
     public String getEnvVar(String name, String defaultValue) {
         return System.getenv().getOrDefault(name, defaultValue);

@@ -47,7 +47,9 @@
             }
           ]
         },
-        "docStatus": "preliminary"
+        "docStatus": "preliminary",
+        "description": "document upload in progress",
+        "created": "2021-11-04T15:57:30Z"
       }
     }
   ]

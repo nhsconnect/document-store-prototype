@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.patientdetails;
+package uk.nhs.digital.docstore.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -16,6 +16,10 @@ import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.model.PatientDetails;
+import uk.nhs.digital.docstore.patientdetails.ClientPatientDetailsDto;
+import uk.nhs.digital.docstore.patientdetails.FakePdsFhirService;
+import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
+import uk.nhs.digital.docstore.patientdetails.RealPdsFhirService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthServiceHttpClient;
 

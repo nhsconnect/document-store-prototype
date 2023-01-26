@@ -6,7 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
+import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 

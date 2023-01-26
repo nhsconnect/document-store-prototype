@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
-import uk.nhs.digital.docstore.documentmanifest.CreateDocumentManifestByNhsNumberHandler;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.NhsNumber;
 

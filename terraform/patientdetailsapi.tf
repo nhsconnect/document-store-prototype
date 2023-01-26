@@ -16,7 +16,7 @@ module "patient_details_collection_preflight" {
 }
 
 resource "aws_lambda_function" "search_patient_details_lambda" {
-  handler          = "uk.nhs.digital.docstore.patientdetails.SearchPatientDetailsHandler::handleRequest"
+  handler          = "uk.nhs.digital.docstore.handlers.SearchPatientDetailsHandler::handleRequest"
   function_name    = "SearchPatientDetailsHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn

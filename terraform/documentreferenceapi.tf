@@ -34,7 +34,7 @@ module "doc_ref_collection_preflight" {
 }
 
 resource "aws_lambda_function" "create_doc_ref_lambda" {
-  handler       = "uk.nhs.digital.docstore.CreateDocumentReferenceHandler::handleRequest"
+  handler       = "uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler::handleRequest"
   function_name = "CreateDocumentReferenceHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
@@ -50,7 +50,7 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
 }
 
 resource "aws_lambda_function" "delete_doc_ref_lambda" {
-  handler       = "uk.nhs.digital.docstore.DeleteDocumentReferenceHandler::handleRequest"
+  handler       = "uk.nhs.digital.docstore.handlers.DeleteDocumentReferenceHandler::handleRequest"
   function_name = "DeleteDocumentReferenceHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
@@ -66,7 +66,7 @@ resource "aws_lambda_function" "delete_doc_ref_lambda" {
 }
 
 resource "aws_lambda_function" "doc_ref_search_lambda" {
-  handler       = "uk.nhs.digital.docstore.search.DocumentReferenceSearchHandler::handleRequest"
+  handler       = "uk.nhs.digital.docstore.handlers.DocumentReferenceSearchHandler::handleRequest"
   function_name = "DocumentReferenceSearchHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn

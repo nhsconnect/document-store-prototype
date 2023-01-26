@@ -30,7 +30,7 @@ provider "aws" {
 }
 
 resource "aws_lambda_function" "document_uploaded_lambda" {
-  handler       = "uk.nhs.digital.docstore.DocumentUploadedEventHandler::handleRequest"
+  handler       = "uk.nhs.digital.docstore.handlers.DocumentUploadedEventHandler::handleRequest"
   function_name = "DocumentUploadedEventHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn

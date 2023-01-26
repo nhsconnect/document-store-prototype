@@ -14,6 +14,7 @@ import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.handlers.DocumentUploadedEventHandler;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 import java.util.List;

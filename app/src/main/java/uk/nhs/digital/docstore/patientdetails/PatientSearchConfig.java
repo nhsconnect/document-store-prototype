@@ -2,7 +2,7 @@ package uk.nhs.digital.docstore.patientdetails;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import uk.nhs.digital.docstore.config.Environment;
-import uk.nhs.digital.docstore.config.MissingEnvironmentVariableException;
+import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.auth.SigningKeyProvider;
 
 public class PatientSearchConfig {

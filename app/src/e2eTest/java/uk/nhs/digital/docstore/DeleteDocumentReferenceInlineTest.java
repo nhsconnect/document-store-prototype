@@ -17,7 +17,9 @@ import uk.nhs.digital.docstore.audit.message.DeletedAllDocumentsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.handlers.DeleteDocumentReferenceHandler;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
 import java.util.HashMap;

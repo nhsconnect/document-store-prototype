@@ -16,11 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.DownloadAllPatientRecordsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
-import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
-import uk.nhs.digital.docstore.documentmanifest.CreateDocumentManifestByNhsNumberHandler;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentManifestService;
@@ -109,16 +109,5 @@ public class CreateDocumentManifestInlineTest {
         parameters.put("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|" + nhsNumber.getValue());
 
         return new APIGatewayProxyRequestEvent().withQueryStringParameters(parameters).withHeaders(headers);
-    }
-
-    private DocumentMetadata createMetadata(String fileName) {
-        var metadata = new DocumentMetadata();
-        metadata.setId("123");
-        metadata.setDocumentUploaded(true);
-        metadata.setDescription(fileName);
-        metadata.setContentType("text/plain");
-        metadata.setLocation("s3://bucket/key");
-
-        return metadata;
     }
 }

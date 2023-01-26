@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.publisher;
+package uk.nhs.digital.docstore.audit.publisher;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.AuditMessage;
 import uk.nhs.digital.docstore.audit.message.BaseAuditMessage;
-import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;

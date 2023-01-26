@@ -4,7 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.DocumentStore;
+import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.model.Document;
 
 import java.io.ByteArrayInputStream;
