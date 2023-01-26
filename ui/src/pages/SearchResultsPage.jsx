@@ -65,12 +65,10 @@ const SearchResultsPage = () => {
         <>
             <BackButton />
             <h1>Download electronic health records and attachments</h1>
-            {(submissionState === states.FAILED || downloadState === states.FAILED) && (
-                <ServiceError />
-            )}
+            {(submissionState === states.FAILED || downloadState === states.FAILED) && <ServiceError />}
             <PatientSummary patientDetails={patientDetails} />
             {submissionState === states.PENDING && <SimpleProgressBar status="Loading..."></SimpleProgressBar>}
-            
+
             {submissionState === states.SUCCEEDED && (
                 <>
                     {searchResults.length > 0 && (
@@ -91,12 +89,16 @@ const SearchResultsPage = () => {
                                     ))}
                                 </Table.Body>
                             </Table>
-                            {downloadState === states.PENDING && <SimpleProgressBar status={"Downloading documents..."} ></SimpleProgressBar>}
+                            {downloadState === states.PENDING && (
+                                <SimpleProgressBar status={"Downloading documents..."}></SimpleProgressBar>
+                            )}
                             <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING}>
                                 Download All Documents
                             </Button>
                             {downloadState === states.SUCCEEDED && (
-                                <p><strong>All documents have been successfully downloaded.</strong></p>
+                                <p>
+                                    <strong>All documents have been successfully downloaded.</strong>
+                                </p>
                             )}
                             <p>
                                 Only use this option if you have a valid reason to permanently delete all available
@@ -104,13 +106,19 @@ const SearchResultsPage = () => {
                                 been reached.
                             </p>
 
-                            <Link role="button" className="nhsuk-button" to="/search/results/delete-documents-confirmation">
+                            <Link
+                                role="button"
+                                className="nhsuk-button"
+                                to="/search/results/delete-documents-confirmation"
+                            >
                                 Delete All Documents
                             </Link>
                         </>
                     )}
                     {searchResults.length === 0 && (
-                        <p><strong>There are no documents available for this patient.</strong></p>
+                        <p>
+                            <strong>There are no documents available for this patient.</strong>
+                        </p>
                     )}
                 </>
             )}

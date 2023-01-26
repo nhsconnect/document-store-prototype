@@ -31,8 +31,12 @@ const searchResultFactory = Factory.define(() => ({
 
 describe("<SearchResultsPage />", () => {
     const renderPage = () => {
-        render(<MemoryRouter><SearchResultsPage /></MemoryRouter>)
-    }
+        render(
+            <MemoryRouter>
+                <SearchResultsPage />
+            </MemoryRouter>
+        );
+    };
 
     describe("when there is an NHS number", () => {
         const nhsNumber = "1112223334";
@@ -50,10 +54,8 @@ describe("<SearchResultsPage />", () => {
             useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         });
 
-        
-
         it("renders the page", () => {
-            renderPage()
+            renderPage();
 
             expect(
                 screen.getByRole("heading", {
@@ -68,7 +70,7 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("should go to home page when user clicks on start again button", () => {
-            renderPage()
+            renderPage();
             userEvent.click(startAgainLink());
             expect(startAgainLink()).toHaveAttribute("href", "/home");
         });
@@ -81,7 +83,7 @@ describe("<SearchResultsPage />", () => {
                     },
                 };
             });
-            renderPage()
+            renderPage();
 
             expect(screen.getByRole("progressbar", { name: "Loading..." })).toBeInTheDocument();
             expect(await screen.findByText("There are no documents available for this patient.")).toBeInTheDocument();
@@ -92,7 +94,7 @@ describe("<SearchResultsPage />", () => {
             useApi.mockImplementation(() => ({
                 findByNhsNumber: () => [searchResult],
             }));
-            renderPage()
+            renderPage();
 
             expect(await screen.findByText("List of documents available")).toBeInTheDocument();
             const documentDescriptionElement = screen.getByText(searchResult.description);
@@ -125,7 +127,7 @@ describe("<SearchResultsPage />", () => {
             useApi.mockImplementation(() => ({
                 findByNhsNumber: () => searchResults,
             }));
-            renderPage()
+            renderPage();
 
             await waitFor(() => {
                 expect(screen.getByText("List of documents available")).toBeInTheDocument();
@@ -143,7 +145,7 @@ describe("<SearchResultsPage />", () => {
             useApi.mockImplementation(() => ({
                 findByNhsNumber: () => [],
             }));
-            renderPage()
+            renderPage();
 
             await waitFor(() => {
                 expect(screen.getByText("There are no documents available for this patient.")).toBeInTheDocument();
@@ -158,12 +160,10 @@ describe("<SearchResultsPage />", () => {
                     throw Error("Error!");
                 },
             }));
-            renderPage()
+            renderPage();
 
             await waitFor(() => {
-                expect(
-                    screen.getByRole("alert")
-                ).toBeInTheDocument();
+                expect(screen.getByRole("alert")).toBeInTheDocument();
             });
         });
 
@@ -174,7 +174,7 @@ describe("<SearchResultsPage />", () => {
                 getPresignedUrlForZip: () => "some-url",
             }));
 
-            renderPage()
+            renderPage();
 
             await waitFor(() => {
                 expect(screen.getByText("List of documents available")).toBeInTheDocument();
@@ -202,7 +202,7 @@ describe("<SearchResultsPage />", () => {
                 getPresignedUrlForZip: () => preSignedUrl,
             }));
 
-            renderPage()
+            renderPage();
             userEvent.click(
                 await screen.findByRole("button", {
                     name: "Download All Documents",
@@ -220,16 +220,14 @@ describe("<SearchResultsPage />", () => {
                 findByNhsNumber: () => [searchResult],
                 getPresignedUrlForZip: () => "some-url",
             }));
-            renderPage()
+            renderPage();
             await waitFor(() => {
                 expect(screen.getByText("List of documents available")).toBeInTheDocument();
             });
             userEvent.click(screen.getByRole("button", { name: "Download All Documents" }));
             await waitFor(() => {
-                expect(
-                    screen.getByRole("button", { name: "Download All Documents" })
-                ).toBeDisabled();
-                expect(screen.getByRole("progressbar")).toBeVisible()
+                expect(screen.getByRole("button", { name: "Download All Documents" })).toBeDisabled();
+                expect(screen.getByRole("progressbar")).toBeVisible();
             });
         });
 
@@ -242,7 +240,7 @@ describe("<SearchResultsPage />", () => {
                 },
             }));
 
-            renderPage()
+            renderPage();
 
             await waitFor(() => {
                 expect(
@@ -266,7 +264,7 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("redirects to patient trace page when the NHS number is NOT available", () => {
-            renderPage()
+            renderPage();
 
             expect(mockNavigate).toHaveBeenCalledWith("/search/patient-trace");
         });
