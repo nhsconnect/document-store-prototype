@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.sherter.google-java-format' version '0.9'
 }
 
 repositories {
@@ -23,11 +24,9 @@ configurations {
     e2eTestRuntime.extendsFrom testRuntime
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
 }
-
-//e2eTest.outputs.upToDateWhen { false }
 
 dependencies {
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.92'
@@ -87,7 +86,7 @@ tasks.named('test') {
     environment "AMPLIFY_BASE_URL", "http://localhost:4566"
 }
 
-task e2eTest(type:Test) {
+tasks.register('e2eTest') {
     group 'verification'
     description 'Run all end-to-end tests against LocalStack.'
     testClassesDirs = sourceSets.e2eTest.output.classesDirs
