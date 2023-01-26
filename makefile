@@ -1,10 +1,10 @@
 default: help
 
 .PHONY: pre-push
-pre-push: format-node-projects lint-node-projects test-ui test-app test-e2e ## Format & lint Node projects & run unit, integration, & E2E tests. Todo: BE formatting & linting
+pre-push: format lint-node-projects test-ui test-app test-e2e ## Format & lint Node projects & run unit, integration, & E2E tests. Todo: BE linting
 
-.PHONY: format-node-projects
-format-node-projects: format-ui format-e2e-test ## Format Prettier-compatible files for Node projects
+.PHONY: format
+format: format-ui format-e2e-test format-app ## Format compatible files in /ui, /e2eTest, & /app
 
 .PHONY: format-ui
 format-ui: ## Format /ui Prettier-compatible files
@@ -13,6 +13,10 @@ format-ui: ## Format /ui Prettier-compatible files
 .PHONY: format-e2e-test
 format-e2e-test: ## Format /e2eTest Prettier-compatible files
 	cd e2eTest && npm run format
+
+.PHONY: format-app
+format-app: ## Format /app Java files
+	./gradlew goJF
 
 .PHONY: lint-node-projects
 lint-node-projects: lint-ui lint-e2e-test ## Lint Node projects
