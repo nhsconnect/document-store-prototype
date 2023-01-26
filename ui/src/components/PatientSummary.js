@@ -5,8 +5,11 @@ import { getFormattedDate } from "../utils/utils";
 const PatientSummary = ({ patientDetails }) => {
     return (
         <>
-            <p>NHS number {patientDetails?.nhsNumber}</p>
             <SummaryList>
+                <SummaryList.Row>
+                    <SummaryList.Key>NHS Number</SummaryList.Key>
+                    <SummaryList.Value>{patientDetails?.nhsNumber}</SummaryList.Value>
+                </SummaryList.Row>
                 <SummaryList.Row>
                     <SummaryList.Key>Surname</SummaryList.Key>
                     <SummaryList.Value>{patientDetails?.familyName}</SummaryList.Value>

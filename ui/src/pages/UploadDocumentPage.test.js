@@ -41,7 +41,7 @@ describe("UploadDocumentPage", () => {
             render(<UploadDocumentPage nextPagePath={nextPagePath} />);
 
             expect(screen.getByRole("heading", { name: "Upload documents" })).toBeInTheDocument();
-            expect(screen.getByText(`NHS number ${nhsNumber}`)).toBeInTheDocument();
+            expect(screen.getByText(nhsNumber)).toBeInTheDocument();
             expect(screen.getByLabelText("Select file(s)")).toBeInTheDocument();
             expect(uploadButton()).toBeInTheDocument();
             expect(mockNavigate).not.toHaveBeenCalled();

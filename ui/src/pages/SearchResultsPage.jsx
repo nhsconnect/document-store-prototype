@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, ErrorMessage, Fieldset, Table } from "nhsuk-react-components";
+import { Button,  Table } from "nhsuk-react-components";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 import BackButton from "../components/BackButton";
 import useApi from "../apiClients/useApi";
 import { downloadFile } from "../utils/utils";
 import PatientSummary from "../components/PatientSummary";
 import SimpleProgressBar from "../components/SimpleProgressBar";
+import ServiceError from "../components/ServiceError"
 
 const states = {
     INITIAL: "initial",
@@ -14,8 +16,6 @@ const states = {
     SUCCEEDED: "succeeded",
     FAILED: "failed",
 };
-
-const boldText = { fontWeight: "600" };
 
 const SearchResultsPage = () => {
     const client = useApi();
@@ -58,42 +58,23 @@ const SearchResultsPage = () => {
             setDownloadState(states.SUCCEEDED);
         } catch (e) {
             setDownloadState(states.FAILED);
-            console.error(e);
         }
-    };
-
-    const goToDeleteDocumentsConfirmationPage = () => {
-        navigate("/search/results/delete-documents-confirmation");
     };
 
     return (
         <>
             <BackButton />
-            <Fieldset>
-                <Fieldset.Legend headingLevel="h1" isPageHeading>
-                    Download electronic health records and attachments
-                </Fieldset.Legend>
-                <PatientSummary patientDetails={patientDetails} />
-                {submissionState === states.PENDING && <SimpleProgressBar status="Loading..."></SimpleProgressBar>}
-            </Fieldset>
-            {submissionState === states.FAILED && (
-                <p>Sorry, the search failed due to an internal error. Please try again.</p>
+            <h1>Download electronic health records and attachments</h1>
+            {(submissionState === states.FAILED || downloadState === states.FAILED) && (
+                <ServiceError />
             )}
+            <PatientSummary patientDetails={patientDetails} />
+            {submissionState === states.PENDING && <SimpleProgressBar status="Loading..."></SimpleProgressBar>}
+            
             {submissionState === states.SUCCEEDED && (
                 <>
                     {searchResults.length > 0 && (
                         <>
-                            <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING}>
-                                {downloadState === states.PENDING
-                                    ? "Downloading All Documents..."
-                                    : "Download All Documents"}
-                            </Button>
-                            {downloadState === states.FAILED && (
-                                <ErrorMessage>Failed to download, please retry.</ErrorMessage>
-                            )}
-                            {downloadState === states.SUCCEEDED && (
-                                <p style={boldText}>All documents have been successfully downloaded.</p>
-                            )}
                             <Table caption="List of documents available">
                                 <Table.Head>
                                     <Table.Row>
@@ -110,19 +91,26 @@ const SearchResultsPage = () => {
                                     ))}
                                 </Table.Body>
                             </Table>
+                            {downloadState === states.PENDING && <SimpleProgressBar status={"Downloading documents..."} ></SimpleProgressBar>}
+                            <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING}>
+                                Download All Documents
+                            </Button>
+                            {downloadState === states.SUCCEEDED && (
+                                <p><strong>All documents have been successfully downloaded.</strong></p>
+                            )}
                             <p>
                                 Only use this option if you have a valid reason to permanently delete all available
                                 documents for this patient. For example, if the retention period of these documents has
                                 been reached.
                             </p>
 
-                            <Button type="button" secondary onClick={goToDeleteDocumentsConfirmationPage}>
+                            <Link role="button" className="nhsuk-button" to="/search/results/delete-documents-confirmation">
                                 Delete All Documents
-                            </Button>
+                            </Link>
                         </>
                     )}
                     {searchResults.length === 0 && (
-                        <p style={boldText}>There are no documents available for this patient.</p>
+                        <p><strong>There are no documents available for this patient.</strong></p>
                     )}
                 </>
             )}
@@ -130,9 +118,9 @@ const SearchResultsPage = () => {
             <>
                 {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) && (
                     <p>
-                        <a className="govuk-link" href="/home">
+                        <Link className="govuk-link" to="/home">
                             Start Again
-                        </a>
+                        </Link>
                     </p>
                 )}
             </>

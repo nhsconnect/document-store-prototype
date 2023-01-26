@@ -18,7 +18,7 @@ describe("The upload summary component", () => {
         render(<UploadSummary patientDetails={patientData} documents={[]}></UploadSummary>);
 
         expect(screen.getByText("Upload Summary")).toBeInTheDocument();
-        expect(screen.getByText(`NHS number ${patientData.nhsNumber}`)).toBeInTheDocument();
+        expect(screen.getByText(patientData.nhsNumber)).toBeInTheDocument();
         expect(screen.getByText("Before you close this page")).toBeInTheDocument();
     });
 

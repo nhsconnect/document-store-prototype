@@ -98,7 +98,7 @@ describe("PatientTracePage", () => {
         });
 
         expect(screen.getByText("Verify patient details")).toBeInTheDocument();
-        expect(screen.getByText(`NHS number ${patientData.nhsNumber}`)).toBeInTheDocument();
+        expect(screen.getByText(patientData.nhsNumber)).toBeInTheDocument();
         expect(screen.queryByText(`${patientData.familyName}`)).toBeInTheDocument();
         expect(screen.queryByText(`${patientData.postalCode}`)).toBeInTheDocument();
         expect(screen.queryByText("22 October 2010")).toBeInTheDocument();

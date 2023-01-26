@@ -13,7 +13,7 @@ describe("Patient Summary test", () => {
 
     it("renders a summary with patient details", () => {
         render(<PatientSummary patientDetails={patientData} />);
-        expect(screen.getByText(`NHS number ${patientData.nhsNumber}`)).toBeInTheDocument();
+        expect(screen.getByText(patientData.nhsNumber)).toBeInTheDocument();
         expect(screen.getByText(patientData.postalCode)).toBeInTheDocument();
         expect(screen.getByText(patientData.familyName)).toBeInTheDocument();
         expect(screen.getByText("22 January 2003")).toBeInTheDocument();

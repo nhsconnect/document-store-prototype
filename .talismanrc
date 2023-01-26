@@ -7,6 +7,8 @@ fileignoreconfig:
   checksum: 512a82c4e4de3c201a985a00ebde5d66a32b4c3284015b7b149c022c65163e5e
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
   checksum: 61352f0d95bc336a602b5818df4eb37c510edb28e6289825c7fa30f5a8166b6e
+- filename: ui/src/components/PatientSummary.js
+  checksum: 5887e478e0ea744814ce24b013e26dd2ce4dfa3c05dfe1a4107ef41b90b21cf2
 - filename: ui/src/pages/PatientTracePage.jsx
   checksum: c977a7264b9471475fade1959b6b804554714c8c7cdf800a27cdc10237f0b6b7
 - filename: ui/src/components/DocumentsInput.js
