@@ -110,8 +110,8 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
   }
 
   attribute_mapping = {
-    nhsid_user_orgs   = "custom:nhsid_user_orgs"
-    nhsid_nrbac_roles = "custom:nhsid_nrbac_roles"
+    nhsid_user_orgs   = "nhsid_user_orgs"
+    nhsid_nrbac_roles = "nhsid_nrbac_roles"
   }
 
   count = var.cloud_only_service_instances
