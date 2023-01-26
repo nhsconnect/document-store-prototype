@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.model.BirthDate;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
 import uk.nhs.digital.docstore.model.Postcode;
@@ -100,9 +101,9 @@ public class Patient {
         return new PatientDetails(
                 name.map(Name::getGiven).orElse(null),
                 name.map(Name::getFamily).orElse(null),
-                this.getBirthDate(),
-                currentHomeAddress.map((address) -> new Postcode(address.getPostalCode())).orElse(null),
-                new NhsNumber(this.getId())
+                birthDate == null ? null : new BirthDate(birthDate),
+                currentHomeAddress.map((address) -> address.getPostalCode() == null ? null : new Postcode(address.getPostalCode())).orElse(null),
+                new NhsNumber(id)
         );
     }
 }

@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.model;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BirthDateTest {
 
@@ -12,8 +13,17 @@ class BirthDateTest {
     }
 
     @Test
-    void shouldRedactIncompleteBirthDate() {
+    void shouldRedactBirthDateOnlyIncludingYear() {
         assertThat(new BirthDate("2013").toString()).isEqualTo("****");
     }
 
+    @Test
+    void shouldRedactBirthDateOnlyIncludingYearAndMonth() {
+        assertThat(new BirthDate("2013-10").toString()).isEqualTo("****-10");
+    }
+
+    @Test
+    void shouldThrowNullPointerExceptionWhenRedactingNullBirthDate() {
+        assertThrows(NullPointerException.class, () -> new BirthDate(null).toString());
+    }
 }

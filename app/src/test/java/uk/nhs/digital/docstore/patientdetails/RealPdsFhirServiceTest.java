@@ -16,6 +16,7 @@ import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.logs.TestLogAppender;
+import uk.nhs.digital.docstore.model.BirthDate;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
 import uk.nhs.digital.docstore.model.Postcode;
@@ -64,7 +65,7 @@ class RealPdsFhirServiceTest {
         NhsNumber nhsNumber = new NhsNumber("9000000009");
         var expectedSensitiveAuditMessage = new SearchPatientDetailsAuditMessage(nhsNumber, 200);
         var accessToken = "token";
-        var expectedPatient = new PatientDetails(List.of("Jane"), "Doe","Test", new Postcode("EX1 2EX"), nhsNumber);
+        var expectedPatient = new PatientDetails(List.of("Jane"), "Doe",new BirthDate("Test"), new Postcode("EX1 2EX"), nhsNumber);
 
         when(httpClient.get(any(), any(), eq(accessToken)))
                 .thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
@@ -161,7 +162,7 @@ class RealPdsFhirServiceTest {
         var pdsFhirClient = new RealPdsFhirService(patientSearchConfig, httpClient, splunkPublisher, authService);
         var nhsNumber = new NhsNumber("9000000009");
         var accessToken = "token";
-        var expectedPatient = new PatientDetails(List.of("Jane"), "Doe","Test", new Postcode("EX1 2EX"), nhsNumber);
+        var expectedPatient = new PatientDetails(List.of("Jane"), "Doe",new BirthDate("Test"), new Postcode("EX1 2EX"), nhsNumber);
 
         when(httpClient.get(any(), any(), eq(accessToken)))
                 .thenReturn(new StubPdsResponse(401, "some error"), new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
