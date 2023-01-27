@@ -18,8 +18,8 @@ public class FileMetadata {
         return id;
     }
 
-    public FileName getFileName() {
-        return fileName;
+    public String getFileName() {
+        return fileName.getValue();
     }
 
     public String getFileType() {

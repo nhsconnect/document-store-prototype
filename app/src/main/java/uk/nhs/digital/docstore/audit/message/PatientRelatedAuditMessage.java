@@ -10,7 +10,7 @@ public abstract class PatientRelatedAuditMessage extends BaseAuditMessage {
         this.nhsNumber = nhsNumber;
     }
 
-    public NhsNumber getNhsNumber() {
-        return nhsNumber;
+    public String getNhsNumber() {
+        return nhsNumber.getValue();
     }
 }

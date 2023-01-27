@@ -31,7 +31,7 @@ class FileMetadataTest {
 
         var fileMetadata = FileMetadata.fromDocument(document);
 
-        assertThat(fileMetadata.getFileName().getValue()).isEqualTo(documentTitle);
+        assertThat(fileMetadata.getFileName()).isEqualTo(documentTitle);
         assertThat(fileMetadata.getId()).isEqualTo(documentId);
         assertThat(fileMetadata.getFileType()).isEqualTo(contentType);
     }
