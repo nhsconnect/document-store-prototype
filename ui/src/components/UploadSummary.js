@@ -3,7 +3,6 @@ import { documentUploadStates } from "../enums/documentUploads";
 import { formatSize, getFormattedDate } from "../utils/utils";
 import PatientSummary from "./PatientSummary";
 import React from "react";
-import ServiceError from "./ServiceError";
 
 const tableMargin = { marginBottom: 50 };
 
