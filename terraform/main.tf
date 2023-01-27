@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.47.0"
+      version = "4.52.0"
     }
   }
 
@@ -42,6 +42,10 @@ resource "aws_lambda_function" "document_uploaded_lambda" {
 
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
 
+  layers = [
+    "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
+  ]
+
   environment {
     variables = local.common_environment_variables
   }
@@ -68,6 +72,11 @@ resource "aws_iam_role" "lambda_execution_role" {
 resource "aws_iam_role_policy_attachment" "lambda_execution_policy" {
   role       = aws_iam_role.lambda_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_insights_policy" {
+  role       = aws_iam_role.lambda_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
 }
 
 resource "aws_api_gateway_rest_api" "lambda_api" {
@@ -152,6 +161,11 @@ resource "aws_iam_role_policy_attachment" "authoriser_lambda_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy_attachment" "authoriser_insights_policy" {
+  role       = aws_iam_role.authoriser_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
+}
+
 resource "aws_lambda_function" "authoriser" {
   handler       = "uk.nhs.digital.docstore.authoriser.Authoriser::handleRequest"
   function_name = "Authoriser"
@@ -164,6 +178,9 @@ resource "aws_lambda_function" "authoriser" {
   filename = var.authoriser_lambda_jar_filename
 
   source_code_hash = filebase64sha256(var.authoriser_lambda_jar_filename)
+  layers = [
+    "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
+  ]
 
   environment {
     variables = {

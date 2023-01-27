@@ -24,6 +24,9 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
   memory_size      = 448
   filename         = var.lambda_jar_filename
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
+  layers = [
+    "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
+  ]
   environment {
     variables = {
       PDS_FHIR_TOKEN_NAME  = "/prs/${var.environment}/pds-fhir-access-token"
