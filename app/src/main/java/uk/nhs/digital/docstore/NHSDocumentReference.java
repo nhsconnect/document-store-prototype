@@ -4,7 +4,12 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import ca.uhn.fhir.util.ElementUtil;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.DocumentReference;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.InstantType;
+import org.hl7.fhir.r4.model.Reference;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.FileName;
@@ -91,7 +96,7 @@ public class NHSDocumentReference extends DocumentReference {
     public Document parse() throws IllFormedPatientDetailsException {
         return new Document(
                 null,
-                new NhsNumber(getSubject().getIdentifier().getValue()),
+                getNhsNumber(),
                 getContentType(),
                 indexed != null,
                 getFileName(),
