@@ -36,13 +36,13 @@ module create_document_reference_alarms {
   lambda_short_name = "create_document_reference_handler"
 }
 
-module authoriser_alarms {
-  source = "./modules/lambda_alarms"
-  lambda_function_name = aws_lambda_function.authoriser.function_name
-  lambda_memory_limit = aws_lambda_function.authoriser.memory_size
-  lambda_timeout = aws_lambda_function.authoriser.timeout
-  lambda_short_name = "authoriser"
-}
+#module authoriser_alarms {
+#  source = "./modules/lambda_alarms"
+#  lambda_function_name = aws_lambda_function.authoriser.function_name
+#  lambda_memory_limit = aws_lambda_function.authoriser.memory_size
+#  lambda_timeout = aws_lambda_function.authoriser.timeout
+#  lambda_short_name = "authoriser"
+#}
 
 module search_patient_details_alarms {
   source = "./modules/lambda_alarms"
