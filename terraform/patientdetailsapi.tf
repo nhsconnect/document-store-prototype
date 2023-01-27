@@ -71,7 +71,7 @@ resource "aws_iam_role_policy" "lambda_get_parameter_policy" {
           "ssm:GetParameter",
           "ssm:PutParameter"
         ],
-        "Resource" : "arn:aws:ssm:*:533825906475:parameter/*"
+        "Resource" : "arn:aws:ssm:*:*:parameter/prs/*/pds-fhir-access-token"
       }
     ]
   })
