@@ -3,10 +3,10 @@ package uk.nhs.digital.docstore.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Name {
+public class PatientName {
     private final String value;
 
-    public Name(String value) {
+    public PatientName(String value) {
         this.value = value;
     }
 

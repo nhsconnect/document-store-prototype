@@ -10,6 +10,7 @@ import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.BirthDate;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
+import uk.nhs.digital.docstore.model.PatientName;
 import uk.nhs.digital.docstore.model.Postcode;
 
 import java.util.List;
@@ -96,11 +97,11 @@ public class Patient {
     }
 
     public PatientDetails parse() throws IllFormedPatientDetailsException {
-        var name = this.getCurrentUsualName();
+        var currentName = this.getCurrentUsualName();
         var currentHomeAddress = this.getCurrentHomeAddress();
         return new PatientDetails(
-                name.map(Name::getGiven).orElse(null),
-                name.map(Name::getFamily).orElse(null),
+                currentName.map(Name::getGiven).orElse(null),
+                currentName.map((name) -> new PatientName(name.getFamily())).orElse(null),
                 birthDate == null ? null : new BirthDate(birthDate),
                 currentHomeAddress.map((address) -> address.getPostalCode() == null ? null : new Postcode(address.getPostalCode())).orElse(null),
                 new NhsNumber(id)

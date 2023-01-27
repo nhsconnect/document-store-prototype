@@ -4,12 +4,12 @@ import java.util.List;
 
 public class PatientDetails {
     private final List<String> givenName;
-    private final String familyName;
+    private final PatientName familyName;
     private final BirthDate birthDate;
     private final Postcode postalCode;
     private final NhsNumber nhsNumber;
 
-    public PatientDetails(List<String> givenName, String familyName, BirthDate birthDate, Postcode postalCode,
+    public PatientDetails(List<String> givenName, PatientName familyName, BirthDate birthDate, Postcode postalCode,
                           NhsNumber nhsNumber) {
         this.givenName = givenName;
         this.familyName = familyName;
@@ -22,7 +22,7 @@ public class PatientDetails {
         return givenName;
     }
 
-    public String getFamilyName() {
+    public PatientName getFamilyName() {
         return familyName;
     }
 

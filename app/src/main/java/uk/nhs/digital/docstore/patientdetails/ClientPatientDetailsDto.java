@@ -3,18 +3,19 @@ package uk.nhs.digital.docstore.patientdetails;
 import uk.nhs.digital.docstore.model.BirthDate;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
+import uk.nhs.digital.docstore.model.PatientName;
 import uk.nhs.digital.docstore.model.Postcode;
 
 import java.util.List;
 
 public class ClientPatientDetailsDto {
     private final List<String> givenName;
-    private final String familyName;
+    private final PatientName familyName;
     private final BirthDate birthDate;
     private final Postcode postalCode;
     private final NhsNumber nhsNumber;
 
-    public ClientPatientDetailsDto(List<String> givenName, String familyName, BirthDate birthDate, Postcode postalCode,
+    public ClientPatientDetailsDto(List<String> givenName, PatientName familyName, BirthDate birthDate, Postcode postalCode,
                                    NhsNumber nhsNumber) {
         this.givenName = givenName;
         this.familyName = familyName;
@@ -28,7 +29,7 @@ public class ClientPatientDetailsDto {
     }
 
     public String getFamilyName() {
-        return familyName;
+        return familyName == null ? null : familyName.getValue();
     }
 
     public String getBirthDate() {
