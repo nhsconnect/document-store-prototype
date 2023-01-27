@@ -49,7 +49,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_memory_alarm" {
   alarm_name        = "prs_${var.lambda_short_name}_memory"
   alarm_description = "Triggers when max memory usage of ${var.lambda_function_name} exceeds 80% of provisioned memory."
   dimensions = {
-    FunctionName = var.lambda_function_name
+    function_name = var.lambda_function_name
   }
   threshold           = var.lambda_memory_limit * 0.8
   namespace           = "LambdaInsights"
