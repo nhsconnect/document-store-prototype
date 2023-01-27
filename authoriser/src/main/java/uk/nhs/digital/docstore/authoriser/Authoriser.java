@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
-import uk.nhs.digital.docstore.authoriser.models.RbacRoles;
+import uk.nhs.digital.docstore.authoriser.models.Role;
 
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
@@ -77,7 +77,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             // Mapping claims to models
             var claimsMapper = new AccessTokenClaimMapper(decodedJWT);
             var organisations = claimsMapper.deserialiseClaim(ASSOCIATED_ORG,  Organisation[].class);
-            var rbacRoles = claimsMapper.deserialiseClaim(RBAC_ROLES, RbacRoles.class);
+            var role = claimsMapper.deserialiseClaim(RBAC_ROLES, Role.class);
 
             // Get a list of tertiary role codes
             var clinicalRoles = Arrays.stream(ClinicalAdmin.values()).map(ClinicalAdmin::getClinicalRoleCode).collect(Collectors.toList());
@@ -89,7 +89,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
                 allowedResources.addAll(authConfig.getAllowedResourcesForPCSEUsers());
             }
 
-            if (rbacRoles.containsAnyTertiaryRole(clinicalRoles)) {
+            if (Role.containsAnyTertiaryRole(role, clinicalRoles)) {
                 allowedResources.addAll(authConfig.getAllowedResourcesForClinicalUsers());
             }
 

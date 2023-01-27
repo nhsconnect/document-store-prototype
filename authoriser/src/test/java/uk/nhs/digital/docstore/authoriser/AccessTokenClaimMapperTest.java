@@ -8,8 +8,6 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.authoriser.models.AssociatedOrganisations;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
-import uk.nhs.digital.docstore.authoriser.models.RbacRoles;
-import uk.nhs.digital.docstore.authoriser.models.Role;
 
 import java.util.List;
 
