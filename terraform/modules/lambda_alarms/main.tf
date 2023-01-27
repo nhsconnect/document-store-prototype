@@ -11,10 +11,6 @@ variable "lambda_timeout" {
   type = number
 }
 
-variable "lambda_memory_limit" {
-  type = number
-}
-
 resource "aws_cloudwatch_metric_alarm" "lambda_error" {
   alarm_name        = "prs_${var.lambda_short_name}_error"
   alarm_description = "Triggers when an error has occurred in ${var.lambda_function_name}."
@@ -51,7 +47,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_memory_alarm" {
   dimensions = {
     function_name = var.lambda_function_name
   }
-  threshold           = var.lambda_memory_limit * 0.8
+  threshold           = 80
   namespace           = "LambdaInsights"
   metric_name         = "memory_utilization"
   comparison_operator = "GreaterThanThreshold"
