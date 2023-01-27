@@ -15,11 +15,6 @@ variable "lambda_memory_limit" {
   type = number
 }
 
-resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name = "/aws/lambda/${var.lambda_function_name}"
-  retention_in_days = 14
-}
-
 resource "aws_cloudwatch_metric_alarm" "lambda_error" {
   alarm_name        = "prs_${var.lambda_short_name}_error"
   alarm_description = "Triggers when an error has occurred in ${var.lambda_function_name}."
