@@ -17,9 +17,9 @@ public class Role {
         return role;
     }
 
-    public static boolean containsAnyTertiaryRole(Role role, List<String> selectedRoleCodes) {
+    public boolean containsAnyTertiaryRole(List<String> selectedRoleCodes) {
         for (String selectedRole : selectedRoleCodes) {
-            var parts = role.getRole().split(":");
+            var parts = role.split(":");
             var tertiaryCode = parts[parts.length - 1];
 
             if (selectedRole.equals(tertiaryCode)) {

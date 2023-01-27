@@ -7,9 +7,9 @@ import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.algorithms.Algorithm;
-import org.slf4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.Role;
@@ -27,7 +27,6 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
     private final AuthConfig authConfig;
     private final Algorithm algorithm;
 
-    public final static String GENERAL_ADMIN_ROLE_NAME = "General administrator";
     public final static String GENERAL_ADMIN_ORG_CODE = "X4S4L";
     public final static String ASSOCIATED_ORG = "custom:nhsid_user_orgs";
     public final static String RBAC_ROLES = "custom:nhsid_nrbac_roles";
@@ -63,21 +62,22 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
     @Override
     public IamPolicyResponse handleRequest(APIGatewayCustomAuthorizerEvent input, Context context) {
         try {
-
-            LOGGER.debug("Authoriser handle funtion started");
+            LOGGER.debug("Authoriser handle function started");
 
             var jwtValidator = new JWTValidator(input.getAuthorizationToken(), algorithm);
             var decodedJWT = jwtValidator.verify();
 
             var iamPolicy = new IamPolicyResponse();
             iamPolicy.setPrincipalId(decodedJWT.getSubject());
-            LOGGER.debug("claim name: " + decodedJWT.getSubject() );
 
-            LOGGER.debug("decoded JWT: " + decodedJWT );
             // Mapping claims to models
             var claimsMapper = new AccessTokenClaimMapper(decodedJWT);
-            var organisations = claimsMapper.deserialiseClaim(ASSOCIATED_ORG,  Organisation[].class);
-            var role = claimsMapper.deserialiseClaim(RBAC_ROLES, Role.class);
+            var organisations = claimsMapper.deserialiseClaim(ASSOCIATED_ORG, Organisation[].class);
+            var roles = claimsMapper.deserialiseClaim(RBAC_ROLES, Role[].class);
+
+
+            LOGGER.debug("organisations" + Arrays.toString(organisations));
+            LOGGER.debug("roles" + Arrays.toString(roles));
 
             // Get a list of tertiary role codes
             var clinicalRoles = Arrays.stream(ClinicalAdmin.values()).map(ClinicalAdmin::getClinicalRoleCode).collect(Collectors.toList());
@@ -89,12 +89,17 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
                 allowedResources.addAll(authConfig.getAllowedResourcesForPCSEUsers());
             }
 
-            if (Role.containsAnyTertiaryRole(role, clinicalRoles)) {
-                allowedResources.addAll(authConfig.getAllowedResourcesForClinicalUsers());
+            for (Role role : roles) {
+                if (role.containsAnyTertiaryRole(clinicalRoles)) {
+                    allowedResources.addAll(authConfig.getAllowedResourcesForClinicalUsers());
+                }
             }
 
             var policyDocument = getPolicyDocument(allowedResources);
             iamPolicy.setPolicyDocument(policyDocument);
+
+            LOGGER.debug("IAM policy" + iamPolicy);
+
             return iamPolicy;
         } catch (NullPointerException e) {
             throw e;

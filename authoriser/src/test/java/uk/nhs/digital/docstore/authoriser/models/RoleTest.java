@@ -13,20 +13,20 @@ public class RoleTest {
     void shouldReturnFalseWhenNoMatchingTertiaryRoleCodeIsFound() {
         var userRole = new Role("Code1:Code4");
         var validRoles = List.of("Code1");
-        assertFalse(Role.containsAnyTertiaryRole(userRole, validRoles));
+        assertFalse(userRole.containsAnyTertiaryRole(validRoles));
     }
 
     @Test
     void shouldReturnTrueWhenAMatchingTertiaryRoleCodeIsFound() {
         var userRole = new Role("Code1:Code4");
         var validRoles = List.of("Code4");
-        assertTrue(Role.containsAnyTertiaryRole(userRole, validRoles));
+        assertTrue(userRole.containsAnyTertiaryRole(validRoles));
     }
 
     @Test
     void shouldReturnTrueWhenTheLastValidRoleCodeMatchesAUserRole() {
         var userRole = new Role("Code1:Code4");
         var validRoles = List.of("Code2", "Code3", "Code4");
-        assertTrue(Role.containsAnyTertiaryRole(userRole, validRoles));
+        assertTrue(userRole.containsAnyTertiaryRole(validRoles));
     }
 }

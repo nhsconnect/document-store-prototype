@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,8 +29,11 @@ class AuthoriserTest {
         var event = new APIGatewayCustomAuthorizerEvent();
         var handler = new Authoriser(authConfig, algorithm);
 
-        var nationalRbAccessClaim = new JSONObject();
-        nationalRbAccessClaim.put("role_code", "some-role-codes");
+        var nationalRbacClaim = new JSONObject();
+        nationalRbacClaim.put("role_code", "some-role-codes");
+
+        JSONArray nationalRbacClaimJson = new JSONArray();
+        nationalRbacClaimJson.put(nationalRbacClaim);
 
         var orgsClaim = new JSONObject();
         orgsClaim.put("org_name", "NHSID DEV");
@@ -44,7 +46,7 @@ class AuthoriserTest {
         var token = JWT.create()
                 .withSubject(principalId)
                 .withClaim("custom:nhsid_user_orgs", organisationsClaimJson.toString())
-                .withClaim("custom:nhsid_nrbac_roles", nationalRbAccessClaim.toString());
+                .withClaim("custom:nhsid_nrbac_roles", nationalRbacClaimJson.toString());
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)
@@ -75,8 +77,11 @@ class AuthoriserTest {
         var event = new APIGatewayCustomAuthorizerEvent();
         var handler = new Authoriser(authConfig, algorithm);
 
-        var nationalRbAccessClaim = new JSONObject();
-        nationalRbAccessClaim.put("role_code", "S0010:G0020:R8008");
+        var nationalRbacClaim = new JSONObject();
+        nationalRbacClaim.put("role_code", "S0010:G0020:R8008");
+
+        JSONArray nationalRbacClaimJson = new JSONArray();
+        nationalRbacClaimJson.put(nationalRbacClaim);
 
         var orgsClaim = new JSONObject();
         orgsClaim.put("org_name", "NHSID DEV");
@@ -88,7 +93,7 @@ class AuthoriserTest {
         String principalId = "some-principal-id";
         var token = JWT.create()
                 .withSubject(principalId)
-                .withClaim("custom:nhsid_nrbac_roles", nationalRbAccessClaim.toString())
+                .withClaim("custom:nhsid_nrbac_roles", nationalRbacClaimJson.toString())
                 .withClaim("custom:nhsid_user_orgs", organisationsClaimJson.toString());
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
@@ -120,8 +125,12 @@ class AuthoriserTest {
         var event = new APIGatewayCustomAuthorizerEvent();
         var handler = new Authoriser(authConfig, algorithm);
 
-        var nationalRbAccessClaim = new JSONObject();
-        nationalRbAccessClaim.put("role_code", "S0010:G0020:R8008");
+        var nationalRbacClaim = new JSONObject();
+        nationalRbacClaim.put("role_code", "S0010:G0020:R8008");
+
+        JSONArray nationalRbacClaimJson = new JSONArray();
+        nationalRbacClaimJson.put(nationalRbacClaim);
+
 
         var orgsClaim = new JSONObject();
         orgsClaim.put("org_name", "NHSID DEV");
@@ -134,7 +143,7 @@ class AuthoriserTest {
         var token = JWT.create()
                 .withSubject(principalId)
                 .withClaim("custom:nhsid_user_orgs", organisationsClaimJson.toString())
-                .withClaim("custom:nhsid_nrbac_roles", nationalRbAccessClaim.toString());
+                .withClaim("custom:nhsid_nrbac_roles", nationalRbacClaimJson.toString());
 
         var allResources = Stream.concat(pcseAllowedResources.stream(), clinicalAllowedResources.stream()).collect(Collectors.toList());
 
@@ -154,6 +163,7 @@ class AuthoriserTest {
         assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
     }
 
+//    :TODO complete deny scenario(s)
     @Test
     void shouldDenyAllWhenTokenSignatureVerificationFails() {
         var pcseAllowedResources = List.of("api-gateway-invocation-arn-1", "api-gateway-invocation-arn-2");
