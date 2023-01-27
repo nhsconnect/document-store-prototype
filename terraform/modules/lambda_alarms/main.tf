@@ -52,8 +52,8 @@ resource "aws_cloudwatch_metric_alarm" "lambda_memory_alarm" {
     FunctionName = var.lambda_function_name
   }
   threshold           = var.lambda_memory_limit * 0.8
-  namespace           = "AWS/LambdaInsights"
-  metric_name         = "UsedMemoryMax"
+  namespace           = "LambdaInsights"
+  metric_name         = "memory_utilization"
   comparison_operator = "GreaterThanThreshold"
   period              = "300"
   evaluation_periods  = "1"
