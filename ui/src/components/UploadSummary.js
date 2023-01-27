@@ -3,6 +3,7 @@ import { documentUploadStates } from "../enums/documentUploads";
 import { formatSize, getFormattedDate } from "../utils/utils";
 import PatientSummary from "./PatientSummary";
 import React from "react";
+import ServiceError from "./ServiceError";
 
 const tableMargin = { marginBottom: 50 };
 
@@ -28,6 +29,13 @@ const UploadSummary = ({ patientDetails, documents }) => {
                             <p>
                                 You can try to upload the documents again if you wish and/or make a note of the failures
                                 for future reference.
+                            </p>
+                            <p>
+                                If the issue persists please contact the{" "}
+                                <a href={"https://digital.nhs.uk/about-nhs-digital/contact-us"}>
+                                    NHS Digital National Service Desk
+                                </a>
+                                .
                             </p>
                         </ErrorSummary.Body>
                     </ErrorSummary>
