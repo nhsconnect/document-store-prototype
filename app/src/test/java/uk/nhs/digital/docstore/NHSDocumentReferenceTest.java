@@ -36,7 +36,6 @@ class NHSDocumentReferenceTest {
 
 
         String description = "Test Document";
-        String id = "1234";
         var created = DateTimeType.now();
 
         var dto = (NHSDocumentReference) new NHSDocumentReference().setCreated(created)
@@ -53,7 +52,7 @@ class NHSDocumentReferenceTest {
 
         assertThat(documentModel.getNhsNumber()).isEqualTo(nhsNumber);
         assertThat(documentModel.getContentType()).isEqualTo(contentType);
-        assertThat(documentModel.getDescription()).isEqualTo(description);
+        assertThat(documentModel.getDescription().getValue()).isEqualTo(description);
         assertThat(documentModel.getType()).isEqualTo(List.of(snomedCode));
         assertThat(documentModel.isUploaded()).isEqualTo(false);
         assertThat(documentModel.getCreated()).isEqualTo(created.getValue().toInstant());

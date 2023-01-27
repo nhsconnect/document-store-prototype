@@ -19,6 +19,7 @@ import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.model.DocumentLocation;
+import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.services.DocumentManifestService;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
@@ -80,7 +81,7 @@ public class CreateDocumentManifestByNhsNumberHandler implements RequestHandler<
             var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
             var documentMetadataList = metadataSearchService.findMetadataByNhsNumber(nhsNumber);
             var documentPath = "tmp/" + CommonUtils.generateRandomUUIDString();
-            var fileName = "patient-record-" + nhsNumber.getValue() + ".zip";
+            var fileName = new FileName("patient-record-" + nhsNumber.getValue() + ".zip");
 
             var zipInputStream = zipService.zipDocuments(documentMetadataList);
 

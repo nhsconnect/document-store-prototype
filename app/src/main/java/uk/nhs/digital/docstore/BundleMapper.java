@@ -54,9 +54,9 @@ public class BundleMapper {
                 .setCreated(new DateTimeType(document.getCreated().toString()))
                 .setIndexed(document.isUploaded() ? new InstantType(document.getIndexed().toString()) : null)
                 .setNhsNumber(document.getNhsNumber())
+                .setFileName(document.getDescription())
                 .setType(type)
                 .setDocStatus(document.isUploaded() ? FINAL : PRELIMINARY)
-                .setDescription(document.getDescription())
                 .setId(document.getReferenceId());
     }
 }

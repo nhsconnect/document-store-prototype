@@ -12,6 +12,7 @@ import uk.nhs.digital.docstore.audit.message.DownloadAllPatientRecordsAuditMessa
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
+import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.time.Instant;
@@ -40,12 +41,13 @@ class DocumentManifestServiceTest {
     @Test
     void shouldSendAuditMessage() throws JsonProcessingException, IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("9123456780");
+        var fileName = new FileName("Document Title");
         var document = new Document(
                 "123",
                 nhsNumber,
                 "pdf",
                 true,
-                "Document Title",
+                fileName,
                 null,
                 null,
                 null,

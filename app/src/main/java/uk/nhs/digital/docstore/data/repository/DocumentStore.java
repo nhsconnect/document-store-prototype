@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import uk.nhs.digital.docstore.model.DocumentLocation;
+import uk.nhs.digital.docstore.model.FileName;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -36,15 +37,18 @@ public class DocumentStore {
         this.bucketName = bucketName;
     }
 
-    public DocumentStore(AmazonS3 client, String bucketName){
+    public DocumentStore(AmazonS3 client, String bucketName) {
         this.client = client;
         this.bucketName = bucketName;
     }
 
-    public URL generatePreSignedUrlForZip(DocumentLocation documentLocation, String filename) {
+    public URL generatePreSignedUrlForZip(DocumentLocation documentLocation, FileName fileName) {
         var generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, documentLocation.getPath())
                 .withExpiration(getExpirationDate())
-                .withResponseHeaders(new ResponseHeaderOverrides().withContentDisposition("attachment; filename=" + filename));
+                .withResponseHeaders(new ResponseHeaderOverrides()
+                        .withContentDisposition("attachment; fileName=" + fileName.getValue())
+                );
+
         return client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 

@@ -41,7 +41,7 @@ class ZipServiceTest {
         var fileNames = listZipEntryNames(result);
 
         assertThat(fileNames.size()).isEqualTo(1);
-        assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getDescription());
+        assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getDescription().getValue());
     }
 
     public ArrayList<Object> listZipEntryNames(ByteArrayInputStream inputStream) throws IOException {

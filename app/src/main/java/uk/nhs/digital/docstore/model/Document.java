@@ -10,20 +10,19 @@ public class Document {
     private final NhsNumber nhsNumber;
     private final String contentType;
     private final Boolean uploaded;
-    private final String description;
+    private final FileName description;
     private final Instant created;
     private final Instant deleted;
     private final Instant indexed;
     private final List<String> type;
     private DocumentLocation location;
 
-
     public Document(
             String referenceId,
             NhsNumber nhsNumber,
             String contentType,
             Boolean uploaded,
-            String description,
+            FileName description,
             Instant created,
             Instant deleted,
             Instant indexed,
@@ -40,7 +39,7 @@ public class Document {
         this.indexed = indexed;
         this.type = type;
         this.location = location;
-    };
+    }
 
     public String getReferenceId() {
         return referenceId;
@@ -58,7 +57,7 @@ public class Document {
         return uploaded;
     }
 
-    public String getDescription() {
+    public FileName getDescription() {
         return description;
     }
 

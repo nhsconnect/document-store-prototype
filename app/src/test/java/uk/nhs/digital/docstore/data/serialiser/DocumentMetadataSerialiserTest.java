@@ -5,6 +5,7 @@ import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.DocumentLocation;
+import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.time.Instant;
@@ -37,13 +38,13 @@ class DocumentMetadataSerialiserTest {
         assertThat(document.getContentType()).isEqualTo(contentType);
         assertThat(document.getLocation().toString()).isEqualTo(location);
         assertThat(document.isUploaded()).isFalse();
-        assertThat(document.getDescription()).isEqualTo(description);
+        assertThat(document.getDescription()).isEqualTo(new FileName(description));
         assertThat(document.getCreated()).isEqualTo(created);
         assertThat(document.getType().get(0)).isEqualTo(type);
         assertThat(document.getIndexed()).isNull();
         assertThat(document.getDeleted()).isNull();
     }
-    
+
     @Test
     void shouldSerialiseFromDocumentModel() throws IllFormedPatientDetailsException {
         var nhsNumber = "1234567890";
@@ -52,20 +53,20 @@ class DocumentMetadataSerialiserTest {
         var description = "doc-name";
         var created = Instant.now();
         var type = "some-type";
-        
+
         var document = new Document(
-                null, 
-                new NhsNumber(nhsNumber), 
-                contentType, 
-                false, 
-                description, 
-                created, 
-                null, 
-                null, 
-                List.of(type), 
+                null,
+                new NhsNumber(nhsNumber),
+                contentType,
+                false,
+                new FileName(description),
+                created,
+                null,
+                null,
+                List.of(type),
                 new DocumentLocation(location)
         );
-        
+
         var metadata = new DocumentMetadataSerialiser().fromDocumentModel(document);
 
         assertThat(metadata.getNhsNumber()).isEqualTo(nhsNumber);

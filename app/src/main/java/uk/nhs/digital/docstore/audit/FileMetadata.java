@@ -1,13 +1,14 @@
 package uk.nhs.digital.docstore.audit;
 
 import uk.nhs.digital.docstore.model.Document;
+import uk.nhs.digital.docstore.model.FileName;
 
 public class FileMetadata {
     private final String id;
-    private final String fileName;
+    private final FileName fileName;
     private final String fileType;
 
-    public FileMetadata(String id, String fileName, String fileType) {
+    public FileMetadata(String id, FileName fileName, String fileType) {
         this.id = id;
         this.fileName = fileName;
         this.fileType = fileType;
@@ -17,7 +18,7 @@ public class FileMetadata {
         return id;
     }
 
-    public String getFileName() {
+    public FileName getFileName() {
         return fileName;
     }
 

@@ -103,13 +103,13 @@ public class CreateDocumentReferenceHandler implements RequestHandler<APIGateway
             var resource = new NHSDocumentReference()
                     .setCreated(new DateTimeType(savedDocument.getCreated().toString()))
                     .setNhsNumber(savedDocument.getNhsNumber())
+                    .setFileName(savedDocument.getDescription())
                     .addContent(new NHSDocumentReference.DocumentReferenceContentComponent()
                             .setAttachment(new Attachment()
                                     .setUrl(presignedS3Url.toString())
                                     .setContentType(savedDocument.getContentType())))
                     .setType(type)
                     .setDocStatus(savedDocument.isUploaded() ? FINAL : PRELIMINARY)
-                    .setDescription(savedDocument.getDescription())
                     .setId(savedDocument.getReferenceId());
 
             var resourceAsJson = jsonParser.encodeResourceToString(resource);

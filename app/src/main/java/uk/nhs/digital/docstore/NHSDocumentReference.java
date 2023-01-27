@@ -4,33 +4,29 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import ca.uhn.fhir.util.ElementUtil;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.DocumentReference;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.InstantType;
-import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.*;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
+import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.util.stream.Collectors;
 
-@ResourceDef(name="DocumentReference", profile="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-GPC-DocumentReference-1")
+@ResourceDef(name = "DocumentReference", profile = "https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-GPC-DocumentReference-1")
 public class NHSDocumentReference extends DocumentReference {
 
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
 
-    @Child(name="created")
-    @Description(shortDefinition="When the document was created. Creation/Edit datetime of the document - event date")
+    @Child(name = "created")
+    @Description(shortDefinition = "When the document was created. Creation/Edit datetime of the document - event date")
     private DateTimeType created;
 
-    @Child(name="indexed")
-    @Description(shortDefinition="When the document reference was created.")
+    @Child(name = "indexed")
+    @Description(shortDefinition = "When the document reference was created.")
     private InstantType indexed;
 
-    @Child(name="deleted")
-    @Description(shortDefinition="When the document reference was deleted.")
+    @Child(name = "deleted")
+    @Description(shortDefinition = "When the document reference was deleted.")
     private InstantType deleted;
 
     @Override
@@ -62,13 +58,6 @@ public class NHSDocumentReference extends DocumentReference {
         return this;
     }
 
-    public InstantType getIndexed() {
-        if (indexed == null) {
-            indexed = new InstantType();
-        }
-        return indexed;
-    }
-
     public NHSDocumentReference setIndexed(InstantType indexed) {
         this.indexed = indexed;
         return this;
@@ -90,13 +79,22 @@ public class NHSDocumentReference extends DocumentReference {
         return getContentFirstRep().getAttachment().getContentType();
     }
 
+    public FileName getFileName() {
+        return new FileName(description.getValue());
+    }
+
+    public NHSDocumentReference setFileName(FileName fileName) {
+        setDescription(fileName.getValue());
+        return this;
+    }
+
     public Document parse() throws IllFormedPatientDetailsException {
         return new Document(
                 null,
                 new NhsNumber(getSubject().getIdentifier().getValue()),
                 getContentType(),
                 indexed != null,
-                description.getValue(),
+                getFileName(),
                 created == null ? null : created.getValue().toInstant(),
                 indexed == null ? null : indexed.getValue().toInstant(),
                 deleted == null ? null : deleted.getValue().toInstant(),

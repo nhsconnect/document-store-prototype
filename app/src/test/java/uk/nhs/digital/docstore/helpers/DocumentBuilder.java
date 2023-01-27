@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.helpers;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.DocumentLocation;
+import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 import java.time.Instant;
@@ -14,19 +15,19 @@ public class DocumentBuilder {
     private final NhsNumber nhsNumber;
     private final String contentType;
     private final Boolean uploaded;
-    private final String description;
+    private final FileName description;
     private final Instant created;
     private final Instant deleted;
     private final Instant indexed;
     private final List<String> type;
-    private DocumentLocation location;
+    private final DocumentLocation location;
 
     public DocumentBuilder(
             String referenceId,
             NhsNumber nhsNumber,
             String contentType,
             Boolean uploaded,
-            String description,
+            FileName description,
             Instant created,
             Instant deleted,
             Instant indexed,
@@ -52,19 +53,30 @@ public class DocumentBuilder {
                     new NhsNumber("1234567890"),
                     "pdf",
                     true,
-                    "some title",
+                    new FileName("some title"),
                     Instant.now().minus(10, ChronoUnit.DAYS),
                     null,
                     Instant.now().minus(10, ChronoUnit.DAYS).plus(10, ChronoUnit.SECONDS),
                     List.of("snomed code"),
                     new DocumentLocation("s3://test-bucket/test-path")
-                    );
+            );
         } catch (IllFormedPatientDetailsException e) {
             throw new RuntimeException(e);
         }
     }
 
     public Document build() {
-        return new Document(referenceId, nhsNumber, contentType, uploaded, description, created, deleted, indexed, type, location);
+        return new Document(
+                referenceId,
+                nhsNumber,
+                contentType,
+                uploaded,
+                description,
+                created,
+                deleted,
+                indexed,
+                type,
+                location
+        );
     }
 }

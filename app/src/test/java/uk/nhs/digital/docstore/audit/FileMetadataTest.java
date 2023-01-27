@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.audit;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
+import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +21,7 @@ class FileMetadataTest {
                 new NhsNumber("0123456789"),
                 contentType,
                 null,
-                documentTitle,
+                new FileName(documentTitle),
                 null,
                 null,
                 null,
@@ -30,7 +31,7 @@ class FileMetadataTest {
 
         var fileMetadata = FileMetadata.fromDocument(document);
 
-        assertThat(fileMetadata.getFileName()).isEqualTo(documentTitle);
+        assertThat(fileMetadata.getFileName().getValue()).isEqualTo(documentTitle);
         assertThat(fileMetadata.getId()).isEqualTo(documentId);
         assertThat(fileMetadata.getFileType()).isEqualTo(contentType);
     }

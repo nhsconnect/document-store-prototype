@@ -38,7 +38,7 @@ public class ZipService {
         for (Document document : documentList) {
             if (document.isUploaded()){
                 LOGGER.debug("Document ID: "+ document.getReferenceId()+ ", S3 location: "+ document.getLocation());
-                zipOutputStream.putNextEntry(new ZipEntry(document.getDescription()));
+                zipOutputStream.putNextEntry(new ZipEntry(document.getDescription().getValue()));
 
                 IOUtils.copy(documentStore.getObjectFromS3(document.getLocation()), zipOutputStream);
 
