@@ -17,6 +17,7 @@ public class AccessTokenClaimMapper {
     }
 
     public <T> T deserialiseClaim(String claimName, Class<T> className) throws InvalidAccessTokenException {
+        LOGGER.debug("claim name: " + claimName );
         String claimValue = jwt.getClaim(claimName).asString();
         LOGGER.debug("claim value: " + claimValue );
         try{

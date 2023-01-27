@@ -71,7 +71,9 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
 
             var iamPolicy = new IamPolicyResponse();
             iamPolicy.setPrincipalId(decodedJWT.getSubject());
+            LOGGER.debug("claim name: " + decodedJWT.getSubject() );
 
+            LOGGER.debug("decoded JWT: " + decodedJWT );
             // Mapping claims to models
             var claimsMapper = new AccessTokenClaimMapper(decodedJWT);
             var claimedAssociatedOrg = claimsMapper.deserialiseClaim(ASSOCIATED_ORG, AssociatedOrganisations.class);
