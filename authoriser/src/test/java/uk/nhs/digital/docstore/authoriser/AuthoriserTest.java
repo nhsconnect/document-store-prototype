@@ -42,7 +42,7 @@ class AuthoriserTest {
         var token = JWT.create()
                 .withSubject(principalId)
                 .withClaim("custom:nhsid_user_orgs", associatedOrgsClaim.toString())
-                .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString());
+                .withClaim("custom:nhsid_nrbac_roles", nationalRbAccessClaim.toString());
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)
@@ -85,7 +85,7 @@ class AuthoriserTest {
         String principalId = "some-principal-id";
         var token = JWT.create()
                 .withSubject(principalId)
-                .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString())
+                .withClaim("custom:nhsid_nrbac_roles", nationalRbAccessClaim.toString())
                 .withClaim("custom:nhsid_user_orgs", associatedOrgsClaim.toString());
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
@@ -130,7 +130,7 @@ class AuthoriserTest {
         var token = JWT.create()
                 .withSubject(principalId)
                 .withClaim("custom:nhsid_user_orgs", associatedOrgsClaim.toString())
-                .withClaim("nationalrbacaccess", nationalRbAccessClaim.toString());
+                .withClaim("custom:nhsid_nrbac_roles", nationalRbAccessClaim.toString());
 
         var allResources = Stream.concat(pcseAllowedResources.stream(), clinicalAllowedResources.stream()).collect(Collectors.toList());
 

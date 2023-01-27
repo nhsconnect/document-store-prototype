@@ -29,8 +29,8 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
 
     public final static String GENERAL_ADMIN_ROLE_NAME = "General administrator";
     public final static String GENERAL_ADMIN_ORG_CODE = "X4S4L";
-    public final static String ASSOCIATED_ORG = "associatedorgs";
-    public final static String RBAC_ROLES = "nationalrbacaccess";
+    public final static String ASSOCIATED_ORG = "custom:nhsid_user_orgs";
+    public final static String RBAC_ROLES = "custom:nhsid_nrbac_roles";
 
     public Authoriser(AuthConfig authConfig, Algorithm algorithm) {
         this.authConfig = authConfig;
@@ -76,7 +76,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             LOGGER.debug("decoded JWT: " + decodedJWT );
             // Mapping claims to models
             var claimsMapper = new AccessTokenClaimMapper(decodedJWT);
-            var claimedAssociatedOrg = claimsMapper.deserialiseClaim("custom:nhsid_user_orgs", AssociatedOrganisations.class);
+            var claimedAssociatedOrg = claimsMapper.deserialiseClaim(ASSOCIATED_ORG,  AssociatedOrganisations.class);
             var rbacRoles = claimsMapper.deserialiseClaim(RBAC_ROLES, RbacRoles.class);
 
             // Get a list of tertiary role codes
