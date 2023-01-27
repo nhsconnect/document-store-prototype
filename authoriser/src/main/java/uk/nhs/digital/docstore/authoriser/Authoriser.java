@@ -76,7 +76,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             LOGGER.debug("decoded JWT: " + decodedJWT );
             // Mapping claims to models
             var claimsMapper = new AccessTokenClaimMapper(decodedJWT);
-            var claimedAssociatedOrg = claimsMapper.deserialiseClaim(ASSOCIATED_ORG, AssociatedOrganisations.class);
+            var claimedAssociatedOrg = claimsMapper.deserialiseClaim("custom:nhsid_user_orgs", AssociatedOrganisations.class);
             var rbacRoles = claimsMapper.deserialiseClaim(RBAC_ROLES, RbacRoles.class);
 
             // Get a list of tertiary role codes
