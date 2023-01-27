@@ -4,5 +4,5 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 
 public interface OperationOutcomeIssuable {
 
-    public OperationOutcome.OperationOutcomeIssueComponent toOperationOutcomeIssue();
+  public OperationOutcome.OperationOutcomeIssueComponent toOperationOutcomeIssue();
 }

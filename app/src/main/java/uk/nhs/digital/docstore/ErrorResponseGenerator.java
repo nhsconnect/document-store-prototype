@@ -7,45 +7,42 @@ import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.exceptions.OperationOutcomeIssuable;
 
 public class ErrorResponseGenerator {
-    private static final Logger logger
-            = LoggerFactory.getLogger(ErrorResponseGenerator.class);
+  private static final Logger logger = LoggerFactory.getLogger(ErrorResponseGenerator.class);
 
-    private final ApiConfig apiConfig;
+  private final ApiConfig apiConfig;
 
-    public ErrorResponseGenerator() {
-        this(new ApiConfig());
+  public ErrorResponseGenerator() {
+    this(new ApiConfig());
+  }
+
+  public ErrorResponseGenerator(ApiConfig apiConfig) {
+    this.apiConfig = apiConfig;
+  }
+
+  public APIGatewayProxyResponseEvent errorResponse(Exception e) {
+    int statusCode;
+    String body;
+
+    if (e instanceof OperationOutcomeIssuable) {
+      statusCode = 400;
+      body = getErrorResponseBody(e.getMessage());
+    } else {
+      statusCode = 500;
+      body = getErrorResponseBody("Internal server error");
     }
 
-    public ErrorResponseGenerator(ApiConfig apiConfig) {
-        this.apiConfig = apiConfig;
-    }
+    logger.error(e.getMessage(), e);
 
-    public APIGatewayProxyResponseEvent errorResponse(Exception e) {
-        int statusCode;
-        String body;
+    return apiConfig.getApiGatewayResponse(statusCode, body, "GET, OPTIONS, POST", null);
+  }
 
-        if (e instanceof OperationOutcomeIssuable) {
-            statusCode = 400;
-            body = getErrorResponseBody(e.getMessage());
-        }  else {
-            statusCode = 500;
-            body = getErrorResponseBody("Internal server error");
-        }
+  public APIGatewayProxyResponseEvent outOfMemoryResponse(OutOfMemoryError e) {
+    logger.error(e.getMessage(), e);
+    var body = "File too large: " + e.getMessage();
+    return apiConfig.getApiGatewayResponse(507, body, "GET, OPTIONS, POST", null);
+  }
 
-        logger.error(e.getMessage(), e);
-
-        return apiConfig.getApiGatewayResponse(statusCode, body, "GET, OPTIONS, POST", null);
-    }
-
-    public APIGatewayProxyResponseEvent outOfMemoryResponse(OutOfMemoryError e) {
-        logger.error(e.getMessage(), e);
-        var body = "File too large: " +  e.getMessage();
-        return apiConfig.getApiGatewayResponse(507, body, "GET, OPTIONS, POST", null);
-    }
-
-    private String getErrorResponseBody(String message) {
-        return "{\n" +
-                "   \"errorMessage\": \""+ message +"\"\n" +
-                "}";
-    }
+  private String getErrorResponseBody(String message) {
+    return "{\n" + "   \"errorMessage\": \"" + message + "\"\n" + "}";
+  }
 }

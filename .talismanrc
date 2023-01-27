@@ -5,8 +5,6 @@ fileignoreconfig:
   checksum: 9313e093fdeac50057945eb84cc146390b7a50724e69a555d643f62f3f6d0f92
 - filename: terraform/.terraform.lock.hcl
   checksum: 67d6e4d1382ac6e96a43b616f3d4fa0dcedbe0567030694b62699efe97275359
-- filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
-  checksum: 61352f0d95bc336a602b5818df4eb37c510edb28e6289825c7fa30f5a8166b6e
 - filename: ui/src/components/PatientSummary.js
   checksum: 5887e478e0ea744814ce24b013e26dd2ce4dfa3c05dfe1a4107ef41b90b21cf2
 - filename: ui/src/pages/PatientTracePage.jsx
@@ -29,6 +27,32 @@ fileignoreconfig:
   checksum: 712ca4e85254158c04fa9f2b1bf90035aae7140a5692444238a1a6dc64abdb92
 - filename: ui/src/pages/UploadDocumentPage.jsx
   checksum: 5ef764f51b40d8aeb41cff59652ffdc2be593a337ba0936bfad8be50b8d44d83
+- filename: app/src/test/java/uk/nhs/digital/docstore/services/DocumentMetadataSearchServiceTest.java
+  checksum: fbdb02db13c354905796bcd3085fd9850e2d0740c23880a37743359d02bf6173
+- filename: app/src/test/java/uk/nhs/digital/docstore/filestorage/GeneratePresignedUrlRequestFactoryTest.java
+  checksum: 417a6dfe085dd50f23e65733dc887e7047b0607dc5e6053244d1df165c8684e4
+- filename: app/src/e2eTest/java/uk/nhs/digital/docstore/CreateDocumentManifestE2eTest.java
+  checksum: 47327ab6de8a65798510ec9cce67d08db777b1e51c05683148443648b30c205a
+- filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
+  checksum: 9030750b348b4ee593b33cc80d1f42f492e454b8969838a0955546e45d0361e4
+- filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/auth/SignedJwtBuilder.java
+  checksum: b728807d93c95a0030f194d993700914403d5beb8dfb1057f93944f70b7c3499
+- filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/auth/SigningKeyProvider.java
+  checksum: 44fc766163d112b151465b1aa5d750394c7690ae97c2f5b8c6edf9fe92a86213
+- filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/auth/SignedJwtBuilderTest.java
+  checksum: 65e97fa152c3cd57dead6f0dc9b18344de105e1c84b2674169c5fe06700fdcf5
+- filename: app/src/test/java/uk/nhs/digital/docstore/config/EnvironmentTest.java
+  checksum: cabcf676a321ee3d0c9e968c56317841285b115305ed86736f22f9e0365a79a7
+- filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/AccessTokenRequestBody.java
+  checksum: a2c4d9590033a051f5207636f2be9c95bc0fec5a006cabfabd72bc0d8404d6ec
+- filename: app/src/main/java/uk/nhs/digital/docstore/handlers/CreateDocumentReferenceHandler.java
+  checksum: 87105c733562fb9bcdcebd3a3ddf409060278409dd3d53c4bbdb9a064f107f8c
+- filename: app/src/main/java/uk/nhs/digital/docstore/handlers/DocumentUploadedEventHandler.java
+  checksum: 7fe0bb4251233414cdc65627a4fc1dc25868a807c44298948cfe55a6fafc8e14
+- filename: app/src/main/java/uk/nhs/digital/docstore/data/entity/DocumentMetadata.java
+  checksum: 6dbeaf5888489144bfe3010450310122b59be6f50a7535790d707dad9aa5a972
+- filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
+  checksum: da917b6733a92b8d0b1d9eedaa9a138ec90ea8627b3c2a71ed23608fbecc98cb
 version: ""
 scopeconfig:
   - scope: node

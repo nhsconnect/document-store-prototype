@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
@@ -23,81 +24,82 @@ import uk.nhs.digital.docstore.patientdetails.RealPdsFhirService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthServiceHttpClient;
 
-import java.util.Map;
-
 @SuppressWarnings("unused")
-public class SearchPatientDetailsHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
+public class SearchPatientDetailsHandler
+    implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
 
-    private final ApiConfig apiConfig;
-    private final PatientSearchConfig patientSearchConfig;
-    private final AuditPublisher sensitiveIndex;
+  private final ApiConfig apiConfig;
+  private final PatientSearchConfig patientSearchConfig;
+  private final AuditPublisher sensitiveIndex;
 
-    private final AuthService authService;
-    private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
+  private final AuthService authService;
+  private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
-    public SearchPatientDetailsHandler() {
-        this(new ApiConfig(), new PatientSearchConfig(), new SplunkPublisher());
+  public SearchPatientDetailsHandler() {
+    this(new ApiConfig(), new PatientSearchConfig(), new SplunkPublisher());
+  }
+
+  public SearchPatientDetailsHandler(
+      ApiConfig apiConfig, PatientSearchConfig patientSearchConfig, AuditPublisher sensitiveIndex) {
+    this.apiConfig = apiConfig;
+    this.patientSearchConfig = patientSearchConfig;
+    this.sensitiveIndex = sensitiveIndex;
+    this.authService = new AuthService(new AuthServiceHttpClient(), patientSearchConfig);
+  }
+
+  @Override
+  public APIGatewayProxyResponseEvent handleRequest(
+      APIGatewayProxyRequestEvent requestEvent, Context context) {
+    Tracer.setMDCContext(context);
+
+    LOGGER.debug("API Gateway event received - processing starts");
+    var searchParameters = queryParametersFrom(requestEvent);
+
+    try {
+      var parameterForm = new NHSNumberSearchParameterForm(searchParameters);
+      var nhsNumber = parameterForm.getNhsNumber();
+      var pdsFhirClient =
+          patientSearchConfig.pdsFhirIsStubbed()
+              ? new FakePdsFhirService(sensitiveIndex)
+              : new RealPdsFhirService(patientSearchConfig, sensitiveIndex, authService);
+      var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
+
+      LOGGER.debug("Generating response body");
+      var json = convertToJson(patientDetails);
+      var body = getBody(json);
+
+      LOGGER.debug("Processing finished - about to return the response");
+      return apiConfig.getApiGatewayResponse(200, body, "GET", null);
+    } catch (PatientNotFoundException e) {
+      return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
+    } catch (Exception exception) {
+      return errorResponseGenerator.errorResponse(exception);
     }
+  }
 
-    public SearchPatientDetailsHandler(ApiConfig apiConfig, PatientSearchConfig patientSearchConfig, AuditPublisher sensitiveIndex) {
-        this.apiConfig = apiConfig;
-        this.patientSearchConfig = patientSearchConfig;
-        this.sensitiveIndex = sensitiveIndex;
-        this.authService = new AuthService(new AuthServiceHttpClient(), patientSearchConfig);
-    }
+  private String getBodyWithError(Exception e) {
+    return "{\n" + "   \"errorMessage\": \"" + e.getMessage() + "\"\n" + "}";
+  }
 
-    @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
-        Tracer.setMDCContext(context);
+  private String getBody(String clientPatientDetails) {
+    return "{\n"
+        + "   \"result\": {\n"
+        + "       \"patientDetails\": "
+        + clientPatientDetails
+        + "   }\n"
+        + "}";
+  }
 
-        LOGGER.debug("API Gateway event received - processing starts");
-        var searchParameters = queryParametersFrom(requestEvent);
+  private String convertToJson(PatientDetails patientDetails) throws JsonProcessingException {
+    var clientPatientDetails = ClientPatientDetailsDto.fromPatientDetails(patientDetails);
+    var objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    return objectWriter.writeValueAsString(clientPatientDetails);
+  }
 
-        try {
-            var parameterForm = new NHSNumberSearchParameterForm(searchParameters);
-            var nhsNumber = parameterForm.getNhsNumber();
-            var pdsFhirClient = patientSearchConfig.pdsFhirIsStubbed()
-                    ? new FakePdsFhirService(sensitiveIndex)
-                    : new RealPdsFhirService(patientSearchConfig, sensitiveIndex, authService);
-            var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
-
-            LOGGER.debug("Generating response body");
-            var json = convertToJson(patientDetails);
-            var body = getBody(json);
-
-            LOGGER.debug("Processing finished - about to return the response");
-            return apiConfig.getApiGatewayResponse(200, body, "GET", null);
-        } catch (PatientNotFoundException e) {
-            return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
-        } catch (Exception exception) {
-            return errorResponseGenerator.errorResponse(exception);
-        }
-    }
-
-    private String getBodyWithError(Exception e) {
-        return "{\n" +
-                "   \"errorMessage\": \"" + e.getMessage() + "\"\n" +
-                "}";
-    }
-
-    private String getBody(String clientPatientDetails) {
-        return "{\n" +
-                "   \"result\": {\n" +
-                "       \"patientDetails\": " + clientPatientDetails +
-                "   }\n" +
-                "}";
-    }
-
-    private String convertToJson(PatientDetails patientDetails) throws JsonProcessingException {
-        var clientPatientDetails = ClientPatientDetailsDto.fromPatientDetails(patientDetails);
-        var objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        return objectWriter.writeValueAsString(clientPatientDetails);
-    }
-
-    private static Map<String, String> queryParametersFrom(APIGatewayProxyRequestEvent requestEvent) {
-        return requestEvent.getQueryStringParameters() == null
-                ? Map.of()
-                : requestEvent.getQueryStringParameters();
-    }
+  private static Map<String, String> queryParametersFrom(APIGatewayProxyRequestEvent requestEvent) {
+    return requestEvent.getQueryStringParameters() == null
+        ? Map.of()
+        : requestEvent.getQueryStringParameters();
+  }
 }

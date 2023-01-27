@@ -16,42 +16,44 @@ import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Void> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentUploadedEventHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentUploadedEventHandler.class);
 
-    private final DocumentReferenceService documentReferenceService;
+  private final DocumentReferenceService documentReferenceService;
 
-    @SuppressWarnings("unused")
-    public DocumentUploadedEventHandler() {
-        this(new DocumentReferenceService(new DocumentMetadataStore(), new SplunkPublisher(), new DocumentMetadataSerialiser()));
+  @SuppressWarnings("unused")
+  public DocumentUploadedEventHandler() {
+    this(
+        new DocumentReferenceService(
+            new DocumentMetadataStore(), new SplunkPublisher(), new DocumentMetadataSerialiser()));
+  }
+
+  public DocumentUploadedEventHandler(DocumentReferenceService documentReferenceService) {
+    this.documentReferenceService = documentReferenceService;
+  }
+
+  @Override
+  public Void handleRequest(S3Event s3Event, Context context) {
+    Tracer.setMDCContext(context);
+
+    var records = s3Event.getRecords();
+    LOGGER.info("Marking {} document(s) as uploaded", records.size());
+
+    try {
+      for (S3EventNotificationRecord record : records) {
+        var s3 = record.getS3();
+        var bucketName = s3.getBucket().getName();
+        var objectKey = s3.getObject().getKey();
+        var location = String.format("s3://%s/%s", bucketName, objectKey);
+
+        documentReferenceService.markDocumentUploaded(new DocumentLocation(location));
+      }
+    } catch (JsonProcessingException | IllFormedPatientDetailsException exception) {
+      LOGGER.error(exception.getMessage(), exception);
+    } catch (Exception exception) {
+      LOGGER.error(exception.getMessage(), exception);
+      throw exception;
     }
 
-    public DocumentUploadedEventHandler(DocumentReferenceService documentReferenceService) {
-        this.documentReferenceService = documentReferenceService;
-    }
-
-    @Override
-    public Void handleRequest(S3Event s3Event, Context context) {
-        Tracer.setMDCContext(context);
-
-        var records = s3Event.getRecords();
-        LOGGER.info("Marking {} document(s) as uploaded", records.size());
-
-        try {
-            for (S3EventNotificationRecord record : records) {
-                var s3 = record.getS3();
-                var bucketName = s3.getBucket().getName();
-                var objectKey = s3.getObject().getKey();
-                var location = String.format("s3://%s/%s", bucketName, objectKey);
-
-                documentReferenceService.markDocumentUploaded(new DocumentLocation(location));
-            }
-        } catch (JsonProcessingException | IllFormedPatientDetailsException exception) {
-            LOGGER.error(exception.getMessage(), exception);
-        } catch (Exception exception) {
-            LOGGER.error(exception.getMessage(), exception);
-            throw exception;
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

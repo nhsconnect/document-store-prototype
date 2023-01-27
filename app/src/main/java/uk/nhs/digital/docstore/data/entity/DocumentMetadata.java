@@ -4,122 +4,143 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-
 import java.util.List;
 
 @DynamoDBTable(tableName = "DocumentReferenceMetadata")
 @SuppressWarnings("unused")
 public class DocumentMetadata {
-    private String id;
-    private String nhsNumber;
-    private String location;
-    private String contentType;
-    private Boolean documentUploaded;
-    private String description;
-    private String created;
-    private String indexed;
-    private String deleted;
-    private List<String> type;
+  private String id;
+  private String nhsNumber;
+  private String location;
+  private String contentType;
+  private Boolean documentUploaded;
+  private String description;
+  private String created;
+  private String indexed;
+  private String deleted;
+  private List<String> type;
 
-    @DynamoDBHashKey(attributeName = "ID")
-    public String getId() {
-        return id;
-    }
+  @DynamoDBHashKey(attributeName = "ID")
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @DynamoDBAttribute(attributeName = "NhsNumber")
-    public String getNhsNumber() {
-        return nhsNumber;
-    }
+  @DynamoDBAttribute(attributeName = "NhsNumber")
+  public String getNhsNumber() {
+    return nhsNumber;
+  }
 
-    public void setNhsNumber(String nhsNumber) {
-        this.nhsNumber = nhsNumber;
-    }
+  public void setNhsNumber(String nhsNumber) {
+    this.nhsNumber = nhsNumber;
+  }
 
-    @DynamoDBIndexHashKey(attributeName = "Location", globalSecondaryIndexName = "LocationsIndex")
-    public String getLocation() {
-        return location;
-    }
+  @DynamoDBIndexHashKey(attributeName = "Location", globalSecondaryIndexName = "LocationsIndex")
+  public String getLocation() {
+    return location;
+  }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
+  public void setLocation(String location) {
+    this.location = location;
+  }
 
-    @DynamoDBAttribute(attributeName = "ContentType")
-    public String getContentType() {
-        return contentType;
-    }
+  @DynamoDBAttribute(attributeName = "ContentType")
+  public String getContentType() {
+    return contentType;
+  }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
+  public void setContentType(String contentType) {
+    this.contentType = contentType;
+  }
 
-    @DynamoDBAttribute(attributeName = "DocumentUploaded")
-    public Boolean isDocumentUploaded() {
-        return documentUploaded;
-    }
+  @DynamoDBAttribute(attributeName = "DocumentUploaded")
+  public Boolean isDocumentUploaded() {
+    return documentUploaded;
+  }
 
-    public void setDocumentUploaded(Boolean documentUploaded) {
-        this.documentUploaded = documentUploaded;
-    }
+  public void setDocumentUploaded(Boolean documentUploaded) {
+    this.documentUploaded = documentUploaded;
+  }
 
-    @DynamoDBAttribute(attributeName = "Description")
-    public String getDescription() {
-        return description;
-    }
+  @DynamoDBAttribute(attributeName = "Description")
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    @DynamoDBAttribute(attributeName = "Created")
-    public String getCreated() {
-        return created;
-    }
+  @DynamoDBAttribute(attributeName = "Created")
+  public String getCreated() {
+    return created;
+  }
 
-    public void setCreated(String created) {
-        this.created = created;
-    }
+  public void setCreated(String created) {
+    this.created = created;
+  }
 
-    @DynamoDBAttribute(attributeName = "Indexed")
-    public String getIndexed() {
-        return indexed;
-    }
+  @DynamoDBAttribute(attributeName = "Indexed")
+  public String getIndexed() {
+    return indexed;
+  }
 
-    @DynamoDBAttribute(attributeName = "Deleted")
-    public String getDeleted(){return deleted;}
+  @DynamoDBAttribute(attributeName = "Deleted")
+  public String getDeleted() {
+    return deleted;
+  }
 
-    public void setDeleted(String deleted){this.deleted = deleted;}
+  public void setDeleted(String deleted) {
+    this.deleted = deleted;
+  }
 
-    public void setIndexed(String indexed) {
-        this.indexed = indexed;
-    }
+  public void setIndexed(String indexed) {
+    this.indexed = indexed;
+  }
 
-    @DynamoDBAttribute(attributeName = "Type")
-    public List<String> getType() {
-        return type;
-    }
+  @DynamoDBAttribute(attributeName = "Type")
+  public List<String> getType() {
+    return type;
+  }
 
-    public void setType(List<String> type) {
-        this.type = type;
-    }
+  public void setType(List<String> type) {
+    this.type = type;
+  }
 
-    @Override
-    public String toString() {
-        return "DocumentMetadata{" +
-                "id='" + id + '\'' +
-                ", nhsNumber='" + nhsNumber + '\'' +
-                ", location='" + location + '\'' +
-                ", contentType='" + contentType + '\'' +
-                ", documentUploaded=" + documentUploaded +
-                ", description='" + description + '\'' +
-                ", created='" + created + '\'' +
-                ", indexed='" + indexed + '\'' +
-                ", deleted='" + deleted + '\'' +
-                ", type=" + type +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "DocumentMetadata{"
+        + "id='"
+        + id
+        + '\''
+        + ", nhsNumber='"
+        + nhsNumber
+        + '\''
+        + ", location='"
+        + location
+        + '\''
+        + ", contentType='"
+        + contentType
+        + '\''
+        + ", documentUploaded="
+        + documentUploaded
+        + ", description='"
+        + description
+        + '\''
+        + ", created='"
+        + created
+        + '\''
+        + ", indexed='"
+        + indexed
+        + '\''
+        + ", deleted='"
+        + deleted
+        + '\''
+        + ", type="
+        + type
+        + '}';
+  }
 }
