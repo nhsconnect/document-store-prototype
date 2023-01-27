@@ -172,7 +172,8 @@ public class PatientTest {
     void canCreatePatientDetailsFromFhirPatient() throws IllFormedPatientDetailsException {
         var nhsNumber = "9876543210";
         var familyName = "Doe";
-        var givenName = List.of("Jane");
+        var givenName = List.of("Jane", "John");
+        var givenPatientName = List.of(new PatientName("Jane"), new PatientName("John"));
         var postalCode = "LS1 6AE";
         var birthDate = "1998-07-11";
 
@@ -186,7 +187,7 @@ public class PatientTest {
 
         assertThat(patientDetails.getBirthDate()).isEqualTo(new BirthDate(birthDate));
         assertThat(patientDetails.getFamilyName()).isEqualTo(new PatientName(familyName));
-        assertThat(patientDetails.getGivenName()).isEqualTo(givenName);
+        assertThat(patientDetails.getGivenName()).isEqualTo(givenPatientName);
         assertThat(patientDetails.getPostalCode()).isEqualTo(new Postcode(postalCode));
         assertThat(patientDetails.getNhsNumber().getValue()).isEqualTo(nhsNumber);
     }

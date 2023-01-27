@@ -3,13 +3,13 @@ package uk.nhs.digital.docstore.model;
 import java.util.List;
 
 public class PatientDetails {
-    private final List<String> givenName;
+    private final List<PatientName> givenName;
     private final PatientName familyName;
     private final BirthDate birthDate;
     private final Postcode postalCode;
     private final NhsNumber nhsNumber;
 
-    public PatientDetails(List<String> givenName, PatientName familyName, BirthDate birthDate, Postcode postalCode,
+    public PatientDetails(List<PatientName> givenName, PatientName familyName, BirthDate birthDate, Postcode postalCode,
                           NhsNumber nhsNumber) {
         this.givenName = givenName;
         this.familyName = familyName;
@@ -18,7 +18,7 @@ public class PatientDetails {
         this.nhsNumber = nhsNumber;
     }
 
-    public List<String> getGivenName() {
+    public List<PatientName> getGivenName() {
         return givenName;
     }
 

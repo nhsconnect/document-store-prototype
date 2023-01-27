@@ -7,15 +7,16 @@ import uk.nhs.digital.docstore.model.PatientName;
 import uk.nhs.digital.docstore.model.Postcode;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClientPatientDetailsDto {
-    private final List<String> givenName;
+    private final List<PatientName> givenName;
     private final PatientName familyName;
     private final BirthDate birthDate;
     private final Postcode postalCode;
     private final NhsNumber nhsNumber;
 
-    public ClientPatientDetailsDto(List<String> givenName, PatientName familyName, BirthDate birthDate, Postcode postalCode,
+    public ClientPatientDetailsDto(List<PatientName> givenName, PatientName familyName, BirthDate birthDate, Postcode postalCode,
                                    NhsNumber nhsNumber) {
         this.givenName = givenName;
         this.familyName = familyName;
@@ -25,7 +26,7 @@ public class ClientPatientDetailsDto {
     }
 
     public List<String> getGivenName() {
-        return givenName;
+        return givenName == null ? null : givenName.stream().map(PatientName::getValue).collect(Collectors.toList());
     }
 
     public String getFamilyName() {

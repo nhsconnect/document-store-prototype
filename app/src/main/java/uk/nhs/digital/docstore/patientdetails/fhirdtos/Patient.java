@@ -16,6 +16,7 @@ import uk.nhs.digital.docstore.model.Postcode;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -100,7 +101,7 @@ public class Patient {
         var currentName = this.getCurrentUsualName();
         var currentHomeAddress = this.getCurrentHomeAddress();
         return new PatientDetails(
-                currentName.map(Name::getGiven).orElse(null),
+                currentName.map((name) -> name.getGiven().stream().map(PatientName::new).collect(Collectors.toList())).orElse(null),
                 currentName.map((name) -> new PatientName(name.getFamily())).orElse(null),
                 birthDate == null ? null : new BirthDate(birthDate),
                 currentHomeAddress.map((address) -> address.getPostalCode() == null ? null : new Postcode(address.getPostalCode())).orElse(null),
