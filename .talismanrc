@@ -4,7 +4,7 @@ fileignoreconfig:
 - filename: documentation/tech/local-development-environment.md
   checksum: 9313e093fdeac50057945eb84cc146390b7a50724e69a555d643f62f3f6d0f92
 - filename: terraform/.terraform.lock.hcl
-  checksum: 512a82c4e4de3c201a985a00ebde5d66a32b4c3284015b7b149c022c65163e5e
+  checksum: 67d6e4d1382ac6e96a43b616f3d4fa0dcedbe0567030694b62699efe97275359
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
   checksum: 61352f0d95bc336a602b5818df4eb37c510edb28e6289825c7fa30f5a8166b6e
 - filename: ui/src/components/PatientSummary.js
