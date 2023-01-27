@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayCustomAuthorizerEv
 import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -29,19 +30,22 @@ class AuthoriserTest {
         var event = new APIGatewayCustomAuthorizerEvent();
         var handler = new Authoriser(authConfig, algorithm);
 
-        var associatedOrgsClaim = new JSONObject();
-        var organisations = List.of(Map.of("org_code", "X4S4L"));
-
         var nationalRbAccessClaim = new JSONObject();
         var roles = List.of(Map.of("role_code", "some-role-codes"));
 
-        associatedOrgsClaim.put("custom:nhsid_user_orgs", organisations);
         nationalRbAccessClaim.put("custom:nhsid_nrbac_roles", roles);
+
+        var orgsClaim = new JSONObject();
+        orgsClaim.put("org_name", "NHSID DEV");
+        orgsClaim.put("org_code", "X4S4L");
+
+        JSONArray organisationsClaimJson = new JSONArray();
+        organisationsClaimJson.put(orgsClaim);
 
         String principalId = "some-principal-id";
         var token = JWT.create()
                 .withSubject(principalId)
-                .withClaim("custom:nhsid_user_orgs", associatedOrgsClaim.toString())
+                .withClaim("custom:nhsid_user_orgs", organisationsClaimJson.toString())
                 .withClaim("custom:nhsid_nrbac_roles", nationalRbAccessClaim.toString());
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
@@ -76,17 +80,20 @@ class AuthoriserTest {
         var nationalRbAccessClaim = new JSONObject();
         var roles = List.of(Map.of("role_code", "S0010:G0020:R8008"));
 
-        var associatedOrgsClaim = new JSONObject();
-        var organisations = List.of(Map.of("org_code", "some-other-code"));
-
         nationalRbAccessClaim.put("custom:nhsid_nrbac_roles", roles);
-        associatedOrgsClaim.put("custom:nhsid_user_orgs", organisations);
+
+        var orgsClaim = new JSONObject();
+        orgsClaim.put("org_name", "NHSID DEV");
+        orgsClaim.put("org_code", "some-other-code");
+
+        JSONArray organisationsClaimJson = new JSONArray();
+        organisationsClaimJson.put(orgsClaim);
 
         String principalId = "some-principal-id";
         var token = JWT.create()
                 .withSubject(principalId)
                 .withClaim("custom:nhsid_nrbac_roles", nationalRbAccessClaim.toString())
-                .withClaim("custom:nhsid_user_orgs", associatedOrgsClaim.toString());
+                .withClaim("custom:nhsid_user_orgs", organisationsClaimJson.toString());
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)
@@ -117,19 +124,23 @@ class AuthoriserTest {
         var event = new APIGatewayCustomAuthorizerEvent();
         var handler = new Authoriser(authConfig, algorithm);
 
-        var associatedOrgsClaim = new JSONObject();
-        var organisations = List.of(Map.of("org_code", "X4S4L"));
 
         var nationalRbAccessClaim = new JSONObject();
         var roles = List.of(Map.of("role_code", "S0010:G0020:R8008"));
 
-        associatedOrgsClaim.put("custom:nhsid_user_orgs", organisations);
+        var orgsClaim = new JSONObject();
+        orgsClaim.put("org_name", "NHSID DEV");
+        orgsClaim.put("org_code", "X4S4L");
+
+        JSONArray organisationsClaimJson = new JSONArray();
+        organisationsClaimJson.put(orgsClaim);
+
         nationalRbAccessClaim.put("custom:nhsid_nrbac_roles", roles);
 
         String principalId = "some-principal-id";
         var token = JWT.create()
                 .withSubject(principalId)
-                .withClaim("custom:nhsid_user_orgs", associatedOrgsClaim.toString())
+                .withClaim("custom:nhsid_user_orgs", organisationsClaimJson.toString())
                 .withClaim("custom:nhsid_nrbac_roles", nationalRbAccessClaim.toString());
 
         var allResources = Stream.concat(pcseAllowedResources.stream(), clinicalAllowedResources.stream()).collect(Collectors.toList());

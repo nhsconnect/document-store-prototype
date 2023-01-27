@@ -2,6 +2,8 @@ package uk.nhs.digital.docstore.authoriser.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class Organisation {
     private final String orgCode;
 
@@ -18,5 +20,9 @@ public class Organisation {
 
     public String getOrgName() {
         return orgName;
+    }
+
+    public static boolean containsOrganisation(List<Organisation> organisations, String code) {
+        return organisations.stream().anyMatch(org -> org.getOrgCode().equals(code));
     }
 }

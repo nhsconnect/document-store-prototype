@@ -16,8 +16,4 @@ public class AssociatedOrganisations {
     public List<Organisation> getOrganisations() {
         return organisations;
     }
-
-    public boolean containsOrganisation(String code) {
-        return organisations.stream().anyMatch(org -> org.getOrgCode().equals(code));
-    }
 }

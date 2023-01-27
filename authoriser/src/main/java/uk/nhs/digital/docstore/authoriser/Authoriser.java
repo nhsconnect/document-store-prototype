@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.authoriser.models.AssociatedOrganisations;
+import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.RbacRoles;
 
 import java.security.interfaces.RSAPublicKey;
@@ -76,7 +76,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             LOGGER.debug("decoded JWT: " + decodedJWT );
             // Mapping claims to models
             var claimsMapper = new AccessTokenClaimMapper(decodedJWT);
-            var claimedAssociatedOrg = claimsMapper.deserialiseClaim(ASSOCIATED_ORG,  AssociatedOrganisations.class);
+            var organisations = claimsMapper.deserialiseClaim(ASSOCIATED_ORG,  Organisation[].class);
             var rbacRoles = claimsMapper.deserialiseClaim(RBAC_ROLES, RbacRoles.class);
 
             // Get a list of tertiary role codes
@@ -85,7 +85,7 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             // Taking models and building a resource list
             var allowedResources = new ArrayList<String>();
 
-            if (claimedAssociatedOrg.containsOrganisation(GENERAL_ADMIN_ORG_CODE)) {
+            if (Organisation.containsOrganisation(Arrays.asList(organisations), GENERAL_ADMIN_ORG_CODE)) {
                 allowedResources.addAll(authConfig.getAllowedResourcesForPCSEUsers());
             }
 
