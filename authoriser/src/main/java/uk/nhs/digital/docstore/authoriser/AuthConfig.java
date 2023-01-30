@@ -15,11 +15,11 @@ public class AuthConfig {
     public AuthConfig(){
     }
 
-    public List<String> getAllowedResourcesForPCSEUsers() {
+    public List<String> getResourcesForPCSEUsers() {
         return allowedResourcesForPCSEUsers;
     }
 
-    public List<String> getAllowedResourcesForClinicalUsers() {
+    public List<String> getResourcesForClinicalUsers() {
         return allowedResourcesForClinicalUsers;
     }
 }

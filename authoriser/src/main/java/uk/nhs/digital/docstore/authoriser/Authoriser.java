@@ -74,17 +74,17 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             var organisations = claimsMapper.deserialiseClaim(ASSOCIATED_ORG, Organisation[].class);
             var roles = claimsMapper.deserialiseClaim(RBAC_ROLES, Role[].class);
 
-            var clinicalRoles = Arrays.stream(ClinicalAdmin.values()).map(ClinicalAdmin::getClinicalRoleCode).collect(Collectors.toList());
+            var clinicalRoles = Arrays.stream(ClinicalAdminRoleCode.values()).map(ClinicalAdminRoleCode::getClinicalRoleCode).collect(Collectors.toList());
 
             var allowedResources = new ArrayList<String>();
 
             if (Organisation.containsOrganisation(Arrays.asList(organisations), GENERAL_ADMIN_ORG_CODE)) {
-                allowedResources.addAll(authConfig.getAllowedResourcesForPCSEUsers());
+                allowedResources.addAll(authConfig.getResourcesForPCSEUsers());
             }
 
             for (Role role : roles) {
                 if (role.containsAnyTertiaryRole(clinicalRoles)) {
-                    allowedResources.addAll(authConfig.getAllowedResourcesForClinicalUsers());
+                    allowedResources.addAll(authConfig.getResourcesForClinicalUsers());
                 }
             }
 
@@ -115,8 +115,8 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
     private IamPolicyResponse.PolicyDocument denyBothPolicyDocument() {
         return IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(authConfig.getAllowedResourcesForPCSEUsers().stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
-                .withStatement(authConfig.getAllowedResourcesForClinicalUsers().stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
+                .withStatement(authConfig.getResourcesForPCSEUsers().stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
+                .withStatement(authConfig.getResourcesForClinicalUsers().stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
                 .build();
     }
 }

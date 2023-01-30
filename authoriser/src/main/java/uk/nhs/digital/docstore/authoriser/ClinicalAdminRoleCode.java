@@ -1,11 +1,11 @@
 package uk.nhs.digital.docstore.authoriser;
 
-public enum ClinicalAdmin {
+public enum ClinicalAdminRoleCode {
     R8008("R8008"), R8010("R8010"), R8007("R8007"), R8000("R8000"), R0008("R0008"), R8003("R8003"), R8013("R8013"), R8009("R8009");
 
     private final String clinicalRoleCode;
 
-    ClinicalAdmin(String clinicalRoleCode) {
+    ClinicalAdminRoleCode(String clinicalRoleCode) {
         this.clinicalRoleCode = clinicalRoleCode;
     }
 
