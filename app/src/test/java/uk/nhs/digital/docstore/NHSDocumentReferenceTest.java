@@ -14,6 +14,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 class NHSDocumentReferenceTest {
@@ -34,13 +35,14 @@ class NHSDocumentReferenceTest {
                     .map(code -> new Coding().setCode(code).setSystem(DOCUMENT_TYPE_CODING_SYSTEM))
                     .collect(toList()));
 
-    String description = "Test Document";
+    var fileName = new FileName("Test Document");
     var created = DateTimeType.now();
 
     var dto =
         (NHSDocumentReference)
             new NHSDocumentReference()
                 .setCreated(created)
+                .setFileName(fileName)
                 .setNhsNumber(nhsNumber)
                 .addContent(
                     new NHSDocumentReference.DocumentReferenceContentComponent()
@@ -49,14 +51,13 @@ class NHSDocumentReferenceTest {
                                 .setUrl(presignedUrl.toString())
                                 .setContentType(contentType)))
                 .setType(type)
-                .setDocStatus(FINAL)
-                .setDescription(description);
+                .setDocStatus(FINAL);
 
     var documentModel = dto.parse();
 
     assertThat(documentModel.getNhsNumber()).isEqualTo(nhsNumber);
     assertThat(documentModel.getContentType()).isEqualTo(contentType);
-    assertThat(documentModel.getFileName().getValue()).isEqualTo(description);
+    assertThat(documentModel.getFileName()).isEqualTo(fileName);
     assertThat(documentModel.getType()).isEqualTo(List.of(snomedCode));
     assertThat(documentModel.isUploaded()).isEqualTo(false);
     assertThat(documentModel.getCreated()).isEqualTo(created.getValue().toInstant());

@@ -15,7 +15,7 @@ public class DocumentMetadataBuilder {
   private final String contentType;
   private final Boolean uploaded;
   private final String deleted;
-  private final String description;
+  private final String fileName;
 
   public static DocumentMetadataBuilder theMetadata() throws IllFormedPatientDetailsException {
     var id = randomAlphabetic(10);
@@ -33,49 +33,49 @@ public class DocumentMetadataBuilder {
       String contentType,
       Boolean uploaded,
       String deleted,
-      String description) {
+      String fileName) {
     this.id = id;
     this.nhsNumber = nhsNumber;
     this.location = location;
     this.contentType = contentType;
     this.uploaded = uploaded;
     this.deleted = deleted;
-    this.description = description;
+    this.fileName = fileName;
   }
 
   public DocumentMetadataBuilder withId(String id) {
     return new DocumentMetadataBuilder(
-        id, nhsNumber, location, contentType, uploaded, deleted, description);
+        id, nhsNumber, location, contentType, uploaded, deleted, fileName);
   }
 
   public DocumentMetadataBuilder withNhsNumber(NhsNumber nhsNumber) {
     return new DocumentMetadataBuilder(
-        id, nhsNumber, location, contentType, uploaded, deleted, description);
+        id, nhsNumber, location, contentType, uploaded, deleted, fileName);
   }
 
   public DocumentMetadataBuilder withLocation(String location) {
     return new DocumentMetadataBuilder(
-        id, nhsNumber, location, contentType, uploaded, deleted, description);
+        id, nhsNumber, location, contentType, uploaded, deleted, fileName);
   }
 
   public DocumentMetadataBuilder withContentType(String contentType) {
     return new DocumentMetadataBuilder(
-        id, nhsNumber, location, contentType, uploaded, deleted, description);
+        id, nhsNumber, location, contentType, uploaded, deleted, fileName);
   }
 
   public DocumentMetadataBuilder withDocumentUploaded(Boolean uploaded) {
     return new DocumentMetadataBuilder(
-        id, nhsNumber, location, contentType, uploaded, deleted, description);
+        id, nhsNumber, location, contentType, uploaded, deleted, fileName);
   }
 
   public DocumentMetadataBuilder withDeleted(String deleted) {
     return new DocumentMetadataBuilder(
-        id, nhsNumber, location, contentType, uploaded, deleted, description);
+        id, nhsNumber, location, contentType, uploaded, deleted, fileName);
   }
 
-  public DocumentMetadataBuilder withDescription(String description) {
+  public DocumentMetadataBuilder withFileName(String fileName) {
     return new DocumentMetadataBuilder(
-        id, nhsNumber, location, contentType, uploaded, deleted, description);
+        id, nhsNumber, location, contentType, uploaded, deleted, fileName);
   }
 
   public DocumentMetadata build() {
@@ -86,7 +86,7 @@ public class DocumentMetadataBuilder {
     metadata.setContentType(contentType);
     metadata.setDocumentUploaded(uploaded);
     metadata.setDeleted(deleted);
-    metadata.setFileName(description);
+    metadata.setFileName(fileName);
     return metadata;
   }
 }

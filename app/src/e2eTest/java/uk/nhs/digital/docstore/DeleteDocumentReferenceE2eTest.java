@@ -66,7 +66,7 @@ public class DeleteDocumentReferenceE2eTest {
             "Location", new AttributeValue(s3Location),
             "ContentType", new AttributeValue("text/plain"),
             "DocumentUploaded", new AttributeValue().withBOOL(true),
-            "Description", new AttributeValue("uploaded document"),
+            "FileName", new AttributeValue("uploaded document"),
             "Created", new AttributeValue("2021-11-04T15:57:30Z"),
             "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE)));
 

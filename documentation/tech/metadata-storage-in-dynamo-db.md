@@ -25,7 +25,7 @@ Primary Key: UUID (generated in the application code that's unique per document)
 Attributes: 
 * NHS Number
 * Title
-* Description 
+* File name 
 * Document clinical type
 * S3 location
 

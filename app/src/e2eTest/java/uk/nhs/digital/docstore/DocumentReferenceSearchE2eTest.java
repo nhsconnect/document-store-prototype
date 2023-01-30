@@ -59,7 +59,7 @@ public class DocumentReferenceSearchE2eTest {
                     String.format("s3://%s/%s", aws.getDocumentStoreBucketName(), S3_KEY)),
             "ContentType", new AttributeValue("text/plain"),
             "DocumentUploaded", new AttributeValue().withBOOL(true),
-            "Description", new AttributeValue("uploaded document"),
+            "FileName", new AttributeValue("uploaded document"),
             "Created", new AttributeValue("2021-11-04T15:57:30Z"),
             "Indexed", new AttributeValue("2021-12-04T15:57:30Z"),
             "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
@@ -72,7 +72,7 @@ public class DocumentReferenceSearchE2eTest {
                 new AttributeValue(
                     String.format("s3://%s/%s", aws.getDocumentStoreBucketName(), "somewhere")),
             "Content-Type", new AttributeValue("application/pdf"),
-            "Description", new AttributeValue("document upload in progress"),
+            "FileName", new AttributeValue("document upload in progress"),
             "Created", new AttributeValue("2021-11-04T15:57:30Z"),
             "DocumentUploaded", new AttributeValue().withBOOL(false),
             "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
@@ -86,7 +86,7 @@ public class DocumentReferenceSearchE2eTest {
                     String.format("s3://%s/%s", aws.getDocumentStoreBucketName(), S3_KEY)),
             "ContentType", new AttributeValue("text/plain"),
             "DocumentUploaded", new AttributeValue().withBOOL(true),
-            "Description", new AttributeValue("uploaded document"),
+            "FileName", new AttributeValue("uploaded document"),
             "Created", new AttributeValue("2021-11-04T15:57:30Z"),
             "Deleted", new AttributeValue("2021-12-04T15:57:30Z"),
             "Indexed", new AttributeValue("2021-12-04T15:57:30Z"),

@@ -83,11 +83,11 @@ public class CreateDocumentReferenceRequestValidatorTest {
   void throwsAnExceptionIfTheDescriptionInTheDocumentReferenceRequestIsMissing()
       throws IOException {
     String validRequestJson =
-        testHelpers.getContentFromResource("create/valid-create-document-reference-request.json");
+        testHelpers.getContentFromResource(
+            "create/create-document-reference-request-without-description.json");
     var jsonParser = fhirContext.newJsonParser();
     var inputDocumentReference =
         jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
-    inputDocumentReference.setDescription("");
     assertThatThrownBy(() -> validator.validate(inputDocumentReference))
         .isExactlyInstanceOf(MissingRequiredValueException.class);
   }

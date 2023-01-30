@@ -37,11 +37,11 @@ public class CreateDocumentManifestE2eTest {
   private static final String CODE_VALUE = "185361000000102";
 
   private final Map<String, String> document1 =
-      Map.of("description", "uploaded document 1", "s3Key", "key1", "content", "content 1");
+      Map.of("fileName", "uploaded document 1", "s3Key", "key1", "content", "content 1");
   private final Map<String, String> document2 =
-      Map.of("description", "uploaded document 2", "s3Key", "key2", "content", "content 2");
+      Map.of("fileName", "uploaded document 2", "s3Key", "key2", "content", "content 2");
   private final Map<String, String> document3 =
-      Map.of("description", "uploaded document 3", "s3Key", "key3", "content", "content 3");
+      Map.of("fileName", "uploaded document 3", "s3Key", "key3", "content", "content 3");
 
   private AwsS3Helper awsS3Helper;
   private AmazonDynamoDB dynamoDbClient;
@@ -75,7 +75,7 @@ public class CreateDocumentManifestE2eTest {
                         awsS3Helper.getDocumentStoreBucketName(), document1.get("s3Key"))),
             "ContentType", new AttributeValue("text/plain"),
             "DocumentUploaded", new AttributeValue().withBOOL(true),
-            "Description", new AttributeValue(document1.get("description")),
+            "FileName", new AttributeValue(document1.get("fileName")),
             "Created", new AttributeValue("2021-11-04T15:57:30Z"),
             "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
     dynamoDbClient.putItem(
@@ -90,7 +90,7 @@ public class CreateDocumentManifestE2eTest {
                         awsS3Helper.getDocumentStoreBucketName(), document2.get("s3Key"))),
             "ContentType", new AttributeValue("text/plain"),
             "DocumentUploaded", new AttributeValue().withBOOL(true),
-            "Description", new AttributeValue(document2.get("description")),
+            "FileName", new AttributeValue(document2.get("fileName")),
             "Created", new AttributeValue("2021-11-04T16:37:30Z"),
             "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
     dynamoDbClient.putItem(
@@ -105,7 +105,7 @@ public class CreateDocumentManifestE2eTest {
                         awsS3Helper.getDocumentStoreBucketName(), document3.get("s3Key"))),
             "ContentType", new AttributeValue("text/plain"),
             "DocumentUploaded", new AttributeValue().withBOOL(true),
-            "Description", new AttributeValue(document3.get("description")),
+            "FileName", new AttributeValue(document3.get("fileName")),
             "Created", new AttributeValue("2021-11-04T17:37:30Z"),
             "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
     dynamoDbClient.putItem(
@@ -161,8 +161,8 @@ public class CreateDocumentManifestE2eTest {
     var fileNames = listZipEntryNames(new ByteArrayInputStream(documentResponse.body()));
 
     assertThat(fileNames.size()).isEqualTo(2);
-    assertThat(fileNames.get(0)).isEqualTo(document1.get("description"));
-    assertThat(fileNames.get(1)).isEqualTo(document3.get("description"));
+    assertThat(fileNames.get(0)).isEqualTo(document1.get("fileName"));
+    assertThat(fileNames.get(1)).isEqualTo(document3.get("fileName"));
 
     var s3Location =
         "s3://" + responseUrl.substring(responseUrl.indexOf('d'), responseUrl.indexOf('?'));

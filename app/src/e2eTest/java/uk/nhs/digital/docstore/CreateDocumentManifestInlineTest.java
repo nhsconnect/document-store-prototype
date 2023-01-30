@@ -65,8 +65,8 @@ public class CreateDocumentManifestInlineTest {
     var metadataBuilder = DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true);
     var metadataList =
         List.of(
-            metadataBuilder.withDescription("Some document").build(),
-            metadataBuilder.withDescription("another document").build());
+            metadataBuilder.withFileName("Some document").build(),
+            metadataBuilder.withFileName("another document").build());
     var requestEvent = createRequestEvent(nhsNumber);
 
     when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);

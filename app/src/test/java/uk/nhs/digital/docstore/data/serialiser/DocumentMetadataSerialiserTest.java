@@ -18,7 +18,7 @@ class DocumentMetadataSerialiserTest {
     var nhsNumber = "1234567890";
     var contentType = "pdf";
     var location = "some-location";
-    var description = "doc-name";
+    var fileName = "doc-name";
     var created = Instant.now();
     var type = "some-type";
 
@@ -27,7 +27,7 @@ class DocumentMetadataSerialiserTest {
     metadata.setContentType(contentType);
     metadata.setLocation(location);
     metadata.setDocumentUploaded(false);
-    metadata.setFileName(description);
+    metadata.setFileName(fileName);
     metadata.setCreated(created.toString());
     metadata.setType(List.of(type));
 
@@ -37,7 +37,7 @@ class DocumentMetadataSerialiserTest {
     assertThat(document.getContentType()).isEqualTo(contentType);
     assertThat(document.getLocation().toString()).isEqualTo(location);
     assertThat(document.isUploaded()).isFalse();
-    assertThat(document.getFileName()).isEqualTo(new FileName(description));
+    assertThat(document.getFileName()).isEqualTo(new FileName(fileName));
     assertThat(document.getCreated()).isEqualTo(created);
     assertThat(document.getType().get(0)).isEqualTo(type);
     assertThat(document.getIndexed()).isNull();
@@ -49,7 +49,7 @@ class DocumentMetadataSerialiserTest {
     var nhsNumber = "1234567890";
     var contentType = "pdf";
     var location = "s3://some-bucket/some-path";
-    var description = "doc-name";
+    var fileName = "doc-name";
     var created = Instant.now();
     var type = "some-type";
 
@@ -59,7 +59,7 @@ class DocumentMetadataSerialiserTest {
             new NhsNumber(nhsNumber),
             contentType,
             false,
-            new FileName(description),
+            new FileName(fileName),
             created,
             null,
             null,
@@ -72,7 +72,7 @@ class DocumentMetadataSerialiserTest {
     assertThat(metadata.getContentType()).isEqualTo(contentType);
     assertThat(metadata.getLocation()).isEqualTo(location);
     assertThat(metadata.isDocumentUploaded()).isFalse();
-    assertThat(metadata.getFileName()).isEqualTo(description);
+    assertThat(metadata.getFileName()).isEqualTo(fileName);
     assertThat(metadata.getCreated()).isEqualTo(created.toString());
     assertThat(metadata.getType().get(0)).isEqualTo(type);
     assertThat(metadata.getIndexed()).isNull();

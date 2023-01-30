@@ -65,7 +65,7 @@ public class DocumentMetadata {
     this.documentUploaded = documentUploaded;
   }
 
-  @DynamoDBAttribute(attributeName = "Description")
+  @DynamoDBAttribute(attributeName = "FileName")
   public String getFileName() {
     return fileName;
   }
