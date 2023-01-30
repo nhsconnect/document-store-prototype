@@ -162,6 +162,20 @@ Machine, may need to target other IP addresses.
 To use this with Docker Machine, one might add the following to the Bash profile (or a utility
 like [direnv](https://direnv.net/)): `export EDGE_HOST_NAME=0.0.0.0`.
 
+## Monitoring
+
+We have configured AWS CloudWatch to provide alarm notifications whenever one of a number of metrics exceeds its normal state.
+Currently, the only way to receive these notifications is by subscribing to an SNS topic using an email. You can subscribe
+to the SNS topic once you have assumed an appropriate role using the AWS CLI. This is the command:
+
+```bash
+aws sns subscribe --topic-arn [topic-arn] --protocol email --notification-endpoint [your NHS email]
+```
+
+You will receive a confirmation email with a link allowing you to confirm the subscription.
+
+We are also subscribing to the SNS topic using email addresses that are provided for Microsoft Teams channels.
+
 ## Troubleshooting
 
 ### Docker Daemon Is Not Running
