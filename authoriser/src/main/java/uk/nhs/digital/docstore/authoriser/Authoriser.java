@@ -70,19 +70,12 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             var iamPolicy = new IamPolicyResponse();
             iamPolicy.setPrincipalId(decodedJWT.getSubject());
 
-            // Mapping claims to models
             var claimsMapper = new AccessTokenClaimMapper(decodedJWT);
             var organisations = claimsMapper.deserialiseClaim(ASSOCIATED_ORG, Organisation[].class);
             var roles = claimsMapper.deserialiseClaim(RBAC_ROLES, Role[].class);
 
-
-            LOGGER.debug("organisations" + Arrays.toString(organisations));
-            LOGGER.debug("roles" + Arrays.toString(roles));
-
-            // Get a list of tertiary role codes
             var clinicalRoles = Arrays.stream(ClinicalAdmin.values()).map(ClinicalAdmin::getClinicalRoleCode).collect(Collectors.toList());
 
-            // Taking models and building a resource list
             var allowedResources = new ArrayList<String>();
 
             if (Organisation.containsOrganisation(Arrays.asList(organisations), GENERAL_ADMIN_ORG_CODE)) {
@@ -98,20 +91,32 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             var policyDocument = getPolicyDocument(allowedResources);
             iamPolicy.setPolicyDocument(policyDocument);
 
-            LOGGER.debug("IAM policy" + iamPolicy);
-
             return iamPolicy;
+
         } catch (NullPointerException e) {
             throw e;
         } catch (InvalidAccessTokenException | InvalidJWTException e) {
-            throw new RuntimeException(e);
+            var policyDocument = denyBothPolicyDocument();
+
+            var denyIamPolicy = new IamPolicyResponse();
+            denyIamPolicy.setPolicyDocument(policyDocument);
+
+            return denyIamPolicy;
         }
     }
 
-    private static IamPolicyResponse.PolicyDocument getPolicyDocument(List<String> allowedResources) {
+    private IamPolicyResponse.PolicyDocument getPolicyDocument(List<String> allowedResources) {
         return IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)
                 .withStatement(allowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
+                .build();
+    }
+
+    private IamPolicyResponse.PolicyDocument denyBothPolicyDocument() {
+        return IamPolicyResponse.PolicyDocument.builder()
+                .withVersion(IamPolicyResponse.VERSION_2012_10_17)
+                .withStatement(authConfig.getAllowedResourcesForPCSEUsers().stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
+                .withStatement(authConfig.getAllowedResourcesForClinicalUsers().stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
                 .build();
     }
 }

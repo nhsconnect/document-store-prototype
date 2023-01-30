@@ -163,7 +163,6 @@ class AuthoriserTest {
         assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
     }
 
-//    :TODO complete deny scenario(s)
     @Test
     void shouldDenyAllWhenTokenSignatureVerificationFails() {
         var pcseAllowedResources = List.of("api-gateway-invocation-arn-1", "api-gateway-invocation-arn-2");
@@ -178,14 +177,24 @@ class AuthoriserTest {
         var handler = new Authoriser(authConfig, algorithm);
 
         String principalId = "some-principal-id";
+
         var token = JWT.create()
                 .withSubject(principalId)
-                .withAudience("invalid audience")
-                .sign(algorithm);
+                .withAudience("invalid audience");
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(clinicalAllowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
+                .withStatement(pcseAllowedResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
+                .withStatement(clinicalAllowedResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
                 .build();
+
+        var expectedResponse = new IamPolicyResponse();
+        expectedResponse.setPolicyDocument(expectedPolicyDocument);
+
+        event.setAuthorizationToken(token.sign(algorithm));
+
+        var response = handler.handleRequest(event, null);
+
+        assertThat(response.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
     }
 }

@@ -6,7 +6,6 @@ import java.util.List;
 
 public class Organisation {
     private final String orgCode;
-
     private final String orgName;
 
     public Organisation(@JsonProperty("org_code") String orgCode, @JsonProperty("org_name") String orgName) {
