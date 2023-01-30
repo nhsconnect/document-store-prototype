@@ -275,14 +275,17 @@
         "kms:DeleteAlias",
         "kms:DescribeKey",
         "kms:EnableKeyRotation",
+        "kms:GetKeyPolicy",
+        "kms:GetKeyRotationStatus",
         "kms:ListAliases",
         "kms:ListKeys",
         "kms:ListResourceTags",
+        "kms:PutKeyPolicy",
+        "kms:ScheduleKeyDeletion",
         "kms:TagResource",
         "kms:UntagResource",
         "kms:UpdateAlias",
-        "kms:UpdateKeyDescription",
-        "kms:PutKeyPolicy"
+        "kms:UpdateKeyDescription"
       ],
       "Resource": "*"
     },
