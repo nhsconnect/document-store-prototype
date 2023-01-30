@@ -31,180 +31,194 @@ import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 import uk.nhs.digital.docstore.helpers.BaseUriHelper;
 
 public class CreateDocumentManifestE2eTest {
-  private static final String BASE_URI_TEMPLATE = "http://%s:%d";
-  private static final String AWS_REGION = "eu-west-2";
-  private static final int DEFAULT_PORT = 4566;
-  private static final String CODE_VALUE = "185361000000102";
+    private static final String BASE_URI_TEMPLATE = "http://%s:%d";
+    private static final String AWS_REGION = "eu-west-2";
+    private static final int DEFAULT_PORT = 4566;
+    private static final String CODE_VALUE = "185361000000102";
 
-  private final Map<String, String> document1 =
-      Map.of("fileName", "uploaded document 1", "s3Key", "key1", "content", "content 1");
-  private final Map<String, String> document2 =
-      Map.of("fileName", "uploaded document 2", "s3Key", "key2", "content", "content 2");
-  private final Map<String, String> document3 =
-      Map.of("fileName", "uploaded document 3", "s3Key", "key3", "content", "content 3");
+    private final Map<String, String> document1 =
+            Map.of("fileName", "uploaded document 1", "s3Key", "key1", "content", "content 1");
+    private final Map<String, String> document2 =
+            Map.of("fileName", "uploaded document 2", "s3Key", "key2", "content", "content 2");
+    private final Map<String, String> document3 =
+            Map.of("fileName", "uploaded document 3", "s3Key", "key3", "content", "content 3");
 
-  private AwsS3Helper awsS3Helper;
-  private AmazonDynamoDB dynamoDbClient;
+    private AwsS3Helper awsS3Helper;
+    private AmazonDynamoDB dynamoDbClient;
 
-  @BeforeEach
-  void setUp() {
-    var baseUri = String.format(BASE_URI_TEMPLATE, getAwsHost(), DEFAULT_PORT);
-    var awsEndpointConfiguration = new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
+    @BeforeEach
+    void setUp() {
+        var baseUri = String.format(BASE_URI_TEMPLATE, getAwsHost(), DEFAULT_PORT);
+        var awsEndpointConfiguration =
+                new AwsClientBuilder.EndpointConfiguration(baseUri, AWS_REGION);
 
-    awsS3Helper = new AwsS3Helper(awsEndpointConfiguration);
+        awsS3Helper = new AwsS3Helper(awsEndpointConfiguration);
 
-    dynamoDbClient =
-        AmazonDynamoDBClientBuilder.standard()
-            .withEndpointConfiguration(awsEndpointConfiguration)
-            .build();
+        dynamoDbClient =
+                AmazonDynamoDBClientBuilder.standard()
+                        .withEndpointConfiguration(awsEndpointConfiguration)
+                        .build();
 
-    ScanResult scanResult = dynamoDbClient.scan("DocumentReferenceMetadata", List.of("ID"));
-    scanResult
-        .getItems()
-        .forEach(item -> dynamoDbClient.deleteItem("DocumentReferenceMetadata", item));
+        ScanResult scanResult = dynamoDbClient.scan("DocumentReferenceMetadata", List.of("ID"));
+        scanResult
+                .getItems()
+                .forEach(item -> dynamoDbClient.deleteItem("DocumentReferenceMetadata", item));
 
-    dynamoDbClient.putItem(
-        "DocumentReferenceMetadata",
-        Map.of(
-            "ID", new AttributeValue("1234"),
-            "NhsNumber", new AttributeValue("9000000009"),
-            "Location",
-                new AttributeValue(
-                    String.format(
-                        "s3://%s/%s",
-                        awsS3Helper.getDocumentStoreBucketName(), document1.get("s3Key"))),
-            "ContentType", new AttributeValue("text/plain"),
-            "DocumentUploaded", new AttributeValue().withBOOL(true),
-            "FileName", new AttributeValue(document1.get("fileName")),
-            "Created", new AttributeValue("2021-11-04T15:57:30Z"),
-            "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
-    dynamoDbClient.putItem(
-        "DocumentReferenceMetadata",
-        Map.of(
-            "ID", new AttributeValue("6987"),
-            "NhsNumber", new AttributeValue("9000000001"),
-            "Location",
-                new AttributeValue(
-                    String.format(
-                        "s3://%s/%s",
-                        awsS3Helper.getDocumentStoreBucketName(), document2.get("s3Key"))),
-            "ContentType", new AttributeValue("text/plain"),
-            "DocumentUploaded", new AttributeValue().withBOOL(true),
-            "FileName", new AttributeValue(document2.get("fileName")),
-            "Created", new AttributeValue("2021-11-04T16:37:30Z"),
-            "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
-    dynamoDbClient.putItem(
-        "DocumentReferenceMetadata",
-        Map.of(
-            "ID", new AttributeValue("5687"),
-            "NhsNumber", new AttributeValue("9000000009"),
-            "Location",
-                new AttributeValue(
-                    String.format(
-                        "s3://%s/%s",
-                        awsS3Helper.getDocumentStoreBucketName(), document3.get("s3Key"))),
-            "ContentType", new AttributeValue("text/plain"),
-            "DocumentUploaded", new AttributeValue().withBOOL(true),
-            "FileName", new AttributeValue(document3.get("fileName")),
-            "Created", new AttributeValue("2021-11-04T17:37:30Z"),
-            "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
-    dynamoDbClient.putItem(
-        "DocumentReferenceMetadata",
-        Map.of(
-            "ID", new AttributeValue("2345"),
-            "NhsNumber", new AttributeValue("9000000009"),
-            "Location",
-                new AttributeValue(
-                    String.format(
-                        "s3://%s/%s", awsS3Helper.getDocumentStoreBucketName(), "somewhere")),
-            "Content-Type", new AttributeValue("application/pdf"),
-            "DocumentUploaded", new AttributeValue().withBOOL(false),
-            "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
+        dynamoDbClient.putItem(
+                "DocumentReferenceMetadata",
+                Map.of(
+                        "ID", new AttributeValue("1234"),
+                        "NhsNumber", new AttributeValue("9000000009"),
+                        "Location",
+                                new AttributeValue(
+                                        String.format(
+                                                "s3://%s/%s",
+                                                awsS3Helper.getDocumentStoreBucketName(),
+                                                document1.get("s3Key"))),
+                        "ContentType", new AttributeValue("text/plain"),
+                        "DocumentUploaded", new AttributeValue().withBOOL(true),
+                        "FileName", new AttributeValue(document1.get("fileName")),
+                        "Created", new AttributeValue("2021-11-04T15:57:30Z"),
+                        "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
+        dynamoDbClient.putItem(
+                "DocumentReferenceMetadata",
+                Map.of(
+                        "ID", new AttributeValue("6987"),
+                        "NhsNumber", new AttributeValue("9000000001"),
+                        "Location",
+                                new AttributeValue(
+                                        String.format(
+                                                "s3://%s/%s",
+                                                awsS3Helper.getDocumentStoreBucketName(),
+                                                document2.get("s3Key"))),
+                        "ContentType", new AttributeValue("text/plain"),
+                        "DocumentUploaded", new AttributeValue().withBOOL(true),
+                        "FileName", new AttributeValue(document2.get("fileName")),
+                        "Created", new AttributeValue("2021-11-04T16:37:30Z"),
+                        "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
+        dynamoDbClient.putItem(
+                "DocumentReferenceMetadata",
+                Map.of(
+                        "ID", new AttributeValue("5687"),
+                        "NhsNumber", new AttributeValue("9000000009"),
+                        "Location",
+                                new AttributeValue(
+                                        String.format(
+                                                "s3://%s/%s",
+                                                awsS3Helper.getDocumentStoreBucketName(),
+                                                document3.get("s3Key"))),
+                        "ContentType", new AttributeValue("text/plain"),
+                        "DocumentUploaded", new AttributeValue().withBOOL(true),
+                        "FileName", new AttributeValue(document3.get("fileName")),
+                        "Created", new AttributeValue("2021-11-04T17:37:30Z"),
+                        "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
+        dynamoDbClient.putItem(
+                "DocumentReferenceMetadata",
+                Map.of(
+                        "ID", new AttributeValue("2345"),
+                        "NhsNumber", new AttributeValue("9000000009"),
+                        "Location",
+                                new AttributeValue(
+                                        String.format(
+                                                "s3://%s/%s",
+                                                awsS3Helper.getDocumentStoreBucketName(),
+                                                "somewhere")),
+                        "Content-Type", new AttributeValue("application/pdf"),
+                        "DocumentUploaded", new AttributeValue().withBOOL(false),
+                        "Type", new AttributeValue().withL(new AttributeValue(CODE_VALUE))));
 
-    awsS3Helper.addDocument(
-        awsS3Helper.getDocumentStoreBucketName(), document1.get("s3Key"), document1.get("content"));
-    awsS3Helper.addDocument(
-        awsS3Helper.getDocumentStoreBucketName(), document2.get("s3Key"), document2.get("content"));
-    awsS3Helper.addDocument(
-        awsS3Helper.getDocumentStoreBucketName(), document3.get("s3Key"), document3.get("content"));
-  }
-
-  @Test
-  void shouldGetDocumentsByNhsNumberAndUploadZipToS3AndSaveMetadata()
-      throws IOException, InterruptedException {
-    var nhsNumber = "9000000009";
-    var searchRequest =
-        HttpRequest.newBuilder(
-                getBaseUri()
-                    .resolve(
-                        "DocumentManifest?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C"
-                            + nhsNumber))
-            .GET()
-            .header("Authorization", createBearerToken())
-            .build();
-    var searchResponse = newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString());
-    var responseUrl = JsonPath.<String>read(searchResponse.body(), "$.result.url");
-
-    assertThat(searchResponse.statusCode()).isEqualTo(200);
-    assertThat(responseUrl).contains(nhsNumber);
-
-    var preSignedUrl =
-        responseUrl.replace(BaseUriHelper.PRESIGNED_URL_REFERENCE_HOST, getAwsHost());
-    var documentRequest =
-        HttpRequest.newBuilder(URI.create(preSignedUrl))
-            .GET()
-            .timeout(Duration.ofSeconds(2))
-            .build();
-    var documentResponse =
-        newHttpClient().send(documentRequest, HttpResponse.BodyHandlers.ofByteArray());
-
-    var fileNames = listZipEntryNames(new ByteArrayInputStream(documentResponse.body()));
-
-    assertThat(fileNames.size()).isEqualTo(2);
-    assertThat(fileNames.get(0)).isEqualTo(document1.get("fileName"));
-    assertThat(fileNames.get(1)).isEqualTo(document3.get("fileName"));
-
-    var s3Location =
-        "s3://" + responseUrl.substring(responseUrl.indexOf('d'), responseUrl.indexOf('?'));
-    var scan = dynamoDbClient.scan(checkZipTraceExists(s3Location));
-
-    assertThat(scan.getItems().size()).isEqualTo(1);
-  }
-
-  private ScanRequest checkZipTraceExists(String location) {
-    var expressionAttributeNames = new HashMap<String, String>();
-    expressionAttributeNames.put("#location", "Location");
-
-    var expressionAttributeValues = new HashMap<String, AttributeValue>();
-    expressionAttributeValues.put(":location", new AttributeValue(location));
-
-    return new ScanRequest()
-        .withTableName("DocumentZipTrace")
-        .withFilterExpression("#location = :location")
-        .withExpressionAttributeNames(expressionAttributeNames)
-        .withExpressionAttributeValues(expressionAttributeValues);
-  }
-
-  public ArrayList<Object> listZipEntryNames(ByteArrayInputStream inputStream) throws IOException {
-    var fileNameArray = new ArrayList<>();
-    var zipInputStream = new ZipInputStream(inputStream);
-    var zipEntry = zipInputStream.getNextEntry();
-
-    while (zipEntry != null) {
-      fileNameArray.add(zipEntry.getName());
-      zipEntry = zipInputStream.getNextEntry();
+        awsS3Helper.addDocument(
+                awsS3Helper.getDocumentStoreBucketName(),
+                document1.get("s3Key"),
+                document1.get("content"));
+        awsS3Helper.addDocument(
+                awsS3Helper.getDocumentStoreBucketName(),
+                document2.get("s3Key"),
+                document2.get("content"));
+        awsS3Helper.addDocument(
+                awsS3Helper.getDocumentStoreBucketName(),
+                document3.get("s3Key"),
+                document3.get("content"));
     }
-    zipInputStream.closeEntry();
 
-    return fileNameArray;
-  }
+    @Test
+    void shouldGetDocumentsByNhsNumberAndUploadZipToS3AndSaveMetadata()
+            throws IOException, InterruptedException {
+        var nhsNumber = "9000000009";
+        var searchRequest =
+                HttpRequest.newBuilder(
+                                getBaseUri()
+                                        .resolve(
+                                                "DocumentManifest?subject:identifier=https://fhir.nhs.uk/Id/nhs-number%7C"
+                                                        + nhsNumber))
+                        .GET()
+                        .header("Authorization", createBearerToken())
+                        .build();
+        var searchResponse =
+                newHttpClient().send(searchRequest, HttpResponse.BodyHandlers.ofString());
+        var responseUrl = JsonPath.<String>read(searchResponse.body(), "$.result.url");
 
-  private String createBearerToken() {
-    String jwt = JWT.create().withClaim("email", "").sign(none());
-    return "Bearer " + jwt;
-  }
+        assertThat(searchResponse.statusCode()).isEqualTo(200);
+        assertThat(responseUrl).contains(nhsNumber);
 
-  public static String getAwsHost() {
-    return resolveContainerHost("localstack");
-  }
+        var preSignedUrl =
+                responseUrl.replace(BaseUriHelper.PRESIGNED_URL_REFERENCE_HOST, getAwsHost());
+        var documentRequest =
+                HttpRequest.newBuilder(URI.create(preSignedUrl))
+                        .GET()
+                        .timeout(Duration.ofSeconds(2))
+                        .build();
+        var documentResponse =
+                newHttpClient().send(documentRequest, HttpResponse.BodyHandlers.ofByteArray());
+
+        var fileNames = listZipEntryNames(new ByteArrayInputStream(documentResponse.body()));
+
+        assertThat(fileNames.size()).isEqualTo(2);
+        assertThat(fileNames.get(0)).isEqualTo(document1.get("fileName"));
+        assertThat(fileNames.get(1)).isEqualTo(document3.get("fileName"));
+
+        var s3Location =
+                "s3://" + responseUrl.substring(responseUrl.indexOf('d'), responseUrl.indexOf('?'));
+        var scan = dynamoDbClient.scan(checkZipTraceExists(s3Location));
+
+        assertThat(scan.getItems().size()).isEqualTo(1);
+    }
+
+    private ScanRequest checkZipTraceExists(String location) {
+        var expressionAttributeNames = new HashMap<String, String>();
+        expressionAttributeNames.put("#location", "Location");
+
+        var expressionAttributeValues = new HashMap<String, AttributeValue>();
+        expressionAttributeValues.put(":location", new AttributeValue(location));
+
+        return new ScanRequest()
+                .withTableName("DocumentZipTrace")
+                .withFilterExpression("#location = :location")
+                .withExpressionAttributeNames(expressionAttributeNames)
+                .withExpressionAttributeValues(expressionAttributeValues);
+    }
+
+    public ArrayList<Object> listZipEntryNames(ByteArrayInputStream inputStream)
+            throws IOException {
+        var fileNameArray = new ArrayList<>();
+        var zipInputStream = new ZipInputStream(inputStream);
+        var zipEntry = zipInputStream.getNextEntry();
+
+        while (zipEntry != null) {
+            fileNameArray.add(zipEntry.getName());
+            zipEntry = zipInputStream.getNextEntry();
+        }
+        zipInputStream.closeEntry();
+
+        return fileNameArray;
+    }
+
+    private String createBearerToken() {
+        String jwt = JWT.create().withClaim("email", "").sign(none());
+        return "Bearer " + jwt;
+    }
+
+    public static String getAwsHost() {
+        return resolveContainerHost("localstack");
+    }
 }

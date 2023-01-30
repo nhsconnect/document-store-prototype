@@ -23,58 +23,58 @@ import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler
-    implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
-  private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
+    private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
 
-  private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
-  private final BundleMapper bundleMapper = new BundleMapper();
+    private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
+    private final BundleMapper bundleMapper = new BundleMapper();
 
-  private final DocumentMetadataSearchService searchService;
-  private final FhirContext fhirContext;
-  private final ApiConfig apiConfig;
+    private final DocumentMetadataSearchService searchService;
+    private final FhirContext fhirContext;
+    private final ApiConfig apiConfig;
 
-  public DocumentReferenceSearchHandler() {
-    this(new ApiConfig());
-  }
-
-  public DocumentReferenceSearchHandler(ApiConfig apiConfig) {
-    this.apiConfig = apiConfig;
-    this.fhirContext = FhirContext.forR4();
-    this.fhirContext.setPerformanceOptions(DEFERRED_MODEL_SCANNING);
-
-    DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-    this.searchService =
-        new DocumentMetadataSearchService(metadataStore, new DocumentMetadataSerialiser());
-  }
-
-  @Override
-  public APIGatewayProxyResponseEvent handleRequest(
-      APIGatewayProxyRequestEvent requestEvent, Context context) {
-    Tracer.setMDCContext(context);
-    LOGGER.debug("API Gateway event received - processing starts");
-
-    var jsonParser = fhirContext.newJsonParser();
-
-    LOGGER.debug("Querying DynamoDB");
-    Bundle bundle;
-
-    try {
-      var nhsNumberSearchParameterForm =
-          new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
-      var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
-      var documents = searchService.findMetadataByNhsNumber(nhsNumber);
-
-      LOGGER.debug("Generating response contents");
-      bundle = bundleMapper.toBundle(documents);
-    } catch (Exception e) {
-      return errorResponseGenerator.errorResponse(e);
+    public DocumentReferenceSearchHandler() {
+        this(new ApiConfig());
     }
 
-    LOGGER.debug("Processing finished - about to return the response");
-    var body = jsonParser.encodeResourceToString(bundle);
-    return apiConfig.getApiGatewayResponse(200, body, "GET", null);
-  }
+    public DocumentReferenceSearchHandler(ApiConfig apiConfig) {
+        this.apiConfig = apiConfig;
+        this.fhirContext = FhirContext.forR4();
+        this.fhirContext.setPerformanceOptions(DEFERRED_MODEL_SCANNING);
+
+        DocumentMetadataStore metadataStore = new DocumentMetadataStore();
+        this.searchService =
+                new DocumentMetadataSearchService(metadataStore, new DocumentMetadataSerialiser());
+    }
+
+    @Override
+    public APIGatewayProxyResponseEvent handleRequest(
+            APIGatewayProxyRequestEvent requestEvent, Context context) {
+        Tracer.setMDCContext(context);
+        LOGGER.debug("API Gateway event received - processing starts");
+
+        var jsonParser = fhirContext.newJsonParser();
+
+        LOGGER.debug("Querying DynamoDB");
+        Bundle bundle;
+
+        try {
+            var nhsNumberSearchParameterForm =
+                    new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
+            var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
+            var documents = searchService.findMetadataByNhsNumber(nhsNumber);
+
+            LOGGER.debug("Generating response contents");
+            bundle = bundleMapper.toBundle(documents);
+        } catch (Exception e) {
+            return errorResponseGenerator.errorResponse(e);
+        }
+
+        LOGGER.debug("Processing finished - about to return the response");
+        var body = jsonParser.encodeResourceToString(bundle);
+        return apiConfig.getApiGatewayResponse(200, body, "GET", null);
+    }
 }

@@ -21,36 +21,36 @@ import uk.nhs.digital.docstore.utils.CommonUtils;
 
 class SignedJwtBuilderTest {
 
-  @Test
-  void shouldGenerateASignedJwtWithRequiredClaims() throws MissingEnvironmentVariableException {
-    var now = Instant.now();
-    var clock = Clock.fixed(now, ZoneId.systemDefault());
-    var randomUuidAsString = UUID.randomUUID().toString();
-    var nhsApiKey = "nhs-api-key";
-    var oauthEndpoint = "oauth-endpoint";
-    var algorithm = Algorithm.none();
-    var patientSearchConfig = mock(PatientSearchConfig.class);
+    @Test
+    void shouldGenerateASignedJwtWithRequiredClaims() throws MissingEnvironmentVariableException {
+        var now = Instant.now();
+        var clock = Clock.fixed(now, ZoneId.systemDefault());
+        var randomUuidAsString = UUID.randomUUID().toString();
+        var nhsApiKey = "nhs-api-key";
+        var oauthEndpoint = "oauth-endpoint";
+        var algorithm = Algorithm.none();
+        var patientSearchConfig = mock(PatientSearchConfig.class);
 
-    when(patientSearchConfig.nhsApiKey()).thenReturn(nhsApiKey);
-    when(patientSearchConfig.nhsOauthEndpoint()).thenReturn(oauthEndpoint);
-    when(patientSearchConfig.pdsFhirAuthPrivateTokenSigningAlgorithm()).thenReturn(algorithm);
+        when(patientSearchConfig.nhsApiKey()).thenReturn(nhsApiKey);
+        when(patientSearchConfig.nhsOauthEndpoint()).thenReturn(oauthEndpoint);
+        when(patientSearchConfig.pdsFhirAuthPrivateTokenSigningAlgorithm()).thenReturn(algorithm);
 
-    var jwtBuilder = new SignedJwtBuilder(clock, patientSearchConfig);
+        var jwtBuilder = new SignedJwtBuilder(clock, patientSearchConfig);
 
-    try (MockedStatic<CommonUtils> utilities = Mockito.mockStatic(CommonUtils.class)) {
-      utilities.when(CommonUtils::generateRandomUUIDString).thenReturn(randomUuidAsString);
-      var actualJwt = jwtBuilder.build();
+        try (MockedStatic<CommonUtils> utilities = Mockito.mockStatic(CommonUtils.class)) {
+            utilities.when(CommonUtils::generateRandomUUIDString).thenReturn(randomUuidAsString);
+            var actualJwt = jwtBuilder.build();
 
-      JWTVerifier verifier =
-          JWT.require(algorithm)
-              .withClaim("exp", now.plus(5, ChronoUnit.MINUTES))
-              .withJWTId(randomUuidAsString)
-              .withIssuer(nhsApiKey)
-              .withSubject(nhsApiKey)
-              .withAudience(oauthEndpoint)
-              .build();
+            JWTVerifier verifier =
+                    JWT.require(algorithm)
+                            .withClaim("exp", now.plus(5, ChronoUnit.MINUTES))
+                            .withJWTId(randomUuidAsString)
+                            .withIssuer(nhsApiKey)
+                            .withSubject(nhsApiKey)
+                            .withAudience(oauthEndpoint)
+                            .build();
 
-      assertDoesNotThrow(() -> verifier.verify(actualJwt));
+            assertDoesNotThrow(() -> verifier.verify(actualJwt));
+        }
     }
-  }
 }

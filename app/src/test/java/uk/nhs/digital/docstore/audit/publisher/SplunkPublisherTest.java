@@ -19,39 +19,41 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SystemStubsExtension.class)
 class SplunkPublisherTest {
-  @Mock private AmazonSQS amazonSqsClient;
+    @Mock private AmazonSQS amazonSqsClient;
 
-  @SuppressWarnings("unused")
-  @SystemStub
-  private EnvironmentVariables environmentVariables;
+    @SuppressWarnings("unused")
+    @SystemStub
+    private EnvironmentVariables environmentVariables;
 
-  @Test
-  void sendsMessageToSqsQueue() throws JsonProcessingException {
-    var queueUrl = "document-store-audit-queue-url";
-    var messageBody = new StubAuditMessage("Audit payload");
-    var sendMessageRequest =
-        new SendMessageRequest().withQueueUrl(queueUrl).withMessageBody(messageBody.toJsonString());
+    @Test
+    void sendsMessageToSqsQueue() throws JsonProcessingException {
+        var queueUrl = "document-store-audit-queue-url";
+        var messageBody = new StubAuditMessage("Audit payload");
+        var sendMessageRequest =
+                new SendMessageRequest()
+                        .withQueueUrl(queueUrl)
+                        .withMessageBody(messageBody.toJsonString());
 
-    environmentVariables.set("SQS_QUEUE_URL", queueUrl);
-    new SplunkPublisher(amazonSqsClient).publish(messageBody);
+        environmentVariables.set("SQS_QUEUE_URL", queueUrl);
+        new SplunkPublisher(amazonSqsClient).publish(messageBody);
 
-    verify(amazonSqsClient, times(1)).sendMessage(sendMessageRequest);
-  }
-
-  private static class StubAuditMessage extends BaseAuditMessage implements AuditMessage {
-    private final String message;
-
-    public StubAuditMessage(String message) {
-      this.message = message;
+        verify(amazonSqsClient, times(1)).sendMessage(sendMessageRequest);
     }
 
-    public String toJsonString() {
-      return message;
-    }
+    private static class StubAuditMessage extends BaseAuditMessage implements AuditMessage {
+        private final String message;
 
-    @Override
-    public String getDescription() {
-      return "Something happened";
+        public StubAuditMessage(String message) {
+            this.message = message;
+        }
+
+        public String toJsonString() {
+            return message;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Something happened";
+        }
     }
-  }
 }

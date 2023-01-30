@@ -16,95 +16,110 @@ import uk.nhs.digital.docstore.exceptions.UnrecognisedCodingSystemException;
 import uk.nhs.digital.docstore.helpers.TestHelpers;
 
 public class CreateDocumentReferenceRequestValidatorTest {
-  static CreateDocumentReferenceRequestValidator validator =
-      new CreateDocumentReferenceRequestValidator();
-  static FhirContext fhirContext = FhirContext.forR4();
-  static TestHelpers testHelpers = new TestHelpers();
+    static CreateDocumentReferenceRequestValidator validator =
+            new CreateDocumentReferenceRequestValidator();
+    static FhirContext fhirContext = FhirContext.forR4();
+    static TestHelpers testHelpers = new TestHelpers();
 
-  @Test
-  void doesNotThrowAnExceptionIfTheDocumentReferenceRequestIsValid() throws IOException {
-    String validRequestJson =
-        testHelpers.getContentFromResource("create/valid-create-document-reference-request.json");
-    var jsonParser = fhirContext.newJsonParser();
-    var inputDocumentReference =
-        jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+    @Test
+    void doesNotThrowAnExceptionIfTheDocumentReferenceRequestIsValid() throws IOException {
+        String validRequestJson =
+                testHelpers.getContentFromResource(
+                        "create/valid-create-document-reference-request.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
 
-    assertThatNoException().isThrownBy(() -> validator.validate(inputDocumentReference));
-  }
+        assertThatNoException().isThrownBy(() -> validator.validate(inputDocumentReference));
+    }
 
-  @Test
-  void throwsAnExceptionIfACodingSystemInTheDocumentReferenceRequestIsNotValid()
-      throws IOException {
-    String validRequestJson =
-        testHelpers.getContentFromResource("create/valid-create-document-reference-request.json");
-    var jsonParser = fhirContext.newJsonParser();
-    var inputDocumentReference =
-        jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
-    var type =
-        new CodeableConcept().setCoding(List.of(new Coding().setCode("1234").setSystem("invalid")));
-    inputDocumentReference.setType(type);
+    @Test
+    void throwsAnExceptionIfACodingSystemInTheDocumentReferenceRequestIsNotValid()
+            throws IOException {
+        String validRequestJson =
+                testHelpers.getContentFromResource(
+                        "create/valid-create-document-reference-request.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        var type =
+                new CodeableConcept()
+                        .setCoding(List.of(new Coding().setCode("1234").setSystem("invalid")));
+        inputDocumentReference.setType(type);
 
-    assertThatThrownBy(() -> validator.validate(inputDocumentReference))
-        .isExactlyInstanceOf(UnrecognisedCodingSystemException.class);
-  }
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(UnrecognisedCodingSystemException.class);
+    }
 
-  @Test
-  void throwsAnExceptionIfACodingCodeInTheDocumentReferenceRequestIsNull() throws IOException {
-    String validRequestJson =
-        testHelpers.getContentFromResource("create/valid-create-document-reference-request.json");
-    var jsonParser = fhirContext.newJsonParser();
-    var inputDocumentReference =
-        jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
-    var type =
-        new CodeableConcept()
-            .setCoding(List.of(new Coding().setCode(null).setSystem("http://snomed.info/sct")));
-    inputDocumentReference.setType(type);
+    @Test
+    void throwsAnExceptionIfACodingCodeInTheDocumentReferenceRequestIsNull() throws IOException {
+        String validRequestJson =
+                testHelpers.getContentFromResource(
+                        "create/valid-create-document-reference-request.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        var type =
+                new CodeableConcept()
+                        .setCoding(
+                                List.of(
+                                        new Coding()
+                                                .setCode(null)
+                                                .setSystem("http://snomed.info/sct")));
+        inputDocumentReference.setType(type);
 
-    assertThatThrownBy(() -> validator.validate(inputDocumentReference))
-        .isExactlyInstanceOf(MissingRequiredValueException.class);
-  }
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(MissingRequiredValueException.class);
+    }
 
-  @Test
-  void throwsAnExceptionIfACodingSystemInTheDocumentReferenceRequestIsNull() throws IOException {
-    String validRequestJson =
-        testHelpers.getContentFromResource("create/valid-create-document-reference-request.json");
-    var jsonParser = fhirContext.newJsonParser();
-    var inputDocumentReference =
-        jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
-    var type =
-        new CodeableConcept().setCoding(List.of(new Coding().setCode("1234").setSystem(null)));
-    inputDocumentReference.setType(type);
+    @Test
+    void throwsAnExceptionIfACodingSystemInTheDocumentReferenceRequestIsNull() throws IOException {
+        String validRequestJson =
+                testHelpers.getContentFromResource(
+                        "create/valid-create-document-reference-request.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        var type =
+                new CodeableConcept()
+                        .setCoding(List.of(new Coding().setCode("1234").setSystem(null)));
+        inputDocumentReference.setType(type);
 
-    assertThatThrownBy(() -> validator.validate(inputDocumentReference))
-        .isExactlyInstanceOf(MissingRequiredValueException.class);
-  }
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(MissingRequiredValueException.class);
+    }
 
-  @Test
-  void throwsAnExceptionIfTheDescriptionInTheDocumentReferenceRequestIsMissing()
-      throws IOException {
-    String validRequestJson =
-        testHelpers.getContentFromResource(
-            "create/create-document-reference-request-without-description.json");
-    var jsonParser = fhirContext.newJsonParser();
-    var inputDocumentReference =
-        jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
-    assertThatThrownBy(() -> validator.validate(inputDocumentReference))
-        .isExactlyInstanceOf(MissingRequiredValueException.class);
-  }
+    @Test
+    void throwsAnExceptionIfTheDescriptionInTheDocumentReferenceRequestIsMissing()
+            throws IOException {
+        String validRequestJson =
+                testHelpers.getContentFromResource(
+                        "create/create-document-reference-request-without-description.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(MissingRequiredValueException.class);
+    }
 
-  @Test
-  void throwsAnExceptionIfACodingCodeInTheDocumentReferenceRequestIsNotValid() throws IOException {
-    String validRequestJson =
-        testHelpers.getContentFromResource("create/valid-create-document-reference-request.json");
-    var jsonParser = fhirContext.newJsonParser();
-    var inputDocumentReference =
-        jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
-    var type =
-        new CodeableConcept()
-            .setCoding(
-                List.of(new Coding().setCode("invalid").setSystem("http://snomed.info/sct")));
-    inputDocumentReference.setType(type);
-    assertThatThrownBy(() -> validator.validate(inputDocumentReference))
-        .isExactlyInstanceOf(InvalidCodingCodeException.class);
-  }
+    @Test
+    void throwsAnExceptionIfACodingCodeInTheDocumentReferenceRequestIsNotValid()
+            throws IOException {
+        String validRequestJson =
+                testHelpers.getContentFromResource(
+                        "create/valid-create-document-reference-request.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        var type =
+                new CodeableConcept()
+                        .setCoding(
+                                List.of(
+                                        new Coding()
+                                                .setCode("invalid")
+                                                .setSystem("http://snomed.info/sct")));
+        inputDocumentReference.setType(type);
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(InvalidCodingCodeException.class);
+    }
 }

@@ -13,25 +13,25 @@ import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 public class DocumentMetadataSearchService {
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(CreateDocumentManifestByNhsNumberHandler.class);
-  private final DocumentMetadataStore metadataStore;
-  private final DocumentMetadataSerialiser serialiser;
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(CreateDocumentManifestByNhsNumberHandler.class);
+    private final DocumentMetadataStore metadataStore;
+    private final DocumentMetadataSerialiser serialiser;
 
-  public DocumentMetadataSearchService(
-      DocumentMetadataStore metadataStore, DocumentMetadataSerialiser serialiser) {
-    this.metadataStore = metadataStore;
-    this.serialiser = serialiser;
-  }
-
-  public List<Document> findMetadataByNhsNumber(NhsNumber nhsNumber)
-      throws IllFormedPatientDetailsException {
-    LOGGER.info("Searched for documents with NHS number " + nhsNumber);
-    List<Document> documentList = new ArrayList<>();
-    for (DocumentMetadata documentMetadata : metadataStore.findByNhsNumber(nhsNumber)) {
-      Document document = serialiser.toDocumentModel(documentMetadata);
-      documentList.add(document);
+    public DocumentMetadataSearchService(
+            DocumentMetadataStore metadataStore, DocumentMetadataSerialiser serialiser) {
+        this.metadataStore = metadataStore;
+        this.serialiser = serialiser;
     }
-    return documentList;
-  }
+
+    public List<Document> findMetadataByNhsNumber(NhsNumber nhsNumber)
+            throws IllFormedPatientDetailsException {
+        LOGGER.info("Searched for documents with NHS number " + nhsNumber);
+        List<Document> documentList = new ArrayList<>();
+        for (DocumentMetadata documentMetadata : metadataStore.findByNhsNumber(nhsNumber)) {
+            Document document = serialiser.toDocumentModel(documentMetadata);
+            documentList.add(document);
+        }
+        return documentList;
+    }
 }

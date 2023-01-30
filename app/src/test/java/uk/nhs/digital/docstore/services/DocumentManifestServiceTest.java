@@ -24,38 +24,39 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentManifestServiceTest {
-  @Mock private SplunkPublisher publisher;
+    @Mock private SplunkPublisher publisher;
 
-  @Captor private ArgumentCaptor<DownloadAllPatientRecordsAuditMessage> sensitiveAuditMessageCaptor;
+    @Captor
+    private ArgumentCaptor<DownloadAllPatientRecordsAuditMessage> sensitiveAuditMessageCaptor;
 
-  private DocumentManifestService documentManifestService;
+    private DocumentManifestService documentManifestService;
 
-  @BeforeEach
-  void setUp() {
-    documentManifestService = new DocumentManifestService(publisher);
-  }
+    @BeforeEach
+    void setUp() {
+        documentManifestService = new DocumentManifestService(publisher);
+    }
 
-  @Test
-  void shouldSendAuditMessage() throws JsonProcessingException, IllFormedPatientDetailsException {
-    var nhsNumber = new NhsNumber("9123456780");
-    var fileName = new FileName("Document Title");
-    var document =
-        new Document("123", nhsNumber, "pdf", true, fileName, null, null, null, null, null);
+    @Test
+    void shouldSendAuditMessage() throws JsonProcessingException, IllFormedPatientDetailsException {
+        var nhsNumber = new NhsNumber("9123456780");
+        var fileName = new FileName("Document Title");
+        var document =
+                new Document("123", nhsNumber, "pdf", true, fileName, null, null, null, null, null);
 
-    var documentList = List.of(document);
-    var expectedSensitiveAuditMessage =
-        new DownloadAllPatientRecordsAuditMessage(nhsNumber, documentList);
+        var documentList = List.of(document);
+        var expectedSensitiveAuditMessage =
+                new DownloadAllPatientRecordsAuditMessage(nhsNumber, documentList);
 
-    documentManifestService.audit(nhsNumber, documentList);
+        documentManifestService.audit(nhsNumber, documentList);
 
-    verify(publisher).publish(sensitiveAuditMessageCaptor.capture());
+        verify(publisher).publish(sensitiveAuditMessageCaptor.capture());
 
-    var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
-    assertThat(actualSensitiveAuditMessage)
-        .usingRecursiveComparison()
-        .ignoringFields("timestamp")
-        .isEqualTo(expectedSensitiveAuditMessage);
-    assertThat(actualSensitiveAuditMessage.getTimestamp())
-        .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
-  }
+        var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
+        assertThat(actualSensitiveAuditMessage)
+                .usingRecursiveComparison()
+                .ignoringFields("timestamp")
+                .isEqualTo(expectedSensitiveAuditMessage);
+        assertThat(actualSensitiveAuditMessage.getTimestamp())
+                .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+    }
 }

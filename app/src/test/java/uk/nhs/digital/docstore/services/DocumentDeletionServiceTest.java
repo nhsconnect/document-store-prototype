@@ -25,44 +25,45 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentDeletionServiceTest {
-  @Mock AuditPublisher splunkPublisher;
-  @Mock DocumentStore documentStore;
-  @Mock DocumentMetadataStore metadataStore;
-  @Mock DocumentMetadataSerialiser serialiser;
+    @Mock AuditPublisher splunkPublisher;
+    @Mock DocumentStore documentStore;
+    @Mock DocumentMetadataStore metadataStore;
+    @Mock DocumentMetadataSerialiser serialiser;
 
-  @Captor private ArgumentCaptor<DeletedAllDocumentsAuditMessage> auditMessageArgumentCaptor;
+    @Captor private ArgumentCaptor<DeletedAllDocumentsAuditMessage> auditMessageArgumentCaptor;
 
-  private DocumentDeletionService documentDeletionService;
+    private DocumentDeletionService documentDeletionService;
 
-  @BeforeEach
-  void setUp() {
-    documentDeletionService =
-        new DocumentDeletionService(splunkPublisher, documentStore, metadataStore, serialiser);
-  }
+    @BeforeEach
+    void setUp() {
+        documentDeletionService =
+                new DocumentDeletionService(
+                        splunkPublisher, documentStore, metadataStore, serialiser);
+    }
 
-  @Test
-  void shouldDeleteAllDocumentsForPatientAndSendAuditMessage()
-      throws IllFormedPatientDetailsException, JsonProcessingException {
-    var nhsNumber = new NhsNumber("0123456789");
-    var document = DocumentBuilder.baseDocumentBuilder().build();
-    var documentList = List.of(document);
-    var expectedAuditMessage = new DeletedAllDocumentsAuditMessage(nhsNumber, documentList);
-    var metadata = theMetadata().build();
-    var metadataList = List.of(metadata);
+    @Test
+    void shouldDeleteAllDocumentsForPatientAndSendAuditMessage()
+            throws IllFormedPatientDetailsException, JsonProcessingException {
+        var nhsNumber = new NhsNumber("0123456789");
+        var document = DocumentBuilder.baseDocumentBuilder().build();
+        var documentList = List.of(document);
+        var expectedAuditMessage = new DeletedAllDocumentsAuditMessage(nhsNumber, documentList);
+        var metadata = theMetadata().build();
+        var metadataList = List.of(metadata);
 
-    when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
-    when(metadataStore.deleteAndSave(metadataList)).thenReturn(metadataList);
-    when(serialiser.toDocumentModel(metadata)).thenReturn(document);
+        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
+        when(metadataStore.deleteAndSave(metadataList)).thenReturn(metadataList);
+        when(serialiser.toDocumentModel(metadata)).thenReturn(document);
 
-    documentDeletionService.deleteAllDocumentsForPatient(nhsNumber);
+        documentDeletionService.deleteAllDocumentsForPatient(nhsNumber);
 
-    verify(documentStore).deleteObjectAtLocation(document.getLocation());
-    verify(splunkPublisher).publish(auditMessageArgumentCaptor.capture());
-    var actualAuditMessage = auditMessageArgumentCaptor.getValue();
-    assertThat(actualAuditMessage.getDescription()).isEqualTo("Deleted documents");
-    assertThat(actualAuditMessage)
-        .usingRecursiveComparison()
-        .comparingOnlyFields("nhsNumber", "fileMetadataList")
-        .isEqualTo(expectedAuditMessage);
-  }
+        verify(documentStore).deleteObjectAtLocation(document.getLocation());
+        verify(splunkPublisher).publish(auditMessageArgumentCaptor.capture());
+        var actualAuditMessage = auditMessageArgumentCaptor.getValue();
+        assertThat(actualAuditMessage.getDescription()).isEqualTo("Deleted documents");
+        assertThat(actualAuditMessage)
+                .usingRecursiveComparison()
+                .comparingOnlyFields("nhsNumber", "fileMetadataList")
+                .isEqualTo(expectedAuditMessage);
+    }
 }

@@ -20,44 +20,45 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentMetadataSearchServiceTest {
-  private static final String JWT =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuYXV0aDAuY29tLyIsImF1ZCI6Imh0dHBzOi8vYXBpLmV4YW1wbGUuY29tL2NhbGFuZGFyL3YxLyIsInN1YiI6InVzcl8xMjMiLCJpYXQiOjE0NTg3ODU3OTYsImV4cCI6MTQ1ODg3MjE5Nn0.CA7eaHjIHz5NxeIJoFK9krqaeZrPLwmMmgI_XiQiIkQ";
+    private static final String JWT =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuYXV0aDAuY29tLyIsImF1ZCI6Imh0dHBzOi8vYXBpLmV4YW1wbGUuY29tL2NhbGFuZGFyL3YxLyIsInN1YiI6InVzcl8xMjMiLCJpYXQiOjE0NTg3ODU3OTYsImV4cCI6MTQ1ODg3MjE5Nn0.CA7eaHjIHz5NxeIJoFK9krqaeZrPLwmMmgI_XiQiIkQ";
 
-  @Mock private DocumentMetadataStore metadataStore;
-  @Mock private DocumentMetadataSerialiser serialiser;
+    @Mock private DocumentMetadataStore metadataStore;
+    @Mock private DocumentMetadataSerialiser serialiser;
 
-  private DocumentMetadataSearchService searchService;
+    private DocumentMetadataSearchService searchService;
 
-  @BeforeEach
-  void setUp() {
-    searchService = new DocumentMetadataSearchService(metadataStore, serialiser);
-  }
+    @BeforeEach
+    void setUp() {
+        searchService = new DocumentMetadataSearchService(metadataStore, serialiser);
+    }
 
-  @Test
-  void findMatchingDocumentMetadataObjectsAndSerialisesToDocuments()
-      throws IllFormedPatientDetailsException {
-    var nhsNumber = new NhsNumber("1234567890");
-    var metadata = theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(true).build();
-    var document = DocumentBuilder.baseDocumentBuilder().build();
+    @Test
+    void findMatchingDocumentMetadataObjectsAndSerialisesToDocuments()
+            throws IllFormedPatientDetailsException {
+        var nhsNumber = new NhsNumber("1234567890");
+        var metadata = theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(true).build();
+        var document = DocumentBuilder.baseDocumentBuilder().build();
 
-    when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of(metadata));
-    when(serialiser.toDocumentModel(metadata)).thenReturn(document);
+        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of(metadata));
+        when(serialiser.toDocumentModel(metadata)).thenReturn(document);
 
-    List<Document> documents = searchService.findMetadataByNhsNumber(nhsNumber);
+        List<Document> documents = searchService.findMetadataByNhsNumber(nhsNumber);
 
-    assertThat(documents.get(0)).isEqualTo(document);
-  }
+        assertThat(documents.get(0)).isEqualTo(document);
+    }
 
-  @Test
-  void logsTheSearchActionObfuscatingPii() throws IllFormedPatientDetailsException {
-    var testLogAppender = TestLogAppender.addTestLogAppender();
-    var nhsNumber = new NhsNumber("1234567890");
+    @Test
+    void logsTheSearchActionObfuscatingPii() throws IllFormedPatientDetailsException {
+        var testLogAppender = TestLogAppender.addTestLogAppender();
+        var nhsNumber = new NhsNumber("1234567890");
 
-    when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of());
-    searchService.findMetadataByNhsNumber(nhsNumber);
+        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(List.of());
+        searchService.findMetadataByNhsNumber(nhsNumber);
 
-    assertThat(
-            testLogAppender.findLoggedEvent("Searched for documents with NHS number 123 *** ****"))
-        .isNotNull();
-  }
+        assertThat(
+                        testLogAppender.findLoggedEvent(
+                                "Searched for documents with NHS number 123 *** ****"))
+                .isNotNull();
+    }
 }

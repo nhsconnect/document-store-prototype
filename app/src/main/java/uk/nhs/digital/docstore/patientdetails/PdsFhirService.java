@@ -7,7 +7,7 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
 
 public interface PdsFhirService {
-  PatientDetails fetchPatientDetails(NhsNumber nhsNumber)
-      throws JsonProcessingException, MissingEnvironmentVariableException,
-          IllFormedPatientDetailsException;
+    PatientDetails fetchPatientDetails(NhsNumber nhsNumber)
+            throws JsonProcessingException, MissingEnvironmentVariableException,
+                    IllFormedPatientDetailsException;
 }

@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 
 class AccessTokenTest {
 
-  @Test
-  void parseFromJson() {
-    var json = new JSONObject();
-    json.put("access_token", "qwerty");
+    @Test
+    void parseFromJson() {
+        var json = new JSONObject();
+        json.put("access_token", "qwerty");
 
-    var accessToken = AccessToken.parse(json.toString());
+        var accessToken = AccessToken.parse(json.toString());
 
-    assertThat(accessToken.getAccessToken()).isEqualTo(json.get("access_token"));
-  }
+        assertThat(accessToken.getAccessToken()).isEqualTo(json.get("access_token"));
+    }
 }

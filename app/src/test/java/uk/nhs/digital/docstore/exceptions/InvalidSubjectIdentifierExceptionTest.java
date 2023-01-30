@@ -12,19 +12,19 @@ import org.junit.jupiter.api.Test;
 
 public class InvalidSubjectIdentifierExceptionTest {
 
-  @Test
-  public void returnsOperationOutcomeIssueComponentWithExpectedAttributes() {
-    InvalidSubjectIdentifierException exception =
-        new InvalidSubjectIdentifierException("subject-identifier");
-    OperationOutcome.OperationOutcomeIssueComponent operationOutcomeIssueComponent =
-        exception.toOperationOutcomeIssue();
-    CodeableConcept details = operationOutcomeIssueComponent.getDetails();
-    List<Coding> coding = details.getCoding();
-    assertThat(operationOutcomeIssueComponent.getCode()).isEqualTo(CODEINVALID);
-    assertThat(operationOutcomeIssueComponent.getSeverity()).isEqualTo(ERROR);
-    assertThat(coding.get(0).getSystem())
-        .isEqualTo("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1");
-    assertThat(coding.get(0).getCode()).isEqualTo("INVALID_IDENTIFIER_VALUE");
-    assertThat(coding.get(0).getDisplay()).isEqualTo("Invalid identifier value");
-  }
+    @Test
+    public void returnsOperationOutcomeIssueComponentWithExpectedAttributes() {
+        InvalidSubjectIdentifierException exception =
+                new InvalidSubjectIdentifierException("subject-identifier");
+        OperationOutcome.OperationOutcomeIssueComponent operationOutcomeIssueComponent =
+                exception.toOperationOutcomeIssue();
+        CodeableConcept details = operationOutcomeIssueComponent.getDetails();
+        List<Coding> coding = details.getCoding();
+        assertThat(operationOutcomeIssueComponent.getCode()).isEqualTo(CODEINVALID);
+        assertThat(operationOutcomeIssueComponent.getSeverity()).isEqualTo(ERROR);
+        assertThat(coding.get(0).getSystem())
+                .isEqualTo("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1");
+        assertThat(coding.get(0).getCode()).isEqualTo("INVALID_IDENTIFIER_VALUE");
+        assertThat(coding.get(0).getDisplay()).isEqualTo("Invalid identifier value");
+    }
 }

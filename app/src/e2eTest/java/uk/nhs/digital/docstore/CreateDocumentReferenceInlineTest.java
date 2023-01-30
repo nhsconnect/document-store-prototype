@@ -29,86 +29,91 @@ import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateDocumentReferenceInlineTest {
-  @Mock private Context context;
-  @Mock private AuditPublisher auditPublisher;
-  @Mock private DynamoDBMapper dynamoDBMapper;
-  @Mock private AmazonS3 s3Client;
+    @Mock private Context context;
+    @Mock private AuditPublisher auditPublisher;
+    @Mock private DynamoDBMapper dynamoDBMapper;
+    @Mock private AmazonS3 s3Client;
 
-  private CreateDocumentReferenceHandler handler;
-  private RequestEventBuilder requestBuilder;
+    private CreateDocumentReferenceHandler handler;
+    private RequestEventBuilder requestBuilder;
 
-  @BeforeEach
-  public void setUp() {
-    handler =
-        new CreateDocumentReferenceHandler(
-            new StubbedApiConfig("http://ui-url"),
-            new DocumentReferenceService(
-                new DocumentMetadataStore(dynamoDBMapper),
-                auditPublisher,
-                new DocumentMetadataSerialiser()),
-            s3Client);
-    requestBuilder = new RequestEventBuilder();
-  }
-
-  @Test
-  void createsDocumentReference() throws IOException {
-    var requestContent = getContentFromResource("create/create-document-reference-request.json");
-    var request = requestBuilder.addBody(requestContent).build();
-
-    when(s3Client.generatePresignedUrl(any())).thenReturn(new URL("http://presigned-url"));
-    doNothing().when(dynamoDBMapper).save(any());
-    var responseEvent = handler.handleRequest(request, context);
-
-    assertThat(responseEvent.getStatusCode()).isEqualTo(201);
-    assertThat(responseEvent.getHeaders().get("Content-Type")).isEqualTo("application/fhir+json");
-    var id = JsonPath.read(responseEvent.getBody(), "$.id");
-    assertThat(responseEvent.getHeaders().get("Location")).isEqualTo("DocumentReference/" + id);
-    assertThatJson(responseEvent.getBody())
-        .whenIgnoringPaths("$.id", "$.meta")
-        .isEqualTo(getContentFromResource("create/created-document-reference.json"));
-  }
-
-  @Test
-  void returnsBadRequestIfCodingSystemIsNotSupported() throws IOException {
-    var expectedErrorResponse =
-        getContentFromResource("create/unsupported-coding-system-response.json");
-    var requestContent = getContentFromResource("create/unsupported-coding-system-request.json");
-    var request = requestBuilder.addBody(requestContent).build();
-    var responseEvent = handler.handleRequest(request, context);
-
-    verify(auditPublisher, never()).publish(any());
-    assertThat(responseEvent.getStatusCode()).isEqualTo(400);
-    assertThat(responseEvent.getHeaders().get("Content-Type")).isEqualTo("application/fhir+json");
-    assertThatJson(responseEvent.getBody()).isEqualTo(expectedErrorResponse);
-  }
-
-  @Test
-  void sendsAuditMessageToSqsWhenDocumentReferenceSuccessfullyCreated() throws IOException {
-    var requestContent = getContentFromResource("create/create-document-reference-request.json");
-    var request = requestBuilder.addBody(requestContent).build();
-
-    when(s3Client.generatePresignedUrl(any())).thenReturn(new URL("http://presigned-url"));
-    handler.handleRequest(request, context);
-
-    verify(auditPublisher).publish(any(CreateDocumentMetadataAuditMessage.class));
-  }
-
-  private String getContentFromResource(String resourcePath) throws IOException {
-    ClassLoader classLoader = getClass().getClassLoader();
-    File file = new File(classLoader.getResource(resourcePath).getFile());
-    return new String(Files.readAllBytes(file.toPath()));
-  }
-
-  public static class RequestEventBuilder {
-    private String body;
-
-    private RequestEventBuilder addBody(String value) {
-      body = value;
-      return this;
+    @BeforeEach
+    public void setUp() {
+        handler =
+                new CreateDocumentReferenceHandler(
+                        new StubbedApiConfig("http://ui-url"),
+                        new DocumentReferenceService(
+                                new DocumentMetadataStore(dynamoDBMapper),
+                                auditPublisher,
+                                new DocumentMetadataSerialiser()),
+                        s3Client);
+        requestBuilder = new RequestEventBuilder();
     }
 
-    private APIGatewayProxyRequestEvent build() {
-      return new APIGatewayProxyRequestEvent().withBody(body);
+    @Test
+    void createsDocumentReference() throws IOException {
+        var requestContent =
+                getContentFromResource("create/create-document-reference-request.json");
+        var request = requestBuilder.addBody(requestContent).build();
+
+        when(s3Client.generatePresignedUrl(any())).thenReturn(new URL("http://presigned-url"));
+        doNothing().when(dynamoDBMapper).save(any());
+        var responseEvent = handler.handleRequest(request, context);
+
+        assertThat(responseEvent.getStatusCode()).isEqualTo(201);
+        assertThat(responseEvent.getHeaders().get("Content-Type"))
+                .isEqualTo("application/fhir+json");
+        var id = JsonPath.read(responseEvent.getBody(), "$.id");
+        assertThat(responseEvent.getHeaders().get("Location")).isEqualTo("DocumentReference/" + id);
+        assertThatJson(responseEvent.getBody())
+                .whenIgnoringPaths("$.id", "$.meta")
+                .isEqualTo(getContentFromResource("create/created-document-reference.json"));
     }
-  }
+
+    @Test
+    void returnsBadRequestIfCodingSystemIsNotSupported() throws IOException {
+        var expectedErrorResponse =
+                getContentFromResource("create/unsupported-coding-system-response.json");
+        var requestContent =
+                getContentFromResource("create/unsupported-coding-system-request.json");
+        var request = requestBuilder.addBody(requestContent).build();
+        var responseEvent = handler.handleRequest(request, context);
+
+        verify(auditPublisher, never()).publish(any());
+        assertThat(responseEvent.getStatusCode()).isEqualTo(400);
+        assertThat(responseEvent.getHeaders().get("Content-Type"))
+                .isEqualTo("application/fhir+json");
+        assertThatJson(responseEvent.getBody()).isEqualTo(expectedErrorResponse);
+    }
+
+    @Test
+    void sendsAuditMessageToSqsWhenDocumentReferenceSuccessfullyCreated() throws IOException {
+        var requestContent =
+                getContentFromResource("create/create-document-reference-request.json");
+        var request = requestBuilder.addBody(requestContent).build();
+
+        when(s3Client.generatePresignedUrl(any())).thenReturn(new URL("http://presigned-url"));
+        handler.handleRequest(request, context);
+
+        verify(auditPublisher).publish(any(CreateDocumentMetadataAuditMessage.class));
+    }
+
+    private String getContentFromResource(String resourcePath) throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource(resourcePath).getFile());
+        return new String(Files.readAllBytes(file.toPath()));
+    }
+
+    public static class RequestEventBuilder {
+        private String body;
+
+        private RequestEventBuilder addBody(String value) {
+            body = value;
+            return this;
+        }
+
+        private APIGatewayProxyRequestEvent build() {
+            return new APIGatewayProxyRequestEvent().withBody(body);
+        }
+    }
 }

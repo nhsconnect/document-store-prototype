@@ -5,22 +5,22 @@ import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 
 public class CreateDocumentMetadataAuditMessage extends PatientRelatedAuditMessage
-    implements AuditMessage {
-  private final FileMetadata fileMetadata;
+        implements AuditMessage {
+    private final FileMetadata fileMetadata;
 
-  public CreateDocumentMetadataAuditMessage(Document document)
-      throws IllFormedPatientDetailsException {
-    super(document.getNhsNumber());
-    this.fileMetadata = FileMetadata.fromDocument(document);
-  }
+    public CreateDocumentMetadataAuditMessage(Document document)
+            throws IllFormedPatientDetailsException {
+        super(document.getNhsNumber());
+        this.fileMetadata = FileMetadata.fromDocument(document);
+    }
 
-  @SuppressWarnings("unused")
-  public FileMetadata getFileMetadata() {
-    return fileMetadata;
-  }
+    @SuppressWarnings("unused")
+    public FileMetadata getFileMetadata() {
+        return fileMetadata;
+    }
 
-  @Override
-  public String getDescription() {
-    return "Initiated document upload";
-  }
+    @Override
+    public String getDescription() {
+        return "Initiated document upload";
+    }
 }

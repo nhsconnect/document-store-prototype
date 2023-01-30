@@ -8,22 +8,23 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.OperationOutcome;
 
 public class UnrecognisedSubjectIdentifierSystemException extends RuntimeException
-    implements OperationOutcomeIssuable {
-  public UnrecognisedSubjectIdentifierSystemException(String subjectIdentifierSystem) {
-    super(String.format("Unrecognised system: '%s'", subjectIdentifierSystem));
-  }
+        implements OperationOutcomeIssuable {
+    public UnrecognisedSubjectIdentifierSystemException(String subjectIdentifierSystem) {
+        super(String.format("Unrecognised system: '%s'", subjectIdentifierSystem));
+    }
 
-  @Override
-  public OperationOutcome.OperationOutcomeIssueComponent toOperationOutcomeIssue() {
-    return new OperationOutcome.OperationOutcomeIssueComponent()
-        .setSeverity(ERROR)
-        .setCode(CODEINVALID)
-        .setDetails(
-            new CodeableConcept()
-                .addCoding(
-                    new Coding()
-                        .setSystem("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1")
-                        .setCode("INVALID_IDENTIFIER_SYSTEM")
-                        .setDisplay("Invalid identifier system")));
-  }
+    @Override
+    public OperationOutcome.OperationOutcomeIssueComponent toOperationOutcomeIssue() {
+        return new OperationOutcome.OperationOutcomeIssueComponent()
+                .setSeverity(ERROR)
+                .setCode(CODEINVALID)
+                .setDetails(
+                        new CodeableConcept()
+                                .addCoding(
+                                        new Coding()
+                                                .setSystem(
+                                                        "https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1")
+                                                .setCode("INVALID_IDENTIFIER_SYSTEM")
+                                                .setDisplay("Invalid identifier system")));
+    }
 }

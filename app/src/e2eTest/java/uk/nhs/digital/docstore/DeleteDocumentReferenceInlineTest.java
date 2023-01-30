@@ -29,56 +29,59 @@ import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
 @ExtendWith(MockitoExtension.class)
 public class DeleteDocumentReferenceInlineTest {
-  @Mock private Context context;
-  @Mock private AuditPublisher auditPublisher;
+    @Mock private Context context;
+    @Mock private AuditPublisher auditPublisher;
 
-  private DeleteDocumentReferenceHandler deleteDocumentReferenceHandler;
-  private static final String AWS_ENDPOINT = "http://localhost:4566";
-  private static final String AWS_REGION = "eu-west-2";
+    private DeleteDocumentReferenceHandler deleteDocumentReferenceHandler;
+    private static final String AWS_ENDPOINT = "http://localhost:4566";
+    private static final String AWS_REGION = "eu-west-2";
 
-  @BeforeEach
-  void setUp() {
-    var apiConfig = new StubbedApiConfig("http://ui-url");
-    var documentDeletionService =
-        new DocumentDeletionService(
-            auditPublisher,
-            // TODO: Change bucket name
-            new DocumentStore(
-                AmazonS3ClientBuilder.standard()
-                    .withEndpointConfiguration(
-                        new AwsClientBuilder.EndpointConfiguration(AWS_ENDPOINT, AWS_REGION))
-                    .withPathStyleAccessEnabled(true)
-                    .build(),
-                "bucket-name"),
-            new DocumentMetadataStore(
-                new DynamoDBMapper(
-                    AmazonDynamoDBClientBuilder.standard()
-                        .withEndpointConfiguration(
-                            new AwsClientBuilder.EndpointConfiguration(AWS_ENDPOINT, AWS_REGION))
-                        .build(),
-                    DynamoDBMapperConfig.builder()
-                        .withSaveBehavior(UPDATE_SKIP_NULL_ATTRIBUTES)
-                        .build())),
-            new DocumentMetadataSerialiser());
+    @BeforeEach
+    void setUp() {
+        var apiConfig = new StubbedApiConfig("http://ui-url");
+        var documentDeletionService =
+                new DocumentDeletionService(
+                        auditPublisher,
+                        // TODO: Change bucket name
+                        new DocumentStore(
+                                AmazonS3ClientBuilder.standard()
+                                        .withEndpointConfiguration(
+                                                new AwsClientBuilder.EndpointConfiguration(
+                                                        AWS_ENDPOINT, AWS_REGION))
+                                        .withPathStyleAccessEnabled(true)
+                                        .build(),
+                                "bucket-name"),
+                        new DocumentMetadataStore(
+                                new DynamoDBMapper(
+                                        AmazonDynamoDBClientBuilder.standard()
+                                                .withEndpointConfiguration(
+                                                        new AwsClientBuilder.EndpointConfiguration(
+                                                                AWS_ENDPOINT, AWS_REGION))
+                                                .build(),
+                                        DynamoDBMapperConfig.builder()
+                                                .withSaveBehavior(UPDATE_SKIP_NULL_ATTRIBUTES)
+                                                .build())),
+                        new DocumentMetadataSerialiser());
 
-    deleteDocumentReferenceHandler =
-        new DeleteDocumentReferenceHandler(apiConfig, documentDeletionService);
-  }
+        deleteDocumentReferenceHandler =
+                new DeleteDocumentReferenceHandler(apiConfig, documentDeletionService);
+    }
 
-  // TODO: Use DocumentMetadataStore and DocumentStore to interact with AWS resources so that we can
-  // perform arrange and assert + change test name
-  @Test
-  void sendsAuditMessageUponSuccessfulDeletion() throws JsonProcessingException {
+    // TODO: Use DocumentMetadataStore and DocumentStore to interact with AWS resources so that we
+    // can
+    // perform arrange and assert + change test name
+    @Test
+    void sendsAuditMessageUponSuccessfulDeletion() throws JsonProcessingException {
 
-    deleteDocumentReferenceHandler.handleRequest(createRequestEvent(), context);
+        deleteDocumentReferenceHandler.handleRequest(createRequestEvent(), context);
 
-    verify(auditPublisher).publish(any(DeletedAllDocumentsAuditMessage.class));
-  }
+        verify(auditPublisher).publish(any(DeletedAllDocumentsAuditMessage.class));
+    }
 
-  private APIGatewayProxyRequestEvent createRequestEvent() {
-    HashMap<String, String> parameters = new HashMap<>();
-    parameters.put("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009");
+    private APIGatewayProxyRequestEvent createRequestEvent() {
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|9000000009");
 
-    return new APIGatewayProxyRequestEvent().withQueryStringParameters(parameters);
-  }
+        return new APIGatewayProxyRequestEvent().withQueryStringParameters(parameters);
+    }
 }

@@ -12,19 +12,20 @@ import org.junit.jupiter.api.Test;
 
 public class InvalidCodingCodeExceptionTest {
 
-  @Test
-  public void returnsOperationOutcomeIssueComponentWithExpectedAttributes() {
-    InvalidCodingCodeException exception = new InvalidCodingCodeException("path", "code");
-    OperationOutcome.OperationOutcomeIssueComponent operationOutcomeIssueComponent =
-        exception.toOperationOutcomeIssue();
-    CodeableConcept details = operationOutcomeIssueComponent.getDetails();
-    List<Coding> coding = details.getCoding();
-    assertThat(operationOutcomeIssueComponent.getCode()).isEqualTo(CODEINVALID);
-    assertThat(operationOutcomeIssueComponent.getSeverity()).isEqualTo(ERROR);
-    assertThat(coding.get(0).getSystem())
-        .isEqualTo("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1");
-    assertThat(coding.get(0).getCode()).isEqualTo("INVALID_CODE_VALUE");
-    assertThat(coding.get(0).getDisplay()).isEqualTo("Invalid coding code value");
-    assertThat(operationOutcomeIssueComponent.getExpression().get(0).toString()).isEqualTo("path");
-  }
+    @Test
+    public void returnsOperationOutcomeIssueComponentWithExpectedAttributes() {
+        InvalidCodingCodeException exception = new InvalidCodingCodeException("path", "code");
+        OperationOutcome.OperationOutcomeIssueComponent operationOutcomeIssueComponent =
+                exception.toOperationOutcomeIssue();
+        CodeableConcept details = operationOutcomeIssueComponent.getDetails();
+        List<Coding> coding = details.getCoding();
+        assertThat(operationOutcomeIssueComponent.getCode()).isEqualTo(CODEINVALID);
+        assertThat(operationOutcomeIssueComponent.getSeverity()).isEqualTo(ERROR);
+        assertThat(coding.get(0).getSystem())
+                .isEqualTo("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1");
+        assertThat(coding.get(0).getCode()).isEqualTo("INVALID_CODE_VALUE");
+        assertThat(coding.get(0).getDisplay()).isEqualTo("Invalid coding code value");
+        assertThat(operationOutcomeIssueComponent.getExpression().get(0).toString())
+                .isEqualTo("path");
+    }
 }

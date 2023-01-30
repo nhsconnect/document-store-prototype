@@ -17,60 +17,60 @@ import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
 public class DeleteDocumentReferenceHandler
-    implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(DeleteDocumentReferenceHandler.class);
+        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(DeleteDocumentReferenceHandler.class);
 
-  private final ApiConfig apiConfig;
-  private final DocumentDeletionService documentDeletionService;
+    private final ApiConfig apiConfig;
+    private final DocumentDeletionService documentDeletionService;
 
-  private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
+    private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
-  @SuppressWarnings("unused")
-  public DeleteDocumentReferenceHandler() {
-    this(
-        new ApiConfig(),
-        new DocumentDeletionService(
-            new SplunkPublisher(),
-            new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME")),
-            new DocumentMetadataStore(),
-            new DocumentMetadataSerialiser()));
-  }
-
-  public DeleteDocumentReferenceHandler(
-      ApiConfig apiConfig, DocumentDeletionService documentDeletionService) {
-    this.apiConfig = apiConfig;
-    this.documentDeletionService = documentDeletionService;
-  }
-
-  @Override
-  public APIGatewayProxyResponseEvent handleRequest(
-      APIGatewayProxyRequestEvent requestEvent, Context context) {
-    Tracer.setMDCContext(context);
-
-    LOGGER.debug("API Gateway event received - processing starts");
-
-    try {
-      var nhsNumberSearchParameterForm =
-          new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
-      var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
-      documentDeletionService.deleteAllDocumentsForPatient(nhsNumber);
-
-      LOGGER.debug("Processing finished - about to return the response");
-      var body = getJsonBody();
-      return apiConfig.getApiGatewayResponse(200, body, "DELETE", null);
-    } catch (Exception e) {
-      return errorResponseGenerator.errorResponse(e);
+    @SuppressWarnings("unused")
+    public DeleteDocumentReferenceHandler() {
+        this(
+                new ApiConfig(),
+                new DocumentDeletionService(
+                        new SplunkPublisher(),
+                        new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME")),
+                        new DocumentMetadataStore(),
+                        new DocumentMetadataSerialiser()));
     }
-  }
 
-  private String getJsonBody() {
-    return "{\n"
-        + "   \"result\": {\n"
-        + "       \"message\": \""
-        + "successfully deleted"
-        + "\"\n"
-        + "   }\n"
-        + "}";
-  }
+    public DeleteDocumentReferenceHandler(
+            ApiConfig apiConfig, DocumentDeletionService documentDeletionService) {
+        this.apiConfig = apiConfig;
+        this.documentDeletionService = documentDeletionService;
+    }
+
+    @Override
+    public APIGatewayProxyResponseEvent handleRequest(
+            APIGatewayProxyRequestEvent requestEvent, Context context) {
+        Tracer.setMDCContext(context);
+
+        LOGGER.debug("API Gateway event received - processing starts");
+
+        try {
+            var nhsNumberSearchParameterForm =
+                    new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
+            var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
+            documentDeletionService.deleteAllDocumentsForPatient(nhsNumber);
+
+            LOGGER.debug("Processing finished - about to return the response");
+            var body = getJsonBody();
+            return apiConfig.getApiGatewayResponse(200, body, "DELETE", null);
+        } catch (Exception e) {
+            return errorResponseGenerator.errorResponse(e);
+        }
+    }
+
+    private String getJsonBody() {
+        return "{\n"
+                + "   \"result\": {\n"
+                + "       \"message\": \""
+                + "successfully deleted"
+                + "\"\n"
+                + "   }\n"
+                + "}";
+    }
 }

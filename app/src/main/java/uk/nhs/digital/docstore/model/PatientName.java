@@ -4,28 +4,28 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class PatientName {
-  private final String value;
+    private final String value;
 
-  public PatientName(String value) {
-    this.value = value;
-  }
+    public PatientName(String value) {
+        this.value = value;
+    }
 
-  public String getValue() {
-    return this.value;
-  }
+    public String getValue() {
+        return this.value;
+    }
 
-  @Override
-  public boolean equals(Object other) {
-    return EqualsBuilder.reflectionEquals(this, other);
-  }
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
 
-  @Override
-  public int hashCode() {
-    return HashCodeBuilder.reflectionHashCode(this);
-  }
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
 
-  @Override
-  public String toString() {
-    return (value.length() > 0 ? String.valueOf(value.charAt(0)) : "") + "***";
-  }
+    @Override
+    public String toString() {
+        return (value.length() > 0 ? String.valueOf(value.charAt(0)) : "") + "***";
+    }
 }

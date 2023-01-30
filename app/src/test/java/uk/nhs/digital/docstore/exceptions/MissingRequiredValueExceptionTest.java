@@ -12,19 +12,21 @@ import org.junit.jupiter.api.Test;
 
 public class MissingRequiredValueExceptionTest {
 
-  @Test
-  public void returnsOperationOutcomeIssueComponentWithExpectedAttributes() {
-    MissingRequiredValueException exception = new MissingRequiredValueException("path", "field");
-    OperationOutcome.OperationOutcomeIssueComponent operationOutcomeIssueComponent =
-        exception.toOperationOutcomeIssue();
-    CodeableConcept details = operationOutcomeIssueComponent.getDetails();
-    List<Coding> coding = details.getCoding();
-    assertThat(operationOutcomeIssueComponent.getCode()).isEqualTo(REQUIRED);
-    assertThat(operationOutcomeIssueComponent.getSeverity()).isEqualTo(ERROR);
-    assertThat(coding.get(0).getSystem())
-        .isEqualTo("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1");
-    assertThat(coding.get(0).getCode()).isEqualTo("INVALID_VALUE");
-    assertThat(coding.get(0).getDisplay()).isEqualTo("Missing required field");
-    assertThat(operationOutcomeIssueComponent.getExpression().get(0).toString()).isEqualTo("path");
-  }
+    @Test
+    public void returnsOperationOutcomeIssueComponentWithExpectedAttributes() {
+        MissingRequiredValueException exception =
+                new MissingRequiredValueException("path", "field");
+        OperationOutcome.OperationOutcomeIssueComponent operationOutcomeIssueComponent =
+                exception.toOperationOutcomeIssue();
+        CodeableConcept details = operationOutcomeIssueComponent.getDetails();
+        List<Coding> coding = details.getCoding();
+        assertThat(operationOutcomeIssueComponent.getCode()).isEqualTo(REQUIRED);
+        assertThat(operationOutcomeIssueComponent.getSeverity()).isEqualTo(ERROR);
+        assertThat(coding.get(0).getSystem())
+                .isEqualTo("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1");
+        assertThat(coding.get(0).getCode()).isEqualTo("INVALID_VALUE");
+        assertThat(coding.get(0).getDisplay()).isEqualTo("Missing required field");
+        assertThat(operationOutcomeIssueComponent.getExpression().get(0).toString())
+                .isEqualTo("path");
+    }
 }

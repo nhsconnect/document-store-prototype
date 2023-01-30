@@ -6,15 +6,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 class PostcodeTest {
-  @Test
-  void testToStringRedactsThePostCode() {
-    var postcode = new Postcode("AB15 3XY");
-    assertThat(postcode.toString()).isEqualTo("AB15 ***");
-  }
+    @Test
+    void testToStringRedactsThePostCode() {
+        var postcode = new Postcode("AB15 3XY");
 
-  @Test
-  void testToStringDoesNotThrowWhenPostcodeIsEmpty() {
-    var postcode = new Postcode("");
-    assertDoesNotThrow(postcode::toString);
-  }
+        assertThat(postcode.toString()).isEqualTo("AB15 ***");
+    }
+
+    @Test
+    void testToStringDoesNotThrowWhenPostcodeIsEmpty() {
+        var postcode = new Postcode("");
+
+        assertDoesNotThrow(postcode::toString);
+    }
 }

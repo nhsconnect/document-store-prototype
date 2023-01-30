@@ -18,50 +18,55 @@ import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 class NHSDocumentReferenceTest {
-  private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
+    private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
 
-  @Test
-  void testItDeserializesToADocumentModel()
-      throws IllFormedPatientDetailsException, MalformedURLException {
-    NhsNumber nhsNumber = new NhsNumber("1234567890");
-    String contentType = "pdf";
-    String snomedCode = "1244";
-    URL presignedUrl = new URL("http://s3.test/object");
+    @Test
+    void testItDeserializesToADocumentModel()
+            throws IllFormedPatientDetailsException, MalformedURLException {
+        NhsNumber nhsNumber = new NhsNumber("1234567890");
+        String contentType = "pdf";
+        String snomedCode = "1244";
+        URL presignedUrl = new URL("http://s3.test/object");
 
-    var type =
-        new CodeableConcept()
-            .setCoding(
-                Stream.of(snomedCode)
-                    .map(code -> new Coding().setCode(code).setSystem(DOCUMENT_TYPE_CODING_SYSTEM))
-                    .collect(toList()));
+        var type =
+                new CodeableConcept()
+                        .setCoding(
+                                Stream.of(snomedCode)
+                                        .map(
+                                                code ->
+                                                        new Coding()
+                                                                .setCode(code)
+                                                                .setSystem(
+                                                                        DOCUMENT_TYPE_CODING_SYSTEM))
+                                        .collect(toList()));
 
-    var fileName = new FileName("Test Document");
-    var created = DateTimeType.now();
+        var fileName = new FileName("Test Document");
+        var created = DateTimeType.now();
 
-    var dto =
-        (NHSDocumentReference)
-            new NHSDocumentReference()
-                .setCreated(created)
-                .setFileName(fileName)
-                .setNhsNumber(nhsNumber)
-                .addContent(
-                    new NHSDocumentReference.DocumentReferenceContentComponent()
-                        .setAttachment(
-                            new Attachment()
-                                .setUrl(presignedUrl.toString())
-                                .setContentType(contentType)))
-                .setType(type)
-                .setDocStatus(FINAL);
+        var dto =
+                (NHSDocumentReference)
+                        new NHSDocumentReference()
+                                .setCreated(created)
+                                .setFileName(fileName)
+                                .setNhsNumber(nhsNumber)
+                                .addContent(
+                                        new NHSDocumentReference.DocumentReferenceContentComponent()
+                                                .setAttachment(
+                                                        new Attachment()
+                                                                .setUrl(presignedUrl.toString())
+                                                                .setContentType(contentType)))
+                                .setType(type)
+                                .setDocStatus(FINAL);
 
-    var documentModel = dto.parse();
+        var documentModel = dto.parse();
 
-    assertThat(documentModel.getNhsNumber()).isEqualTo(nhsNumber);
-    assertThat(documentModel.getContentType()).isEqualTo(contentType);
-    assertThat(documentModel.getFileName()).isEqualTo(fileName);
-    assertThat(documentModel.getType()).isEqualTo(List.of(snomedCode));
-    assertThat(documentModel.isUploaded()).isEqualTo(false);
-    assertThat(documentModel.getCreated()).isEqualTo(created.getValue().toInstant());
-    assertThat(documentModel.getIndexed()).isNull();
-    assertThat(documentModel.getDeleted()).isNull();
-  }
+        assertThat(documentModel.getNhsNumber()).isEqualTo(nhsNumber);
+        assertThat(documentModel.getContentType()).isEqualTo(contentType);
+        assertThat(documentModel.getFileName()).isEqualTo(fileName);
+        assertThat(documentModel.getType()).isEqualTo(List.of(snomedCode));
+        assertThat(documentModel.isUploaded()).isEqualTo(false);
+        assertThat(documentModel.getCreated()).isEqualTo(created.getValue().toInstant());
+        assertThat(documentModel.getIndexed()).isNull();
+        assertThat(documentModel.getDeleted()).isNull();
+    }
 }

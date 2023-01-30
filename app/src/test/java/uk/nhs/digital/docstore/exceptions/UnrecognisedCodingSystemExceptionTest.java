@@ -12,19 +12,19 @@ import org.junit.jupiter.api.Test;
 
 public class UnrecognisedCodingSystemExceptionTest {
 
-  @Test
-  public void returnsOperationOutcomeIssueComponentWithExpectedAttributes() {
-    UnrecognisedCodingSystemException exception =
-        new UnrecognisedCodingSystemException("coding-system");
-    OperationOutcome.OperationOutcomeIssueComponent operationOutcomeIssueComponent =
-        exception.toOperationOutcomeIssue();
-    CodeableConcept details = operationOutcomeIssueComponent.getDetails();
-    List<Coding> coding = details.getCoding();
-    assertThat(operationOutcomeIssueComponent.getCode()).isEqualTo(CODEINVALID);
-    assertThat(operationOutcomeIssueComponent.getSeverity()).isEqualTo(ERROR);
-    assertThat(coding.get(0).getSystem())
-        .isEqualTo("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1");
-    assertThat(coding.get(0).getCode()).isEqualTo("INVALID_CODE_SYSTEM");
-    assertThat(coding.get(0).getDisplay()).isEqualTo("Invalid code system");
-  }
+    @Test
+    public void returnsOperationOutcomeIssueComponentWithExpectedAttributes() {
+        UnrecognisedCodingSystemException exception =
+                new UnrecognisedCodingSystemException("coding-system");
+        OperationOutcome.OperationOutcomeIssueComponent operationOutcomeIssueComponent =
+                exception.toOperationOutcomeIssue();
+        CodeableConcept details = operationOutcomeIssueComponent.getDetails();
+        List<Coding> coding = details.getCoding();
+        assertThat(operationOutcomeIssueComponent.getCode()).isEqualTo(CODEINVALID);
+        assertThat(operationOutcomeIssueComponent.getSeverity()).isEqualTo(ERROR);
+        assertThat(coding.get(0).getSystem())
+                .isEqualTo("https://fhir.nhs.uk/STU3/ValueSet/Spine-ErrorOrWarningCode-1");
+        assertThat(coding.get(0).getCode()).isEqualTo("INVALID_CODE_SYSTEM");
+        assertThat(coding.get(0).getDisplay()).isEqualTo("Invalid code system");
+    }
 }

@@ -20,40 +20,44 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentMetadataStoreTest {
-  @Mock private DynamoDBMapper dynamoDBMapper;
-  @Mock private PaginatedQueryList<DocumentMetadata> documentMetadataPaginatedQueryList;
+    @Mock private DynamoDBMapper dynamoDBMapper;
+    @Mock private PaginatedQueryList<DocumentMetadata> documentMetadataPaginatedQueryList;
 
-  private DocumentMetadataStore documentMetadataStore;
+    private DocumentMetadataStore documentMetadataStore;
 
-  @BeforeEach
-  void setUp() {
-    documentMetadataStore = new DocumentMetadataStore(dynamoDBMapper);
-  }
+    @BeforeEach
+    void setUp() {
+        documentMetadataStore = new DocumentMetadataStore(dynamoDBMapper);
+    }
 
-  @Test
-  void returnsDocumentReferenceWithMatchingId() throws IllFormedPatientDetailsException {
-    var id = "1234";
-    var documentMetadata = theMetadata().withId(id).build();
+    @Test
+    void returnsDocumentReferenceWithMatchingId() throws IllFormedPatientDetailsException {
+        var id = "1234";
+        var documentMetadata = theMetadata().withId(id).build();
 
-    when(dynamoDBMapper.load(DocumentMetadata.class, id)).thenReturn(documentMetadata);
-    var documentReference = documentMetadataStore.getById(id);
+        when(dynamoDBMapper.load(DocumentMetadata.class, id)).thenReturn(documentMetadata);
+        var documentReference = documentMetadataStore.getById(id);
 
-    assertThat(documentReference.getId()).isEqualTo(id);
-  }
+        assertThat(documentReference.getId()).isEqualTo(id);
+    }
 
-  @Test
-  void returnsNonDeletedDocumentMetadataListByNhsNumber() throws IllFormedPatientDetailsException {
-    var nhsNumber = new NhsNumber("9000000009");
-    var documentMetadata = theMetadata().withNhsNumber(nhsNumber).withDeleted(null).build();
-    var softDeletedDocumentMetadata =
-        theMetadata().withNhsNumber(nhsNumber).withDeleted("2023-01-17T09:45:59.457620Z").build();
-    var documentMetadataList = List.of(documentMetadata, softDeletedDocumentMetadata);
+    @Test
+    void returnsNonDeletedDocumentMetadataListByNhsNumber()
+            throws IllFormedPatientDetailsException {
+        var nhsNumber = new NhsNumber("9000000009");
+        var documentMetadata = theMetadata().withNhsNumber(nhsNumber).withDeleted(null).build();
+        var softDeletedDocumentMetadata =
+                theMetadata()
+                        .withNhsNumber(nhsNumber)
+                        .withDeleted("2023-01-17T09:45:59.457620Z")
+                        .build();
+        var documentMetadataList = List.of(documentMetadata, softDeletedDocumentMetadata);
 
-    when(dynamoDBMapper.query(eq(DocumentMetadata.class), any()))
-        .thenReturn(documentMetadataPaginatedQueryList);
-    when(documentMetadataPaginatedQueryList.stream()).thenReturn(documentMetadataList.stream());
-    var actualDocumentMetadataList = documentMetadataStore.findByNhsNumber(nhsNumber);
+        when(dynamoDBMapper.query(eq(DocumentMetadata.class), any()))
+                .thenReturn(documentMetadataPaginatedQueryList);
+        when(documentMetadataPaginatedQueryList.stream()).thenReturn(documentMetadataList.stream());
+        var actualDocumentMetadataList = documentMetadataStore.findByNhsNumber(nhsNumber);
 
-    assertThat(actualDocumentMetadataList).doesNotContain(softDeletedDocumentMetadata);
-  }
+        assertThat(actualDocumentMetadataList).doesNotContain(softDeletedDocumentMetadata);
+    }
 }

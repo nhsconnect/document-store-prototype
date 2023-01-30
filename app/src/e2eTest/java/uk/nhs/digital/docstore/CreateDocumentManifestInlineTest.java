@@ -37,78 +37,80 @@ import uk.nhs.digital.docstore.services.DocumentManifestService;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateDocumentManifestInlineTest {
-  @Mock private Context context;
-  @Mock private DynamoDBMapper dynamoDbMapper;
-  @Mock private AmazonS3 s3Client;
-  @Mock private AuditPublisher auditPublisher;
-  @Mock private DocumentMetadataStore metadataStore;
+    @Mock private Context context;
+    @Mock private DynamoDBMapper dynamoDbMapper;
+    @Mock private AmazonS3 s3Client;
+    @Mock private AuditPublisher auditPublisher;
+    @Mock private DocumentMetadataStore metadataStore;
 
-  private CreateDocumentManifestByNhsNumberHandler createDocumentManifestByNhsNumberHandler;
+    private CreateDocumentManifestByNhsNumberHandler createDocumentManifestByNhsNumberHandler;
 
-  @BeforeEach
-  public void setUp() {
-    createDocumentManifestByNhsNumberHandler =
-        new CreateDocumentManifestByNhsNumberHandler(
-            new StubbedApiConfig("http://ui-url"),
-            metadataStore,
-            new DocumentZipTraceStore(dynamoDbMapper),
-            new DocumentStore(s3Client, "bucket-name"),
-            new DocumentManifestService(auditPublisher),
-            "1");
-  }
+    @BeforeEach
+    public void setUp() {
+        createDocumentManifestByNhsNumberHandler =
+                new CreateDocumentManifestByNhsNumberHandler(
+                        new StubbedApiConfig("http://ui-url"),
+                        metadataStore,
+                        new DocumentZipTraceStore(dynamoDbMapper),
+                        new DocumentStore(s3Client, "bucket-name"),
+                        new DocumentManifestService(auditPublisher),
+                        "1");
+    }
 
-  @Test
-  void uploadsZipOfAllDocsAndSavesMetadataForGivenNhsNumber()
-      throws MalformedURLException, IllFormedPatientDetailsException {
-    var nhsNumber = new NhsNumber("9000000009");
-    var presignedUrl = "http://presigned-url";
-    var metadataBuilder = DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true);
-    var metadataList =
-        List.of(
-            metadataBuilder.withFileName("Some document").build(),
-            metadataBuilder.withFileName("another document").build());
-    var requestEvent = createRequestEvent(nhsNumber);
+    @Test
+    void uploadsZipOfAllDocsAndSavesMetadataForGivenNhsNumber()
+            throws MalformedURLException, IllFormedPatientDetailsException {
+        var nhsNumber = new NhsNumber("9000000009");
+        var presignedUrl = "http://presigned-url";
+        var metadataBuilder = DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true);
+        var metadataList =
+                List.of(
+                        metadataBuilder.withFileName("Some document").build(),
+                        metadataBuilder.withFileName("another document").build());
+        var requestEvent = createRequestEvent(nhsNumber);
 
-    when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
-    when(s3Client.getObject(anyString(), anyString())).thenReturn(new S3Object());
-    when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
-    doNothing().when(dynamoDbMapper).save(any());
-    var responseEvent =
+        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
+        when(s3Client.getObject(anyString(), anyString())).thenReturn(new S3Object());
+        when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
+        doNothing().when(dynamoDbMapper).save(any());
+        var responseEvent =
+                createDocumentManifestByNhsNumberHandler.handleRequest(requestEvent, context);
+
+        assertThat(responseEvent.getStatusCode()).isEqualTo(200);
+        assertThat(responseEvent.getHeaders().get("Content-Type"))
+                .isEqualTo("application/fhir+json");
+        var responseUrl = JsonPath.<String>read(responseEvent.getBody(), "$.result.url");
+        assertThat(responseUrl).isEqualTo(presignedUrl);
+    }
+
+    @Test
+    void sendsAuditMessageAfterZipIsUploadedSuccessfully()
+            throws MalformedURLException, JsonProcessingException,
+                    IllFormedPatientDetailsException {
+        var nhsNumber = new NhsNumber("9000000009");
+        var presignedUrl = "http://presigned-url";
+        var requestEvent = createRequestEvent(nhsNumber);
+        var metadataList =
+                List.of(DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true).build());
+
+        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
+        when(s3Client.getObject(anyString(), anyString())).thenReturn(new S3Object());
+        when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
+        doNothing().when(dynamoDbMapper).save(any());
         createDocumentManifestByNhsNumberHandler.handleRequest(requestEvent, context);
 
-    assertThat(responseEvent.getStatusCode()).isEqualTo(200);
-    assertThat(responseEvent.getHeaders().get("Content-Type")).isEqualTo("application/fhir+json");
-    var responseUrl = JsonPath.<String>read(responseEvent.getBody(), "$.result.url");
-    assertThat(responseUrl).isEqualTo(presignedUrl);
-  }
+        verify(auditPublisher).publish(any(DownloadAllPatientRecordsAuditMessage.class));
+    }
 
-  @Test
-  void sendsAuditMessageAfterZipIsUploadedSuccessfully()
-      throws MalformedURLException, JsonProcessingException, IllFormedPatientDetailsException {
-    var nhsNumber = new NhsNumber("9000000009");
-    var presignedUrl = "http://presigned-url";
-    var requestEvent = createRequestEvent(nhsNumber);
-    var metadataList =
-        List.of(DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true).build());
+    private APIGatewayProxyRequestEvent createRequestEvent(NhsNumber nhsNumber) {
+        HashMap<String, String> headers = new HashMap<>();
+        HashMap<String, String> parameters = new HashMap<>();
+        headers.put("Authorization", "Bearer " + JWT.create().withClaim("email", "").sign(none()));
+        parameters.put(
+                "subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|" + nhsNumber.getValue());
 
-    when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
-    when(s3Client.getObject(anyString(), anyString())).thenReturn(new S3Object());
-    when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
-    doNothing().when(dynamoDbMapper).save(any());
-    createDocumentManifestByNhsNumberHandler.handleRequest(requestEvent, context);
-
-    verify(auditPublisher).publish(any(DownloadAllPatientRecordsAuditMessage.class));
-  }
-
-  private APIGatewayProxyRequestEvent createRequestEvent(NhsNumber nhsNumber) {
-    HashMap<String, String> headers = new HashMap<>();
-    HashMap<String, String> parameters = new HashMap<>();
-    headers.put("Authorization", "Bearer " + JWT.create().withClaim("email", "").sign(none()));
-    parameters.put(
-        "subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|" + nhsNumber.getValue());
-
-    return new APIGatewayProxyRequestEvent()
-        .withQueryStringParameters(parameters)
-        .withHeaders(headers);
-  }
+        return new APIGatewayProxyRequestEvent()
+                .withQueryStringParameters(parameters)
+                .withHeaders(headers);
+    }
 }

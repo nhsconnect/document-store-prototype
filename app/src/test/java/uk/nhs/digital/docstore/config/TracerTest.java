@@ -13,17 +13,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class TracerTest {
 
-  @Test
-  void shouldCreateAndAddCorrelationIdToMDC() {
-    var context = mock(Context.class);
-    var requestId = UUID.randomUUID().toString();
+    @Test
+    void shouldCreateAndAddCorrelationIdToMDC() {
+        var context = mock(Context.class);
+        var requestId = UUID.randomUUID().toString();
 
-    when(context.getAwsRequestId()).thenReturn(requestId);
+        when(context.getAwsRequestId()).thenReturn(requestId);
 
-    Tracer.setMDCContext(context);
+        Tracer.setMDCContext(context);
 
-    var mdcCorrelationIdValue = Tracer.getCorrelationId();
+        var mdcCorrelationIdValue = Tracer.getCorrelationId();
 
-    assertThat(mdcCorrelationIdValue).isEqualTo(requestId);
-  }
+        assertThat(mdcCorrelationIdValue).isEqualTo(requestId);
+    }
 }
