@@ -1,4 +1,7 @@
 #!/bin/sh
+
+set -euxo pipefail
+
 terraform -version
 cd terraform
 terraform init -backend-config local.s3.tfbackend
