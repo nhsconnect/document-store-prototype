@@ -28,15 +28,36 @@ resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
   statistic           = "Sum"
 }
 
+resource "aws_sns_topic" "alarm_notifications" {
+  name   = "alarms-notifications-topic"
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "cloudwatch.amazonaws.com"
+        },
+        "Action" : "SNS:Publish",
+        "Condition" : {
+          "ArnLike" : {
+            "aws:SourceArn" : "arn:aws:cloudwatch:${var.region}:${var.account_id}:alarm:*"
+          }
+        }
+      }
+    ]
+  })
+}
+
 module create_document_reference_alarms {
-  source = "./modules/lambda_alarms"
+  source               = "./modules/lambda_alarms"
   lambda_function_name = aws_lambda_function.create_doc_ref_lambda.function_name
-  lambda_timeout = aws_lambda_function.create_doc_ref_lambda.timeout
-  lambda_short_name = "create_document_reference_handler"
+  lambda_timeout       = aws_lambda_function.create_doc_ref_lambda.timeout
+  lambda_short_name    = "create_document_reference_handler"
 }
 
 module authoriser_alarms {
-  source = "./modules/lambda_alarms"
+  source               = "./modules/lambda_alarms"
   lambda_function_name = aws_lambda_function.authoriser.function_name
   lambda_timeout = aws_lambda_function.authoriser.timeout
   lambda_short_name = "authoriser"
