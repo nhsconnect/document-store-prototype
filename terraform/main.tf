@@ -22,6 +22,7 @@ provider "aws" {
     cloudwatch = var.aws_endpoint
     dynamodb   = var.aws_endpoint
     iam        = var.aws_endpoint
+    kms        = var.aws_endpoint
     lambda     = var.aws_endpoint
     s3         = var.aws_endpoint
     sns        = var.aws_endpoint

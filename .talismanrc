@@ -53,6 +53,8 @@ fileignoreconfig:
   checksum: 6dbeaf5888489144bfe3010450310122b59be6f50a7535790d707dad9aa5a972
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
   checksum: da917b6733a92b8d0b1d9eedaa9a138ec90ea8627b3c2a71ed23608fbecc98cb
+- filename: terraform/alarms.tf
+  checksum: 361a0bf54d2386f17812e8baf74862b4e3ec0f9dc056aeeafb23e9e6e0094c2e
 version: ""
 scopeconfig:
   - scope: node
