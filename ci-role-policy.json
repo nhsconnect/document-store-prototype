@@ -281,7 +281,6 @@
         "kms:ListKeys",
         "kms:ListResourceTags",
         "kms:PutKeyPolicy",
-        "kms:ScheduleKeyDeletion",
         "kms:TagResource",
         "kms:UntagResource",
         "kms:UpdateAlias",
