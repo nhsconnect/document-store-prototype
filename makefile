@@ -82,6 +82,10 @@ build-api-jars: ## Build API JARs
 deploy-to-localstack: ## Deploy to LocalStack
 	./tasks deploy-to-localstack
 
+.PHONY: start-localstack
+start-localstack: ## Start LocalStack
+	./tasks start-localstack
+
 .PHONY: start-ui
 start-ui: ## Start the UI
 	cd ui && npm start
