@@ -11,7 +11,7 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 public class InvalidResourceIdException extends RuntimeException
     implements OperationOutcomeIssuable {
   public InvalidResourceIdException(NhsNumber nhsNumber) {
-    super(String.format("invalid nhs number: '%s'", nhsNumber));
+    super(String.format("Invalid NHS number: '%s'", nhsNumber));
   }
 
   @Override
