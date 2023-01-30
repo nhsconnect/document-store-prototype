@@ -4,29 +4,29 @@ default: help
 pre-push: format lint test-ui test-app test-e2e ## Format, lint, & run unit, integration, & E2E tests
 
 .PHONY: format
-format: format-ui format-app format-e2e-test ## Format compatible files in /ui, /app, & /e2eTest
+format: format-ui format-app format-e2e-test ## Format files
 
 .PHONY: format-ui
-format-ui: ## Format /ui Prettier-compatible files
+format-ui: ## Format /ui files
 	cd ui && npm run format
 
 .PHONY: format-app
-format-app: ## Format /app .java files
-	./gradlew goJF
+format-app: ## Format /app files
+	./gradlew :app:spotlessApply
 
 .PHONY: format-e2e-test
-format-e2e-test: ## Format /e2eTest Prettier-compatible files
+format-e2e-test: ## Format /e2eTest files
 	cd e2eTest && npm run format
 
 .PHONY: lint
-lint: lint-ui lint-e2e-test ## Lint compatible files in /ui & /e2eTest.  Todo: BE linting
+lint: lint-ui lint-e2e-test ## Lint files in /ui & /e2eTest.  Todo: BE linting
 
 .PHONY: lint-ui
-lint-ui: ## Lint /ui .js[x] files
+lint-ui: ## Lint /ui files
 	cd ui && npm run lint
 
 .PHONY: lint-e2e-test
-lint-e2e-test: ## Lint /e2eTest .js files
+lint-e2e-test: ## Lint /e2eTest files
 	cd e2eTest && npm run lint
 
 .PHONY: test-ui
@@ -57,18 +57,18 @@ test-e2e-open: ## Run E2E test (with visible browser)
 	cd e2eTest && npm run test:open
 
 .PHONY: install
-install: install-ui install-app install-e2e-test  ## Install dependencies in /ui, /app, & /e2eTest
+install: install-ui install-app install-e2e-test  ## Install dependencies
 
 .PHONY: install-ui
-install-ui: ## Install dependencies in /ui
+install-ui: ## Install /ui dependencies
 	cd ui && npm i
 
 .PHONY: install-app
-install-app: ## Install dependencies in /app
+install-app: ## Install /app dependencies
 	./gradlew build --refresh-dependencies
 
 .PHONY: install-e2e-test
-install-e2e-test: ## Install dependencies in /e2eTest
+install-e2e-test: ## Install /e2eTest dependencies
 	cd e2eTest && npm i
 
 .PHONY: build-and-deploy-to-localstack

@@ -1,95 +1,107 @@
 plugins {
-    id 'java'
-    id 'com.github.sherter.google-java-format' version '0.9'
+	id 'java'
+	id "com.diffplug.spotless" version "6.14.0"
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 sourceSets {
-    e2eTest {
-        compileClasspath += sourceSets.main.output
-        compileClasspath += sourceSets.test.output
-        runtimeClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.test.output
-        java {
-            srcDirs 'src/e2eTest'
-        }
-    }
+	e2eTest {
+		compileClasspath += sourceSets.main.output
+		compileClasspath += sourceSets.test.output
+		runtimeClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.test.output
+		java {
+			srcDirs 'src/e2eTest'
+		}
+	}
 }
 
 configurations {
-    e2eTestImplementation.extendsFrom testImplementation
-    e2eTestRuntime.extendsFrom testRuntime
+	e2eTestImplementation.extendsFrom testImplementation
+	e2eTestRuntime.extendsFrom testRuntime
 }
 
 tasks.withType(Test) {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }
 
 dependencies {
-    implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.92'
-    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.92'
-    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
-    implementation 'com.amazonaws:aws-lambda-java-events:3.9.0'
-    implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
-    implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
+	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.92'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.92'
+	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+	implementation 'com.amazonaws:aws-lambda-java-events:3.9.0'
+	implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
+	implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
 
-    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.5.4'
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:5.5.1'
+	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.5.4'
+	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:5.5.1'
 
-    implementation 'ch.qos.logback:logback-classic:1.2.6'
-    implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
+	implementation 'ch.qos.logback:logback-classic:1.2.6'
+	implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
 
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.0'
+	implementation 'net.logstash.logback:logstash-logback-encoder:7.0'
 
-    implementation 'com.auth0:java-jwt:4.2.1'
+	implementation 'com.auth0:java-jwt:4.2.1'
 
-    implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+	implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
 
-    implementation 'org.json:json:20211205'
+	implementation 'org.json:json:20211205'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
-    testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
-    testImplementation 'org.mockito:mockito-core:4.0.0'
-    testImplementation 'uk.org.webcompere:system-stubs-jupiter:2.0.1'
-    testImplementation 'org.assertj:assertj-core:3.21.0'
-    testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
-    testImplementation 'org.apache.commons:commons-lang3:3.12.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+	testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
+	testImplementation 'org.mockito:mockito-core:4.0.0'
+	testImplementation 'uk.org.webcompere:system-stubs-jupiter:2.0.1'
+	testImplementation 'org.assertj:assertj-core:3.21.0'
+	testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
+	testImplementation 'org.apache.commons:commons-lang3:3.12.0'
 
-    e2eTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
-    e2eTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
-    e2eTestImplementation 'org.awaitility:awaitility:4.1.1'
-    e2eTestImplementation 'ch.qos.logback:logback-classic:1.4.4'
+	e2eTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
+	e2eTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
+	e2eTestImplementation 'org.awaitility:awaitility:4.1.1'
+	e2eTestImplementation 'ch.qos.logback:logback-classic:1.4.4'
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(11)
+	}
 }
 
 jar {
-    from compileJava
-    from processResources
-    into('lib') {
-        from configurations.runtimeClasspath
-    }
+	from compileJava
+	from processResources
+	into('lib') {
+		from configurations.runtimeClasspath
+	}
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
-    environment "AMPLIFY_BASE_URL", "http://localhost:4566"
+	useJUnitPlatform()
+	environment "AMPLIFY_BASE_URL", "http://localhost:4566"
 }
 
-task e2eTest(type:Test) {
-    group 'verification'
-    description 'Run all end-to-end tests against LocalStack.'
-    testClassesDirs = sourceSets.e2eTest.output.classesDirs
-    classpath = sourceSets.e2eTest.runtimeClasspath
-    outputs.upToDateWhen { false }
+task e2eTest(type: Test) {
+	group 'verification'
+	description 'Run all end-to-end tests against LocalStack.'
+	testClassesDirs = sourceSets.e2eTest.output.classesDirs
+	classpath = sourceSets.e2eTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+}
+
+spotless {
+	format 'misc', {
+		target '*.gradle'
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
+	java {
+		googleJavaFormat('1.15.0').aosp().reflowLongStrings()
+	}
 }
