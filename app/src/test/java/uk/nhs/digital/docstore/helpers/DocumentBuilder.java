@@ -1,20 +1,21 @@
 package uk.nhs.digital.docstore.helpers;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 public class DocumentBuilder {
   private final String referenceId;
   private final NhsNumber nhsNumber;
   private final String contentType;
   private final Boolean uploaded;
-  private final FileName description;
+  private final FileName fileName;
   private final Instant created;
   private final Instant deleted;
   private final Instant indexed;
@@ -26,7 +27,7 @@ public class DocumentBuilder {
       NhsNumber nhsNumber,
       String contentType,
       Boolean uploaded,
-      FileName description,
+      FileName fileName,
       Instant created,
       Instant deleted,
       Instant indexed,
@@ -36,7 +37,7 @@ public class DocumentBuilder {
     this.nhsNumber = nhsNumber;
     this.contentType = contentType;
     this.uploaded = uploaded;
-    this.description = description;
+    this.fileName = fileName;
     this.created = created;
     this.deleted = deleted;
     this.indexed = indexed;
@@ -68,7 +69,7 @@ public class DocumentBuilder {
         nhsNumber,
         contentType,
         uploaded,
-        description,
+        fileName,
         created,
         deleted,
         indexed,

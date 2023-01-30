@@ -1,13 +1,5 @@
 package uk.nhs.digital.docstore;
 
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.stream.Stream;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -15,6 +7,15 @@ import org.hl7.fhir.r4.model.DateTimeType;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 
 class NHSDocumentReferenceTest {
   private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
@@ -56,7 +57,7 @@ class NHSDocumentReferenceTest {
 
     assertThat(documentModel.getNhsNumber()).isEqualTo(nhsNumber);
     assertThat(documentModel.getContentType()).isEqualTo(contentType);
-    assertThat(documentModel.getDescription().getValue()).isEqualTo(description);
+    assertThat(documentModel.getFileName().getValue()).isEqualTo(description);
     assertThat(documentModel.getType()).isEqualTo(List.of(snomedCode));
     assertThat(documentModel.isUploaded()).isEqualTo(false);
     assertThat(documentModel.getCreated()).isEqualTo(created.getValue().toInstant());

@@ -28,6 +28,6 @@ public class FileMetadata {
 
   public static FileMetadata fromDocument(Document document) {
     return new FileMetadata(
-        document.getReferenceId(), document.getDescription(), document.getContentType());
+        document.getReferenceId(), document.getFileName(), document.getContentType());
   }
 }

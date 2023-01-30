@@ -1,9 +1,5 @@
 package uk.nhs.digital.docstore.handlers;
 
-import static java.util.stream.Collectors.toList;
-import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
-import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
-
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -11,7 +7,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.s3.AmazonS3;
-import java.net.URL;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -31,6 +26,12 @@ import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
+
+import java.net.URL;
+
+import static java.util.stream.Collectors.toList;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
 @SuppressWarnings("unused")
 public class CreateDocumentReferenceHandler
@@ -110,7 +111,7 @@ public class CreateDocumentReferenceHandler
           new NHSDocumentReference()
               .setCreated(new DateTimeType(savedDocument.getCreated().toString()))
               .setNhsNumber(savedDocument.getNhsNumber())
-              .setFileName(savedDocument.getDescription())
+              .setFileName(savedDocument.getFileName())
               .addContent(
                   new NHSDocumentReference.DocumentReferenceContentComponent()
                       .setAttachment(

@@ -1,15 +1,16 @@
 package uk.nhs.digital.docstore.model;
 
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+
 import java.time.Instant;
 import java.util.List;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 
 public class Document {
   private final String referenceId;
   private final NhsNumber nhsNumber;
   private final String contentType;
   private final Boolean uploaded;
-  private final FileName description;
+  private final FileName fileName;
   private final Instant created;
   private final Instant deleted;
   private final Instant indexed;
@@ -21,7 +22,7 @@ public class Document {
       NhsNumber nhsNumber,
       String contentType,
       Boolean uploaded,
-      FileName description,
+      FileName fileName,
       Instant created,
       Instant deleted,
       Instant indexed,
@@ -31,7 +32,7 @@ public class Document {
     this.nhsNumber = nhsNumber;
     this.contentType = contentType;
     this.uploaded = uploaded;
-    this.description = description;
+    this.fileName = fileName;
     this.created = created;
     this.deleted = deleted;
     this.indexed = indexed;
@@ -55,8 +56,8 @@ public class Document {
     return uploaded;
   }
 
-  public FileName getDescription() {
-    return description;
+  public FileName getFileName() {
+    return fileName;
   }
 
   public Instant getCreated() {

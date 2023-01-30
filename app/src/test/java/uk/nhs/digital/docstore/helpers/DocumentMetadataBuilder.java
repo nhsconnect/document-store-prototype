@@ -1,11 +1,11 @@
 package uk.nhs.digital.docstore.helpers;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
 @SuppressWarnings("unused")
 public class DocumentMetadataBuilder {
@@ -86,7 +86,7 @@ public class DocumentMetadataBuilder {
     metadata.setContentType(contentType);
     metadata.setDocumentUploaded(uploaded);
     metadata.setDeleted(deleted);
-    metadata.setDescription(description);
+    metadata.setFileName(description);
     return metadata;
   }
 }

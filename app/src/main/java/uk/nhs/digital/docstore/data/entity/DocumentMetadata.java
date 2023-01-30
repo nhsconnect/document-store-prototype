@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+
 import java.util.List;
 
 @DynamoDBTable(tableName = "DocumentReferenceMetadata")
@@ -14,7 +15,7 @@ public class DocumentMetadata {
   private String location;
   private String contentType;
   private Boolean documentUploaded;
-  private String description;
+  private String fileName;
   private String created;
   private String indexed;
   private String deleted;
@@ -66,12 +67,12 @@ public class DocumentMetadata {
   }
 
   @DynamoDBAttribute(attributeName = "Description")
-  public String getDescription() {
-    return description;
+  public String getFileName() {
+    return fileName;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
   }
 
   @DynamoDBAttribute(attributeName = "Created")
@@ -127,8 +128,8 @@ public class DocumentMetadata {
         + '\''
         + ", documentUploaded="
         + documentUploaded
-        + ", description='"
-        + description
+        + ", fileName='"
+        + fileName
         + '\''
         + ", created='"
         + created

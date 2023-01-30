@@ -1,15 +1,6 @@
 package uk.nhs.digital.docstore.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -27,6 +18,16 @@ import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.helpers.DocumentBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 public class DocumentReferenceServiceTest {
   @Mock private AuditPublisher auditPublisher;
@@ -42,7 +43,7 @@ public class DocumentReferenceServiceTest {
     var documentMetadata = new DocumentMetadata();
     documentMetadata.setId("1");
     documentMetadata.setNhsNumber("1234567890");
-    documentMetadata.setDescription("Document Title");
+    documentMetadata.setFileName("Document Title");
     documentMetadata.setContentType("pdf");
     documentMetadata.setDocumentUploaded(false);
     documentMetadata.setCreated(Instant.now().toString());
@@ -79,7 +80,7 @@ public class DocumentReferenceServiceTest {
     var documentMetadata = new DocumentMetadata();
     documentMetadata.setId("2");
     documentMetadata.setNhsNumber("1234567890");
-    documentMetadata.setDescription("Document Title");
+    documentMetadata.setFileName("Document Title");
     documentMetadata.setContentType("pdf");
     documentMetadata.setIndexed(now.toString());
 
