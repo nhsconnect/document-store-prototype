@@ -1,9 +1,8 @@
 package uk.nhs.digital.docstore.model;
 
-import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-
 import java.time.Instant;
 import java.util.List;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 
 public class Document {
   private final String referenceId;

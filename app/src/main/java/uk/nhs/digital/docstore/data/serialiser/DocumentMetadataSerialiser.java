@@ -1,13 +1,12 @@
 package uk.nhs.digital.docstore.data.serialiser;
 
+import java.time.Instant;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
-
-import java.time.Instant;
 
 public class DocumentMetadataSerialiser {
 

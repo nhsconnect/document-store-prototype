@@ -1,19 +1,18 @@
 package uk.nhs.digital.docstore.utils;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.data.repository.DocumentStore;
-import uk.nhs.digital.docstore.model.Document;
+import static java.util.zip.Deflater.DEFLATED;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import static java.util.zip.Deflater.DEFLATED;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.data.repository.DocumentStore;
+import uk.nhs.digital.docstore.model.Document;
 
 public class ZipService {
   private static final Logger LOGGER = LoggerFactory.getLogger(ZipService.class);

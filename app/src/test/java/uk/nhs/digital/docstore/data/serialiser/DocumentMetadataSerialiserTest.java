@@ -1,5 +1,9 @@
 package uk.nhs.digital.docstore.data.serialiser;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Instant;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
@@ -7,11 +11,6 @@ import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
-
-import java.time.Instant;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class DocumentMetadataSerialiserTest {
   @Test

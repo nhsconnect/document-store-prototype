@@ -1,5 +1,12 @@
 package uk.nhs.digital.docstore;
 
+import static java.util.stream.Collectors.toList;
+import static org.hl7.fhir.r4.model.Bundle.BundleType.SEARCHSET;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -9,14 +16,6 @@ import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.InstantType;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
-import static org.hl7.fhir.r4.model.Bundle.BundleType.SEARCHSET;
-import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
-import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
 
 public class BundleMapper {
   private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
