@@ -11,6 +11,9 @@ resource "aws_cloudwatch_metric_alarm" "sensitive_index_age_of_oldest_message" {
   period              = "1800"
   evaluation_periods  = "1"
   statistic           = "Maximum"
+  actions_enabled     = "true"
+  alarm_actions       = [aws_sns_topic.alarm_notifications.arn]
+  ok_actions          = [aws_sns_topic.alarm_notifications.arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
@@ -26,6 +29,9 @@ resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
   period              = "300"
   evaluation_periods  = "1"
   statistic           = "Sum"
+  actions_enabled     = "true"
+  alarm_actions       = [aws_sns_topic.alarm_notifications.arn]
+  ok_actions          = [aws_sns_topic.alarm_notifications.arn]
 }
 
 module create_document_reference_alarms {
