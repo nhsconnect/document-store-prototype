@@ -274,13 +274,33 @@
         "kms:CreateKey",
         "kms:DeleteAlias",
         "kms:DescribeKey",
+        "kms:EnableKeyRotation",
         "kms:ListAliases",
         "kms:ListKeys",
         "kms:ListResourceTags",
         "kms:TagResource",
         "kms:UntagResource",
         "kms:UpdateAlias",
-        "kms:UpdateKeyDescription"
+        "kms:UpdateKeyDescription",
+        "kms:PutKeyPolicy"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowSNS",
+      "Effect": "Allow",
+      "Action": [
+        "sns:AddPermission",
+        "sns:CreateTopic",
+        "sns:DeleteTopic",
+        "sns:GetDataProtectionPolicy",
+        "sns:GetTopicAttributes",
+        "sns:ListTagsForResource",
+        "sns:PutDataProtectionPolicy",
+        "sns:RemovePermission",
+        "sns:SetTopicAttributes",
+        "sns:TagResource",
+        "sns:UntagResource"
       ],
       "Resource": "*"
     }
