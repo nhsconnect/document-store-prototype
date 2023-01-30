@@ -33,6 +33,7 @@ module create_document_reference_alarms {
   lambda_function_name = aws_lambda_function.create_doc_ref_lambda.function_name
   lambda_timeout       = aws_lambda_function.create_doc_ref_lambda.timeout
   lambda_short_name    = "create_document_reference_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
 }
 
 module authoriser_alarms {
@@ -40,6 +41,7 @@ module authoriser_alarms {
   lambda_function_name = aws_lambda_function.authoriser.function_name
   lambda_timeout = aws_lambda_function.authoriser.timeout
   lambda_short_name = "authoriser"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
 }
 
 module search_patient_details_alarms {
@@ -47,6 +49,7 @@ module search_patient_details_alarms {
   lambda_function_name = aws_lambda_function.search_patient_details_lambda.function_name
   lambda_timeout = aws_lambda_function.search_patient_details_lambda.timeout
   lambda_short_name = "search_patient_details_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
 }
 
 module document_uploaded_event_alarms {
@@ -54,6 +57,7 @@ module document_uploaded_event_alarms {
   lambda_function_name = aws_lambda_function.document_uploaded_lambda.function_name
   lambda_timeout = aws_lambda_function.document_uploaded_lambda.timeout
   lambda_short_name = "document_uploaded_event_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
 }
 
 module create_document_manifest_by_nhs_number_alarms {
@@ -61,6 +65,7 @@ module create_document_manifest_by_nhs_number_alarms {
   lambda_function_name = aws_lambda_function.document_manifest_lambda.function_name
   lambda_timeout = aws_lambda_function.document_manifest_lambda.timeout
   lambda_short_name = "create_document_manifest_by_nhs_number_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
 }
 
 module document_reference_search_alarms {
@@ -68,6 +73,7 @@ module document_reference_search_alarms {
   lambda_function_name = aws_lambda_function.doc_ref_search_lambda.function_name
   lambda_timeout = aws_lambda_function.doc_ref_search_lambda.timeout
   lambda_short_name = "document_reference_search_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
 }
 
 module delete_document_reference_alarms {
@@ -75,6 +81,7 @@ module delete_document_reference_alarms {
   lambda_function_name = aws_lambda_function.delete_doc_ref_lambda.function_name
   lambda_timeout = aws_lambda_function.delete_doc_ref_lambda.timeout
   lambda_short_name = "delete_document_reference_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
 }
 
 resource "aws_sns_topic" "alarm_notifications" {

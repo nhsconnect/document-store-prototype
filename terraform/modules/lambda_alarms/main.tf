@@ -11,6 +11,11 @@ variable "lambda_timeout" {
   type = number
 }
 
+variable "notification_sns_topic_arn" {
+  type = string
+  description = "The SNS ARN of the topic we would like alarm notifications to be sent to"
+}
+
 resource "aws_cloudwatch_metric_alarm" "lambda_error" {
   alarm_name        = "prs_${var.lambda_short_name}_error"
   alarm_description = "Triggers when an error has occurred in ${var.lambda_function_name}."
@@ -24,6 +29,9 @@ resource "aws_cloudwatch_metric_alarm" "lambda_error" {
   period              = "300"
   evaluation_periods  = "1"
   statistic           = "Sum"
+  actions_enabled     = "true"
+  alarm_actions       = [var.notification_sns_topic_arn]
+  ok_actions          = [var.notification_sns_topic_arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "lambda_duration_alarm" {
