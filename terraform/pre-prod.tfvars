@@ -10,4 +10,4 @@ cognito_cis2_provider_jwks_uri       = "https://am.nhsdev.auth-ptl.cis2.spineser
 cognito_cis2_client_callback_urls    = []
 cognito_cis2_client_signout_urls     = []
 cognito_key_id                       = "hkmsNYnD3kvYvyaOWcuqPT2K5lad8tT8mWZU1sF6n14="
-pds_fhir_is_stubbed                  = "false"
+pds_fhir_is_stubbed                  = "true"
