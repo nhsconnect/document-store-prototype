@@ -1,12 +1,13 @@
 package uk.nhs.digital.docstore.create;
 
-import java.util.List;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import uk.nhs.digital.docstore.NHSDocumentReference;
 import uk.nhs.digital.docstore.exceptions.InvalidCodingCodeException;
 import uk.nhs.digital.docstore.exceptions.MissingRequiredValueException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedCodingSystemException;
+
+import java.util.List;
 
 public class CreateDocumentReferenceRequestValidator {
   private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
@@ -38,7 +39,7 @@ public class CreateDocumentReferenceRequestValidator {
     }
 
     String description = documentReference.getDescription();
-    if (description == null) {
+    if (description == null || description.equals("")) {
       throw new MissingRequiredValueException("DocumentReference.description", "description");
     }
   }

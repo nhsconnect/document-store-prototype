@@ -26,6 +26,6 @@ public class PatientName {
 
   @Override
   public String toString() {
-    return value.charAt(0) + "***";
+    return (value.length() > 0 ? String.valueOf(value.charAt(0)) : "") + "***";
   }
 }

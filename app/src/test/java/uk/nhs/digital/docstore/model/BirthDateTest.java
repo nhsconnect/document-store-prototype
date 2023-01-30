@@ -1,9 +1,10 @@
 package uk.nhs.digital.docstore.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BirthDateTest {
 
@@ -20,6 +21,11 @@ class BirthDateTest {
   @Test
   void shouldRedactBirthDateOnlyIncludingYearAndMonth() {
     assertThat(new BirthDate("2013-10").toString()).isEqualTo("****-10");
+  }
+
+  @Test
+  void shouldNotThrowExceptionWhenRedactingEmptyBirthDate() {
+    assertDoesNotThrow(() -> new BirthDate("").toString());
   }
 
   @Test
