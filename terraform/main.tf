@@ -24,6 +24,7 @@ provider "aws" {
     iam        = var.aws_endpoint
     lambda     = var.aws_endpoint
     s3         = var.aws_endpoint
+    sns        = var.aws_endpoint
     sqs        = var.aws_endpoint
     logs       = var.aws_endpoint
   }
