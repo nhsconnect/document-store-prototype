@@ -5,12 +5,13 @@ import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.Role;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PolicyGeneratorTest {
+public class PolicyDocumentGeneratorTest {
 
     @Test
     void shouldReturnCorrectPolicyForPCSE() {
@@ -21,12 +22,15 @@ public class PolicyGeneratorTest {
         var organisations = List.of(new Organisation("X4S4L", "some-org-name"));
         var roles = List.of(new Role("some-role-code"));
 
-        var generatePolicy = new PolicyGenerator(authConfig, organisations, roles);
+        var generatePolicy = new PolicyDocumentGenerator(authConfig, organisations, roles);
+
+        List<IamPolicyResponse.Statement> statements = new ArrayList<>();
+        statements.addAll(pcseResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()));
+        statements.addAll(clinicalResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()));
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(pcseResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
-                .withStatement(clinicalResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
+                .withStatement(statements)
                 .build();
 
         var actual = generatePolicy.getPolicyDocument();
@@ -43,12 +47,15 @@ public class PolicyGeneratorTest {
         var organisations = List.of(new Organisation("some-org-code", "some-org-name"));
         var roles = List.of(new Role("role:role:R8008"));
 
-        var generatePolicy = new PolicyGenerator(authConfig, organisations, roles);
+        var generatePolicy = new PolicyDocumentGenerator(authConfig, organisations, roles);
+
+        List<IamPolicyResponse.Statement> statements = new ArrayList<>();
+        statements.addAll(clinicalResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()));
+        statements.addAll(pcseResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()));
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(clinicalResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
-                .withStatement(pcseResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
+                .withStatement(statements)
                 .build();
 
         var actual = generatePolicy.getPolicyDocument();
@@ -65,7 +72,7 @@ public class PolicyGeneratorTest {
         var organisations = List.of(new Organisation("some-org-code", "some-org-name"));
         var roles = List.of(new Role("some-role-code"));
 
-        var generatePolicy = new PolicyGenerator(authConfig, organisations, roles);
+        var generatePolicy = new PolicyDocumentGenerator(authConfig, organisations, roles);
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)

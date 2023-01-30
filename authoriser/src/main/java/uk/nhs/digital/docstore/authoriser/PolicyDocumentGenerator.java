@@ -7,7 +7,7 @@ import uk.nhs.digital.docstore.authoriser.models.Role;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PolicyGenerator {
+public class PolicyDocumentGenerator {
     private final AuthConfig authConfig;
     private final List<Organisation> organisations;
     private final List<Role> roles;
@@ -15,7 +15,7 @@ public class PolicyGenerator {
     public final static String GENERAL_ADMIN_ORG_CODE = "X4S4L";
     public final static String EVERYTHING = "*";
 
-    public PolicyGenerator(AuthConfig authConfig, List<Organisation> organisations, List<Role> roles) {
+    public PolicyDocumentGenerator(AuthConfig authConfig, List<Organisation> organisations, List<Role> roles) {
         this.authConfig = authConfig;
         this.organisations = organisations;
         this.roles = roles;
@@ -43,8 +43,10 @@ public class PolicyGenerator {
     }
 
     private void setPolicy(IamPolicyResponse.PolicyDocument.PolicyDocumentBuilder policy, List<String> allowedResources, List<String> deniedResources) {
-        policy.withStatement(allowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()));
-        policy.withStatement(deniedResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()));
+        List<IamPolicyResponse.Statement> statements = new ArrayList<>();
+        statements.addAll(allowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()));
+        statements.addAll(deniedResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()));
+        policy.withStatement(statements);
     }
 
     private boolean containsRoles() {

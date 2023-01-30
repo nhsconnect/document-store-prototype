@@ -67,28 +67,16 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             var jwtValidator = new JWTValidator(input.getAuthorizationToken(), algorithm);
             var decodedJWT = jwtValidator.verify();
 
-            var iamPolicy = new IamPolicyResponse();
-            iamPolicy.setPrincipalId(decodedJWT.getSubject());
-
             var claimsMapper = new AccessTokenClaimMapper(decodedJWT);
             var organisations = claimsMapper.deserialiseClaim(ASSOCIATED_ORG, Organisation[].class);
             var roles = claimsMapper.deserialiseClaim(RBAC_ROLES, Role[].class);
 
-            var clinicalRoles = Arrays.stream(ClinicalAdminRoleCode.values()).map(ClinicalAdminRoleCode::getClinicalRoleCode).collect(Collectors.toList());
+            var iamPolicy = new IamPolicyResponse();
+            iamPolicy.setPrincipalId(decodedJWT.getSubject());
 
-            var allowedResources = new ArrayList<String>();
+            var generatePolicy = new PolicyDocumentGenerator(authConfig, Arrays.asList(organisations), Arrays.asList(roles));
+            var policyDocument = generatePolicy.getPolicyDocument();
 
-            if (Organisation.containsOrganisation(Arrays.asList(organisations), GENERAL_ADMIN_ORG_CODE)) {
-                allowedResources.addAll(authConfig.getResourcesForPCSEUsers());
-            }
-
-            for (Role role : roles) {
-                if (role.containsAnyTertiaryRole(clinicalRoles)) {
-                    allowedResources.addAll(authConfig.getResourcesForClinicalUsers());
-                }
-            }
-
-            var policyDocument = getPolicyDocument(allowedResources);
             iamPolicy.setPolicyDocument(policyDocument);
 
             return iamPolicy;
