@@ -4,7 +4,9 @@ import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.Role;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class PolicyDocumentGenerator {
@@ -13,7 +15,7 @@ public class PolicyDocumentGenerator {
     private final List<Role> roles;
 
     public final static String GENERAL_ADMIN_ORG_CODE = "X4S4L";
-    public final static String EVERYTHING = "*";
+    public final static String DENY_ALL_RESOURCES = "*";
 
     public PolicyDocumentGenerator(AuthConfig authConfig, List<Organisation> organisations, List<Role> roles) {
         this.authConfig = authConfig;
@@ -36,16 +38,22 @@ public class PolicyDocumentGenerator {
 
             setPolicy(policy, allowedResources, deniedResources);
         } else {
-            policy.withStatement(List.of(IamPolicyResponse.denyStatement(EVERYTHING)));
+            return getDenyResourcesPolicy(policy);
         }
 
         return policy.build();
+    }
+
+    public static IamPolicyResponse.PolicyDocument getDenyResourcesPolicy(IamPolicyResponse.PolicyDocument.PolicyDocumentBuilder policy) {
+        policy.withVersion(IamPolicyResponse.VERSION_2012_10_17);
+        return policy.withStatement(List.of(IamPolicyResponse.denyStatement(DENY_ALL_RESOURCES))).build();
     }
 
     private void setPolicy(IamPolicyResponse.PolicyDocument.PolicyDocumentBuilder policy, List<String> allowedResources, List<String> deniedResources) {
         List<IamPolicyResponse.Statement> statements = new ArrayList<>();
         statements.addAll(allowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()));
         statements.addAll(deniedResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()));
+
         policy.withStatement(statements);
     }
 

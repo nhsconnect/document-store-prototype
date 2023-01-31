@@ -143,8 +143,7 @@ class AuthoriserTest {
 
         var expectedPolicyDocument = IamPolicyResponse.PolicyDocument.builder()
                 .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(pcseAllowedResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
-                .withStatement(clinicalAllowedResources.stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
+                .withStatement(List.of(IamPolicyResponse.denyStatement("*")))
                 .build();
 
         var expectedResponse = new IamPolicyResponse();

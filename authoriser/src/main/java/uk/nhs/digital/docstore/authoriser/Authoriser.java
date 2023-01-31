@@ -15,10 +15,7 @@ import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.Role;
 
 import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEvent, IamPolicyResponse> {
 
@@ -27,7 +24,6 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
     private final AuthConfig authConfig;
     private final Algorithm algorithm;
 
-    public final static String GENERAL_ADMIN_ORG_CODE = "X4S4L";
     public final static String ASSOCIATED_ORG = "custom:nhsid_user_orgs";
     public final static String RBAC_ROLES = "custom:nhsid_nrbac_roles";
 
@@ -82,29 +78,17 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             return iamPolicy;
 
         } catch (NullPointerException e) {
-            throw e;
+            throw new RuntimeException(e);
+
         } catch (InvalidAccessTokenException | InvalidJWTException e) {
-            var policyDocument = denyBothPolicyDocument();
 
-            var denyIamPolicy = new IamPolicyResponse();
-            denyIamPolicy.setPolicyDocument(policyDocument);
+            var policy = IamPolicyResponse.PolicyDocument.builder();
+            var policyDocument = PolicyDocumentGenerator.getDenyResourcesPolicy(policy);
 
-            return denyIamPolicy;
+            var iamPolicyResponse = new IamPolicyResponse();
+            iamPolicyResponse.setPolicyDocument(policyDocument);
+
+            return iamPolicyResponse;
         }
-    }
-
-    private IamPolicyResponse.PolicyDocument getPolicyDocument(List<String> allowedResources) {
-        return IamPolicyResponse.PolicyDocument.builder()
-                .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(allowedResources.stream().map(IamPolicyResponse::allowStatement).collect(Collectors.toList()))
-                .build();
-    }
-
-    private IamPolicyResponse.PolicyDocument denyBothPolicyDocument() {
-        return IamPolicyResponse.PolicyDocument.builder()
-                .withVersion(IamPolicyResponse.VERSION_2012_10_17)
-                .withStatement(authConfig.getResourcesForPCSEUsers().stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
-                .withStatement(authConfig.getResourcesForClinicalUsers().stream().map(IamPolicyResponse::denyStatement).collect(Collectors.toList()))
-                .build();
     }
 }
