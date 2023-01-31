@@ -187,13 +187,13 @@ resource "aws_lambda_function" "authoriser" {
   environment {
     variables = {
       AUTH_CONFIG = jsonencode({
-        allowedResourcesForPCSEUsers = [
+        resourcesForPCSEUsers = [
           local.search_patient_details_invocation_arn,
           local.search_document_reference_invocation_arn,
           local.get_document_manifest_invocation_arn,
           local.delete_document_reference_invocation_arn
         ],
-        allowedResourcesForClinicalUsers = [
+        resourcesForClinicalUsers = [
           local.search_patient_details_invocation_arn,
           local.create_document_reference_invocation_arn,
         ]
