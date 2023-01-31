@@ -1,5 +1,8 @@
 package uk.nhs.digital.docstore.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.List;
 
 public class PatientDetails {
@@ -40,5 +43,34 @@ public class PatientDetails {
 
     public NhsNumber getNhsNumber() {
         return nhsNumber;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return "PatientDetails{"
+                + "givenName='"
+                + givenName
+                + '\''
+                + ", familyName='"
+                + familyName
+                + '\''
+                + ", birthDate='"
+                + birthDate
+                + '\''
+                + ", postalCode="
+                + postalCode
+                + ", nhsNumber='"
+                + nhsNumber
+                + '}';
     }
 }

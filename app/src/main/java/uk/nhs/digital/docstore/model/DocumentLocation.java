@@ -1,5 +1,8 @@
 package uk.nhs.digital.docstore.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.net.URI;
 
 public class DocumentLocation {
@@ -15,6 +18,16 @@ public class DocumentLocation {
 
     public String getPath() {
         return location.getPath().substring(1);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override

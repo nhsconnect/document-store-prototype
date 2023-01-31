@@ -2,6 +2,9 @@ package uk.nhs.digital.docstore.model;
 
 import java.time.Instant;
 import java.util.List;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 
 public class Document {
@@ -81,5 +84,49 @@ public class Document {
 
     public void setLocation(DocumentLocation s3Location) {
         this.location = s3Location;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Document{"
+                + "referenceId='"
+                + referenceId
+                + '\''
+                + ", nhsNumber='"
+                + nhsNumber
+                + '\''
+                + ", contentType='"
+                + contentType
+                + '\''
+                + ", uploaded="
+                + uploaded
+                + ", fileName='"
+                + fileName
+                + '\''
+                + ", created='"
+                + created
+                + '\''
+                + ", deleted='"
+                + deleted
+                + '\''
+                + ", indexed='"
+                + indexed
+                + '\''
+                + ", type="
+                + type
+                + '\''
+                + ", location='"
+                + location
+                + '}';
     }
 }
