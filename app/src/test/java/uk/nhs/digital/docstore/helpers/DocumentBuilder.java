@@ -1,7 +1,6 @@
 package uk.nhs.digital.docstore.helpers;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
@@ -52,9 +51,9 @@ public class DocumentBuilder {
                     "pdf",
                     true,
                     new FileName("some title"),
-                    Instant.now().minus(10, ChronoUnit.DAYS),
+                    Instant.parse("2023-01-21T15:44:42.370623Z"),
                     null,
-                    Instant.now().minus(10, ChronoUnit.DAYS).plus(10, ChronoUnit.SECONDS),
+                    Instant.parse("2023-01-21T15:44:42.372042Z"),
                     List.of("snomed code"),
                     new DocumentLocation("s3://test-bucket/test-path"));
         } catch (IllFormedPatientDetailsException e) {
