@@ -1,9 +1,8 @@
 package uk.nhs.digital.docstore.model;
 
+import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import java.util.List;
 
 public class PatientDetails {
     private final List<PatientName> givenName;

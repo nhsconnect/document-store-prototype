@@ -1,13 +1,12 @@
 package uk.nhs.digital.docstore.model;
 
-import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 
 public class DocumentTest {
     @Test
@@ -21,37 +20,49 @@ public class DocumentTest {
         List<String> type = List.of("snomed-code");
         DocumentLocation location = new DocumentLocation("s3://test/location");
 
-        var expectedDocumentString = "Document{"
-                + "referenceId='"
-                + referenceId
-                + '\''
-                + ", nhsNumber='"
-                + nhsNumber
-                + '\''
-                + ", contentType='"
-                + contentType
-                + '\''
-                + ", uploaded="
-                + true
-                + ", fileName='"
-                + fileName
-                + '\''
-                + ", created='"
-                + created
-                + '\''
-                + ", deleted='"
-                + null
-                + '\''
-                + ", indexed='"
-                + indexed
-                + '\''
-                + ", type="
-                + type
-                + '\''
-                + ", location='"
-                + location
-                + '}';
-        var document = new Document(referenceId, nhsNumber, contentType, true, fileName, created, null, indexed, type, location);
+        var expectedDocumentString =
+                "Document{"
+                        + "referenceId='"
+                        + referenceId
+                        + '\''
+                        + ", nhsNumber='"
+                        + nhsNumber
+                        + '\''
+                        + ", contentType='"
+                        + contentType
+                        + '\''
+                        + ", uploaded="
+                        + true
+                        + ", fileName='"
+                        + fileName
+                        + '\''
+                        + ", created='"
+                        + created
+                        + '\''
+                        + ", deleted='"
+                        + null
+                        + '\''
+                        + ", indexed='"
+                        + indexed
+                        + '\''
+                        + ", type="
+                        + type
+                        + '\''
+                        + ", location='"
+                        + location
+                        + '}';
+        var document =
+                new Document(
+                        referenceId,
+                        nhsNumber,
+                        contentType,
+                        true,
+                        fileName,
+                        created,
+                        null,
+                        indexed,
+                        type,
+                        location);
 
         assertThat(document.toString()).isEqualTo(expectedDocumentString);
     }

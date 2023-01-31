@@ -1,9 +1,8 @@
 package uk.nhs.digital.docstore.model;
 
+import java.net.URI;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import java.net.URI;
 
 public class DocumentLocation {
     private final URI location;

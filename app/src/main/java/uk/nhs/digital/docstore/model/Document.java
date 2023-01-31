@@ -2,7 +2,6 @@ package uk.nhs.digital.docstore.model;
 
 import java.time.Instant;
 import java.util.List;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
