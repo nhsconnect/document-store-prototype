@@ -113,10 +113,17 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   type          = "COGNITO_USER_POOLS"
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   provider_arns = var.cloud_only_service_instances > 0 ? [
-    for pool_arn in aws_cognito_user_pool.pool[*].arn :pool_arn
+  for pool_arn in aws_cognito_user_pool.pool[*].arn :pool_arn
   ] : [
     ""
   ]
+  authorizer_credentials = aws_iam_role.lambda_execution_role.arn
+}
+
+resource "aws_api_gateway_authorizer" "custom_authoriser" {
+  name                   = custom-authoriser
+  rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
+  authorizer_uri         = aws_lambda_function.authoriser.invoke_arn
   authorizer_credentials = aws_iam_role.lambda_execution_role.arn
 }
 
@@ -180,7 +187,7 @@ resource "aws_lambda_function" "authoriser" {
   filename = var.authoriser_lambda_jar_filename
 
   source_code_hash = filebase64sha256(var.authoriser_lambda_jar_filename)
-  layers = [
+  layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
 
