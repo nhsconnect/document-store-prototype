@@ -1,8 +1,8 @@
 package uk.nhs.digital.docstore.model;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class FileNameTest {
     @Test
@@ -40,5 +40,21 @@ class FileNameTest {
         var fileName = new FileName("");
 
         assertThrows(StringIndexOutOfBoundsException.class, fileName::toString);
+    }
+
+    @Test
+    void isEqualWhenFileNameValuesAreSame() {
+        var fileName1 = new FileName("filename1.pdf");
+        var fileName2 = new FileName("filename1.pdf");
+
+        assertEquals(fileName1, fileName2);
+    }
+
+    @Test
+    void isNotEqualWhenFileNameValuesAreDifferent() {
+        var fileName1 = new FileName("filename1.pdf");
+        var fileName2 = new FileName("filename2.js");
+
+        assertNotEquals(fileName1, fileName2);
     }
 }

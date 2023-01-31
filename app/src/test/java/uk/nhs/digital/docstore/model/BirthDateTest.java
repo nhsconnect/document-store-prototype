@@ -1,9 +1,9 @@
 package uk.nhs.digital.docstore.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BirthDateTest {
 
@@ -25,5 +25,21 @@ class BirthDateTest {
     @Test
     void doesNotThrowExceptionWhenBirthDateIsAnEmptyString() {
         assertDoesNotThrow(() -> new BirthDate("").toString());
+    }
+
+    @Test
+    void isEqualWhenValuesAreSame() {
+        var birthDate1 = new BirthDate("2021-12-01");
+        var birthDate2 = new BirthDate("2021-12-01");
+
+        assertEquals(birthDate1, birthDate2);
+    }
+
+    @Test
+    void isNotEqualWhenValuesAreDifferent() {
+        var birthDate1 = new BirthDate("2021-12-01");
+        var birthDate2 = new BirthDate("2020-01-11");
+
+        assertNotEquals(birthDate1, birthDate2);
     }
 }
