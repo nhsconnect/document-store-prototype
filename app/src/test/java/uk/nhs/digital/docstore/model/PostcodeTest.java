@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 
 class PostcodeTest {
     @Test
-    void testToStringRedactsThePostCode() {
+    void redactPostcodeAsString() {
         var postcode = new Postcode("AB15 3XY");
 
         assertThat(postcode.toString()).isEqualTo("AB15 ***");
     }
 
     @Test
-    void testToStringDoesNotThrowWhenPostcodeIsEmpty() {
+    void doesNotThrowExceptionWhenPostcodeIsEmptyAsString() {
         var postcode = new Postcode("");
 
         assertDoesNotThrow(postcode::toString);

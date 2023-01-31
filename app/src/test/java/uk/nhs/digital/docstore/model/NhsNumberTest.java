@@ -23,7 +23,7 @@ class NhsNumberTest {
     }
 
     @Test
-    public void shouldRedact() throws IllFormedPatientDetailsException {
+    public void redactsNhsNumberAsString() throws IllFormedPatientDetailsException {
         var actual = new NhsNumber("1234567890");
 
         assertThat(actual.toString()).isEqualTo("123 *** ****");

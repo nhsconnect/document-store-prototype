@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 
 public class PatientNameTest {
     @Test
-    void redactsNameExceptForFirstChar() {
+    void redactPatientNameAsString() {
         assertEquals("J***", new PatientName("John").toString());
     }
 
     @Test
-    void shouldNotThrowExceptionWhenRedactingEmptyPatientName() {
+    void doesNotThrowExceptionWhenPatientNameIsEmptyAsString() {
         assertDoesNotThrow(() -> new PatientName("").toString());
     }
 }

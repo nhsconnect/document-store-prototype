@@ -1,6 +1,6 @@
 package uk.nhs.digital.docstore.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,5 +33,12 @@ class FileNameTest {
         var redactedFileName = fileName.toString();
 
         assertEquals("t***t.cy.js", redactedFileName);
+    }
+
+    @Test
+    void throwsExceptionWhenFileNameIsEmptyString() {
+        var fileName = new FileName("");
+
+        assertThrows(StringIndexOutOfBoundsException.class, fileName::toString);
     }
 }

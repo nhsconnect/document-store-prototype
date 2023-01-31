@@ -1,16 +1,18 @@
 package uk.nhs.digital.docstore.model;
 
 import java.util.Arrays;
+import javax.annotation.Nonnull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class BirthDate {
-    private final String value;
+    @Nonnull private final String value;
 
-    public BirthDate(String value) {
+    public BirthDate(@Nonnull String value) {
         this.value = value;
     }
 
+    @Nonnull
     public String getValue() {
         return this.value;
     }

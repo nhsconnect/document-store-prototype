@@ -1,15 +1,17 @@
 package uk.nhs.digital.docstore.model;
 
+import javax.annotation.Nonnull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Postcode {
-    private final String value;
+    @Nonnull private final String value;
 
-    public Postcode(String value) {
+    public Postcode(@Nonnull String value) {
         this.value = value;
     }
 
+    @Nonnull
     public String getValue() {
         return value;
     }

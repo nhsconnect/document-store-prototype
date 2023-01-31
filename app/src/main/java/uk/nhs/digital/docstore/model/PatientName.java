@@ -1,15 +1,17 @@
 package uk.nhs.digital.docstore.model;
 
+import javax.annotation.Nonnull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class PatientName {
-    private final String value;
+    @Nonnull private final String value;
 
-    public PatientName(String value) {
+    public PatientName(@Nonnull String value) {
         this.value = value;
     }
 
+    @Nonnull
     public String getValue() {
         return this.value;
     }
