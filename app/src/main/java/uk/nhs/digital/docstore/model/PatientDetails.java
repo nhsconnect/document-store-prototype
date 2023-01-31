@@ -1,22 +1,25 @@
 package uk.nhs.digital.docstore.model;
 
 import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class PatientDetails {
-    private final List<PatientName> givenName;
-    private final PatientName familyName;
-    private final BirthDate birthDate;
-    private final Postcode postalCode;
-    private final NhsNumber nhsNumber;
+    @Nullable private final List<PatientName> givenName;
+    @Nullable private final PatientName familyName;
+    @Nullable private final BirthDate birthDate;
+    @Nullable private final Postcode postalCode;
+    @Nonnull private final NhsNumber nhsNumber;
 
     public PatientDetails(
-            List<PatientName> givenName,
-            PatientName familyName,
-            BirthDate birthDate,
-            Postcode postalCode,
-            NhsNumber nhsNumber) {
+            @Nullable List<PatientName> givenName,
+            @Nullable PatientName familyName,
+            @Nullable BirthDate birthDate,
+            @Nullable Postcode postalCode,
+            @Nonnull NhsNumber nhsNumber) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.birthDate = birthDate;
@@ -24,22 +27,23 @@ public class PatientDetails {
         this.nhsNumber = nhsNumber;
     }
 
-    public List<PatientName> getGivenName() {
-        return givenName;
+    public Optional<List<PatientName>> getGivenName() {
+        return Optional.ofNullable(givenName);
     }
 
-    public PatientName getFamilyName() {
-        return familyName;
+    public Optional<PatientName> getFamilyName() {
+        return Optional.ofNullable(familyName);
     }
 
-    public BirthDate getBirthDate() {
-        return birthDate;
+    public Optional<BirthDate> getBirthDate() {
+        return Optional.ofNullable(birthDate);
     }
 
-    public Postcode getPostalCode() {
-        return postalCode;
+    public Optional<Postcode> getPostalCode() {
+        return Optional.ofNullable(postalCode);
     }
 
+    @Nonnull
     public NhsNumber getNhsNumber() {
         return nhsNumber;
     }

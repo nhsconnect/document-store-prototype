@@ -106,6 +106,7 @@ public class Patient {
     public PatientDetails parse() throws IllFormedPatientDetailsException {
         var currentName = this.getCurrentUsualName();
         var currentHomeAddress = this.getCurrentHomeAddress();
+
         return new PatientDetails(
                 currentName
                         .map(
@@ -117,11 +118,8 @@ public class Patient {
                 currentName.map((name) -> new PatientName(name.getFamily())).orElse(null),
                 birthDate == null ? null : new BirthDate(birthDate),
                 currentHomeAddress
-                        .map(
-                                (address) ->
-                                        address.getPostalCode() == null
-                                                ? null
-                                                : new Postcode(address.getPostalCode()))
+                        .filter(address -> address.getPostalCode() != null)
+                        .map(address -> new Postcode(address.getPostalCode()))
                         .orElse(null),
                 new NhsNumber(id));
     }

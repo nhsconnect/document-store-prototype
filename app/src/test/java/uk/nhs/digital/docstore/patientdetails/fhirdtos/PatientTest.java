@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.patientdetails.fhirdtos;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -180,20 +181,22 @@ public class PatientTest {
         var givenPatientName = List.of(new PatientName("Jane"), new PatientName("John"));
         var postalCode = "LS1 6AE";
         var birthDate = "1998-07-11";
-
         var currentPeriod = new Period(LocalDate.now().minusYears(1), null);
         var currentName = new Name(currentPeriod, "usual", givenName, familyName);
         var currentAddress = new Address(currentPeriod, postalCode, "home");
-
         var fhirPatient =
                 new Patient(nhsNumber, birthDate, List.of(currentAddress), List.of(currentName));
 
         var patientDetails = fhirPatient.parse();
 
-        assertThat(patientDetails.getBirthDate()).isEqualTo(new BirthDate(birthDate));
-        assertThat(patientDetails.getFamilyName()).isEqualTo(new PatientName(familyName));
-        assertThat(patientDetails.getGivenName()).isEqualTo(givenPatientName);
-        assertThat(patientDetails.getPostalCode()).isEqualTo(new Postcode(postalCode));
+        assertTrue(patientDetails.getBirthDate().isPresent());
+        assertThat(patientDetails.getBirthDate().get()).isEqualTo(new BirthDate(birthDate));
+        assertTrue(patientDetails.getFamilyName().isPresent());
+        assertThat(patientDetails.getFamilyName().get()).isEqualTo(new PatientName(familyName));
+        assertTrue(patientDetails.getGivenName().isPresent());
+        assertThat(patientDetails.getGivenName().get()).isEqualTo(givenPatientName);
+        assertTrue(patientDetails.getPostalCode().isPresent());
+        assertThat(patientDetails.getPostalCode().get()).isEqualTo(new Postcode(postalCode));
         assertThat(patientDetails.getNhsNumber().getValue()).isEqualTo(nhsNumber);
     }
 }

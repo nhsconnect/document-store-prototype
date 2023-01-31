@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import uk.nhs.digital.docstore.model.BirthDate;
@@ -29,21 +30,19 @@ public class ClientPatientDetailsDto {
     }
 
     public List<String> getGivenName() {
-        return givenName == null
-                ? null
-                : givenName.stream().map(PatientName::getValue).collect(Collectors.toList());
+        return givenName.stream().map(PatientName::getValue).collect(Collectors.toList());
     }
 
     public String getFamilyName() {
-        return familyName == null ? null : familyName.getValue();
+        return familyName.getValue();
     }
 
     public String getBirthDate() {
-        return birthDate == null ? null : birthDate.getValue();
+        return birthDate.getValue();
     }
 
     public String getPostalCode() {
-        return postalCode == null ? null : postalCode.getValue();
+        return postalCode.getValue();
     }
 
     public String getNhsNumber() {
@@ -52,10 +51,10 @@ public class ClientPatientDetailsDto {
 
     public static ClientPatientDetailsDto fromPatientDetails(PatientDetails patientDetails) {
         return new ClientPatientDetailsDto(
-                patientDetails.getGivenName(),
-                patientDetails.getFamilyName(),
-                patientDetails.getBirthDate(),
-                patientDetails.getPostalCode(),
+                patientDetails.getGivenName().orElse(Collections.emptyList()),
+                patientDetails.getFamilyName().orElse(new PatientName("")),
+                patientDetails.getBirthDate().orElse(new BirthDate("")),
+                patientDetails.getPostalCode().orElse(new Postcode("")),
                 patientDetails.getNhsNumber());
     }
 }
