@@ -63,11 +63,6 @@ resource "aws_iam_role_policy_attachment" "splunk_access_policy_attachment" {
   policy_arn = aws_iam_policy.splunk_access_policy.arn
 }
 
-resource "aws_iam_role" "authoriser_execution" {
-  name               = "AuthoriserExecute"
-  description        = "Role to allow authoriser to execute"
-  assume_role_policy = data.aws_iam_policy_document.authoriser_execution_access_policy_document.json
-}
 
 data "aws_iam_policy_document" "authoriser_execution_access_policy_document" {
   statement {
@@ -76,3 +71,30 @@ data "aws_iam_policy_document" "authoriser_execution_access_policy_document" {
     resources = ["*"]
   }
 }
+
+data "aws_iam_policy_document" "authoriser_trust_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      identifiers = ["apigateway.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
+resource "aws_iam_role" "authoriser_execution" {
+  name               = "AuthoriserExecute"
+  description        = "Role to allow authoriser to execute"
+  assume_role_policy = data.aws_iam_policy_document.authoriser_trust_policy.json
+}
+
+resource "aws_iam_policy" "authoriser_access_policy" {
+  name   = "authoriser_access_policy"
+  policy = data.aws_iam_policy_document.authoriser_execution_access_policy_document.json
+}
+
+resource "aws_iam_role_policy_attachment" "authoriser_execution_access_policy_attachment" {
+  role       = aws_iam_role.authoriser_execution_role.name
+  policy_arn = aws_iam_policy.authoriser_access_policy.arn
+}
+

@@ -127,16 +127,6 @@ resource "aws_api_gateway_authorizer" "custom_authoriser" {
   authorizer_credentials = aws_iam_role.authoriser_execution.arn
 }
 
-resource "aws_iam_policy" "authoriser_access_policy" {
-  name   = "authoriser_access_policy"
-  policy = data.aws_iam_policy_document.authoriser_execution_access_policy_document.json
-}
-
-resource "aws_iam_role_policy_attachment" "authoriser_execution_access_policy_attachment" {
-  role       = aws_iam_role.authoriser_execution_role.name
-  policy_arn = aws_iam_policy.authoriser_access_policy.arn
-}
-
 resource "aws_lambda_permission" "s3_permission_for_document_upload_event" {
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
