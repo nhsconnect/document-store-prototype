@@ -63,12 +63,26 @@ resource "aws_iam_role_policy_attachment" "splunk_access_policy_attachment" {
   policy_arn = aws_iam_policy.splunk_access_policy.arn
 }
 
-
 data "aws_iam_policy_document" "authoriser_execution_access_policy_document" {
   statement {
     effect    = "Allow"
     actions   = ["lambda:InvokeFunction"]
     resources = ["*"]
+  }
+  statement {
+    effect  = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    effect  = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["arn:aws:logs:*:*:log-group:/aws/lambda-insights:*"]
   }
 }
 
