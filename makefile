@@ -1,7 +1,7 @@
 default: help
 
 .PHONY: pre-push
-pre-push: format lint test-ui test-app test-e2e ## Format, lint, & run unit, integration, & E2E tests
+pre-push: format lint test-ui test-app test-e2e ## Format, lint, & test
 
 .PHONY: format
 format: format-ui format-app format-e2e-test ## Format files
@@ -19,7 +19,7 @@ format-e2e-test: ## Format /e2eTest files
 	cd e2eTest && npm run format
 
 .PHONY: lint
-lint: lint-ui lint-e2e-test ## Lint files in /ui & /e2eTest.  Todo: BE linting
+lint: lint-ui lint-e2e-test ## Lint /ui & /e2eTest files.  Todo: BE linting
 
 .PHONY: lint-ui
 lint-ui: ## Lint /ui files
@@ -28,6 +28,9 @@ lint-ui: ## Lint /ui files
 .PHONY: lint-e2e-test
 lint-e2e-test: ## Lint /e2eTest files
 	cd e2eTest && npm run lint
+
+.PHONY: test
+test: test-ui test-app test-e2e ## Run all unit, integration, & E2E tests
 
 .PHONY: test-ui
 test-ui: ## Run /ui tests
@@ -49,11 +52,11 @@ test-app-integration: ## Run /app integration tests
 	./gradlew e2eTest
 
 .PHONY: test-e2e
-test-e2e: ## Run E2E test (without visible browser)
+test-e2e: ## Run E2E tests (without visible browser)
 	cd e2eTest && npm run test
 
 .PHONY: test-e2e-open
-test-e2e-open: ## Run E2E test (with visible browser)
+test-e2e-open: ## Run E2E tests (with visible browser)
 	cd e2eTest && npm run test:open
 
 .PHONY: install
@@ -74,6 +77,10 @@ install-e2e-test: ## Install /e2eTest dependencies
 .PHONY: build-and-deploy-to-localstack
 build-and-deploy-to-localstack: build-api-jars deploy-to-localstack ## Build & deploy to LocalStack
 
+.PHONY: build-ui
+build-ui: ## Build the UI
+	cd ui && npm run build
+
 .PHONY: build-api-jars
 build-api-jars: ## Build API JARs
 	./tasks build-api-jars
@@ -82,13 +89,13 @@ build-api-jars: ## Build API JARs
 deploy-to-localstack: ## Deploy to LocalStack
 	./tasks deploy-to-localstack
 
-.PHONY: start-localstack
-start-localstack: ## Start LocalStack
-	./tasks start-localstack
-
 .PHONY: start-ui
 start-ui: ## Start the UI
 	cd ui && npm start
+
+.PHONY: start-localstack
+start-localstack: ## Start LocalStack
+	./tasks start-localstack
 
 .PHONY: view-terraform-logs
 view-terraform-logs: ## View Terraform logs
