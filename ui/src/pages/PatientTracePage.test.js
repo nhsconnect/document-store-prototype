@@ -286,7 +286,7 @@ describe("PatientTracePage", () => {
         startSearch();
 
         await waitFor(() => {
-            expect(screen.getByText("Try again later.")).toBeInTheDocument();
+            expect(screen.getByRole("alert")).toBeInTheDocument();
         });
         expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Search" })).toBeInTheDocument();

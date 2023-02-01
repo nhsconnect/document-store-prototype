@@ -30,7 +30,7 @@ const UploadSummary = ({ patientDetails, documents }) => {
                                 for future reference.
                             </p>
                             <p>
-                                If the issue persists please contact the{" "}
+                                Please check your internet connection. If the issue persists please contact the{" "}
                                 <a href={"https://digital.nhs.uk/about-nhs-digital/contact-us"}>
                                     NHS Digital National Service Desk
                                 </a>

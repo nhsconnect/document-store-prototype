@@ -8,7 +8,6 @@ import useApi from "../apiClients/useApi";
 import PatientSummary from "../components/PatientSummary";
 import SimpleProgressBar from "../components/SimpleProgressBar";
 import ServiceError from "../components/ServiceError";
-// import ServiceError from "../components/ServiceError";
 
 const states = {
     IDLE: "idle",
