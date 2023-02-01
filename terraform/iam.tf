@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "authoriser_trust_policy" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
-      identifiers = ["lambda.amazonaws.com"]
+      identifiers = ["lambda.amazonaws.com", "apigateway.amazonaws.com"]
       type        = "Service"
     }
   }
