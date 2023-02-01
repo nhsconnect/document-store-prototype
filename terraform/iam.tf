@@ -108,7 +108,7 @@ resource "aws_iam_policy" "authoriser_access_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "authoriser_execution_access_policy_attachment" {
-  role       = aws_iam_role.authoriser_execution_role.name
+  role       = aws_iam_role.authoriser_execution.name
   policy_arn = aws_iam_policy.authoriser_access_policy.arn
 }
 
