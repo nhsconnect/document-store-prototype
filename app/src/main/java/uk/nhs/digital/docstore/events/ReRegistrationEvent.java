@@ -9,14 +9,15 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReRegistrationEvent {
     private final NhsNumber nhsNumber;
     private final String nemsMessageId;
 
-    public ReRegistrationEvent(@JsonProperty("nhsNumber") String nhsNumber,
-                               @JsonProperty("nemsMessageId") String nemsMessageId) throws IllFormedPatientDetailsException {
+    public ReRegistrationEvent(
+            @JsonProperty("nhsNumber") String nhsNumber,
+            @JsonProperty("nemsMessageId") String nemsMessageId)
+            throws IllFormedPatientDetailsException {
         this.nhsNumber = new NhsNumber(nhsNumber);
         this.nemsMessageId = nemsMessageId;
     }
@@ -39,5 +40,4 @@ public class ReRegistrationEvent {
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
-
 }
