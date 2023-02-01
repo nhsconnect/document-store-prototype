@@ -90,6 +90,14 @@ start-localstack: ## Start LocalStack
 start-ui: ## Start the UI
 	cd ui && npm start
 
+.PHONY: view-terraform-logs
+view-terraform-logs: ## View Terraform logs
+	./tasks view-terraform-logs
+
+.PHONY: view-localstack-logs
+view-localstack-logs: ## View LocalStack logs
+	./tasks view-localstack-logs
+
 .PHONY: help
 help: ## Show help
 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'
