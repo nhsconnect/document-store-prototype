@@ -72,7 +72,7 @@ resource "aws_iam_role" "authoriser_execution" {
 data "aws_iam_policy_document" "authoriser_execution_access_policy_document" {
   statement {
     effect    = "Allow"
-    actions   = "lambda:InvokeFunction"
-    resources = "*"
+    actions   = ["lambda:InvokeFunction"]
+    resources = ["*"]
   }
 }
