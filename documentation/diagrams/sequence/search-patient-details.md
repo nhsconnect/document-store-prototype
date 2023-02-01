@@ -30,5 +30,8 @@ sequenceDiagram
     API Gateway-->>AWS Amplify: 200 PatientDetails
     deactivate API Gateway
     AWS Amplify-->>GP Practice/PCSE User: Displays patient details
+    loop Every 5 mins
+        Splunk-->>SQS: Polls for audit messages
+    end
     deactivate AWS Amplify
 ```

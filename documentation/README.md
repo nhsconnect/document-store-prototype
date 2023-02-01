@@ -14,7 +14,7 @@ diagrams dynamically.
 To create a new Mermaid diagram, create a new `.md` file in the appropriate directory within [diagrams](diagrams) and
 wrap your diagram in a code
 block specified with `mermaid`. You can use [Mermaid Live Editor](https://mermaid.live/edit) to help the diagrams and
-the code to go inside of the aforementioned code block in the Markdown.
+the code to go inside the aforementioned code block in the Markdown.
 
 ### IntelliJ Setup
 
