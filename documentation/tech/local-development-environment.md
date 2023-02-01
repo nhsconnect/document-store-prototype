@@ -48,7 +48,7 @@ LocalStack state.
 At this point, we have a docker network running that looks like this (dashed lines indicate ephemeral containers that
 only run for the duration of their entrypoint script):
 
-![Local dev env network diagram](/Users/ryan/Projects/nhs/document-store-prototype/documentation/tech/local-dev-env.png)
+![Local dev env network diagram](../images/local-dev-env.png)
 
 You'll have noticed that there are several elements we haven't covered yet in that diagram. Let's take a look at those.
 
