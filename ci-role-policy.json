@@ -179,6 +179,7 @@
         "iam:PassRole",
         "iam:PutRolePolicy",
         "iam:CreatePolicy",
+        "iam:CreatePolicyVersion",
         "iam:GetPolicy",
         "iam:GetPolicyVersion",
         "iam:ListPolicyVersions",
