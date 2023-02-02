@@ -120,8 +120,8 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   authorizer_credentials = aws_iam_role.lambda_execution_role.arn
 }
 
-resource "aws_api_gateway_authorizer" "custom_authoriser" {
-  name                   = "custom_authoriser"
+resource "aws_api_gateway_authorizer" "cis2_authoriser" {
+  name                   = "cis2_authoriser"
   rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
   authorizer_uri         = aws_lambda_function.authoriser.invoke_arn
   authorizer_credentials = aws_iam_role.authoriser_execution.arn

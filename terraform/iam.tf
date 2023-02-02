@@ -97,7 +97,7 @@ data "aws_iam_policy_document" "authoriser_trust_policy" {
 }
 
 resource "aws_iam_role" "authoriser_execution" {
-  name               = "AuthoriserExecute"
+  name               = "AuthoriserExecution"
   description        = "Role to allow authoriser to execute"
   assume_role_policy = data.aws_iam_policy_document.authoriser_trust_policy.json
 }
