@@ -16,6 +16,24 @@ resource "aws_cloudwatch_metric_alarm" "sensitive_index_age_of_oldest_message" {
   ok_actions          = [aws_sns_topic.alarm_notifications.arn]
 }
 
+resource "aws_cloudwatch_metric_alarm" "sensitive_nems_index_age_of_oldest_message" {
+  alarm_name        = "prs_${var.environment}_sensitive_nems_index_age_of_oldest_message"
+  alarm_description = "Triggers when a message has been in the ${aws_sqs_queue.sensitive_nems_audit.name} queue for more than 10 minutes."
+  namespace         = "AWS/SQS"
+  dimensions        = {
+    QueueName = aws_sqs_queue.sensitive_nems_audit.name
+  }
+  metric_name         = "ApproximateAgeOfOldestMessage"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = "600"
+  period              = "1800"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
+  actions_enabled     = "true"
+  alarm_actions       = [aws_sns_topic.alarm_notifications.arn]
+  ok_actions          = [aws_sns_topic.alarm_notifications.arn]
+}
+
 resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
   alarm_name        = "prs_${var.environment}_doc_store_api_5xx_error"
   alarm_description = "Triggers when a 5xx status code has been returned by the DocStoreAPI."
