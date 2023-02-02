@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -8,6 +9,10 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,6 +26,7 @@ import uk.nhs.digital.docstore.handlers.ReRegistrationEventHandler;
 import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 import uk.nhs.digital.docstore.helpers.BaseUriHelper;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
@@ -57,13 +63,29 @@ public class ReRegistrationEventInlineTest {
                         publisher, documentStore, metadataStore, new DocumentMetadataSerialiser());
 
         var handler = new ReRegistrationEventHandler(deletionService);
-        var snsEvent = new SNSEvent();
+        var message =
+                new JSONObject()
+                        .put("nhsNumber", nhsNumber.getValue())
+                        .put("newlyRegisteredOdsCode", "TEST123")
+                        .put("nemsMessageId", "some id")
+                        .put("lastUpdated", "some date")
+                        .toString();
+        var sns = new SNSEvent.SNS().withMessage(message);
+        var snsRecord = new SNSEvent.SNSRecord().withSns(sns);
+        var snsEvent = new SNSEvent().withRecords(List.of(snsRecord));
         var metadata = DocumentMetadataBuilder.theMetadata().withNhsNumber(nhsNumber).build();
+        var content = "content of file stored in S3";
 
         metadataStore.save(metadata);
+        documentStore.addDocument(
+                new DocumentLocation(metadata.getLocation()).getPath(),
+                new ByteArrayInputStream(content.getBytes()));
 
         handler.handleRequest(snsEvent, context);
 
         assertThat(metadataStore.findByNhsNumber(nhsNumber)).isEmpty();
+        assertThrows(
+                AmazonS3Exception.class,
+                () -> documentStore.getObjectFromS3(new DocumentLocation(metadata.getLocation())));
     }
 }

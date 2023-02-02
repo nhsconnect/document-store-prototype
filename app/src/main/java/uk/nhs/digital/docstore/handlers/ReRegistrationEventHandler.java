@@ -8,8 +8,7 @@ import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
-import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.events.ReRegistrationEvent;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
 public class ReRegistrationEventHandler implements RequestHandler<SNSEvent, Void> {
@@ -30,14 +29,19 @@ public class ReRegistrationEventHandler implements RequestHandler<SNSEvent, Void
 
     @Override
     public Void handleRequest(SNSEvent snsEvent, Context context) {
-        try {
-            var nhsNumber = new NhsNumber("9890123456");
+        snsEvent.getRecords()
+                .forEach(
+                        record -> {
+                            var message = record.getSNS().getMessage();
+                            var reRegistrationEvent = ReRegistrationEvent.parse(message);
+                            var nhsNumber = reRegistrationEvent.getNhsNumber();
+                            try {
+                                deletionService.deleteAllDocumentsForPatient(nhsNumber);
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
 
-            deletionService.deleteAllDocumentsForPatient(nhsNumber);
-
-        } catch (IllFormedPatientDetailsException | JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
         return null;
     }
 }

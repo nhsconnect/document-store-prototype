@@ -22,6 +22,10 @@ public class ReRegistrationEvent {
         this.nemsMessageId = nemsMessageId;
     }
 
+    public NhsNumber getNhsNumber() {
+        return nhsNumber;
+    }
+
     public static ReRegistrationEvent parse(String message) {
         var objectMapper = JsonMapper.builder().build();
         try {
