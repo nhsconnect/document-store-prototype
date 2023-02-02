@@ -14,6 +14,7 @@ sequenceDiagram
     deactivate React Web App
     GP Practice/PCSE User->>React Web App: Searches for patient
     activate React Web App
+    React Web App-->>GP Practice/PCSE User: Displays loading bar
     React Web App->>API Gateway: GET /PatientDetails
     activate API Gateway
     API Gateway->>Lambda: Invokes SearchPatientDetailsHandler
