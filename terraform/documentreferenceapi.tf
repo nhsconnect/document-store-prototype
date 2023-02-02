@@ -136,7 +136,7 @@ locals {
     S3_ENDPOINT                = var.s3_endpoint
     S3_USE_PATH_STYLE          = var.s3_use_path_style
     SQS_ENDPOINT               = var.sqs_endpoint
-    SQS_QUEUE_URL              = aws_sqs_queue.sensitive_audit.url
+    SQS_AUDIT_QUEUE_URL        = aws_sqs_queue.sensitive_audit.url
   }
   amplify_base_url = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
 }

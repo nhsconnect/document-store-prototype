@@ -32,7 +32,7 @@ public class SplunkPublisher implements AuditPublisher {
     }
 
     public void publish(AuditMessage auditMessage) throws JsonProcessingException {
-        var queueUrl = System.getenv("SQS_QUEUE_URL");
+        var queueUrl = System.getenv("SQS_AUDIT_QUEUE_URL");
         var messageRequest =
                 new SendMessageRequest()
                         .withQueueUrl(queueUrl)
