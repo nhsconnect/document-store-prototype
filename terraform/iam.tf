@@ -41,7 +41,10 @@ resource "aws_iam_role_policy" "sensitive_audit" {
           "sqs:SendMessage",
           "sqs:GetQueueUrl"
         ],
-        "Resource" : aws_sqs_queue.sensitive_audit.arn
+        "Resource" : [
+          aws_sqs_queue.sensitive_audit.arn,
+          aws_sqs_queue.sensitive_nems_audit.arn
+        ]
       }
     ]
   })

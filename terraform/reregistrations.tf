@@ -11,6 +11,8 @@ resource "aws_lambda_function" "re_registration_lambda" {
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {
-    variables = local.common_environment_variables
+    variables = merge({
+      NEMS_SQS_AUDIT_QUEUE_URL = aws_sqs_queue.sensitive_nems_audit.url
+    }, local.common_environment_variables)
   }
 }
