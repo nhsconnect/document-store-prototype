@@ -90,6 +90,15 @@ module delete_document_reference_alarms {
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
 }
 
+module re_registration_alarms{
+  source = "./modules/lambda_alarms"
+  lambda_function_name = aws_lambda_function.re_registration_lambda.function_name
+  lambda_timeout = aws_lambda_function.re_registration_lambda.timeout
+  lambda_short_name = "re_registration_event_handler"
+   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+}
+
+
 resource "aws_sns_topic" "alarm_notifications" {
   name   = "alarms-notifications-topic"
   policy = jsonencode({
