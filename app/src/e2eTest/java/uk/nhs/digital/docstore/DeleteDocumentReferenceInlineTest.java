@@ -1,5 +1,10 @@
 package uk.nhs.digital.docstore;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
@@ -8,6 +13,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.ByteArrayInputStream;
+import java.util.HashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,14 +34,6 @@ import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
-
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class DeleteDocumentReferenceInlineTest {
@@ -72,14 +71,18 @@ public class DeleteDocumentReferenceInlineTest {
         documentStore = new DocumentStore(s3Client, bucketName);
         var deletionService =
                 new DocumentDeletionService(
-                        auditPublisher, documentStore, documentMetadataStore, new DocumentMetadataSerialiser());
+                        auditPublisher,
+                        documentStore,
+                        documentMetadataStore,
+                        new DocumentMetadataSerialiser());
 
         deleteDocumentReferenceHandler =
                 new DeleteDocumentReferenceHandler(apiConfig, deletionService);
     }
 
     @Test
-    void deletesDocumentAndPublishesAuditMessage() throws JsonProcessingException, IllFormedPatientDetailsException {
+    void deletesDocumentAndPublishesAuditMessage()
+            throws JsonProcessingException, IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("1234567890");
         var metadata = DocumentMetadataBuilder.theMetadata().withNhsNumber(nhsNumber).build();
         var content = "content of file stored in S3";
@@ -101,7 +104,8 @@ public class DeleteDocumentReferenceInlineTest {
 
     private APIGatewayProxyRequestEvent createRequestEvent(NhsNumber nhsNumber) {
         HashMap<String, String> parameters = new HashMap<>();
-        parameters.put("subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|" + nhsNumber.getValue());
+        parameters.put(
+                "subject:identifier", "https://fhir.nhs.uk/Id/nhs-number|" + nhsNumber.getValue());
 
         return new APIGatewayProxyRequestEvent().withQueryStringParameters(parameters);
     }
