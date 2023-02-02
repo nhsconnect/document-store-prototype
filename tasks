@@ -297,4 +297,10 @@ bootstrap-ci-role)
 _bootstrap-ci-role)
   aws iam create-role --role-name=ci-agent --assume-role-policy-document=file://ci-assume-role-policy.json
   ;;
+_java-dependency-scan)
+  gradle dependencyCheckAnalyze
+  ;;
+java-dependency-scan)
+  dojo "./tasks _java-dependency-scan"
+  ;;
 esac
