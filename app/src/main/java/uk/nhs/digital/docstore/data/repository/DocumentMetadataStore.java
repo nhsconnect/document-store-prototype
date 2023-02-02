@@ -71,6 +71,7 @@ public class DocumentMetadataStore extends DynamoDbConnection {
 
     public List<DocumentMetadata> deleteAndSave(List<DocumentMetadata> documentMetadataList) {
         List<DocumentMetadata> metadataList = new ArrayList<>();
+        // TODO: consider using DynamoDB batch operation to save network requests, if possible
         documentMetadataList.forEach(
                 documentMetadata -> {
                     documentMetadata.setDeleted(Instant.now().toString());

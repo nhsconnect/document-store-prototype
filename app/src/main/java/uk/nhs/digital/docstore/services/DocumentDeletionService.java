@@ -40,6 +40,7 @@ public class DocumentDeletionService {
             documentMetadataList = metadataStore.deleteAndSave(documentMetadataList);
 
             LOGGER.debug("Deleting documents from S3");
+            // TODO: consider using S3 delete objects operation to save network requests, if possible
             documentMetadataList.forEach(
                     documentMetadata -> {
                         try {
