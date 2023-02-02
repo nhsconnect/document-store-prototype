@@ -1,11 +1,10 @@
 package uk.nhs.digital.docstore.audit.message;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import uk.nhs.digital.docstore.audit.FileMetadata;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.NhsNumber;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class ReRegistrationAuditMessage extends PatientRelatedAuditMessage implements AuditMessage {
     private final List<FileMetadata> fileMetadataList;
