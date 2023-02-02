@@ -86,7 +86,7 @@ class ApiClient {
     }
 
     async getPatientDetails(nhsNumber) {
-        const data = await this.api.get("doc-store-api", "/PatientDetails", {
+        return await this.api.get("doc-store-api", "/PatientDetails", {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${this.user.id_token}`,
@@ -95,8 +95,6 @@ class ApiClient {
                 "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
             },
         });
-
-        return data;
     }
 
     async getPresignedUrlForZip(nhsNumber) {
