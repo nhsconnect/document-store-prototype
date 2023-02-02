@@ -1,4 +1,4 @@
-# Upload Documents Journey
+# Upload Documents
 
 The user journey diagram below illustrates the journey that the user goes through when uploading documents.
 
