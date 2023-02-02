@@ -28,6 +28,7 @@ public class DocumentMetadataStore extends DynamoDbConnection {
         return mapper.load(DocumentMetadata.class, id);
     }
 
+    // TODO: Query using locations index instead of performing a full table scan. Will require changing projection type of locations index to "ALL" instead of "KEYS_ONLY" so that all attributes can be accessed
     public DocumentMetadata getByLocation(DocumentLocation location) {
         List<DocumentMetadata> items =
                 mapper.scan(
