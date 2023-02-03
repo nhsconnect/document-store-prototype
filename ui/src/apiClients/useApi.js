@@ -1,12 +1,11 @@
 import { useAuth } from "react-oidc-context";
 import axios from "axios";
-import { useConfig } from "../utils/useConfig";
+import config from "../config";
 import { useMemo } from "react";
 
 export const useApiRequest = (apiName) => {
     const { user } = useAuth();
-    const { API } = useConfig();
-    const baseUrl = API.endpoints.find((endpoint) => endpoint.name === apiName).endpoint;
+    const baseUrl = config.API.endpoints.find((endpoint) => endpoint.name === apiName).endpoint;
     return useMemo(
         () =>
             axios.create({
