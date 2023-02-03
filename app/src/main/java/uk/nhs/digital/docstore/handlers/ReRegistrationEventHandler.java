@@ -36,7 +36,10 @@ public class ReRegistrationEventHandler implements RequestHandler<SNSEvent, Void
                             var reRegistrationEvent = ReRegistrationEvent.parse(message);
                             var nhsNumber = reRegistrationEvent.getNhsNumber();
                             try {
+                                var deletedDocuments =
                                         deletionService.deleteAllDocumentsForPatient(nhsNumber);
+                                deletionService.reRegistrationAudit(
+                                        reRegistrationEvent, deletedDocuments);
                             } catch (JsonProcessingException e) {
                                 throw new RuntimeException(e);
                             }

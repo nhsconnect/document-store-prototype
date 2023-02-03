@@ -26,13 +26,8 @@ public class ReRegistrationEvent {
         return nhsNumber;
     }
 
-    public static ReRegistrationEvent parse(String message) {
-        var objectMapper = JsonMapper.builder().build();
-        try {
-            return objectMapper.readValue(message, ReRegistrationEvent.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    public String getNemsMessageId() {
+        return nemsMessageId;
     }
 
     @Override
@@ -43,5 +38,14 @@ public class ReRegistrationEvent {
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    public static ReRegistrationEvent parse(String message) {
+        var objectMapper = JsonMapper.builder().build();
+        try {
+            return objectMapper.readValue(message, ReRegistrationEvent.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

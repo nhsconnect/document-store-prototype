@@ -2,13 +2,16 @@ package uk.nhs.digital.docstore.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.message.DeletedAllDocumentsAuditMessage;
+import uk.nhs.digital.docstore.audit.message.ReRegistrationAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.events.ReRegistrationEvent;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.NhsNumber;
@@ -31,7 +34,8 @@ public class DocumentDeletionService {
         this.serialiser = serialiser;
     }
 
-    public void deleteAllDocumentsForPatient(NhsNumber nhsNumber) throws JsonProcessingException {
+    public List<Document> deleteAllDocumentsForPatient(NhsNumber nhsNumber)
+            throws JsonProcessingException {
         var documentMetadataList = metadataStore.findByNhsNumber(nhsNumber);
         var documentList = new ArrayList<Document>();
 
@@ -59,8 +63,19 @@ public class DocumentDeletionService {
                         }
                     });
         }
+        return documentList;
+    }
 
+    public void deleteAllDocumentsAudit(NhsNumber nhsNumber, List<Document> documentList)
+            throws JsonProcessingException {
         sensitiveIndexPublisher.publish(
                 new DeletedAllDocumentsAuditMessage(nhsNumber, documentList));
+    }
+
+    public void reRegistrationAudit(
+            ReRegistrationEvent reRegistrationEvent, List<Document> documentList)
+            throws JsonProcessingException {
+        sensitiveIndexPublisher.publish(
+                new ReRegistrationAuditMessage(reRegistrationEvent, documentList));
     }
 }

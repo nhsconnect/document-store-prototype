@@ -54,7 +54,8 @@ public class DeleteDocumentReferenceHandler
             var nhsNumberSearchParameterForm =
                     new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
             var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
-            documentDeletionService.deleteAllDocumentsForPatient(nhsNumber);
+            var deletedDocuments = documentDeletionService.deleteAllDocumentsForPatient(nhsNumber);
+            documentDeletionService.deleteAllDocumentsAudit(nhsNumber, deletedDocuments);
 
             LOGGER.debug("Processing finished - about to return the response");
             var body = getJsonBody();
