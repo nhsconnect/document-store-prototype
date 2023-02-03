@@ -1,9 +1,7 @@
-import { Amplify, API } from "aws-amplify";
 import React from "react";
 import { BrowserRouter as Router, Outlet, Route, Routes } from "react-router-dom";
 import "./App.scss";
 import config from "./config";
-import ApiClient from "./apiClients/apiClient";
 import Authenticator from "./components/Authenticator/Authenticator";
 import HomePage from "./pages/HomePage";
 import Layout from "./components/layout";
@@ -18,9 +16,6 @@ import AuthenticationCallbackRouter from "./components/Authenticator/Authenticat
 import AuthProvider from "./components/Authenticator/AuthProvider";
 import DeleteDocumentsConfirmationPage from "./pages/DeleteDocumentsConfirmationPage";
 
-Amplify.configure({ API: config.API });
-
-const client = new ApiClient(API);
 const AppRoutes = () => {
     return (
         <Routes>
@@ -42,15 +37,12 @@ const AppRoutes = () => {
                         </PatientDetailsProvider>
                     }
                 >
-                    <Route
-                        path="/search/patient-trace"
-                        element={<PatientTracePage client={client} nextPage={"/search/results"} />}
-                    />
+                    <Route path="/search/patient-trace" element={<PatientTracePage nextPage={"/search/results"} />} />
                     <Route
                         path="/search/results"
                         element={
                             <DeleteDocumentsResponseProvider>
-                                <SearchResultsPage client={client} />
+                                <SearchResultsPage />
                             </DeleteDocumentsResponseProvider>
                         }
                     />
@@ -73,14 +65,8 @@ const AppRoutes = () => {
                         </PatientDetailsProvider>
                     }
                 >
-                    <Route
-                        path="/upload/patient-trace"
-                        element={<PatientTracePage client={client} nextPage={"/upload/submit"} />}
-                    />
-                    <Route
-                        path="/upload/submit"
-                        element={<UploadDocumentPage client={client} nextPagePath={"/home"} />}
-                    />
+                    <Route path="/upload/patient-trace" element={<PatientTracePage nextPage={"/upload/submit"} />} />
+                    <Route path="/upload/submit" element={<UploadDocumentPage nextPagePath={"/home"} />} />
                 </Route>
             </Route>
         </Routes>

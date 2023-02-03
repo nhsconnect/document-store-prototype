@@ -1,25 +1,9 @@
 import { renderHook } from "@testing-library/react-hooks";
-import ApiClient from "./apiClient";
-import useApi, { useApiRequest } from "./useApi";
-import { API } from "aws-amplify";
+import { useApiRequest } from "./useApi";
 import { useAuth } from "react-oidc-context";
 import config from "../config";
 
-jest.mock("./apiClient");
-jest.mock("aws-amplify");
 jest.mock("react-oidc-context");
-
-describe("useApi", () => {
-    it("returns an instance of the API client", () => {
-        const user = "foo";
-        useAuth.mockImplementation(() => ({ user }));
-
-        const { result } = renderHook(() => useApi());
-        expect(result.current).toBeInstanceOf(ApiClient);
-
-        expect(ApiClient).toHaveBeenCalledWith(API, user);
-    });
-});
 
 describe("useApiRequest", () => {
     it("returns a configured request object", () => {

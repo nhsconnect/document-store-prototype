@@ -13,8 +13,6 @@
         "test:nw": "react-scripts test --watchAll=false"
     },
     "dependencies": {
-        "@aws-amplify/ui-react": "^1.2.23",
-        "aws-amplify": "^4.3.5",
         "axios": "^1.1.3",
         "dayjs": "^1.11.7",
         "history": "^5.3.0",
