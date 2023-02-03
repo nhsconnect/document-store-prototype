@@ -9,7 +9,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.events.SNSEvent;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -74,9 +74,10 @@ public class ReRegistrationEventInlineTest {
                         .put("nemsMessageId", "some id")
                         .put("lastUpdated", "some date")
                         .toString();
-        var sns = new SNSEvent.SNS().withMessage(message);
-        var snsRecord = new SNSEvent.SNSRecord().withSns(sns);
-        var snsEvent = new SNSEvent().withRecords(List.of(snsRecord));
+        var sqsMessage = new SQSEvent.SQSMessage();
+        sqsMessage.setBody(message);
+        var sqsEvent = new SQSEvent();
+        sqsEvent.setRecords(List.of(sqsMessage));
         var metadata = DocumentMetadataBuilder.theMetadata().withNhsNumber(nhsNumber).build();
         var content = "content of file stored in S3";
 
@@ -85,7 +86,7 @@ public class ReRegistrationEventInlineTest {
                 new DocumentLocation(metadata.getLocation()).getPath(),
                 new ByteArrayInputStream(content.getBytes()));
 
-        handler.handleRequest(snsEvent, context);
+        handler.handleRequest(sqsEvent, context);
 
         verify(publisher).publish(any(ReRegistrationAuditMessage.class));
         assertThat(metadataStore.findByNhsNumber(nhsNumber)).isEmpty();

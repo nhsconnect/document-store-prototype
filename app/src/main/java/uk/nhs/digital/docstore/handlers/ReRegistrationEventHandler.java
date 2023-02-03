@@ -2,7 +2,7 @@ package uk.nhs.digital.docstore.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.SNSEvent;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
@@ -11,7 +11,7 @@ import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.events.ReRegistrationEvent;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
-public class ReRegistrationEventHandler implements RequestHandler<SNSEvent, Void> {
+public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void> {
     private final DocumentDeletionService deletionService;
 
     public ReRegistrationEventHandler() {
@@ -28,11 +28,11 @@ public class ReRegistrationEventHandler implements RequestHandler<SNSEvent, Void
     }
 
     @Override
-    public Void handleRequest(SNSEvent snsEvent, Context context) {
-        snsEvent.getRecords()
+    public Void handleRequest(SQSEvent sqsEvent, Context context) {
+        sqsEvent.getRecords()
                 .forEach(
                         record -> {
-                            var message = record.getSNS().getMessage();
+                            var message = record.getBody();
                             var reRegistrationEvent = ReRegistrationEvent.parse(message);
                             var nhsNumber = reRegistrationEvent.getNhsNumber();
                             try {
