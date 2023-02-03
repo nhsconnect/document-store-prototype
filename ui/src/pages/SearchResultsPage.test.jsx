@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { Factory } from "fishery";
 import useApi from "../apiClients/useApi";
+import "../apiClients/documentStore";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
@@ -9,6 +10,16 @@ import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDo
 import { MemoryRouter } from "react-router";
 
 jest.mock("../apiClients/useApi");
+
+const mockDocumentStore = {
+    findByNhsNumber: () => [],
+};
+
+jest.mock("../apiClients/documentStore", () => {
+    return {
+        useDocumentStore: () => mockDocumentStore,
+    };
+});
 jest.mock("../providers/PatientDetailsProvider", () => ({
     usePatientDetailsProviderContext: jest.fn(),
 }));
@@ -54,7 +65,7 @@ describe("<SearchResultsPage />", () => {
             useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         });
 
-        it("renders the page", () => {
+        it("renders the page", async () => {
             renderPage();
 
             expect(
@@ -66,23 +77,20 @@ describe("<SearchResultsPage />", () => {
             expect(screen.getByText(patientData.nhsNumber)).toBeInTheDocument();
             expect(screen.getByText(patientData.familyName)).toBeInTheDocument();
             expect(mockNavigate).not.toHaveBeenCalled();
-            expect(startAgainLink()).toBeInTheDocument();
+            await waitFor(() => {
+                expect(startAgainLink()).toBeVisible();
+            });
         });
 
-        it("should go to home page when user clicks on start again button", () => {
+        it("should go to home page when user clicks on start again button", async () => {
             renderPage();
-            userEvent.click(startAgainLink());
-            expect(startAgainLink()).toHaveAttribute("href", "/home");
+            await waitFor(() => {
+                expect(startAgainLink()).toHaveAttribute("href", "/home");
+            });
         });
 
         it("displays a loading spinner when a document search is in progress", async () => {
-            useApi.mockImplementation(() => {
-                return {
-                    findByNhsNumber: () => {
-                        return [];
-                    },
-                };
-            });
+            mockDocumentStore.findByNhsNumber = () => [];
             renderPage();
 
             expect(screen.getByRole("progressbar", { name: "Loading..." })).toBeInTheDocument();
@@ -91,9 +99,7 @@ describe("<SearchResultsPage />", () => {
 
         it("displays search results when there are results", async () => {
             const searchResult = searchResultFactory.build();
-            useApi.mockImplementation(() => ({
-                findByNhsNumber: () => [searchResult],
-            }));
+            mockDocumentStore.findByNhsNumber = () => [searchResult];
             renderPage();
 
             expect(await screen.findByText("List of documents available")).toBeInTheDocument();
@@ -124,9 +130,7 @@ describe("<SearchResultsPage />", () => {
                     indexed: new Date(Date.UTC(2022, 7, 10, 10)),
                 }),
             ];
-            useApi.mockImplementation(() => ({
-                findByNhsNumber: () => searchResults,
-            }));
+            mockDocumentStore.findByNhsNumber = () => searchResults;
             renderPage();
 
             await waitFor(() => {
@@ -142,9 +146,7 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("displays a message when a document search returns no results", async () => {
-            useApi.mockImplementation(() => ({
-                findByNhsNumber: () => [],
-            }));
+            mockDocumentStore.findByNhsNumber = () => [];
             renderPage();
 
             await waitFor(() => {
@@ -155,11 +157,9 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("displays a message when a document search fails", async () => {
-            useApi.mockImplementation(() => ({
-                findByNhsNumber: () => {
-                    throw Error("Error!");
-                },
-            }));
+            mockDocumentStore.findByNhsNumber = () => {
+                throw Error("Error!");
+            };
             renderPage();
 
             await waitFor(() => {
@@ -170,9 +170,9 @@ describe("<SearchResultsPage />", () => {
         it("calls api client and should download the zip file when user clicks on download all button", async () => {
             const searchResult = searchResultFactory.build();
             useApi.mockImplementation(() => ({
-                findByNhsNumber: () => [searchResult],
                 getPresignedUrlForZip: () => "some-url",
             }));
+            mockDocumentStore.findByNhsNumber = () => [searchResult];
 
             renderPage();
 
@@ -198,9 +198,9 @@ describe("<SearchResultsPage />", () => {
             const preSignedUrl = "some-pre-signed-url";
             const searchResult = searchResultFactory.build();
             useApi.mockImplementation(() => ({
-                findByNhsNumber: () => [searchResult],
                 getPresignedUrlForZip: () => preSignedUrl,
             }));
+            mockDocumentStore.findByNhsNumber = () => [searchResult];
 
             renderPage();
             userEvent.click(
@@ -217,9 +217,9 @@ describe("<SearchResultsPage />", () => {
         it("should disable the download all button while waiting to download the zip file", async () => {
             const searchResult = searchResultFactory.build();
             useApi.mockImplementation(() => ({
-                findByNhsNumber: () => [searchResult],
                 getPresignedUrlForZip: () => "some-url",
             }));
+            mockDocumentStore.findByNhsNumber = () => [searchResult];
             renderPage();
             await waitFor(() => {
                 expect(screen.getByText("List of documents available")).toBeInTheDocument();
@@ -234,11 +234,11 @@ describe("<SearchResultsPage />", () => {
         it("should display error message when download fails after clicking download all button", async () => {
             const searchResult = searchResultFactory.build();
             useApi.mockImplementation(() => ({
-                findByNhsNumber: () => [searchResult],
                 getPresignedUrlForZip: () => {
                     throw Error("Error");
                 },
             }));
+            mockDocumentStore.findByNhsNumber = () => [searchResult];
 
             renderPage();
 

@@ -9,6 +9,7 @@ import { downloadFile } from "../utils/utils";
 import PatientSummary from "../components/PatientSummary";
 import SimpleProgressBar from "../components/SimpleProgressBar";
 import ServiceError from "../components/ServiceError";
+import { useDocumentStore } from "../apiClients/documentStore";
 
 const states = {
     INITIAL: "initial",
@@ -19,6 +20,7 @@ const states = {
 
 const SearchResultsPage = () => {
     const client = useApi();
+    const documentStore = useDocumentStore();
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
@@ -34,7 +36,7 @@ const SearchResultsPage = () => {
             setSubmissionState(states.PENDING);
             setSearchResults([]);
             try {
-                const results = await client.findByNhsNumber(patientDetails.nhsNumber);
+                const results = await documentStore.findByNhsNumber(patientDetails.nhsNumber);
                 results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
                 setSearchResults(results);
                 setSubmissionState(states.SUCCEEDED);
@@ -43,10 +45,7 @@ const SearchResultsPage = () => {
             }
         };
         void search();
-
-        // Todo: Remove the suppression when we provide a client to the dependency array that remains stable between renders
-        // eslint-disable-next-line
-    }, [patientDetails, navigate, setSubmissionState, setSearchResults]);
+    }, [documentStore, patientDetails, navigate, setSubmissionState, setSearchResults]);
 
     const downloadAll = async () => {
         setDownloadState(states.PENDING);
