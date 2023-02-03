@@ -170,6 +170,7 @@
         "iam:AttachRolePolicy",
         "iam:DetachRolePolicy",
         "iam:CreateRole",
+        "iam:CreatePolicyVersion",
         "iam:DeleteRolePolicy",
         "iam:GetRole",
         "iam:GetRolePolicy",
