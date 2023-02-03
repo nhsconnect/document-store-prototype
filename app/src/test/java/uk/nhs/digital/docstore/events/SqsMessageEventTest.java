@@ -6,25 +6,26 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 
-class ReRegistrationEventTest {
+class SqsMessageEventTest {
 
     @Test
     void parsesReRegistrationFromString() throws IllFormedPatientDetailsException {
         var nhsNumber = "9876543210";
         var nemsMessageId = "123";
 
-        var message =
+        var reRegistrationMessage =
                 new JSONObject()
                         .put("nhsNumber", nhsNumber)
                         .put("newlyRegisteredOdsCode", "ABC12")
                         .put("nemsMessageId", nemsMessageId)
-                        .put("lastUpdated", "some date")
-                        .toString();
+                        .put("lastUpdated", "some date");
+        var message = new JSONObject().put("Message", reRegistrationMessage).toString();
 
-        var expectedReRegistrationEvent = new ReRegistrationEvent(nhsNumber, nemsMessageId);
+        var reRegistrationEvent = new ReRegistrationEvent(nhsNumber, nemsMessageId);
+        var expectedSqsMessageEvent = new SqsMessageEvent(reRegistrationEvent);
 
-        var reRegistrationEvent = ReRegistrationEvent.parse(message);
+        var sqsMessageEvent = SqsMessageEvent.parse(message);
 
-        assertEquals(expectedReRegistrationEvent, reRegistrationEvent);
+        assertEquals(expectedSqsMessageEvent, sqsMessageEvent);
     }
 }

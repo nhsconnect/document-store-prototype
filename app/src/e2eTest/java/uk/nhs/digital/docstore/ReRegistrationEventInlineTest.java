@@ -67,13 +67,13 @@ public class ReRegistrationEventInlineTest {
                         publisher, documentStore, metadataStore, new DocumentMetadataSerialiser());
 
         var handler = new ReRegistrationEventHandler(deletionService);
-        var message =
+        var reRegistrationMessage =
                 new JSONObject()
                         .put("nhsNumber", nhsNumber.getValue())
                         .put("newlyRegisteredOdsCode", "TEST123")
                         .put("nemsMessageId", "some id")
-                        .put("lastUpdated", "some date")
-                        .toString();
+                        .put("lastUpdated", "some date");
+        var message = new JSONObject().put("Message", reRegistrationMessage).toString();
         var sqsMessage = new SQSEvent.SQSMessage();
         sqsMessage.setBody(message);
         var sqsEvent = new SQSEvent();
