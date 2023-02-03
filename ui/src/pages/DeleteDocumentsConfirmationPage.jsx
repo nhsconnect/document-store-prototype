@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import BackButton from "../components/BackButton";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
-import useApi from "../apiClients/useApi";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import ServiceError from "../components/ServiceError";
 import SimpleProgressBar from "../components/SimpleProgressBar";
+import { useDocumentStore } from "../apiClients/documentStore";
 
 const states = {
     IDLE: "idle",
@@ -16,7 +16,7 @@ const states = {
 };
 
 const DeleteDocumentsConfirmationPage = () => {
-    const client = useApi();
+    const documentStore = useDocumentStore();
     const { register, handleSubmit } = useForm();
     let navigate = useNavigate();
     const [patientDetails] = usePatientDetailsProviderContext();
@@ -27,7 +27,7 @@ const DeleteDocumentsConfirmationPage = () => {
         if (data.trx === "yes") {
             setSubmissionState(states.DELETING);
             try {
-                const response = await client.deleteAllDocuments(patientDetails.nhsNumber);
+                const response = await documentStore.deleteAllDocuments(patientDetails.nhsNumber);
                 if (response === "successfully deleted") {
                     setSubmissionState(states.SUCCEEDED);
                     navigate("/search/results");

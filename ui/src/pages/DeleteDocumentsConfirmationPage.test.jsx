@@ -1,14 +1,21 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import DeleteDocumentsConfirmationPage from "./DeleteDocumentsConfirmationPage";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
-import useApi from "../apiClients/useApi";
+import "../apiClients/documentStore";
 import userEvent from "@testing-library/user-event";
 import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
 
 const mockNavigate = jest.fn();
-jest.mock("../apiClients/useApi");
 
-jest.mock("../apiClients/useApi");
+const mockDocumentStore = {
+    deleteAllDocuments: () => "Test message",
+};
+jest.mock("../apiClients/documentStore", () => {
+    return {
+        useDocumentStore: () => mockDocumentStore,
+    };
+});
+
 jest.mock("react-router", () => ({
     useNavigate: () => mockNavigate,
 }));
@@ -67,12 +74,8 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
     describe("when user choose YES radio button and clicks continue", () => {
         it('should navigate to search results page with delete document response as "successful" when deleteAllDocuments api method returns successfully deleted message ', async () => {
             const deleteDocumentsResponse = "successful";
-            useApi.mockImplementation(() => {
-                return {
-                    deleteAllDocuments: () => "successfully deleted",
-                };
-            });
-            usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
+            (mockDocumentStore.deleteAllDocuments = () => "successfully deleted"),
+                usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
             useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
             expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
@@ -83,22 +86,17 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
                 expect(screen.getByRole("progressbar")).toBeInTheDocument();
                 expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
             });
-            await waitFor(() => {
-                expect(useApi().deleteAllDocuments()).toBe("successfully deleted");
-            });
+
             await waitFor(() => {
                 expect(mockNavigate).toHaveBeenCalledWith("/search/results");
             });
         });
 
-        it('should navigate to search results page with delete documents response as "unsuccessful" when api call throws an error ', async () => {
-            useApi.mockImplementation(() => {
-                return {
-                    deleteAllDocuments: () => {
-                        throw new Error();
-                    },
-                };
-            });
+        it("should not navigate to search results page when api call throws an error ", async () => {
+            mockDocumentStore.deleteAllDocuments = () => {
+                throw new Error();
+            };
+
             usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
             expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
@@ -120,6 +118,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
     it("should navigate to search results page when user choose No and clicks continue", async () => {
         usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
         useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
+
         render(<DeleteDocumentsConfirmationPage />);
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
         userEvent.click(screen.getByRole("radio", { name: "No" }));

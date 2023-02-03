@@ -191,40 +191,38 @@ describe("The document store API client", () => {
     //     });
     // });
 
-    describe("getPatientDetails()", () => {
-        it("returns a patient trace when given the NHS number 9000000009", async () => {
-            const nhsNumber = "9000000009";
-            const patientObject = {
-                birthDate: "2010-10-22",
-                familyName: "Smith",
-                givenName: ["Jane"],
-                nhsNumber: nhsNumber,
-                postalCode: "LS1 6AE",
-            };
+    it("gets patient details", async () => {
+        const nhsNumber = "9000000009";
+        const patientObject = {
+            birthDate: "2010-10-22",
+            familyName: "Smith",
+            givenName: ["Jane"],
+            nhsNumber: nhsNumber,
+            postalCode: "LS1 6AE",
+        };
 
-            const queryStringParameters = {
-                "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
-            };
-            const responseBody = {
-                result: { patientDetails: patientObject },
-            };
+        const queryStringParameters = {
+            "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+        };
+        const responseBody = {
+            result: { patientDetails: patientObject },
+        };
 
-            const get = jest.fn(async (path, options) => {
-                expect(path).toEqual("/PatientDetails");
-                expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
-                return { data: responseBody };
-            });
-            useApiRequest.mockImplementation(() => ({
-                get,
-                defaults: { headers: {} },
-            }));
-
-            const { result } = renderHook(() => useDocumentStore());
-            const returnedPatientBundle = await result.current.getPatientDetails(nhsNumber);
-
-            expect(get).toHaveBeenCalled();
-            expect(returnedPatientBundle).toStrictEqual(responseBody);
+        const get = jest.fn(async (path, options) => {
+            expect(path).toEqual("/PatientDetails");
+            expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
+            return { data: responseBody };
         });
+        useApiRequest.mockImplementation(() => ({
+            get,
+            defaults: { headers: {} },
+        }));
+
+        const { result } = renderHook(() => useDocumentStore());
+        const returnedPatientBundle = await result.current.getPatientDetails(nhsNumber);
+
+        expect(get).toHaveBeenCalled();
+        expect(returnedPatientBundle).toStrictEqual(responseBody);
     });
 
     // describe("getPresignedUrlForZip()", () => {
@@ -263,37 +261,32 @@ describe("The document store API client", () => {
     //     });
     // });
 
-    // describe("deleteAllDocuments()", () => {
-    //     it("returns a success message after deleting the files related to an nhs number ", async () => {
-    //         const expectedResponse = {
-    //             result: {
-    //                 message: "successfully deleted",
-    //             },
-    //         };
-    //         const getMock = jest.fn(() => {
-    //             return expectedResponse;
-    //         });
-    //         const api = { del: getMock };
-    //         const apiClient = new ApiClient(api, user);
-    //         const nhsNumber = "1234567890";
-    //         const requestHeaders = {
-    //             Accept: "application/fhir+json",
-    //             Authorization: `Bearer ${token}`,
-    //         };
-    //         const queryStringParametersMock = {
-    //             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
-    //         };
-    //         const returnedDeleteResult = await apiClient.deleteAllDocuments(nhsNumber);
+    it("deletes all documents for a patient", async () => {
+        const nhsNumber = "1234567890";
 
-    //         expect(getMock).toHaveBeenCalledWith(
-    //             "doc-store-api",
-    //             "/DocumentReference",
-    //             expect.objectContaining({
-    //                 headers: requestHeaders,
-    //                 queryStringParameters: queryStringParametersMock,
-    //             })
-    //         );
-    //         expect(returnedDeleteResult).toStrictEqual(expectedResponse.result.message);
-    //     });
-    // });
+        const expectedResponse = {
+            result: {
+                message: "successfully deleted",
+            },
+        };
+
+        const queryStringParameters = {
+            "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+        };
+
+        const del = jest.fn(async (path, options) => {
+            expect(path).toEqual("/DocumentReference");
+            expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
+            return { data: expectedResponse };
+        });
+        useApiRequest.mockImplementation(() => ({
+            delete: del,
+        }));
+
+        const { result } = renderHook(() => useDocumentStore());
+        const returnedDeleteResult = await result.current.deleteAllDocuments(nhsNumber);
+
+        expect(del).toHaveBeenCalled();
+        expect(returnedDeleteResult).toStrictEqual(expectedResponse.result.message);
+    });
 });

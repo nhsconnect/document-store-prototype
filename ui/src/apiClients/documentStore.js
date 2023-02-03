@@ -32,6 +32,14 @@ export const useDocumentStore = () => {
                 });
                 return data;
             },
+            deleteAllDocuments: async (nhsNumber) => {
+                const { data } = await request.delete("/DocumentReference", {
+                    params: {
+                        "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+                    },
+                });
+                return data.result.message;
+            },
         }),
         [request]
     );
