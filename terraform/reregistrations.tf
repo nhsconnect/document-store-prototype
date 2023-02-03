@@ -23,3 +23,21 @@ resource "aws_lambda_event_source_mapping" "event_source_mapping" {
   function_name    = aws_lambda_function.re_registration_lambda.arn
   batch_size       = 1
 }
+
+resource "aws_iam_role_policy" "sqs_to_lambda_policy" {
+  name = "sqs_to_lambda_policy"
+  role = aws_iam_role.lambda_execution_role.id
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "sqs:DeleteMessage",
+        ],
+        "Resource" : aws_sqs_queue.re_registration.arn
+      }
+    ]
+  })
+}
