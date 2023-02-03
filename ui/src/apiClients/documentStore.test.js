@@ -1,9 +1,11 @@
 import { documentUploadStates } from "../enums/documentUploads";
 import { useApiRequest } from "./useApi";
+import { useStorage } from "./useStorage";
 import { useDocumentStore } from "./documentStore";
 import { renderHook } from "@testing-library/react-hooks";
 
 jest.mock("./useApi");
+jest.mock("./useStorage");
 
 describe("The document store API client", () => {
     it("returns a list of documents associated with an NHS number", async () => {
@@ -108,7 +110,8 @@ describe("The document store API client", () => {
                 });
             });
 
-            useApiRequest.mockImplementation(() => ({ post, put }));
+            useApiRequest.mockImplementation(() => ({ post }));
+            useStorage.mockImplementation(() => ({ put }));
 
             const onUploadStateChangeMock = jest.fn();
             const { result } = renderHook(() => useDocumentStore());

@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import { setUrlHostToLocalHost } from "../utils/utils";
 import { useApiRequest } from "./useApi";
+import { useStorage } from "./useStorage";
 import { documentUploadStates } from "../enums/documentUploads";
 
 export const useDocumentStore = () => {
     const request = useApiRequest("doc-store-api");
+    const storage = useStorage();
 
     return useMemo(
         () => ({
@@ -86,7 +88,7 @@ export const useDocumentStore = () => {
                     const url = data.content[0].attachment.url;
                     let s3Url = setUrlHostToLocalHost(url);
 
-                    await request.put(s3Url, document, {
+                    await storage.put(s3Url, document, {
                         headers: {
                             "Content-Type": document.type,
                         },
