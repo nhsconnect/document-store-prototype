@@ -2,7 +2,6 @@ package uk.nhs.digital.docstore.data.repository;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,22 +27,20 @@ public class DocumentMetadataStore extends DynamoDbConnection {
         return mapper.load(DocumentMetadata.class, id);
     }
 
-    // TODO: Query using locations index instead of performing a full table scan. Will require
-    // changing projection type of locations index to "ALL" instead of "KEYS_ONLY" so that all
-    // attributes can be accessed
     public DocumentMetadata getByLocation(DocumentLocation location) {
-        List<DocumentMetadata> items =
-                mapper.scan(
-                        DocumentMetadata.class,
-                        new DynamoDBScanExpression()
-                                .withFilterExpression("#loc = :location")
-                                .withExpressionAttributeNames(Map.of("#loc", "Location"))
-                                .withExpressionAttributeValues(
-                                        Map.of(
-                                                ":location",
-                                                new AttributeValue(location.toString())))
-                                .withConsistentRead(false));
-        return items.size() > 0 ? items.get(0) : null;
+        var expressionAttributeValues =
+                Map.of(":location", new AttributeValue(location.toString()));
+        var dynamoDBQueryExpression =
+                new DynamoDBQueryExpression<DocumentMetadata>()
+                        .withIndexName("LocationsIndex")
+                        .withKeyConditionExpression("#loc = :location")
+                        .withExpressionAttributeNames(Map.of("#loc", "Location"))
+                        .withExpressionAttributeValues(expressionAttributeValues)
+                        .withConsistentRead(false);
+
+        var paginatedQueryList = mapper.query(DocumentMetadata.class, dynamoDBQueryExpression);
+
+        return paginatedQueryList.size() > 0 ? paginatedQueryList.get(0) : null;
     }
 
     public List<DocumentMetadata> findByNhsNumber(NhsNumber nhsNumber) {

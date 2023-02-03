@@ -22,7 +22,7 @@ resource "aws_dynamodb_table" "doc_ref_store" {
   global_secondary_index {
     name            = "LocationsIndex"
     hash_key        = "Location"
-    projection_type = "KEYS_ONLY"
+    projection_type = "ALL"
   }
 
   global_secondary_index {
