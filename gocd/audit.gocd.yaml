@@ -18,7 +18,7 @@ pipelines:
             dependency_check:
               artifacts:
                 - build:
-                    source: build/reports
+                    source: app/build/reports
               tabs:
                 dependency: reports/dependency-check-report.html
               resources:
