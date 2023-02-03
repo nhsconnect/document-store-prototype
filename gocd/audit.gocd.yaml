@@ -1,7 +1,7 @@
 format_version: 4
 pipelines:
   access-request-fulfillment.audit:
-    group: repo-audit
+    group: paperless-record-service
     label_template: '${git[:8]}'
     materials:
       git:
