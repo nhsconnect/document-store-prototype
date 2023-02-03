@@ -12,18 +12,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.AuditMessage;
 import uk.nhs.digital.docstore.audit.message.BaseAuditMessage;
-import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
-import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SystemStubsExtension.class)
 class SplunkPublisherTest {
     @Mock private AmazonSQS amazonSqsClient;
-
-    @SuppressWarnings("unused")
-    @SystemStub
-    private EnvironmentVariables environmentVariables;
 
     @Test
     void sendsMessageToSqsQueue() throws JsonProcessingException {
@@ -34,8 +28,7 @@ class SplunkPublisherTest {
                         .withQueueUrl(queueUrl)
                         .withMessageBody(messageBody.toJsonString());
 
-        environmentVariables.set("SQS_AUDIT_QUEUE_URL", queueUrl);
-        new SplunkPublisher(amazonSqsClient).publish(messageBody);
+        new SplunkPublisher(amazonSqsClient, queueUrl).publish(messageBody);
 
         verify(amazonSqsClient, times(1)).sendMessage(sendMessageRequest);
     }

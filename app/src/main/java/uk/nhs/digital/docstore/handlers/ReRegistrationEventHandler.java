@@ -17,7 +17,7 @@ public class ReRegistrationEventHandler implements RequestHandler<SNSEvent, Void
     public ReRegistrationEventHandler() {
         this(
                 new DocumentDeletionService(
-                        new SplunkPublisher(),
+                        new SplunkPublisher(System.getenv("NEMS_SQS_AUDIT_QUEUE_URL")),
                         new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME")),
                         new DocumentMetadataStore(),
                         new DocumentMetadataSerialiser()));
@@ -36,7 +36,7 @@ public class ReRegistrationEventHandler implements RequestHandler<SNSEvent, Void
                             var reRegistrationEvent = ReRegistrationEvent.parse(message);
                             var nhsNumber = reRegistrationEvent.getNhsNumber();
                             try {
-                                deletionService.deleteAllDocumentsForPatient(nhsNumber);
+                                        deletionService.deleteAllDocumentsForPatient(nhsNumber);
                             } catch (JsonProcessingException e) {
                                 throw new RuntimeException(e);
                             }

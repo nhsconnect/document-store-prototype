@@ -13,8 +13,10 @@ public class SplunkPublisher implements AuditPublisher {
     private static final String SQS_ENDPOINT_ENV = "SQS_ENDPOINT";
 
     private final AmazonSQS amazonSqsClient;
+    private final String queueUrl;
 
-    public SplunkPublisher() {
+    public SplunkPublisher(String queueUrl) {
+        this.queueUrl = queueUrl;
         var clientBuilder = AmazonSQSClientBuilder.standard();
         var sqsEndpoint = System.getenv(SQS_ENDPOINT_ENV);
 
@@ -27,12 +29,12 @@ public class SplunkPublisher implements AuditPublisher {
         amazonSqsClient = clientBuilder.build();
     }
 
-    public SplunkPublisher(AmazonSQS amazonSqsClient) {
+    public SplunkPublisher(AmazonSQS amazonSqsClient, String queueUrl) {
         this.amazonSqsClient = amazonSqsClient;
+        this.queueUrl = queueUrl;
     }
 
     public void publish(AuditMessage auditMessage) throws JsonProcessingException {
-        var queueUrl = System.getenv("SQS_AUDIT_QUEUE_URL");
         var messageRequest =
                 new SendMessageRequest()
                         .withQueueUrl(queueUrl)

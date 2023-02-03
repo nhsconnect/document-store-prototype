@@ -58,7 +58,7 @@ public class CreateDocumentReferenceHandler
                 new ApiConfig(),
                 new DocumentReferenceService(
                         new DocumentMetadataStore(),
-                        new SplunkPublisher(),
+                        new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")),
                         new DocumentMetadataSerialiser()),
                 CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION));
     }

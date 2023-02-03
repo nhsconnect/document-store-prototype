@@ -26,7 +26,7 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
         this(
                 new DocumentReferenceService(
                         new DocumentMetadataStore(),
-                        new SplunkPublisher(),
+                        new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")),
                         new DocumentMetadataSerialiser()));
     }
 

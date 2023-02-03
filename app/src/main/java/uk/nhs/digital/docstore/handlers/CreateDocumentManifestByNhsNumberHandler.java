@@ -49,7 +49,8 @@ public class CreateDocumentManifestByNhsNumberHandler
                 new DocumentMetadataStore(),
                 new DocumentZipTraceStore(),
                 new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME")),
-                new DocumentManifestService(new SplunkPublisher()),
+                new DocumentManifestService(
+                        new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL"))),
                 System.getenv("DOCUMENT_ZIP_TRACE_TTL_IN_DAYS"));
     }
 

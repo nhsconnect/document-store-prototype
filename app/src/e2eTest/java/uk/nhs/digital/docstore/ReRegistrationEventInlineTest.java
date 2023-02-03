@@ -2,6 +2,8 @@ package uk.nhs.digital.docstore;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -10,6 +12,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import org.json.JSONObject;
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.audit.message.ReRegistrationAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
@@ -37,7 +41,7 @@ public class ReRegistrationEventInlineTest {
     @Mock private SplunkPublisher publisher;
 
     @Test
-    void deletePatientDocuments() throws IllFormedPatientDetailsException {
+    void deletePatientDocuments() throws IllFormedPatientDetailsException, JsonProcessingException {
         var nhsNumber = new NhsNumber("9890123456");
         var endpoint = String.format("http://%s:4566", BaseUriHelper.getAwsHost());
         var endpointConfiguration =
@@ -83,6 +87,7 @@ public class ReRegistrationEventInlineTest {
 
         handler.handleRequest(snsEvent, context);
 
+        verify(publisher).publish(any(ReRegistrationAuditMessage.class));
         assertThat(metadataStore.findByNhsNumber(nhsNumber)).isEmpty();
         assertThrows(
                 AmazonS3Exception.class,

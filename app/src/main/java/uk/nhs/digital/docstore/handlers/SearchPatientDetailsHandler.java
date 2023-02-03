@@ -37,7 +37,10 @@ public class SearchPatientDetailsHandler
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     public SearchPatientDetailsHandler() {
-        this(new ApiConfig(), new PatientSearchConfig(), new SplunkPublisher());
+        this(
+                new ApiConfig(),
+                new PatientSearchConfig(),
+                new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")));
     }
 
     public SearchPatientDetailsHandler(
