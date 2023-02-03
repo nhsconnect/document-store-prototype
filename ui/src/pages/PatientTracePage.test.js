@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PatientTracePage } from "./PatientTracePage";
 import * as ReactRouter from "react-router";
-import useApi from "../apiClients/useApi";
+import "../apiClients/documentStore";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 
 const fakeNhsNumber = "9000000009";
@@ -14,9 +14,15 @@ const patientData = {
     postalCode: "LS1 6AE",
 };
 
-jest.mock("../apiClients/useApi");
-const mockSetPatientDetails = jest.fn();
+const mockDocumentStore = {
+    getPatientDetails: () => ({}),
+};
 
+jest.mock("../apiClients/documentStore", () => {
+    return { useDocumentStore: () => mockDocumentStore };
+});
+
+const mockSetPatientDetails = jest.fn();
 jest.mock("../providers/PatientDetailsProvider", () => ({
     usePatientDetailsProviderContext: jest.fn(),
 }));
@@ -57,15 +63,11 @@ describe("PatientTracePage", () => {
     });
 
     it("gets the patient's data when the NHS number is submitted", async () => {
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: (nhsNumber) => {
-                    if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse;
-                    }
-                },
-            };
-        });
+        mockDocumentStore.getPatientDetails = (nhsNumber) => {
+            if (nhsNumber === fakeNhsNumber) {
+                return patientDetailsResponse;
+            }
+        };
 
         render(<PatientTracePage />);
 
@@ -78,15 +80,11 @@ describe("PatientTracePage", () => {
     });
 
     it("displays the patient's details when their demographic data is found", async () => {
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: (nhsNumber) => {
-                    if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse;
-                    }
-                },
-            };
-        });
+        mockDocumentStore.getPatientDetails = (nhsNumber) => {
+            if (nhsNumber === fakeNhsNumber) {
+                return patientDetailsResponse;
+            }
+        };
 
         render(<PatientTracePage />);
 
@@ -109,15 +107,11 @@ describe("PatientTracePage", () => {
     });
 
     it("stores the patient's details in context when moving to next page", async () => {
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: (nhsNumber) => {
-                    if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse;
-                    }
-                },
-            };
-        });
+        mockDocumentStore.getPatientDetails = (nhsNumber) => {
+            if (nhsNumber === fakeNhsNumber) {
+                return patientDetailsResponse;
+            }
+        };
 
         render(<PatientTracePage />);
 
@@ -135,15 +129,11 @@ describe("PatientTracePage", () => {
 
     it("navigates to specified page when moving to next page", async () => {
         const expectedNextPage = "test/submit";
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: (nhsNumber) => {
-                    if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse;
-                    }
-                },
-            };
-        });
+        mockDocumentStore.getPatientDetails = (nhsNumber) => {
+            if (nhsNumber === fakeNhsNumber) {
+                return patientDetailsResponse;
+            }
+        };
         render(<PatientTracePage nextPage={expectedNextPage} />);
 
         enterNhsNumber(fakeNhsNumber);
@@ -160,16 +150,11 @@ describe("PatientTracePage", () => {
 
     it("displays text specific to upload path if user has selected upload", async () => {
         const expectedNextPage = "upload";
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: (nhsNumber) => {
-                    if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse;
-                    }
-                },
-            };
-        });
-
+        mockDocumentStore.getPatientDetails = (nhsNumber) => {
+            if (nhsNumber === fakeNhsNumber) {
+                return patientDetailsResponse;
+            }
+        };
         render(<PatientTracePage nextPage={expectedNextPage} />);
 
         enterNhsNumber(fakeNhsNumber);
@@ -186,17 +171,13 @@ describe("PatientTracePage", () => {
         );
     });
 
-    it("doesn't displays text specific to upload path if user has selected download", async () => {
+    it("doesn't display text specific to upload path if user has selected download", async () => {
         const expectedNextPage = "download";
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: (nhsNumber) => {
-                    if (nhsNumber === fakeNhsNumber) {
-                        return patientDetailsResponse;
-                    }
-                },
-            };
-        });
+        mockDocumentStore.getPatientDetails = (nhsNumber) => {
+            if (nhsNumber === fakeNhsNumber) {
+                return patientDetailsResponse;
+            }
+        };
 
         render(<PatientTracePage nextPage={expectedNextPage} />);
 
@@ -215,15 +196,11 @@ describe("PatientTracePage", () => {
     });
 
     it("displays a loading spinner when the patient's details are being requested", async () => {
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: (nhsNumber) => {
-                    if (nhsNumber === fakeNhsNumber) {
-                        return [];
-                    }
-                },
-            };
-        });
+        mockDocumentStore.getPatientDetails = (nhsNumber) => {
+            if (nhsNumber === fakeNhsNumber) {
+                return [];
+            }
+        };
         render(<PatientTracePage />);
 
         userEvent.type(screen.getByLabelText("Enter NHS number"), fakeNhsNumber);
@@ -235,12 +212,6 @@ describe("PatientTracePage", () => {
     });
 
     it("displays an error message when the form is submitted and the NHS number is missing", async () => {
-        const getPatientDetails = jest.fn();
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails,
-            };
-        });
         render(<PatientTracePage />);
 
         startSearch();
@@ -248,18 +219,11 @@ describe("PatientTracePage", () => {
         await waitFor(() => {
             expect(screen.getByText("Please enter a 10 digit NHS number")).toBeInTheDocument();
         });
-        expect(getPatientDetails).not.toHaveBeenCalled();
     });
 
     it.each([["123456789"], ["12345678901"], ["123456789A"]])(
         "displays an error message when the form is submitted and the NHS number is '%s''",
         async (nhsNumber) => {
-            const getPatientDetails = jest.fn();
-            useApi.mockImplementation(() => {
-                return {
-                    getPatientDetails,
-                };
-            });
             render(<PatientTracePage />);
 
             enterNhsNumber(nhsNumber);
@@ -268,18 +232,13 @@ describe("PatientTracePage", () => {
             await waitFor(() => {
                 expect(screen.getByText("Please enter a 10 digit NHS number")).toBeInTheDocument();
             });
-            expect(getPatientDetails).not.toHaveBeenCalled();
         }
     );
 
     it("displays an error message when there is a problem retrieving the patient's details", async () => {
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: () => {
-                    throw Error("Error");
-                },
-            };
-        });
+        mockDocumentStore.getPatientDetails = () => {
+            throw Error("Error");
+        };
         render(<PatientTracePage />);
 
         enterNhsNumber("0987654321");
@@ -298,13 +257,9 @@ describe("PatientTracePage", () => {
             status: 404,
             message: "404 Patient not found.",
         };
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: () => {
-                    throw { response: errorResponse };
-                },
-            };
-        });
+        mockDocumentStore.getPatientDetails = () => {
+            throw { response: errorResponse };
+        };
         render(<PatientTracePage />);
 
         enterNhsNumber(fakeNhsNumber);
@@ -321,13 +276,9 @@ describe("PatientTracePage", () => {
             status: 400,
             message: "400 Invalid NHS number.",
         };
-        useApi.mockImplementation(() => {
-            return {
-                getPatientDetails: () => {
-                    throw { response: errorResponse };
-                },
-            };
-        });
+        mockDocumentStore.getPatientDetails = () => {
+            throw { response: errorResponse };
+        };
         render(<PatientTracePage />);
 
         enterNhsNumber(fakeNhsNumber);

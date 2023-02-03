@@ -20,6 +20,18 @@ export const useDocumentStore = () => {
                       }))
                     : [];
             },
+            getPatientDetails: async (nhsNumber) => {
+                const { data } = await request.get("/PatientDetails", {
+                    headers: {
+                        ...request.defaults.headers,
+                        Accept: "application/json",
+                    },
+                    params: {
+                        "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+                    },
+                });
+                return data;
+            },
         }),
         [request]
     );

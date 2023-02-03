@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import BackButton from "../components/BackButton";
-import useApi from "../apiClients/useApi";
 import PatientSummary from "../components/PatientSummary";
 import SimpleProgressBar from "../components/SimpleProgressBar";
 import ServiceError from "../components/ServiceError";
+import { useDocumentStore } from "../apiClients/documentStore";
 
 const states = {
     IDLE: "idle",
@@ -17,7 +17,7 @@ const states = {
 };
 
 export const PatientTracePage = ({ nextPage }) => {
-    const client = useApi();
+    const documentStore = useDocumentStore();
     const { register, formState, handleSubmit } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
         required: "Please enter a 10 digit NHS number",
@@ -35,7 +35,7 @@ export const PatientTracePage = ({ nextPage }) => {
         try {
             setSubmissionState(states.SEARCHING);
             setStatusCode(null);
-            const response = await client.getPatientDetails(data.nhsNumber);
+            const response = await documentStore.getPatientDetails(data.nhsNumber);
             setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
         } catch (e) {

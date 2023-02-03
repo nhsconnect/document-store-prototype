@@ -191,45 +191,41 @@ describe("The document store API client", () => {
     //     });
     // });
 
-    // describe("getPatientDetails()", () => {
-    //     it("returns a patient trace when given the NHS number 9000000009", async () => {
-    //         const nhsNumber = "9000000009";
-    //         const patientObject = {
-    //             birthDate: "2010-10-22",
-    //             familyName: "Smith",
-    //             givenName: ["Jane"],
-    //             nhsNumber: nhsNumber,
-    //             postalCode: "LS1 6AE",
-    //         };
-    //         const getMock = jest.fn(() => {
-    //             return responseBody;
-    //         });
-    //         const api = { get: getMock };
-    //         const apiClient = new ApiClient(api, user);
-    //         const requestHeaders = {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${user.id_token}`,
-    //         };
-    //         const queryStringParametersMock = {
-    //             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
-    //         };
-    //         const responseBody = {
-    //             result: { patientDetails: patientObject },
-    //         };
+    describe("getPatientDetails()", () => {
+        it("returns a patient trace when given the NHS number 9000000009", async () => {
+            const nhsNumber = "9000000009";
+            const patientObject = {
+                birthDate: "2010-10-22",
+                familyName: "Smith",
+                givenName: ["Jane"],
+                nhsNumber: nhsNumber,
+                postalCode: "LS1 6AE",
+            };
 
-    //         const returnedPatientBundle = await apiClient.getPatientDetails(nhsNumber);
+            const queryStringParameters = {
+                "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+            };
+            const responseBody = {
+                result: { patientDetails: patientObject },
+            };
 
-    //         expect(getMock).toHaveBeenCalledWith(
-    //             "doc-store-api",
-    //             "/PatientDetails",
-    //             expect.objectContaining({
-    //                 headers: requestHeaders,
-    //                 queryStringParameters: queryStringParametersMock,
-    //             })
-    //         );
-    //         expect(returnedPatientBundle).toStrictEqual(responseBody);
-    //     });
-    // });
+            const get = jest.fn(async (path, options) => {
+                expect(path).toEqual("/PatientDetails");
+                expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
+                return { data: responseBody };
+            });
+            useApiRequest.mockImplementation(() => ({
+                get,
+                defaults: { headers: {} },
+            }));
+
+            const { result } = renderHook(() => useDocumentStore());
+            const returnedPatientBundle = await result.current.getPatientDetails(nhsNumber);
+
+            expect(get).toHaveBeenCalled();
+            expect(returnedPatientBundle).toStrictEqual(responseBody);
+        });
+    });
 
     // describe("getPresignedUrlForZip()", () => {
     //     test("returns a presigned url associated with zip of all documents related to an nhs number ", async () => {
