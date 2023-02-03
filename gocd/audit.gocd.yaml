@@ -25,7 +25,7 @@ pipelines:
                 - docker
               tasks:
                 - exec:
-                    command: dojo
+                    command: /bin/bash
                     arguments:
                       - -c
                       - ./tasks java-dependency-scan
