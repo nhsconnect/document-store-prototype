@@ -9,3 +9,8 @@ resource "aws_sqs_queue" "sensitive_nems_audit" {
   message_retention_seconds = 1209600
   sqs_managed_sse_enabled = true
 }
+
+resource "aws_sqs_queue" "re_registration" {
+  name = "${var.environment}-re-registration"
+  sqs_managed_sse_enabled = true
+}
