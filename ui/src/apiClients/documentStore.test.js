@@ -225,41 +225,34 @@ describe("The document store API client", () => {
         expect(returnedPatientBundle).toStrictEqual(responseBody);
     });
 
-    // describe("getPresignedUrlForZip()", () => {
-    //     test("returns a presigned url associated with zip of all documents related to an nhs number ", async () => {
-    //         const getMock = jest.fn(() => {
-    //             return expectedResponse;
-    //         });
-    //         const api = { get: getMock };
-    //         const apiClient = new ApiClient(api, user);
-    //         const nhsNumber = "1234567890";
-    //         const requestHeaders = {
-    //             Accept: "application/fhir+json",
-    //             Authorization: `Bearer ${token}`,
-    //         };
-    //         const responseUrl = "presigned-url";
-    //         const expectedResponse = {
-    //             result: {
-    //                 url: responseUrl,
-    //             },
-    //         };
-    //         const queryStringParametersMock = {
-    //             "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
-    //         };
+    test("returns a presigned url associated with zip of all documents related to an nhs number ", async () => {
+        const nhsNumber = "1234567890";
+        const responseUrl = "presigned-url";
+        const expectedResponse = {
+            result: {
+                url: responseUrl,
+            },
+        };
+        const queryStringParameters = {
+            "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+        };
 
-    //         const returnedPresignedUrl = await apiClient.getPresignedUrlForZip(nhsNumber);
+        const get = jest.fn(async (path, options) => {
+            expect(path).toEqual("/DocumentManifest");
+            expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
+            return { data: expectedResponse };
+        });
+        useApiRequest.mockImplementation(() => ({
+            get,
+        }));
 
-    //         expect(getMock).toHaveBeenCalledWith(
-    //             "doc-store-api",
-    //             "/DocumentManifest",
-    //             expect.objectContaining({
-    //                 headers: requestHeaders,
-    //                 queryStringParameters: queryStringParametersMock,
-    //             })
-    //         );
-    //         expect(returnedPresignedUrl).toStrictEqual(responseUrl);
-    //     });
-    // });
+        const { result } = renderHook(() => useDocumentStore());
+
+        const returnedPresignedUrl = await result.current.getPresignedUrlForZip(nhsNumber);
+
+        expect(get).toHaveBeenCalled();
+        expect(returnedPresignedUrl).toStrictEqual(responseUrl);
+    });
 
     it("deletes all documents for a patient", async () => {
         const nhsNumber = "1234567890";

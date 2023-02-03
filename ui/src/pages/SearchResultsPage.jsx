@@ -4,7 +4,6 @@ import { usePatientDetailsProviderContext } from "../providers/PatientDetailsPro
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import BackButton from "../components/BackButton";
-import useApi from "../apiClients/useApi";
 import { downloadFile } from "../utils/utils";
 import PatientSummary from "../components/PatientSummary";
 import SimpleProgressBar from "../components/SimpleProgressBar";
@@ -19,7 +18,6 @@ const states = {
 };
 
 const SearchResultsPage = () => {
-    const client = useApi();
     const documentStore = useDocumentStore();
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
@@ -50,7 +48,7 @@ const SearchResultsPage = () => {
     const downloadAll = async () => {
         setDownloadState(states.PENDING);
         try {
-            const preSignedUrl = await client.getPresignedUrlForZip(patientDetails.nhsNumber);
+            const preSignedUrl = await documentStore.getPresignedUrlForZip(patientDetails.nhsNumber);
 
             downloadFile(preSignedUrl, `patient-record-${patientDetails.nhsNumber}`);
 

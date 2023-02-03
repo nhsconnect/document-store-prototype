@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { setUrlHostToLocalHost } from "../utils/utils";
 import { useApiRequest } from "./useApi";
 
 export const useDocumentStore = () => {
@@ -31,6 +32,14 @@ export const useDocumentStore = () => {
                     },
                 });
                 return data;
+            },
+            getPresignedUrlForZip: async (nhsNumber) => {
+                const { data } = await request.get("/DocumentManifest", {
+                    params: {
+                        "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
+                    },
+                });
+                return setUrlHostToLocalHost(data.result.url);
             },
             deleteAllDocuments: async (nhsNumber) => {
                 const { data } = await request.delete("/DocumentReference", {

@@ -1,6 +1,5 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { Factory } from "fishery";
-import useApi from "../apiClients/useApi";
 import "../apiClients/documentStore";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import SearchResultsPage from "./SearchResultsPage";
@@ -13,6 +12,7 @@ jest.mock("../apiClients/useApi");
 
 const mockDocumentStore = {
     findByNhsNumber: () => [],
+    getPresignedUrlForZip: () => "test-url",
 };
 
 jest.mock("../apiClients/documentStore", () => {
@@ -169,9 +169,6 @@ describe("<SearchResultsPage />", () => {
 
         it("calls api client and should download the zip file when user clicks on download all button", async () => {
             const searchResult = searchResultFactory.build();
-            useApi.mockImplementation(() => ({
-                getPresignedUrlForZip: () => "some-url",
-            }));
             mockDocumentStore.findByNhsNumber = () => [searchResult];
 
             renderPage();
@@ -197,9 +194,7 @@ describe("<SearchResultsPage />", () => {
         it("downloads the file", async () => {
             const preSignedUrl = "some-pre-signed-url";
             const searchResult = searchResultFactory.build();
-            useApi.mockImplementation(() => ({
-                getPresignedUrlForZip: () => preSignedUrl,
-            }));
+            mockDocumentStore.getPresignedUrlForZip = () => preSignedUrl;
             mockDocumentStore.findByNhsNumber = () => [searchResult];
 
             renderPage();
@@ -216,9 +211,6 @@ describe("<SearchResultsPage />", () => {
 
         it("should disable the download all button while waiting to download the zip file", async () => {
             const searchResult = searchResultFactory.build();
-            useApi.mockImplementation(() => ({
-                getPresignedUrlForZip: () => "some-url",
-            }));
             mockDocumentStore.findByNhsNumber = () => [searchResult];
             renderPage();
             await waitFor(() => {
@@ -233,11 +225,9 @@ describe("<SearchResultsPage />", () => {
 
         it("should display error message when download fails after clicking download all button", async () => {
             const searchResult = searchResultFactory.build();
-            useApi.mockImplementation(() => ({
-                getPresignedUrlForZip: () => {
-                    throw Error("Error");
-                },
-            }));
+            mockDocumentStore.getPresignedUrlForZip = () => {
+                throw Error("Error");
+            };
             mockDocumentStore.findByNhsNumber = () => [searchResult];
 
             renderPage();
