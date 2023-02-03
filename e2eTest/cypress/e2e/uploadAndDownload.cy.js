@@ -40,9 +40,6 @@ describe("uploads, downloads, and deletes docs", () => {
 
         cy.url().should("eq", baseUrl + "/home");
         cy.injectAxe();
-        // Todo: Replace cy.wait() with a guard to wait until React has completed it's initial render(s)
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(500);
         cy.findByRole("radio", { name: /Upload/ }).check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Continue" }).click();
