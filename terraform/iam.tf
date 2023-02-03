@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "splunk_access_policy_document" {
   }
 }
 
-resource "aws_iam_role_policy" "sensitive_audit" {
+resource "aws_iam_role_policy" "sqs_policy" {
   name   = "send_audit_messages_policy"
   role   = aws_iam_role.lambda_execution_role.id
   policy = jsonencode({
@@ -45,6 +45,12 @@ resource "aws_iam_role_policy" "sensitive_audit" {
           aws_sqs_queue.sensitive_audit.arn,
           aws_sqs_queue.sensitive_nems_audit.arn
         ]
+      },
+      {
+        "Sid" : "ReadMessages"
+        "Effect" : "Allow",
+        "Action" : "sqs:ReceiveMessage",
+        "Resource" : aws_sqs_queue.re_registration.arn
       }
     ]
   })
