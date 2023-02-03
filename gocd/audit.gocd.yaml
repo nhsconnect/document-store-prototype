@@ -9,7 +9,7 @@ pipelines:
         blacklist:
           - documentation/*
     timer:
-      spec: '*/5 * * * *'
+      spec: '*/3 * * * *'
     stages:
       - audit:
           clean_workspace: true
@@ -25,7 +25,7 @@ pipelines:
                 - docker
               tasks:
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - ./tasks java-dependency-scan
