@@ -9,7 +9,7 @@ import DocumentsInput from "../components/DocumentsInput";
 import { formatSize } from "../utils/utils";
 import { documentUploadStates as stateNames, documentUploadSteps } from "../enums/documentUploads";
 import UploadSummary from "../components/UploadSummary";
-import useApi from "../apiClients/useApi";
+import { useDocumentStore } from "../apiClients/documentStore";
 import PatientSummary from "../components/PatientSummary";
 
 const uploadStateMessages = {
@@ -20,7 +20,7 @@ const uploadStateMessages = {
 };
 
 const UploadDocumentPage = ({ nextPagePath }) => {
-    const client = useApi();
+    const documentStore = useDocumentStore();
     const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
     const documents = watch("documents");
     const [patientDetails] = usePatientDetailsProviderContext();
@@ -34,7 +34,7 @@ const UploadDocumentPage = ({ nextPagePath }) => {
 
     const doSubmit = async (data) => {
         const doUpload = async (document) => {
-            await client.uploadDocument(document.file, patientDetails?.nhsNumber, (state, progress) => {
+            await documentStore.uploadDocument(document.file, patientDetails?.nhsNumber, (state, progress) => {
                 setValue(
                     "documents",
                     produce(getValues("documents"), (draft) => {

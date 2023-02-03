@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { setUrlHostToLocalHost } from "../utils/utils";
 import { useApiRequest } from "./useApi";
+import { documentUploadStates } from "../enums/documentUploads";
 
 export const useDocumentStore = () => {
     const request = useApiRequest("doc-store-api");
@@ -48,6 +49,55 @@ export const useDocumentStore = () => {
                     },
                 });
                 return data.result.message;
+            },
+            uploadDocument: async (document, nhsNumber, onUploadStateChange) => {
+                const requestBody = {
+                    resourceType: "DocumentReference",
+                    subject: {
+                        identifier: {
+                            system: "https://fhir.nhs.uk/Id/nhs-number",
+                            value: nhsNumber,
+                        },
+                    },
+                    type: {
+                        coding: [
+                            {
+                                system: "http://snomed.info/sct",
+                                code: "22151000087106",
+                            },
+                        ],
+                    },
+                    content: [
+                        {
+                            attachment: {
+                                contentType: document.type,
+                            },
+                        },
+                    ],
+                    description: document.name,
+                    created: "2021-07-11T16:57:30+01:00",
+                };
+
+                onUploadStateChange(documentUploadStates.UPLOADING, 0);
+
+                try {
+                    const { data } = await request.post("/DocumentReference", requestBody);
+
+                    const url = data.content[0].attachment.url;
+                    let s3Url = setUrlHostToLocalHost(url);
+
+                    await request.put(s3Url, document, {
+                        headers: {
+                            "Content-Type": document.type,
+                        },
+                        onUploadProgress: ({ total, loaded }) => {
+                            onUploadStateChange(documentUploadStates.UPLOADING, (loaded / total) * 100);
+                        },
+                    });
+                    onUploadStateChange(documentUploadStates.SUCCEEDED, 100);
+                } catch (e) {
+                    onUploadStateChange(documentUploadStates.FAILED, 0);
+                }
             },
         }),
         [request]

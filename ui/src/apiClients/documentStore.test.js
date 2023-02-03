@@ -44,152 +44,145 @@ describe("The document store API client", () => {
         expect(returnedDocumentList).toStrictEqual(expectedReturnedDocumentList);
     });
 
-    // describe("uploadDocument()", () => {
-    //     test("makes the request to create a DocumentReference and upload document, providing progress updates", async () => {
-    //         const metadataResponseBody = {
-    //             content: [
-    //                 {
-    //                     attachment: {
-    //                         contentType: "text/plain",
-    //                         url: "pre-signed-url-mock",
-    //                     },
-    //                 },
-    //             ],
-    //         };
-    //         const postMock = jest.fn(async () => {
-    //             return new Promise((resolve) => {
-    //                 setTimeout(() => {
-    //                     resolve(metadataResponseBody);
-    //                 }, 2);
-    //             });
-    //         });
-    //         const api = { post: postMock };
-    //         const apiClient = new ApiClient(api, user);
-    //         const fileName = "hello.txt";
-    //         const document = new File(["hello"], fileName, {
-    //             type: "text/plain",
-    //         });
-    //         const nhsNumber = "0987654321";
+    describe("when uploading documents", () => {
+        it("makes the request to create a DocumentReference and upload document, providing progress updates", async () => {
+            const metadataResponseBody = {
+                content: [
+                    {
+                        attachment: {
+                            contentType: "text/plain",
+                            url: "pre-signed-url-mock",
+                        },
+                    },
+                ],
+            };
+            const post = jest.fn(async () => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({ data: metadataResponseBody });
+                    }, 2);
+                });
+            });
+            const fileName = "hello.txt";
+            const document = new File(["hello"], fileName, {
+                type: "text/plain",
+            });
+            const nhsNumber = "0987654321";
 
-    //         const requestBody = {
-    //             resourceType: "DocumentReference",
-    //             subject: {
-    //                 identifier: {
-    //                     system: "https://fhir.nhs.uk/Id/nhs-number",
-    //                     value: nhsNumber,
-    //                 },
-    //             },
-    //             type: {
-    //                 coding: [
-    //                     {
-    //                         system: "http://snomed.info/sct",
-    //                         code: "22151000087106",
-    //                     },
-    //                 ],
-    //             },
-    //             content: [
-    //                 {
-    //                     attachment: {
-    //                         contentType: "text/plain",
-    //                     },
-    //                 },
-    //             ],
-    //             description: document.name,
-    //             created: "2021-07-11T16:57:30+01:00",
-    //         };
+            const requestBody = {
+                resourceType: "DocumentReference",
+                subject: {
+                    identifier: {
+                        system: "https://fhir.nhs.uk/Id/nhs-number",
+                        value: nhsNumber,
+                    },
+                },
+                type: {
+                    coding: [
+                        {
+                            system: "http://snomed.info/sct",
+                            code: "22151000087106",
+                        },
+                    ],
+                },
+                content: [
+                    {
+                        attachment: {
+                            contentType: "text/plain",
+                        },
+                    },
+                ],
+                description: document.name,
+                created: "2021-07-11T16:57:30+01:00",
+            };
 
-    //         axios.put = jest.fn(async (s3url, document, { onUploadProgress }) => {
-    //             return new Promise((resolve) => {
-    //                 setTimeout(() => {
-    //                     onUploadProgress({ total: 10, loaded: 5 });
-    //                 }, 1);
+            const put = jest.fn(async (s3url, document, { onUploadProgress }) => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        onUploadProgress({ total: 10, loaded: 5 });
+                    }, 1);
 
-    //                 setTimeout(() => {
-    //                     resolve();
-    //                 }, 2);
-    //             });
-    //         });
+                    setTimeout(() => {
+                        resolve();
+                    }, 2);
+                });
+            });
 
-    //         const onUploadStateChangeMock = jest.fn();
-    //         await apiClient.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
+            useApiRequest.mockImplementation(() => ({ post, put }));
 
-    //         expect(postMock).toHaveBeenCalledWith(
-    //             "doc-store-api",
-    //             "/DocumentReference",
-    //             expect.objectContaining({
-    //                 headers: {
-    //                     Accept: "application/fhir+json",
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //                 body: requestBody,
-    //             })
-    //         );
-    //         expect(axios.put).toHaveBeenCalledWith(
-    //             metadataResponseBody.content[0].attachment.url,
-    //             document,
-    //             expect.anything()
-    //         );
-    //         expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.UPLOADING, 0);
-    //         expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.UPLOADING, 50);
-    //         expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.SUCCEEDED, 100);
-    //     });
+            const onUploadStateChangeMock = jest.fn();
+            const { result } = renderHook(() => useDocumentStore());
+            await result.current.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
 
-    //     test("reports the upload as failed if the store metadata request fails", async () => {
-    //         const postMock = jest.fn(() => {
-    //             throw new Error("Request failed");
-    //         });
+            expect(post).toHaveBeenCalledWith("/DocumentReference", expect.objectContaining(requestBody));
+            expect(put).toHaveBeenCalledWith(
+                metadataResponseBody.content[0].attachment.url,
+                document,
+                expect.anything()
+            );
+            expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.UPLOADING, 0);
+            expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.UPLOADING, 50);
+            expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.SUCCEEDED, 100);
+        });
 
-    //         const api = { post: postMock };
-    //         const apiClient = new ApiClient(api, user);
-    //         const fileName = "hello.txt";
-    //         const document = new File(["hello"], fileName, {
-    //             type: "text/plain",
-    //         });
-    //         const nhsNumber = "0987654321";
+        it("reports the upload as failed if the store metadata request fails", async () => {
+            const post = jest.fn(() => {
+                throw new Error("Request failed");
+            });
 
-    //         const onUploadStateChangeMock = jest.fn();
-    //         await apiClient.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
+            useApiRequest.mockImplementation(() => ({ post }));
 
-    //         expect(postMock).toHaveBeenCalled();
+            const fileName = "hello.txt";
+            const document = new File(["hello"], fileName, {
+                type: "text/plain",
+            });
+            const nhsNumber = "0987654321";
 
-    //         expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0);
-    //     });
+            const onUploadStateChangeMock = jest.fn();
+            const { result } = renderHook(() => useDocumentStore());
+            await result.current.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
 
-    //     test("reports the upload as failed if the S3 upload request fails", async () => {
-    //         const metadataResponseBody = {
-    //             content: [
-    //                 {
-    //                     attachment: {
-    //                         contentType: "text/plain",
-    //                         url: "pre-signed-url-mock",
-    //                     },
-    //                 },
-    //             ],
-    //         };
-    //         const postMock = jest.fn(() => {
-    //             return metadataResponseBody;
-    //         });
+            expect(post).toHaveBeenCalled();
 
-    //         const api = { post: postMock };
-    //         const apiClient = new ApiClient(api, user);
-    //         const fileName = "hello.txt";
-    //         const document = new File(["hello"], fileName, {
-    //             type: "text/plain",
-    //         });
-    //         const nhsNumber = "0987654321";
+            expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0);
+        });
 
-    //         axios.put = jest.fn(async () => {
-    //             throw new Error("S3 upload failed");
-    //         });
+        it("reports the upload as failed if the S3 upload request fails", async () => {
+            const metadataResponseBody = {
+                content: [
+                    {
+                        attachment: {
+                            contentType: "text/plain",
+                            url: "pre-signed-url-mock",
+                        },
+                    },
+                ],
+            };
+            const post = jest.fn(() => {
+                return { data: metadataResponseBody };
+            });
 
-    //         const onUploadStateChangeMock = jest.fn();
-    //         await apiClient.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
+            const fileName = "hello.txt";
+            const document = new File(["hello"], fileName, {
+                type: "text/plain",
+            });
+            const nhsNumber = "0987654321";
 
-    //         expect(postMock).toHaveBeenCalled();
+            const put = jest.fn(async () => {
+                throw new Error("S3 upload failed");
+            });
 
-    //         expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0);
-    //     });
-    // });
+            useApiRequest.mockImplementation(() => ({ post, put }));
+
+            const onUploadStateChangeMock = jest.fn();
+            const { result } = renderHook(() => useDocumentStore());
+            await result.current.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
+
+            expect(post).toHaveBeenCalled();
+
+            expect(onUploadStateChangeMock).toHaveBeenCalledWith(documentUploadStates.FAILED, 0);
+        });
+    });
 
     it("gets patient details", async () => {
         const nhsNumber = "9000000009";

@@ -1,12 +1,21 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
-import useApi from "../apiClients/useApi";
+import "../apiClients/documentStore";
 import { documentUploadStates } from "../enums/documentUploads";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import UploadDocumentPage from "./UploadDocumentPage";
 
-jest.mock("../apiClients/useApi");
+const mockDocumentStore = {
+    uploadDocument: () => null,
+};
+
+jest.mock("../apiClients/documentStore", () => {
+    return {
+        useDocumentStore: () => mockDocumentStore,
+    };
+});
+
 jest.mock("../providers/PatientDetailsProvider", () => ({
     usePatientDetailsProviderContext: jest.fn(),
 }));
@@ -14,10 +23,6 @@ const mockNavigate = jest.fn();
 jest.mock("react-router", () => ({
     useNavigate: () => mockNavigate,
 }));
-
-beforeEach(() => {
-    useApi.mockReset();
-});
 
 describe("UploadDocumentPage", () => {
     const nextPagePath = "/next";
@@ -51,15 +56,14 @@ describe("UploadDocumentPage", () => {
             const uploadStateChangeTriggers = {};
             const resolvers = {};
 
-            useApi.mockImplementation(() => ({
-                uploadDocument: async (document, nhsNumber, onUploadStateChange) => {
-                    uploadStateChangeTriggers[document.name] = onUploadStateChange;
+            mockDocumentStore.uploadDocument = async (document, uploadNhsNumber, onUploadStateChange) => {
+                expect(uploadNhsNumber).toBe(nhsNumber);
+                uploadStateChangeTriggers[document.name] = onUploadStateChange;
 
-                    return new Promise((resolve) => {
-                        resolvers[document.name] = resolve;
-                    });
-                },
-            }));
+                return new Promise((resolve) => {
+                    resolvers[document.name] = resolve;
+                });
+            };
 
             render(<UploadDocumentPage nextPagePath={nextPagePath} />);
 
