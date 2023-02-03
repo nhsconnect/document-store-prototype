@@ -102,6 +102,6 @@ export const useDocumentStore = () => {
                 }
             },
         }),
-        [request]
+        [request, storage]
     );
 };
