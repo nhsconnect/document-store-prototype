@@ -34,7 +34,12 @@ resource "aws_iam_role_policy" "sqs_to_lambda_policy" {
       {
         "Effect" : "Allow",
         "Action" : [
-          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:ListQueues",
+          "sqs:ReceiveMessage",
+          "sqs:GetQueueUrl",
+          "sqs:SendMessage",
+          "sqs:DeleteMessage"
         ],
         "Resource" : aws_sqs_queue.re_registration.arn
       }
