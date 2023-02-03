@@ -31,14 +31,14 @@ common:
               command: dojo
               arguments:
                 - -c
-                - Dojofile-node
-                - ./tasks test-ui
+                - Dojofile-infra
+                - ./tasks configure-ui
           - exec:
               command: dojo
               arguments:
                 - -c
-                - Dojofile-infra
-                - ./tasks configure-ui
+                - Dojofile-node
+                - ./tasks test-ui
           - exec:
               command: dojo
               arguments:
