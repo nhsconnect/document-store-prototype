@@ -10,7 +10,8 @@ import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 class SqsMessageEventTest {
 
     @Test
-    void parsesReRegistrationFromString() throws IllFormedPatientDetailsException, JsonProcessingException {
+    void parsesReRegistrationFromString()
+            throws IllFormedPatientDetailsException, JsonProcessingException {
         var nhsNumber = "9876543210";
         var nemsMessageId = "123";
 
