@@ -1,11 +1,11 @@
 import { documentUploadStates } from "../enums/documentUploads";
-import { useApiRequest } from "./useApi";
-import { useStorage } from "./useStorage";
+import { useDocumentStoreClient } from "./useDocumentStoreClient";
+import { useStorageClient } from "./useStorageClient";
 import { useDocumentStore } from "./documentStore";
 import { renderHook } from "@testing-library/react-hooks";
 
-jest.mock("./useApi");
-jest.mock("./useStorage");
+jest.mock("./useDocumentStoreClient");
+jest.mock("./useStorageClient");
 
 describe("The document store API client", () => {
     it("returns a list of documents associated with an NHS number", async () => {
@@ -37,7 +37,7 @@ describe("The document store API client", () => {
             expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
             return { data: responseBody };
         });
-        useApiRequest.mockImplementation(() => ({ get }));
+        useDocumentStoreClient.mockImplementation(() => ({ get }));
         const { result } = renderHook(() => useDocumentStore());
 
         const returnedDocumentList = await result.current.findByNhsNumber(nhsNumber);
@@ -110,8 +110,8 @@ describe("The document store API client", () => {
                 });
             });
 
-            useApiRequest.mockImplementation(() => ({ post }));
-            useStorage.mockImplementation(() => ({ put }));
+            useDocumentStoreClient.mockImplementation(() => ({ post }));
+            useStorageClient.mockImplementation(() => ({ put }));
 
             const onUploadStateChangeMock = jest.fn();
             const { result } = renderHook(() => useDocumentStore());
@@ -133,7 +133,7 @@ describe("The document store API client", () => {
                 throw new Error("Request failed");
             });
 
-            useApiRequest.mockImplementation(() => ({ post }));
+            useDocumentStoreClient.mockImplementation(() => ({ post }));
 
             const fileName = "hello.txt";
             const document = new File(["hello"], fileName, {
@@ -175,7 +175,7 @@ describe("The document store API client", () => {
                 throw new Error("S3 upload failed");
             });
 
-            useApiRequest.mockImplementation(() => ({ post, put }));
+            useDocumentStoreClient.mockImplementation(() => ({ post, put }));
 
             const onUploadStateChangeMock = jest.fn();
             const { result } = renderHook(() => useDocumentStore());
@@ -209,7 +209,7 @@ describe("The document store API client", () => {
             expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
             return { data: responseBody };
         });
-        useApiRequest.mockImplementation(() => ({
+        useDocumentStoreClient.mockImplementation(() => ({
             get,
             defaults: { headers: {} },
         }));
@@ -238,7 +238,7 @@ describe("The document store API client", () => {
             expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
             return { data: expectedResponse };
         });
-        useApiRequest.mockImplementation(() => ({
+        useDocumentStoreClient.mockImplementation(() => ({
             get,
         }));
 
@@ -268,7 +268,7 @@ describe("The document store API client", () => {
             expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
             return { data: expectedResponse };
         });
-        useApiRequest.mockImplementation(() => ({
+        useDocumentStoreClient.mockImplementation(() => ({
             delete: del,
         }));
 

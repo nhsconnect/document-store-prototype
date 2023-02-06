@@ -4,11 +4,13 @@ import config from "../config";
 import { useMemo } from "react";
 import { useDocumentStoreAuthErrorInterceptor } from "./useDocumentStoreAuthErrorInterceptor";
 
-export const useApiRequest = (apiName) => {
+const DOCUMENT_STORE_API = "doc-store-api";
+
+export const useDocumentStoreClient = () => {
     const { user } = useAuth();
     const documentStoreAuthErrorInterceptor = useDocumentStoreAuthErrorInterceptor();
 
-    const baseUrl = config.API.endpoints.find((endpoint) => endpoint.name === apiName).endpoint;
+    const baseUrl = config.API.endpoints.find((endpoint) => endpoint.name === DOCUMENT_STORE_API).endpoint;
 
     return useMemo(() => {
         const axiosInstance = axios.create({

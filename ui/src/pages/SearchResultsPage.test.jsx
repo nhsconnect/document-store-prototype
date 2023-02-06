@@ -8,8 +8,6 @@ import { downloadFile } from "../utils/utils";
 import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
 import { MemoryRouter } from "react-router";
 
-jest.mock("../apiClients/useApi");
-
 const mockDocumentStore = {
     findByNhsNumber: () => [],
     getPresignedUrlForZip: () => "test-url",

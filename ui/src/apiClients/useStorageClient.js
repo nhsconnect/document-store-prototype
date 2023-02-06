@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useMemo } from "react";
 
-export const useStorage = () => {
+export const useStorageClient = () => {
     return useMemo(() => axios.create(), []);
 };

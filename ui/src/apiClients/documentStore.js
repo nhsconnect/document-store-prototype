@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { setUrlHostToLocalHost } from "../utils/utils";
-import { useApiRequest } from "./useApi";
-import { useStorage } from "./useStorage";
+import { useDocumentStoreClient } from "./useDocumentStoreClient";
+import { useStorageClient } from "./useStorageClient";
 import { documentUploadStates } from "../enums/documentUploads";
 
 export const useDocumentStore = () => {
-    const request = useApiRequest("doc-store-api");
-    const storage = useStorage();
+    const request = useDocumentStoreClient("doc-store-api");
+    const storage = useStorageClient();
 
     return useMemo(
         () => ({
