@@ -11,6 +11,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.JsonPath;
@@ -18,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,9 +70,10 @@ public class CreateDocumentManifestInlineTest {
                         metadataBuilder.withFileName("Some document").build(),
                         metadataBuilder.withFileName("another document").build());
         var requestEvent = createRequestEvent(nhsNumber);
+        var s3Object = createS3Object();
 
         when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
-        when(s3Client.getObject(anyString(), anyString())).thenReturn(new S3Object());
+        when(s3Client.getObject(anyString(), anyString())).thenReturn(s3Object);
         when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
         doNothing().when(dynamoDbMapper).save(any());
         var responseEvent =
@@ -93,10 +96,13 @@ public class CreateDocumentManifestInlineTest {
         var metadataList =
                 List.of(DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true).build());
 
+        var s3Object = createS3Object();
+
         when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
-        when(s3Client.getObject(anyString(), anyString())).thenReturn(new S3Object());
+        when(s3Client.getObject(anyString(), anyString())).thenReturn(s3Object);
         when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
         doNothing().when(dynamoDbMapper).save(any());
+
         createDocumentManifestByNhsNumberHandler.handleRequest(requestEvent, context);
 
         verify(auditPublisher).publish(any(DownloadAllPatientRecordsAuditMessage.class));
@@ -112,5 +118,13 @@ public class CreateDocumentManifestInlineTest {
         return new APIGatewayProxyRequestEvent()
                 .withQueryStringParameters(parameters)
                 .withHeaders(headers);
+    }
+
+    private S3Object createS3Object() {
+        var input = IOUtils.toInputStream("some test data for my input stream", "UTF-8");
+        var s3Object = new S3Object();
+        s3Object.setObjectContent(new S3ObjectInputStream(input, null));
+
+        return s3Object;
     }
 }
