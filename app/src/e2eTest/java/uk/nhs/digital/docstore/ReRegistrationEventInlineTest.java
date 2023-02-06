@@ -14,6 +14,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 import java.util.List;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,12 @@ public class ReRegistrationEventInlineTest {
                         .put("nemsMessageId", "some id")
                         .put("lastUpdated", "some date")
                         .toString();
-        var message = new JSONObject().put("Message", reRegistrationMessage).toString();
+        var message =
+                new JSONObject()
+                        .put("Message", reRegistrationMessage)
+                        .put("Timestamp", Instant.now())
+                        .toString();
+
         var sqsMessage = new SQSEvent.SQSMessage();
         sqsMessage.setBody(message);
         var sqsEvent = new SQSEvent();

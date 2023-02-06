@@ -38,7 +38,8 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void
                             LOGGER.info("Received new message from re-registration queue.");
                             var message = record.getBody();
                             try {
-                                var messageBody = new JSONObject(message).get("Message").toString();
+                                LOGGER.debug("message " + message);
+                                var messageBody = new JSONObject(message).getString("Message");
 
                                 LOGGER.info("Parsing message to ReRegistrationEvent.");
                                 var reRegistrationEvent = ReRegistrationEvent.parse(messageBody);
