@@ -29,3 +29,4 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks java-dependency-scan
+                    
