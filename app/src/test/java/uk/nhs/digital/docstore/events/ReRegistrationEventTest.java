@@ -1,13 +1,13 @@
 package uk.nhs.digital.docstore.events;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 
-class SqsMessageEventTest {
+public class ReRegistrationEventTest {
 
     @Test
     void parsesReRegistrationFromString()
@@ -20,14 +20,12 @@ class SqsMessageEventTest {
                         .put("nhsNumber", nhsNumber)
                         .put("newlyRegisteredOdsCode", "ABC12")
                         .put("nemsMessageId", nemsMessageId)
-                        .put("lastUpdated", "some date");
-        var message = new JSONObject().put("Message", reRegistrationMessage).toString();
+                        .put("lastUpdated", "some date")
+                        .toString();
 
-        var reRegistrationEvent = new ReRegistrationEvent(nhsNumber, nemsMessageId);
-        var expectedSqsMessageEvent = new SqsMessageEvent(reRegistrationEvent);
+        var expectedReRegistrationEvent = new ReRegistrationEvent(nhsNumber, nemsMessageId);
+        var reRegistrationEvent = ReRegistrationEvent.parse(reRegistrationMessage);
 
-        var sqsMessageEvent = SqsMessageEvent.parse(message);
-
-        assertEquals(expectedSqsMessageEvent, sqsMessageEvent);
+        assertEquals(expectedReRegistrationEvent, reRegistrationEvent);
     }
 }

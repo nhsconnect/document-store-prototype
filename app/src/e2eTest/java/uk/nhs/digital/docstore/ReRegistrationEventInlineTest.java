@@ -72,7 +72,8 @@ public class ReRegistrationEventInlineTest {
                         .put("nhsNumber", nhsNumber.getValue())
                         .put("newlyRegisteredOdsCode", "TEST123")
                         .put("nemsMessageId", "some id")
-                        .put("lastUpdated", "some date");
+                        .put("lastUpdated", "some date")
+                        .toString();
         var message = new JSONObject().put("Message", reRegistrationMessage).toString();
         var sqsMessage = new SQSEvent.SQSMessage();
         sqsMessage.setBody(message);

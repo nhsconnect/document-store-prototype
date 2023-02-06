@@ -3,13 +3,14 @@ package uk.nhs.digital.docstore.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
-import uk.nhs.digital.docstore.events.SqsMessageEvent;
+import uk.nhs.digital.docstore.events.ReRegistrationEvent;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
 public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void> {
@@ -37,9 +38,10 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void
                             LOGGER.info("Received new message from re-registration queue.");
                             var message = record.getBody();
                             try {
-                                var sqsMessageEvent = SqsMessageEvent.parse(message);
+                                var messageBody = new JSONObject(message).get("Message").toString();
+
                                 LOGGER.info("Parsing message to ReRegistrationEvent.");
-                                var reRegistrationEvent = sqsMessageEvent.getMessage();
+                                var reRegistrationEvent = ReRegistrationEvent.parse(messageBody);
                                 LOGGER.info("Deleting all documents for patient...");
                                 var deletedDocuments =
                                         deletionService.deleteAllDocumentsForPatient(
