@@ -7,7 +7,7 @@ resource "aws_lambda_function" "re_registration_lambda" {
   memory_size      = 448
   filename         = var.lambda_jar_filename
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
-  layers           = [
+  layers = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {
@@ -45,11 +45,4 @@ resource "aws_iam_role_policy" "sqs_to_lambda_policy" {
       }
     ]
   })
-}
-
-resource "aws_sns_topic_subscription" "subscription_to_re_registration_sns_topic" {
-  topic_arn = data.aws_ssm_parameter.re_registration_sns_topic_arn[0].value
-  protocol  = "sqs"
-  endpoint  = aws_sqs_queue.re_registration.arn
-  count     = var.cloud_only_service_instances
 }
