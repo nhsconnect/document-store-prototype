@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore.events;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
@@ -9,7 +10,7 @@ import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 class SqsMessageEventTest {
 
     @Test
-    void parsesReRegistrationFromString() throws IllFormedPatientDetailsException {
+    void parsesReRegistrationFromString() throws IllFormedPatientDetailsException, JsonProcessingException {
         var nhsNumber = "9876543210";
         var nemsMessageId = "123";
 

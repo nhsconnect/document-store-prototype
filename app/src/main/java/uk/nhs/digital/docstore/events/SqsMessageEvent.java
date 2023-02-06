@@ -19,13 +19,9 @@ public class SqsMessageEvent {
         return message;
     }
 
-    public static SqsMessageEvent parse(String message) {
+    public static SqsMessageEvent parse(String message) throws JsonProcessingException {
         var objectMapper = JsonMapper.builder().build();
-        try {
-            return objectMapper.readValue(message, SqsMessageEvent.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return objectMapper.readValue(message, SqsMessageEvent.class);
     }
 
     @Override
