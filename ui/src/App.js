@@ -19,8 +19,8 @@ import DeleteDocumentsConfirmationPage from "./pages/DeleteDocumentsConfirmation
 const AppRoutes = () => {
     return (
         <Routes>
-            <Route element={<StartPage />} path={"/"} />
-            <Route element={<AuthenticationCallbackRouter />} path={"cis2-auth-callback"} />
+            <Route element={<StartPage />} path="/" />
+            <Route element={<AuthenticationCallbackRouter />} path="cis2-auth-callback" />
             <Route
                 element={
                     <Authenticator.Protected>
@@ -28,7 +28,7 @@ const AppRoutes = () => {
                     </Authenticator.Protected>
                 }
             >
-                <Route path={"/home"} element={<HomePage />} />
+                <Route path="/home" element={<HomePage />} />
                 <Route
                     path="/search"
                     element={
@@ -37,7 +37,7 @@ const AppRoutes = () => {
                         </PatientDetailsProvider>
                     }
                 >
-                    <Route path="/search/patient-trace" element={<PatientTracePage nextPage={"/search/results"} />} />
+                    <Route path="/search/patient-trace" element={<PatientTracePage nextPage="/search/results" />} />
                     <Route
                         path="/search/results"
                         element={
@@ -46,7 +46,6 @@ const AppRoutes = () => {
                             </DeleteDocumentsResponseProvider>
                         }
                     />
-
                     <Route
                         path="/search/results/delete-documents-confirmation"
                         element={
@@ -56,7 +55,6 @@ const AppRoutes = () => {
                         }
                     />
                 </Route>
-
                 <Route
                     path="/upload"
                     element={
@@ -65,8 +63,8 @@ const AppRoutes = () => {
                         </PatientDetailsProvider>
                     }
                 >
-                    <Route path="/upload/patient-trace" element={<PatientTracePage nextPage={"/upload/submit"} />} />
-                    <Route path="/upload/submit" element={<UploadDocumentPage nextPagePath={"/home"} />} />
+                    <Route path="/upload/patient-trace" element={<PatientTracePage nextPage="/upload/submit" />} />
+                    <Route path="/upload/submit" element={<UploadDocumentPage nextPagePath="/home" />} />
                 </Route>
             </Route>
         </Routes>
