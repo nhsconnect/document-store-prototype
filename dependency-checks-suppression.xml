@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions>
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <suppress until="2023-03-07">
+        <notes><![CDATA[
+   file name: json-20220924.jar
+   ]]></notes>
+        <sha1>5aa95e7688f76c664af205c5937620f02688dfbc</sha1>
         <vulnerabilityName>CVE-2022-45688</vulnerabilityName>
-        <timestamp>2023-03-07</timestamp>
     </suppress>
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/com\.squareup\.okhttp3/okhttp@.*$</packageUrl>
+    <suppress until="2023-03-07">
+        <notes><![CDATA[
+   file name: okhttp-3.8.1.jar
+   ]]></notes>
+        <sha1>4d060ca3190df0eda4dc13415532a12e15ca5f11</sha1>
         <vulnerabilityName>CVE-2021-0341</vulnerabilityName>
-        <timestamp>2023-03-07</timestamp>
     </suppress>
 </suppressions>
