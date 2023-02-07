@@ -303,6 +303,13 @@ _java-dependency-scan)
 java-dependency-scan)
   dojo "./tasks _java-dependency-scan"
   ;;
+_javascript-dependency-scan)
+  cd ui && npm install
+  npm run check-audit
+  ;;
+javascript-dependency-scan)
+  dojo "./tasks _javascript-dependency-scan"
+  ;;
 *)
   echo "make $@"
   make "$@"

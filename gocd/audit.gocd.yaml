@@ -29,4 +29,8 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks java-dependency-scan
-                    
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks javascript-dependency-scan
