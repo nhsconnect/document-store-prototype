@@ -84,10 +84,6 @@ jar {
 
 dependencyCheck {
 	failBuildOnCVSS = 7
-	suppressionFile = './dependency-checks-suppression.xml'
-	analyzers {
-		assemblyEnabled = false
-	}
 }
 
 
