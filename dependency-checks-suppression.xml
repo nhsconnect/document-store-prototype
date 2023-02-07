@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
+        <vulnerabilityName>CVE-2022-45688</vulnerabilityName>
+        <timestamp>2023-03-07</timestamp>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/com\.squareup\.okhttp3/okhttp@.*$</packageUrl>
+        <vulnerabilityName>CVE-2021-0341</vulnerabilityName>
+        <timestamp>2023-03-07</timestamp>
+    </suppress>
+</suppressions>
