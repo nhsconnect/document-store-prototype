@@ -73,16 +73,14 @@ export const PatientTracePage = ({ nextPage }) => {
                         </>
                     )}
                     <Fieldset>
-                        <Fieldset.Legend headingLevel={"h1"} isPageHeading>
+                        <Fieldset.Legend headingLevel="h1" isPageHeading>
                             Search for patient
                         </Fieldset.Legend>
                         <Input
-                            id={"nhs-number-input"}
+                            id="nhs-number-input"
                             name="nhsNumber"
                             label="Enter NHS number"
-                            hint={
-                                "Please search patient's record you wish to upload by 10 digit NHS number. For example, 4857773456."
-                            }
+                            hint="A 10-digit number, for example, 485 777 3456"
                             error={formState.errors.nhsNumber?.message}
                             type="text"
                             {...nhsNumberProps}
@@ -95,7 +93,7 @@ export const PatientTracePage = ({ nextPage }) => {
                     )}
                     {submissionState === states.FAILED && statusCode === 404 && (
                         <WarningCallout>
-                            <WarningCallout.Label headingLevel={"h2"}>Patient Not Found</WarningCallout.Label>
+                            <WarningCallout.Label headingLevel="h2">Patient Not Found</WarningCallout.Label>
                             <p>Please verify NHS number again.</p>
                         </WarningCallout>
                     )}

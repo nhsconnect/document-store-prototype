@@ -5,35 +5,32 @@ import * as ReactRouter from "react-router";
 import "../apiClients/documentStore";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 
-const fakeNhsNumber = "9000000009";
-const patientData = {
-    birthDate: "2010-10-22",
-    familyName: "Smith",
-    givenName: ["Jane"],
-    nhsNumber: "9000000009",
-    postalCode: "LS1 6AE",
-};
-
 const mockDocumentStore = {
     getPatientDetails: () => ({}),
 };
 
+jest.mock("../providers/PatientDetailsProvider", () => ({
+    usePatientDetailsProviderContext: jest.fn(),
+}));
 jest.mock("../apiClients/documentStore", () => {
     return { useDocumentStore: () => mockDocumentStore };
 });
 
-const mockSetPatientDetails = jest.fn();
-jest.mock("../providers/PatientDetailsProvider", () => ({
-    usePatientDetailsProviderContext: jest.fn(),
-}));
-
-const patientDetailsResponse = {
-    result: {
-        patientDetails: patientData,
-    },
-};
-
-describe("PatientTracePage", () => {
+describe("<PatientTracePage/>", () => {
+    const fakeNhsNumber = "9000000009";
+    const patientData = {
+        birthDate: "2010-10-22",
+        familyName: "Smith",
+        givenName: ["Jane"],
+        nhsNumber: "9000000009",
+        postalCode: "LS1 6AE",
+    };
+    const patientDetailsResponse = {
+        result: {
+            patientDetails: patientData,
+        },
+    };
+    const mockSetPatientDetails = jest.fn();
     const mockNavigate = jest.fn();
     let useNavigateSpy;
 
@@ -53,11 +50,7 @@ describe("PatientTracePage", () => {
 
         expect(screen.getByRole("heading", { name: "Search for patient" })).toBeInTheDocument();
         expect(screen.queryByText("Enter NHS number")).toBeInTheDocument();
-        expect(
-            screen.queryByText(
-                "Please search patient's record you wish to upload by 10 digit NHS number. For example, 4857773456."
-            )
-        ).toBeInTheDocument();
+        expect(screen.getByText("A 10-digit number, for example, 485 777 3456")).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Search" })).toBeInTheDocument();
         expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
     });
