@@ -7,9 +7,9 @@ export const useDocumentStoreAuthErrorInterceptor = () => {
     const navigate = useNavigate();
 
     return useCallback(
-        async (error) => {
+        (error) => {
             if (error.response?.status === 401) {
-                await removeUser();
+                void removeUser();
                 navigate("/");
             } else {
                 throw error;

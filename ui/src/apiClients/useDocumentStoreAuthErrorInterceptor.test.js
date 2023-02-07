@@ -7,16 +7,16 @@ jest.mock("react-oidc-context");
 jest.mock("react-router");
 
 describe("useDocumentStoreAuthErrorInterceptor()", () => {
-    it("returns error on any non-401 response status code", async () => {
+    it("returns error on any non-401 response status code", () => {
         const error = new Error();
 
         useAuth.mockReturnValue({ removeUser: jest.fn() });
         const { result } = renderHook(() => useDocumentStoreAuthErrorInterceptor());
 
-        await expect(() => result.current(error)).rejects.toThrow(error);
+        expect(() => result.current(error)).toThrow(error);
     });
 
-    it("navigates to start page on 401 response status code", async () => {
+    it("navigates to start page on 401 response status code", () => {
         const removeUser = jest.fn();
         const navigate = jest.fn();
         const error = new Error();
@@ -25,7 +25,7 @@ describe("useDocumentStoreAuthErrorInterceptor()", () => {
         useAuth.mockReturnValue({ removeUser });
         useNavigate.mockReturnValue(navigate);
         const { result } = renderHook(() => useDocumentStoreAuthErrorInterceptor());
-        await result.current(error);
+        result.current(error);
 
         expect(removeUser).toHaveBeenCalled();
         expect(navigate).toHaveBeenCalledWith("/");
