@@ -57,6 +57,8 @@ fileignoreconfig:
   checksum: 292759e803f02341effc9b5016f434b28505deb296eb568ba36ee275695456ca
 - filename: documentation/tech/local-development-environment.md
   checksum: e8dcf70d13bc84a5fa2d5cc56906ad32f2dd72ef7ed56a4c0d33081507518bde
+- filename: terraform/main.tf
+  checksum: 230b87fd35f88a3bd7f2b28689c4c98c084a7616ad5800ee8b93fdae6c26396b
 version: ""
 scopeconfig:
   - scope: node

@@ -127,6 +127,36 @@ resource "aws_api_gateway_authorizer" "cis2_authoriser" {
   authorizer_credentials = aws_iam_role.authoriser_execution.arn
 }
 
+resource "aws_api_gateway_gateway_response" "doc_store_unauthorised_response" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  response_type = "DEFAULT_4XX"
+
+  response_templates = {
+    "application/json" = "{\"message\":$context.error.messageString}"
+  }
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Origin" = "${local.amplify_base_url}"
+    "gatewayresponse.header.Access-Control-Allow-Methods" = "*"
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
+  }
+}
+
+resource "aws_api_gateway_gateway_response" "doc_store_bad_gateway_response" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  response_type = "DEFAULT_5XX"
+
+  response_templates = {
+    "application/json" = "{\"message\":$context.error.messageString}"
+  }
+
+  response_parameters = {
+    "gatewayresponse.header.Access-Control-Allow-Origin" = "${local.amplify_base_url}"
+    "gatewayresponse.header.Access-Control-Allow-Methods" = "*"
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"
+  }
+}
+
 resource "aws_lambda_permission" "s3_permission_for_document_upload_event" {
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
