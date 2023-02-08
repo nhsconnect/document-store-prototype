@@ -3,7 +3,8 @@ package uk.nhs.digital.docstore.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
@@ -39,7 +40,10 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void
                             var message = record.getBody();
                             try {
                                 LOGGER.debug("message " + message);
-                                var messageBody = new JSONObject(message).getString("Message");
+
+                                ObjectMapper mapper = new ObjectMapper();
+                                JsonNode root = mapper.readTree(message);
+                                var messageBody = root.path("Message").asText();
 
                                 LOGGER.info("Parsing message to ReRegistrationEvent.");
                                 var reRegistrationEvent = ReRegistrationEvent.parse(messageBody);
