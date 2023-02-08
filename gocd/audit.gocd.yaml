@@ -11,7 +11,7 @@ pipelines:
     timer:
       spec: 0 0 7 ? * MON,TUE,WED,THU,FRI *
     stages:
-      - audit:
+      - audit_java:
           clean_workspace: true
           approval: manual
           jobs:
@@ -29,6 +29,25 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks java-dependency-scan
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks javascript-dependency-scan
+      - audit_javascript:
+          clean_workspace: true
+          approval: manual
+          jobs:
+            dependency_check:
+              artifacts:
+                - build:
+                    source: audit-output.txt
+                    destination: reports
+              tabs:
+                dependency: reports/dependency-check-report.html
+              resources:
+                - docker
+              tasks:
                 - exec:
                     command: /bin/bash
                     arguments:
