@@ -8,8 +8,6 @@ export const useDocumentStoreAuthErrorInterceptor = () => {
 
     return useCallback(
         (error) => {
-            // TODO: [PRMT-3018] Remove this log once Axios/API Gateway 401 issues are resolved
-            console.debug("useDocumentStoreAuthErrorInterceptor", error);
             if (error.response?.status === 401) {
                 void removeUser();
                 navigate("/");
