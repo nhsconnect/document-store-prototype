@@ -41,8 +41,8 @@ pipelines:
             dependency_check:
               artifacts:
                 - build:
-                    source: audit-output.txt
-                    destination: reports
+                    source: ui/audit-output.txt
+                    destination: app/build/reports
               tabs:
                 dependency: reports/dependency-check-report.html
               resources:
