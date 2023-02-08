@@ -25,15 +25,10 @@ pipelines:
                 - docker
               tasks:
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - ./tasks java-dependency-scan
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks javascript-dependency-scan
       - audit_javascript:
           clean_workspace: true
           approval: manual
@@ -49,7 +44,7 @@ pipelines:
                 - docker
               tasks:
                 - exec:
-                    command: /bin/bash
+                    command: dojo
                     arguments:
                       - -c
                       - ./tasks javascript-dependency-scan
