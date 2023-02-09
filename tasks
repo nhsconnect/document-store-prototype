@@ -305,7 +305,7 @@ java-dependency-scan)
   ;;
 _javascript-dependency-scan)
   cd ui && npm ci -y
-  npm run audit > audit-output.txt
+  npm run audit
   ;;
 javascript-dependency-scan)
   dojo -c Dojofile-node "./tasks _javascript-dependency-scan"

@@ -52,7 +52,7 @@
         "eslint-config-prettier": "^8.6.0",
         "fishery": "^2.2.2",
         "prettier": "^2.8.1",
-        "react-scripts": "4.0.3",
+        "react-scripts": "^5.0.1",
         "sass": "^1.54.7"
     },
     "engines": {
@@ -62,5 +62,8 @@
         "moduleNameMapper": {
             "axios": "axios/dist/node/axios.cjs"
         }
+    },
+    "overrides": {
+        "nth-check": "2.1.1"
     }
 }
