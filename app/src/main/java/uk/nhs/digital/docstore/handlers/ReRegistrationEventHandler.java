@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
+import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
@@ -31,6 +32,7 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void
 
     @Override
     public Void handleRequest(SQSEvent sqsEvent, Context context) {
+        Tracer.setMDCContext(context);
         sqsEvent.getRecords()
                 .forEach(
                         record -> {
