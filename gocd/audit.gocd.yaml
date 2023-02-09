@@ -1,6 +1,6 @@
 format_version: 4
 pipelines:
-  access-request-fulfillment.audit:
+  access-request-fulfilment.audit:
     group: access-request-fulfilment
     label_template: '${git[:8]}'
     materials:
