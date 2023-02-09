@@ -304,7 +304,9 @@
         "sns:SetTopicAttributes",
         "sns:TagResource",
         "sns:UntagResource",
-        "sns:Subscribe"
+        "sns:Subscribe",
+        "sns:GetSubscriptionAttributes",
+        "sns:Unsubscribe"
       ],
       "Resource": "*"
     }
