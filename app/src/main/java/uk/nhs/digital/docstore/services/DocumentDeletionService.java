@@ -34,12 +34,13 @@ public class DocumentDeletionService {
         this.serialiser = serialiser;
     }
 
-    public List<Document> deleteAllDocumentsForPatient(NhsNumber nhsNumber)
-            throws JsonProcessingException {
+    public List<Document> deleteAllDocumentsForPatient(NhsNumber nhsNumber) {
         var documentMetadataList = metadataStore.findByNhsNumber(nhsNumber);
         var documentList = new ArrayList<Document>();
 
-        if (documentMetadataList != null) {
+        if (documentMetadataList.size() == 0) {
+            LOGGER.info("There is no document available for this NHS number.");
+        } else {
             LOGGER.debug("Deleting document metadata from DynamoDB");
             documentMetadataList = metadataStore.deleteAndSave(documentMetadataList);
 
@@ -62,7 +63,9 @@ public class DocumentDeletionService {
                             LOGGER.error(e.getMessage());
                         }
                     });
+            LOGGER.info("Successfully deleted all documents.");
         }
+
         return documentList;
     }
 

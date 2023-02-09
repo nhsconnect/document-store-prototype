@@ -1,11 +1,11 @@
 package uk.nhs.digital.docstore.services;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder.theMetadata;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,8 +49,7 @@ class DocumentDeletionServiceTest {
     }
 
     @Test
-    void shouldDeleteAllDocumentsForPatient()
-            throws IllFormedPatientDetailsException, JsonProcessingException {
+    void shouldDeleteAllDocumentsForPatient() throws IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("0123456789");
         var document = DocumentBuilder.baseDocumentBuilder().build();
         var expectedDocumentList = List.of(document);
@@ -65,6 +64,21 @@ class DocumentDeletionServiceTest {
 
         verify(documentStore).deleteObjectAtLocation(document.getLocation());
         assertThat(actualDocumentList).usingRecursiveComparison().isEqualTo(expectedDocumentList);
+    }
+
+    @Test
+    void shouldNotDeleteIfThereAreNoDocumentsAvailableForPatient()
+            throws IllFormedPatientDetailsException {
+        var nhsNumber = new NhsNumber("9123456789");
+
+        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(Collections.emptyList());
+
+        var emptyDocumentList = documentDeletionService.deleteAllDocumentsForPatient(nhsNumber);
+
+        verify(metadataStore, times(0)).deleteAndSave(any());
+        verify(documentStore, times(0)).deleteObjectAtLocation(any());
+        verify(serialiser, times(0)).toDocumentModel(any());
+        assertThat(emptyDocumentList).isEqualTo(Collections.emptyList());
     }
 
     @Test

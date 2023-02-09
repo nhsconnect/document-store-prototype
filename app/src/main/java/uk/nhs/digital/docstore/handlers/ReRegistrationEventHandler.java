@@ -41,13 +41,12 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void
                             try {
                                 LOGGER.info("Parsing message to ReRegistrationEvent.");
                                 var reRegistrationEvent = ReRegistrationEvent.parse(message);
-                                LOGGER.info("Deleting all documents for patient...");
+
                                 var deletedDocuments =
                                         deletionService.deleteAllDocumentsForPatient(
                                                 reRegistrationEvent.getNhsNumber());
                                 deletionService.reRegistrationAudit(
                                         reRegistrationEvent, deletedDocuments);
-                                LOGGER.info("Successfully deleted all documents.");
                             } catch (Exception e) {
                                 LOGGER.error(e.getMessage());
                                 throw new RuntimeException(e);
