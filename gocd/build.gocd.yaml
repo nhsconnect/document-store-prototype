@@ -166,8 +166,8 @@ common:
       - test:
           source: e2eTest/cypress/videos
 pipelines:
-  "paperless-record-service.dev":
-    group: paperless-record-service
+  "access-request-fulfilment.dev":
+    group: access-request-fulfilment
     label_template: "${git[:8]}"
     materials:
       git:
@@ -217,8 +217,8 @@ pipelines:
           clean_workspace: true
           jobs:
             e2e-test: *e2e_test
-  "paperless-record-service.pre-prod":
-    group: paperless-record-service
+  "access-request-fulfilment.pre-prod":
+    group: access-request-fulfilment
     label_template: "${git[:8]}"
     materials:
       git:
@@ -229,7 +229,7 @@ pipelines:
           - documentation/**/*.*
           - gradle/**/*.*
       dev_env:
-        pipeline: paperless-record-service.dev
+        pipeline: access-request-fulfilment.dev
         stage: e2e_tests
     stages:
       - build:
@@ -274,8 +274,8 @@ pipelines:
           clean_workspace: true
           jobs:
             e2e-test: *e2e_test
-  "paperless-record-service.prod":
-    group: paperless-record-service
+  "access-request-fulfilment.prod":
+    group: access-request-fulfilment
     label_template: "${git[:8]}"
     materials:
       git:
@@ -286,7 +286,7 @@ pipelines:
           - documentation/**/*.*
           - gradle/**/*.*
       pre_prod_env:
-        pipeline: paperless-record-service.pre-prod
+        pipeline: access-request-fulfilment.pre-prod
         stage: e2e_tests
     stages:
       - build:
