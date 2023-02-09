@@ -303,7 +303,8 @@
         "sns:RemovePermission",
         "sns:SetTopicAttributes",
         "sns:TagResource",
-        "sns:UntagResource"
+        "sns:UntagResource",
+        "sns:Subscribe"
       ],
       "Resource": "*"
     }

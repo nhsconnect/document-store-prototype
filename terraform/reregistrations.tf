@@ -46,3 +46,10 @@ resource "aws_iam_role_policy" "sqs_to_lambda_policy" {
     ]
   })
 }
+
+resource "aws_sns_topic_subscription" "subscription_to_re_registration_sns_topic" {
+  topic_arn = data.aws_ssm_parameter.re_registration_sns_topic_arn[0].value
+  protocol  = "sqs"
+  endpoint  = aws_sqs_queue.re_registration.arn
+  count     = var.cloud_only_service_instances
+}
