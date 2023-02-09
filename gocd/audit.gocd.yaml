@@ -27,4 +27,5 @@ pipelines:
                 - exec:
                     command: /bin/bash
                     arguments:
+                      - -c
                       - ./tasks java-dependency-scan
