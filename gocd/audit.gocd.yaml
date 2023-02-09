@@ -25,4 +25,6 @@ pipelines:
                 - docker
               tasks:
                 - exec:
-                    command: ./tasks java-dependency-scan
+                    command: /bin/bash
+                    arguments:
+                      - ./tasks java-dependency-scan
