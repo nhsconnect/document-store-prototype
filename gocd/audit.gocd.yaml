@@ -30,12 +30,6 @@ pipelines:
                       - -c
                       - ./tasks java-dependency-scan
             dependency_check_js:
-              artifacts:
-                - build:
-                    source: ui/audit-output.txt
-                    destination: app/build/reports
-              tabs:
-                dependency: ui/audit-output.txt
               resources:
                 - docker
               tasks:
