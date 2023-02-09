@@ -22,6 +22,7 @@ resource "aws_lambda_event_source_mapping" "event_source_mapping" {
   enabled          = true
   function_name    = aws_lambda_function.re_registration_lambda.arn
   batch_size       = 1
+  function_response_types = ["ReportBatchItemFailures"]
 }
 
 resource "aws_iam_role_policy" "sqs_to_lambda_policy" {

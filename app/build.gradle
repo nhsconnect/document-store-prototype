@@ -33,7 +33,7 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.261'
 	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
-	implementation 'com.amazonaws:aws-lambda-java-events:3.9.0'
+	implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
 	implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
 	implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
 

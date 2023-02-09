@@ -15,8 +15,8 @@ public class ReRegistrationEvent {
     private final String nemsMessageId;
 
     public ReRegistrationEvent(
-            @JsonProperty("nhsNumber") String nhsNumber,
-            @JsonProperty("nemsMessageId") String nemsMessageId)
+            @JsonProperty(value = "nhsNumber", required = true) String nhsNumber,
+            @JsonProperty(value = "nemsMessageId", required = true) String nemsMessageId)
             throws IllFormedPatientDetailsException {
         this.nhsNumber = new NhsNumber(nhsNumber);
         this.nemsMessageId = nemsMessageId;

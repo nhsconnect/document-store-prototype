@@ -2,7 +2,9 @@ package uk.nhs.digital.docstore.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.SQSBatchResponse;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
@@ -13,7 +15,7 @@ import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.events.ReRegistrationEvent;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
-public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void> {
+public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, SQSBatchResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReRegistrationEventHandler.class);
     private final DocumentDeletionService deletionService;
 
@@ -31,8 +33,9 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void
     }
 
     @Override
-    public Void handleRequest(SQSEvent sqsEvent, Context context) {
+    public SQSBatchResponse handleRequest(SQSEvent sqsEvent, Context context) {
         Tracer.setMDCContext(context);
+        var batchItemFailures = new ArrayList<SQSBatchResponse.BatchItemFailure>();
         sqsEvent.getRecords()
                 .forEach(
                         record -> {
@@ -49,10 +52,12 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, Void
                                         reRegistrationEvent, deletedDocuments);
                             } catch (Exception e) {
                                 LOGGER.error(e.getMessage());
-                                throw new RuntimeException(e);
+                                batchItemFailures.add(
+                                        new SQSBatchResponse.BatchItemFailure(
+                                                record.getMessageId()));
                             }
                         });
 
-        return null;
+        return new SQSBatchResponse(batchItemFailures);
     }
 }

@@ -1,9 +1,9 @@
 package uk.nhs.digital.docstore;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -15,6 +15,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,10 +39,13 @@ public class ReRegistrationEventInlineTest {
     private static final String AWS_REGION = "eu-west-2";
     @Mock private Context context;
     @Mock private SplunkPublisher publisher;
+    private DocumentMetadataStore metadataStore;
+    private DocumentStore documentStore;
+    private DocumentDeletionService deletionService;
+    private ReRegistrationEventHandler handler;
 
-    @Test
-    void deletePatientDocuments() throws IllFormedPatientDetailsException, JsonProcessingException {
-        var nhsNumber = new NhsNumber("9890123456");
+    @BeforeEach
+    void setUp() {
         var endpoint = String.format("http://%s:4566", BaseUriHelper.getAwsHost());
         var endpointConfiguration =
                 new AwsClientBuilder.EndpointConfiguration(endpoint, AWS_REGION);
@@ -59,13 +63,18 @@ public class ReRegistrationEventInlineTest {
                         .withPathStyleAccessEnabled(true)
                         .build();
 
-        var metadataStore = new DocumentMetadataStore(dynamoDBMapper);
-        var documentStore = new DocumentStore(s3Client, bucketName);
-        var deletionService =
+        metadataStore = new DocumentMetadataStore(dynamoDBMapper);
+        documentStore = new DocumentStore(s3Client, bucketName);
+        deletionService =
                 new DocumentDeletionService(
                         publisher, documentStore, metadataStore, new DocumentMetadataSerialiser());
 
-        var handler = new ReRegistrationEventHandler(deletionService);
+        handler = new ReRegistrationEventHandler(deletionService);
+    }
+
+    @Test
+    void deletePatientDocuments() throws IllFormedPatientDetailsException, JsonProcessingException {
+        var nhsNumber = new NhsNumber("9890123456");
         var reRegistrationMessage =
                 "{\"nhsNumber\":"
                         + nhsNumber.getValue()
@@ -82,12 +91,30 @@ public class ReRegistrationEventInlineTest {
                 new DocumentLocation(metadata.getLocation()).getPath(),
                 new ByteArrayInputStream(content.getBytes()));
 
-        handler.handleRequest(sqsEvent, context);
+        var failedMessages = handler.handleRequest(sqsEvent, context);
 
         verify(publisher).publish(any(ReRegistrationAuditMessage.class));
+        assertTrue(failedMessages.getBatchItemFailures().isEmpty());
         assertThat(metadataStore.findByNhsNumber(nhsNumber)).isEmpty();
         assertThrows(
                 AmazonS3Exception.class,
                 () -> documentStore.getObjectFromS3(new DocumentLocation(metadata.getLocation())));
+    }
+
+    @Test
+    void returnsMessageIdWhenDeletionFails() throws JsonProcessingException {
+        var messageWithoutNhsNumber =
+                "{\"newlyRegisteredOdsCode\":\"N82668\",\"nemsMessageId\":\"34cac591-616c-4727-9d24-c25f97da05e5\",\"lastUpdated\":\"2023-02-03T14:51:43+00:00\"}";
+        var sqsMessage = new SQSEvent.SQSMessage();
+        sqsMessage.setBody(messageWithoutNhsNumber);
+        var sqsEvent = new SQSEvent();
+        sqsEvent.setRecords(List.of(sqsMessage));
+        var deletionServiceSpy = spy(deletionService);
+
+        var failedMessages = handler.handleRequest(sqsEvent, context);
+
+        assertThat(failedMessages.getBatchItemFailures().size()).isGreaterThan(0);
+        verify(deletionServiceSpy, times(0)).deleteAllDocumentsForPatient(any());
+        verify(deletionServiceSpy, times(0)).reRegistrationAudit(any(), any());
     }
 }
