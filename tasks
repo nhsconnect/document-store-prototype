@@ -308,7 +308,7 @@ _javascript-dependency-scan)
   npm run audit > audit-output.txt
   ;;
 javascript-dependency-scan)
-  dojo "./tasks _javascript-dependency-scan"
+  dojo -c Dojofile-node "./tasks _javascript-dependency-scan"
   ;;
 *)
   echo "make $@"
