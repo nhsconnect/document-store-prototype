@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSBatchResponse;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -52,10 +53,12 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, SQSB
     private Optional<SQSBatchResponse.BatchItemFailure> handleSqsMessage(
             SQSEvent.SQSMessage sqsMessage) {
         LOGGER.info("Received new message from re-registration queue.");
-        var message = sqsMessage.getBody();
+        var sqsMessageBody = sqsMessage.getBody();
 
         try {
             LOGGER.info("Parsing message to ReRegistrationEvent.");
+            var root = new ObjectMapper().readTree(sqsMessageBody);
+            var message = root.path("Message").asText();
             var reRegistrationEvent = ReRegistrationEvent.parse(message);
 
             var deletedDocuments =

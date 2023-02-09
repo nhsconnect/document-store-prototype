@@ -1,7 +1,8 @@
 package uk.nhs.digital.docstore;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -14,7 +15,9 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 import java.util.List;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,11 +79,19 @@ public class ReRegistrationEventInlineTest {
     void deletePatientDocuments() throws IllFormedPatientDetailsException, JsonProcessingException {
         var nhsNumber = new NhsNumber("9890123456");
         var reRegistrationMessage =
-                "{\"nhsNumber\":"
-                        + nhsNumber.getValue()
-                        + ",\"newlyRegisteredOdsCode\":\"N82668\",\"nemsMessageId\":\"34cac591-616c-4727-9d24-c25f97da05e5\",\"lastUpdated\":\"2023-02-03T14:51:43+00:00\"}";
+                new JSONObject()
+                        .put("nhsNumber", nhsNumber.getValue())
+                        .put("newlyRegisteredOdsCode", "TEST123")
+                        .put("nemsMessageId", "some id")
+                        .put("lastUpdated", "some date")
+                        .toString();
+        var message =
+                new JSONObject()
+                        .put("Message", reRegistrationMessage)
+                        .put("Timestamp", Instant.now())
+                        .toString();
         var sqsMessage = new SQSEvent.SQSMessage();
-        sqsMessage.setBody(reRegistrationMessage);
+        sqsMessage.setBody(message);
         var sqsEvent = new SQSEvent();
         sqsEvent.setRecords(List.of(sqsMessage));
         var metadata = DocumentMetadataBuilder.theMetadata().withNhsNumber(nhsNumber).build();
