@@ -1,3 +1,75 @@
+module create_document_reference_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.create_doc_ref_lambda.function_name
+  lambda_timeout             = aws_lambda_function.create_doc_ref_lambda.timeout
+  lambda_short_name          = "create_document_reference_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
+module authoriser_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.authoriser.function_name
+  lambda_timeout             = aws_lambda_function.authoriser.timeout
+  lambda_short_name          = "authoriser"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
+module search_patient_details_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.search_patient_details_lambda.function_name
+  lambda_timeout             = aws_lambda_function.search_patient_details_lambda.timeout
+  lambda_short_name          = "search_patient_details_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
+module document_uploaded_event_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.document_uploaded_lambda.function_name
+  lambda_timeout             = aws_lambda_function.document_uploaded_lambda.timeout
+  lambda_short_name          = "document_uploaded_event_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
+module create_document_manifest_by_nhs_number_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.document_manifest_lambda.function_name
+  lambda_timeout             = aws_lambda_function.document_manifest_lambda.timeout
+  lambda_short_name          = "create_document_manifest_by_nhs_number_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
+module document_reference_search_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.doc_ref_search_lambda.function_name
+  lambda_timeout             = aws_lambda_function.doc_ref_search_lambda.timeout
+  lambda_short_name          = "document_reference_search_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
+module delete_document_reference_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.delete_doc_ref_lambda.function_name
+  lambda_timeout             = aws_lambda_function.delete_doc_ref_lambda.timeout
+  lambda_short_name          = "delete_document_reference_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
+module re_registration_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.re_registration_lambda.function_name
+  lambda_timeout             = aws_lambda_function.re_registration_lambda.timeout
+  lambda_short_name          = "re_registration_event_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
 resource "aws_cloudwatch_metric_alarm" "sensitive_index_age_of_oldest_message" {
   alarm_name        = "prs_${var.environment}_sensitive_index_age_of_oldest_message"
   alarm_description = "Triggers when a message has been in the ${aws_sqs_queue.sensitive_audit.name} queue for more than 10 minutes."
@@ -52,7 +124,6 @@ resource "aws_cloudwatch_metric_alarm" "re_registration_age_of_oldest_message" {
   ok_actions          = [aws_sns_topic.alarm_notifications.arn]
 }
 
-
 resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
   alarm_name        = "prs_${var.environment}_doc_store_api_5xx_error"
   alarm_description = "Triggers when a 5xx status code has been returned by the DocStoreAPI."
@@ -71,71 +142,6 @@ resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
   ok_actions          = [aws_sns_topic.alarm_notifications.arn]
 }
 
-module create_document_reference_alarms {
-  source               = "./modules/lambda_alarms"
-  lambda_function_name = aws_lambda_function.create_doc_ref_lambda.function_name
-  lambda_timeout       = aws_lambda_function.create_doc_ref_lambda.timeout
-  lambda_short_name    = "create_document_reference_handler"
-  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-}
-
-module authoriser_alarms {
-  source               = "./modules/lambda_alarms"
-  lambda_function_name = aws_lambda_function.authoriser.function_name
-  lambda_timeout = aws_lambda_function.authoriser.timeout
-  lambda_short_name = "authoriser"
-  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-}
-
-module search_patient_details_alarms {
-  source = "./modules/lambda_alarms"
-  lambda_function_name = aws_lambda_function.search_patient_details_lambda.function_name
-  lambda_timeout = aws_lambda_function.search_patient_details_lambda.timeout
-  lambda_short_name = "search_patient_details_handler"
-  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-}
-
-module document_uploaded_event_alarms {
-  source = "./modules/lambda_alarms"
-  lambda_function_name = aws_lambda_function.document_uploaded_lambda.function_name
-  lambda_timeout = aws_lambda_function.document_uploaded_lambda.timeout
-  lambda_short_name = "document_uploaded_event_handler"
-  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-}
-
-module create_document_manifest_by_nhs_number_alarms {
-  source = "./modules/lambda_alarms"
-  lambda_function_name = aws_lambda_function.document_manifest_lambda.function_name
-  lambda_timeout = aws_lambda_function.document_manifest_lambda.timeout
-  lambda_short_name = "create_document_manifest_by_nhs_number_handler"
-  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-}
-
-module document_reference_search_alarms {
-  source = "./modules/lambda_alarms"
-  lambda_function_name = aws_lambda_function.doc_ref_search_lambda.function_name
-  lambda_timeout = aws_lambda_function.doc_ref_search_lambda.timeout
-  lambda_short_name = "document_reference_search_handler"
-  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-}
-
-module delete_document_reference_alarms {
-  source = "./modules/lambda_alarms"
-  lambda_function_name = aws_lambda_function.delete_doc_ref_lambda.function_name
-  lambda_timeout = aws_lambda_function.delete_doc_ref_lambda.timeout
-  lambda_short_name = "delete_document_reference_handler"
-  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-}
-
-module re_registration_alarms{
-  source = "./modules/lambda_alarms"
-  lambda_function_name = aws_lambda_function.re_registration_lambda.function_name
-  lambda_timeout = aws_lambda_function.re_registration_lambda.timeout
-  lambda_short_name = "re_registration_event_handler"
-   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-}
-
-
 resource "aws_sns_topic" "alarm_notifications" {
   name   = "alarms-notifications-topic"
   policy = jsonencode({
@@ -152,15 +158,15 @@ resource "aws_sns_topic" "alarm_notifications" {
             "aws:SourceArn" : "arn:aws:cloudwatch:${var.region}:${var.account_id}:alarm:*"
           }
         }
-        "Resource": "*"
+        "Resource" : "*"
       }
     ]
   })
 }
 
 resource "aws_kms_key" "alarm_notification_encryption_key" {
-  description = "Custom KMS Key to enable server side encryption for alarm notifications"
-  policy      = data.aws_iam_policy_document.alarm_notification_kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption for alarm notifications"
+  policy              = data.aws_iam_policy_document.alarm_notification_kms_key_policy_doc.json
   enable_key_rotation = true
 }
 
@@ -179,7 +185,6 @@ data "aws_iam_policy_document" "alarm_notification_kms_key_policy_doc" {
     actions   = ["kms:*"]
     resources = ["*"]
   }
-
   statement {
     effect = "Allow"
     principals {
@@ -192,7 +197,6 @@ data "aws_iam_policy_document" "alarm_notification_kms_key_policy_doc" {
     ]
     resources = ["*"]
   }
-
   statement {
     effect = "Allow"
     principals {
@@ -206,5 +210,3 @@ data "aws_iam_policy_document" "alarm_notification_kms_key_policy_doc" {
     resources = ["*"]
   }
 }
-
-
