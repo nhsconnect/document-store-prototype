@@ -3,20 +3,17 @@ package uk.nhs.digital.docstore;
 import static com.auth0.jwt.algorithms.Algorithm.none;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.JsonPath;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
@@ -26,56 +23,85 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.DownloadAllPatientRecordsAuditMessage;
-import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler;
+import uk.nhs.digital.docstore.helpers.AwsS3Helper;
+import uk.nhs.digital.docstore.helpers.BaseUriHelper;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentManifestService;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateDocumentManifestInlineTest {
+
+    private static final String AWS_REGION = "eu-west-2";
     @Mock private Context context;
-    @Mock private DynamoDBMapper dynamoDbMapper;
-    @Mock private AmazonS3 s3Client;
-    @Mock private AuditPublisher auditPublisher;
-    @Mock private DocumentMetadataStore metadataStore;
+
+    @Mock private SplunkPublisher publisher;
+
+    private DocumentMetadataStore metadataStore;
+
+    private DocumentStore documentStore;
 
     private CreateDocumentManifestByNhsNumberHandler createDocumentManifestByNhsNumberHandler;
 
     @BeforeEach
     public void setUp() {
+        var endpoint = String.format("http://%s:4566", BaseUriHelper.getAwsHost());
+        var endpointConfiguration =
+                new AwsClientBuilder.EndpointConfiguration(endpoint, AWS_REGION);
+        var bucketName = new AwsS3Helper(endpointConfiguration).getDocumentStoreBucketName();
+
+        var dynamodbClient =
+                AmazonDynamoDBClientBuilder.standard()
+                        .withEndpointConfiguration(endpointConfiguration)
+                        .build();
+        var dynamoDBMapper = new DynamoDBMapper(dynamodbClient);
+
+        var s3Client =
+                AmazonS3ClientBuilder.standard()
+                        .withEndpointConfiguration(endpointConfiguration)
+                        .withPathStyleAccessEnabled(true)
+                        .build();
+
+        metadataStore = new DocumentMetadataStore(dynamoDBMapper);
+        documentStore = new DocumentStore(s3Client, bucketName);
+        DocumentZipTraceStore zipTraceStore = new DocumentZipTraceStore(dynamoDBMapper);
         createDocumentManifestByNhsNumberHandler =
                 new CreateDocumentManifestByNhsNumberHandler(
                         new StubbedApiConfig("http://ui-url"),
                         metadataStore,
-                        new DocumentZipTraceStore(dynamoDbMapper),
-                        new DocumentStore(s3Client, "bucket-name"),
-                        new DocumentManifestService(auditPublisher),
+                        zipTraceStore,
+                        documentStore,
+                        new DocumentManifestService(publisher),
                         "1");
     }
 
     @Test
     void uploadsZipOfAllDocsAndSavesMetadataForGivenNhsNumber()
-            throws MalformedURLException, IllFormedPatientDetailsException {
+            throws IllFormedPatientDetailsException, JsonProcessingException {
         var nhsNumber = new NhsNumber("9000000009");
-        var presignedUrl = "http://presigned-url";
         var metadataBuilder = DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true);
         var metadataList =
                 List.of(
                         metadataBuilder.withFileName("Some document").build(),
                         metadataBuilder.withFileName("another document").build());
-        var requestEvent = createRequestEvent(nhsNumber);
-        var s3Object = createS3Object();
 
-        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
-        when(s3Client.getObject(anyString(), anyString())).thenReturn(s3Object);
-        when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
-        doNothing().when(dynamoDbMapper).save(any());
+        metadataList.forEach(
+                metadata -> {
+                    metadataStore.save(metadata);
+                    var input = IOUtils.toInputStream("Test data", "UTF-8");
+                    documentStore.addDocument(
+                            new DocumentLocation(metadata.getLocation()).getPath(), input);
+                });
+
+        var requestEvent = createRequestEvent(nhsNumber);
         var responseEvent =
                 createDocumentManifestByNhsNumberHandler.handleRequest(requestEvent, context);
 
@@ -83,29 +109,9 @@ public class CreateDocumentManifestInlineTest {
         assertThat(responseEvent.getHeaders().get("Content-Type"))
                 .isEqualTo("application/fhir+json");
         var responseUrl = JsonPath.<String>read(responseEvent.getBody(), "$.result.url");
-        assertThat(responseUrl).isEqualTo(presignedUrl);
-    }
+        assertThat(responseUrl).contains("patient-record-" + nhsNumber.getValue());
 
-    @Test
-    void sendsAuditMessageAfterZipIsUploadedSuccessfully()
-            throws MalformedURLException, JsonProcessingException,
-                    IllFormedPatientDetailsException {
-        var nhsNumber = new NhsNumber("9000000009");
-        var presignedUrl = "http://presigned-url";
-        var requestEvent = createRequestEvent(nhsNumber);
-        var metadataList =
-                List.of(DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true).build());
-
-        var s3Object = createS3Object();
-
-        when(metadataStore.findByNhsNumber(nhsNumber)).thenReturn(metadataList);
-        when(s3Client.getObject(anyString(), anyString())).thenReturn(s3Object);
-        when(s3Client.generatePresignedUrl(any())).thenReturn(new URL(presignedUrl));
-        doNothing().when(dynamoDbMapper).save(any());
-
-        createDocumentManifestByNhsNumberHandler.handleRequest(requestEvent, context);
-
-        verify(auditPublisher).publish(any(DownloadAllPatientRecordsAuditMessage.class));
+        verify(publisher).publish(any(DownloadAllPatientRecordsAuditMessage.class));
     }
 
     private APIGatewayProxyRequestEvent createRequestEvent(NhsNumber nhsNumber) {
@@ -118,13 +124,5 @@ public class CreateDocumentManifestInlineTest {
         return new APIGatewayProxyRequestEvent()
                 .withQueryStringParameters(parameters)
                 .withHeaders(headers);
-    }
-
-    private S3Object createS3Object() {
-        var input = IOUtils.toInputStream("some test data for my input stream", "UTF-8");
-        var s3Object = new S3Object();
-        s3Object.setObjectContent(new S3ObjectInputStream(input, null));
-
-        return s3Object;
     }
 }
