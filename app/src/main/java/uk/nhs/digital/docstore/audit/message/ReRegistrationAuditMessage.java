@@ -1,10 +1,11 @@
 package uk.nhs.digital.docstore.audit.message;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import uk.nhs.digital.docstore.audit.FileMetadata;
 import uk.nhs.digital.docstore.events.ReRegistrationEvent;
 import uk.nhs.digital.docstore.model.Document;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReRegistrationAuditMessage extends PatientRelatedAuditMessage implements AuditMessage {
     private final List<FileMetadata> fileMetadataList;
@@ -18,10 +19,12 @@ public class ReRegistrationAuditMessage extends PatientRelatedAuditMessage imple
         this.nemsMessageId = reRegistrationEvent.getNemsMessageId();
     }
 
+    @SuppressWarnings("unused")
     public String getNemsMessageId() {
         return nemsMessageId;
     }
 
+    @SuppressWarnings("unused")
     public List<FileMetadata> getFileMetadataList() {
         return fileMetadataList;
     }
