@@ -39,7 +39,7 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, SQSB
     public SQSBatchResponse handleRequest(SQSEvent sqsEvent, Context context) {
         Tracer.setMDCContext(context);
         var batchItemFailures = new ArrayList<SQSBatchResponse.BatchItemFailure>();
-
+        LOGGER.info("Received new message from re-registration queue.");
         sqsEvent.getRecords()
                 .forEach(
                         sqsMessage -> {
@@ -52,11 +52,11 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, SQSB
 
     private Optional<SQSBatchResponse.BatchItemFailure> handleSqsMessage(
             SQSEvent.SQSMessage sqsMessage) {
-        LOGGER.info("Received new message from re-registration queue.");
         var sqsMessageBody = sqsMessage.getBody();
+        var messageId = sqsMessage.getMessageId();
+        LOGGER.info("Handling sqs message with ID: " + messageId);
 
         try {
-            LOGGER.info("Parsing message to ReRegistrationEvent.");
             var root = new ObjectMapper().readTree(sqsMessageBody);
             var message = root.path("Message").asText();
             var reRegistrationEvent = ReRegistrationEvent.parse(message);
@@ -67,7 +67,7 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, SQSB
             deletionService.reRegistrationAudit(reRegistrationEvent, deletedDocuments);
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage());
-            return Optional.of(new SQSBatchResponse.BatchItemFailure(sqsMessage.getMessageId()));
+            return Optional.of(new SQSBatchResponse.BatchItemFailure(messageId));
         }
 
         return Optional.empty();
