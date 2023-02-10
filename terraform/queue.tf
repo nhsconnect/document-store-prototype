@@ -24,7 +24,7 @@ resource "aws_sqs_queue_redrive_policy" "re_registration_redrive_policy" {
   queue_url      = aws_sqs_queue.re_registration.id
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.re_registration_dlq.arn
-    maxReceiveCount     = 1
+    maxReceiveCount     = 5
   })
 }
 
