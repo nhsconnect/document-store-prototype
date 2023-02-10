@@ -19,7 +19,10 @@ data "aws_iam_policy_document" "splunk_access_policy_document" {
       "sqs:SendMessage",
       "sqs:DeleteMessage"
     ]
-    resources = ["arn:aws:sqs:eu-west-2:*:*-sensitive-audit"]
+    resources = [
+      aws_sqs_queue.sensitive_audit.arn,
+      aws_sqs_queue.sensitive_nems_audit.arn
+    ]
   }
   statement {
     effect    = "Allow"
