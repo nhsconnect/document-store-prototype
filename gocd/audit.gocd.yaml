@@ -9,7 +9,7 @@ pipelines:
         blacklist:
           - documentation/*
     timer:
-      spec: 0 0/3 * * * *
+      spec: 0 0 7 ? * MON,TUE,WED,THU,FRI *
     stages:
       - audit:
           clean_workspace: true
