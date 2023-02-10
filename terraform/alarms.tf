@@ -124,6 +124,24 @@ resource "aws_cloudwatch_metric_alarm" "re_registration_age_of_oldest_message" {
   ok_actions          = [aws_sns_topic.alarm_notifications.arn]
 }
 
+resource "aws_cloudwatch_metric_alarm" "re_registration_dlq_number_of_messages_visible" {
+  alarm_name        = "prs_${var.environment}_re_registration_dlq_number_of_messages_visible"
+  alarm_description = "Triggers when the number of messages visible in the ${aws_sqs_queue.re_registration_dlq.name} queue is greater than 0."
+  namespace         = "AWS/SQS"
+  dimensions        = {
+    QueueName = aws_sqs_queue.re_registration_dlq.name
+  }
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = "0"
+  period              = "1800"
+  evaluation_periods  = "1"
+  statistic           = "Maximum"
+  actions_enabled     = "true"
+  alarm_actions       = [aws_sns_topic.alarm_notifications.arn]
+  ok_actions          = [aws_sns_topic.alarm_notifications.arn]
+}
+
 resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
   alarm_name        = "prs_${var.environment}_doc_store_api_5xx_error"
   alarm_description = "Triggers when a 5xx status code has been returned by the DocStoreAPI."
