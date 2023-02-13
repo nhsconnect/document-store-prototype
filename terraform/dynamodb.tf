@@ -60,6 +60,7 @@ resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
         "Effect" : "Allow",
         "Action" : [
           "dynamodb:Scan",
+          "dynamodb:Query"
         ],
         "Resource" : [
           aws_dynamodb_table.doc_ref_store.arn
@@ -89,7 +90,6 @@ resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
         "Effect" : "Allow",
         "Action" : [
           "dynamodb:GetItem",
-          "dynamodb:Query",
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
         ],
