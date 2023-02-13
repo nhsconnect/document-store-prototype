@@ -4,9 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
@@ -26,7 +23,6 @@ import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.handlers.DocumentUploadedEventHandler;
-import uk.nhs.digital.docstore.helpers.BaseUriHelper;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
@@ -43,15 +39,8 @@ public class DocumentUploadedEventInlineTest {
 
     @BeforeEach
     void setUp() {
-        var endpoint = String.format("http://%s:4566", BaseUriHelper.getAwsHost());
-        var endpointConfiguration =
-                new AwsClientBuilder.EndpointConfiguration(endpoint, AWS_REGION);
-        var dynamodbClient =
-                AmazonDynamoDBClientBuilder.standard()
-                        .withEndpointConfiguration(endpointConfiguration)
-                        .build();
-        var dynamoDBMapper = new DynamoDBMapper(dynamodbClient);
-        documentMetadataStore = new DocumentMetadataStore(dynamoDBMapper);
+        var aws = new AWSServiceContainer();
+        documentMetadataStore = new DocumentMetadataStore(aws.getDynamoDBMapper());
         var documentReferenceService =
                 new DocumentReferenceService(
                         documentMetadataStore, publisher, new DocumentMetadataSerialiser(), clock);

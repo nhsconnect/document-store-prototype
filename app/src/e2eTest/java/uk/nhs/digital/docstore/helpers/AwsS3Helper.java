@@ -15,6 +15,10 @@ public class AwsS3Helper {
                         .build();
     }
 
+    public AwsS3Helper(AmazonS3 s3Client) {
+        this.s3Client = s3Client;
+    }
+
     public String getDocumentStoreBucketName() {
         var documentBucket =
                 s3Client.listBuckets().stream()

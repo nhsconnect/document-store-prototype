@@ -1,6 +1,6 @@
 package uk.nhs.digital.docstore.data.repository;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.IDynamoDBMapper;
 import uk.nhs.digital.docstore.data.entity.DocumentZipTrace;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
@@ -10,7 +10,7 @@ public class DocumentZipTraceStore extends DynamoDbConnection {
         super();
     }
 
-    public DocumentZipTraceStore(DynamoDBMapper dynamodbMapper) {
+    public DocumentZipTraceStore(IDynamoDBMapper dynamodbMapper) {
         super(dynamodbMapper);
     }
 

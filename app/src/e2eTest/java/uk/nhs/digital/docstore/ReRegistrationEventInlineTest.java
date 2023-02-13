@@ -6,12 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.ByteArrayInputStream;
@@ -31,7 +27,6 @@ import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.handlers.ReRegistrationEventHandler;
 import uk.nhs.digital.docstore.helpers.AwsS3Helper;
-import uk.nhs.digital.docstore.helpers.BaseUriHelper;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
@@ -49,25 +44,11 @@ public class ReRegistrationEventInlineTest {
 
     @BeforeEach
     void setUp() {
-        var endpoint = String.format("http://%s:4566", BaseUriHelper.getAwsHost());
-        var endpointConfiguration =
-                new AwsClientBuilder.EndpointConfiguration(endpoint, AWS_REGION);
-        var bucketName = new AwsS3Helper(endpointConfiguration).getDocumentStoreBucketName();
+        var aws = new AWSServiceContainer();
+        var bucketName = new AwsS3Helper(aws.getS3Client()).getDocumentStoreBucketName();
 
-        var dynamodbClient =
-                AmazonDynamoDBClientBuilder.standard()
-                        .withEndpointConfiguration(endpointConfiguration)
-                        .build();
-        var dynamoDBMapper = new DynamoDBMapper(dynamodbClient);
-
-        var s3Client =
-                AmazonS3ClientBuilder.standard()
-                        .withEndpointConfiguration(endpointConfiguration)
-                        .withPathStyleAccessEnabled(true)
-                        .build();
-
-        metadataStore = new DocumentMetadataStore(dynamoDBMapper);
-        documentStore = new DocumentStore(s3Client, bucketName);
+        metadataStore = new DocumentMetadataStore(aws.getDynamoDBMapper());
+        documentStore = new DocumentStore(aws.getS3Client(), bucketName);
         deletionService =
                 new DocumentDeletionService(
                         publisher, documentStore, metadataStore, new DocumentMetadataSerialiser());

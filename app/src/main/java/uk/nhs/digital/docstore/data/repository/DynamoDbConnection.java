@@ -7,12 +7,12 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.IDynamoDBMapper;
 
 public class DynamoDbConnection {
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_ENDPOINT = "";
-
-    protected final DynamoDBMapper mapper;
+    protected final IDynamoDBMapper mapper;
 
     public DynamoDbConnection() {
         var dynamodbClient = getDynamodbClient();
@@ -24,7 +24,7 @@ public class DynamoDbConnection {
                                 .build());
     }
 
-    public DynamoDbConnection(DynamoDBMapper dynamodbMapper) {
+    public DynamoDbConnection(IDynamoDBMapper dynamodbMapper) {
         this.mapper = dynamodbMapper;
     }
 
@@ -37,7 +37,6 @@ public class DynamoDbConnection {
                             new AwsClientBuilder.EndpointConfiguration(
                                     dynamodbEndpoint, AWS_REGION));
         }
-        var dynamodbClient = clientBuilder.build();
-        return dynamodbClient;
+        return clientBuilder.build();
     }
 }

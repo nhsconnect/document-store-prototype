@@ -6,12 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.jayway.jsonpath.JsonPath;
 import java.io.File;
 import java.io.IOException;
@@ -30,12 +26,10 @@ import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler;
 import uk.nhs.digital.docstore.helpers.AwsS3Helper;
-import uk.nhs.digital.docstore.helpers.BaseUriHelper;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateDocumentReferenceInlineTest {
-    private static final String AWS_REGION = "eu-west-2";
     @Mock private Context context;
     @Mock private AuditPublisher auditPublisher;
     private CreateDocumentReferenceHandler handler;
@@ -43,31 +37,18 @@ public class CreateDocumentReferenceInlineTest {
 
     @BeforeEach
     public void setUp() {
-        var endpoint = String.format("http://%s:4566", BaseUriHelper.getAwsHost());
+        var aws = new AWSServiceContainer();
 
-        var endpointConfiguration =
-                new AwsClientBuilder.EndpointConfiguration(endpoint, AWS_REGION);
-        var dynamodbClient =
-                AmazonDynamoDBClientBuilder.standard()
-                        .withEndpointConfiguration(endpointConfiguration)
-                        .build();
-        var dynamoDBMapper = new DynamoDBMapper(dynamodbClient);
-
-        var s3Client =
-                AmazonS3ClientBuilder.standard()
-                        .withEndpointConfiguration(endpointConfiguration)
-                        .withPathStyleAccessEnabled(true)
-                        .build();
-        var bucketName = new AwsS3Helper(endpointConfiguration).getDocumentStoreBucketName();
+        var bucketName = new AwsS3Helper(aws.getS3Client()).getDocumentStoreBucketName();
 
         handler =
                 new CreateDocumentReferenceHandler(
                         new StubbedApiConfig("http://ui-url"),
                         new DocumentReferenceService(
-                                new DocumentMetadataStore(dynamoDBMapper),
+                                new DocumentMetadataStore(aws.getDynamoDBMapper()),
                                 auditPublisher,
                                 new DocumentMetadataSerialiser()),
-                        new DocumentStore(s3Client, bucketName));
+                        new DocumentStore(aws.getS3Client(), bucketName));
         requestBuilder = new RequestEventBuilder();
     }
 
