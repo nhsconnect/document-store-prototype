@@ -115,7 +115,7 @@ class DocumentDeletionServiceTest {
         verify(splunkPublisher).publish(reRegistrationAuditMessageArgumentCaptor.capture());
         var actualAuditMessage = reRegistrationAuditMessageArgumentCaptor.getValue();
         assertThat(actualAuditMessage.getDescription())
-                .isEqualTo("Deleted documents for re-registered patients");
+                .isEqualTo("Deleted documents for re-registered patient");
         assertThat(actualAuditMessage)
                 .usingRecursiveComparison()
                 .comparingOnlyFields("nhsNumber", "fileMetadataList", "nemsMessageId")

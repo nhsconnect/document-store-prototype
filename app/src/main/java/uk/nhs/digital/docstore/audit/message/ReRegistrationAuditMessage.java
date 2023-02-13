@@ -13,6 +13,7 @@ public class ReRegistrationAuditMessage extends PatientRelatedAuditMessage imple
     public ReRegistrationAuditMessage(
             ReRegistrationEvent reRegistrationEvent, List<Document> documentList) {
         super(reRegistrationEvent.getNhsNumber());
+
         this.fileMetadataList =
                 documentList.stream().map(FileMetadata::fromDocument).collect(Collectors.toList());
         this.nemsMessageId = reRegistrationEvent.getNemsMessageId();
@@ -30,6 +31,8 @@ public class ReRegistrationAuditMessage extends PatientRelatedAuditMessage imple
 
     @Override
     public String getDescription() {
-        return "Deleted documents for re-registered patients";
+        return fileMetadataList.isEmpty()
+                ? "Found no documents for re-registered patient"
+                : "Deleted documents for re-registered patient";
     }
 }
