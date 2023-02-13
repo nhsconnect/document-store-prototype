@@ -1,5 +1,9 @@
 package uk.nhs.digital.docstore;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
@@ -7,6 +11,10 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.List;
+import java.util.TimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,15 +30,6 @@ import uk.nhs.digital.docstore.helpers.BaseUriHelper;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.util.List;
-import java.util.TimeZone;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class DocumentUploadedEventInlineTest {
@@ -67,7 +66,8 @@ public class DocumentUploadedEventInlineTest {
         var documentLocation = new DocumentLocation(documentMetadata.getLocation());
         documentMetadataStore.save(documentMetadata);
 
-        documentUploadedEventHandler.handleRequest(makeS3EventNotification(documentLocation), context);
+        documentUploadedEventHandler.handleRequest(
+                makeS3EventNotification(documentLocation), context);
         var actual = documentMetadataStore.getByLocation(documentLocation);
 
         assertThat(actual.isDocumentUploaded()).isTrue();

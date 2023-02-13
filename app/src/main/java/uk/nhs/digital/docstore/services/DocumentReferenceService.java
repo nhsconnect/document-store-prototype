@@ -1,6 +1,8 @@
 package uk.nhs.digital.docstore.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.Clock;
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
@@ -11,9 +13,6 @@ import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.DocumentLocation;
-
-import java.time.Clock;
-import java.time.Instant;
 
 public class DocumentReferenceService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentReferenceService.class);
