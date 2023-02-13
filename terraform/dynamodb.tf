@@ -89,7 +89,7 @@ resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
         "Effect" : "Allow",
         "Action" : [
           "dynamodb:GetItem",
-          "dynamodb:QueryItem",
+          "dynamodb:Query",
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
         ],
