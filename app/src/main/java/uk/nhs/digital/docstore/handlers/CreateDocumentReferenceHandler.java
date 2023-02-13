@@ -46,12 +46,11 @@ public class CreateDocumentReferenceHandler
     private final AmazonS3 s3client;
     private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
+    private final GeneratePresignedUrlRequestFactory requestFactory;
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final CreateDocumentReferenceRequestValidator requestValidator =
             new CreateDocumentReferenceRequestValidator();
-    private final GeneratePresignedUrlRequestFactory requestFactory =
-            new GeneratePresignedUrlRequestFactory(System.getenv("DOCUMENT_STORE_BUCKET_NAME"));
 
     public CreateDocumentReferenceHandler() {
         this(
@@ -60,18 +59,22 @@ public class CreateDocumentReferenceHandler
                         new DocumentMetadataStore(),
                         new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")),
                         new DocumentMetadataSerialiser()),
-                CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION));
+                CommonUtils.buildS3Client(DEFAULT_ENDPOINT, AWS_REGION),
+                new GeneratePresignedUrlRequestFactory(
+                        System.getenv("DOCUMENT_STORE_BUCKET_NAME")));
     }
 
     public CreateDocumentReferenceHandler(
             ApiConfig apiConfig,
             DocumentReferenceService documentReferenceService,
-            AmazonS3 s3client) {
+            AmazonS3 s3client,
+            GeneratePresignedUrlRequestFactory requestFactory) {
         this.apiConfig = apiConfig;
         this.documentReferenceService = documentReferenceService;
         this.s3client = s3client;
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
+        this.requestFactory = requestFactory;
     }
 
     @Override

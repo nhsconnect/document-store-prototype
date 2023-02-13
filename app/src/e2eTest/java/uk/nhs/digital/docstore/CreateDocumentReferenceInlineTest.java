@@ -2,13 +2,16 @@ package uk.nhs.digital.docstore;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.jayway.jsonpath.JsonPath;
 import java.io.File;
 import java.io.IOException;
@@ -24,21 +27,39 @@ import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
+import uk.nhs.digital.docstore.filestorage.GeneratePresignedUrlRequestFactory;
 import uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler;
+import uk.nhs.digital.docstore.helpers.AwsS3Helper;
+import uk.nhs.digital.docstore.helpers.BaseUriHelper;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateDocumentReferenceInlineTest {
+    private static final String AWS_REGION = "eu-west-2";
     @Mock private Context context;
     @Mock private AuditPublisher auditPublisher;
-    @Mock private DynamoDBMapper dynamoDBMapper;
-    @Mock private AmazonS3 s3Client;
-
     private CreateDocumentReferenceHandler handler;
     private RequestEventBuilder requestBuilder;
 
     @BeforeEach
     public void setUp() {
+        var endpoint = String.format("http://%s:4566", BaseUriHelper.getAwsHost());
+
+        var endpointConfiguration =
+                new AwsClientBuilder.EndpointConfiguration(endpoint, AWS_REGION);
+        var dynamodbClient =
+                AmazonDynamoDBClientBuilder.standard()
+                        .withEndpointConfiguration(endpointConfiguration)
+                        .build();
+        var dynamoDBMapper = new DynamoDBMapper(dynamodbClient);
+
+        var s3Client =
+                AmazonS3ClientBuilder.standard()
+                        .withEndpointConfiguration(endpointConfiguration)
+                        .withPathStyleAccessEnabled(true)
+                        .build();
+        var bucketName = new AwsS3Helper(endpointConfiguration).getDocumentStoreBucketName();
+
         handler =
                 new CreateDocumentReferenceHandler(
                         new StubbedApiConfig("http://ui-url"),
@@ -46,7 +67,8 @@ public class CreateDocumentReferenceInlineTest {
                                 new DocumentMetadataStore(dynamoDBMapper),
                                 auditPublisher,
                                 new DocumentMetadataSerialiser()),
-                        s3Client);
+                        s3Client,
+                        new GeneratePresignedUrlRequestFactory(bucketName));
         requestBuilder = new RequestEventBuilder();
     }
 
@@ -56,18 +78,24 @@ public class CreateDocumentReferenceInlineTest {
                 getContentFromResource("create/create-document-reference-request.json");
         var request = requestBuilder.addBody(requestContent).build();
 
-        when(s3Client.generatePresignedUrl(any())).thenReturn(new URL("http://presigned-url"));
-        doNothing().when(dynamoDBMapper).save(any());
         var responseEvent = handler.handleRequest(request, context);
 
         assertThat(responseEvent.getStatusCode()).isEqualTo(201);
         assertThat(responseEvent.getHeaders().get("Content-Type"))
                 .isEqualTo("application/fhir+json");
         var id = JsonPath.read(responseEvent.getBody(), "$.id");
+        var presignedUrl = JsonPath.read(responseEvent.getBody(), "$.content[0].attachment.url");
         assertThat(responseEvent.getHeaders().get("Location")).isEqualTo("DocumentReference/" + id);
+        assertThat(presignedUrl).isNotNull();
+        assertDoesNotThrow(
+                () -> {
+                    new URL(presignedUrl.toString());
+                });
         assertThatJson(responseEvent.getBody())
-                .whenIgnoringPaths("$.id", "$.meta")
+                .whenIgnoringPaths("$.id", "$.meta", "$.content[*].attachment.url")
                 .isEqualTo(getContentFromResource("create/created-document-reference.json"));
+
+        verify(auditPublisher).publish(any(CreateDocumentMetadataAuditMessage.class));
     }
 
     @Test
@@ -84,18 +112,6 @@ public class CreateDocumentReferenceInlineTest {
         assertThat(responseEvent.getHeaders().get("Content-Type"))
                 .isEqualTo("application/fhir+json");
         assertThatJson(responseEvent.getBody()).isEqualTo(expectedErrorResponse);
-    }
-
-    @Test
-    void sendsAuditMessageToSqsWhenDocumentReferenceSuccessfullyCreated() throws IOException {
-        var requestContent =
-                getContentFromResource("create/create-document-reference-request.json");
-        var request = requestBuilder.addBody(requestContent).build();
-
-        when(s3Client.generatePresignedUrl(any())).thenReturn(new URL("http://presigned-url"));
-        handler.handleRequest(request, context);
-
-        verify(auditPublisher).publish(any(CreateDocumentMetadataAuditMessage.class));
     }
 
     private String getContentFromResource(String resourcePath) throws IOException {
