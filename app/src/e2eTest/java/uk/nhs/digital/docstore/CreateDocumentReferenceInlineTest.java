@@ -26,8 +26,8 @@ import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
-import uk.nhs.digital.docstore.filestorage.GeneratePresignedUrlRequestFactory;
 import uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler;
 import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 import uk.nhs.digital.docstore.helpers.BaseUriHelper;
@@ -67,8 +67,7 @@ public class CreateDocumentReferenceInlineTest {
                                 new DocumentMetadataStore(dynamoDBMapper),
                                 auditPublisher,
                                 new DocumentMetadataSerialiser()),
-                        s3Client,
-                        new GeneratePresignedUrlRequestFactory(bucketName));
+                        new DocumentStore(s3Client, bucketName));
         requestBuilder = new RequestEventBuilder();
     }
 

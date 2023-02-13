@@ -56,6 +56,14 @@ public class DocumentStore {
         return client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
+    public URL generatePreSignedUrlForDocument(DocumentLocation documentLocation) {
+        var generatePresignedUrlRequest =
+                new GeneratePresignedUrlRequest(bucketName, documentLocation.getPath())
+                        .withExpiration(getExpirationDate());
+
+        return client.generatePresignedUrl(generatePresignedUrlRequest);
+    }
+
     public S3ObjectInputStream getObjectFromS3(DocumentLocation documentLocation) {
         return client.getObject(bucketName, documentLocation.getPath()).getObjectContent();
     }
