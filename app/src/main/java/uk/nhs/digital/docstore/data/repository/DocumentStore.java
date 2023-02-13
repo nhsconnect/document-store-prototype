@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.data.repository;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -59,7 +60,8 @@ public class DocumentStore {
     public URL generatePreSignedUrlForDocument(DocumentLocation documentLocation) {
         var generatePresignedUrlRequest =
                 new GeneratePresignedUrlRequest(bucketName, documentLocation.getPath())
-                        .withExpiration(getExpirationDate());
+                        .withExpiration(Date.from(Instant.now().plus(PRE_SIGNED_URL_DURATION)))
+                        .withMethod(HttpMethod.PUT);
 
         return client.generatePresignedUrl(generatePresignedUrlRequest);
     }
