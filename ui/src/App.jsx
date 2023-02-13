@@ -4,7 +4,7 @@ import "./App.scss";
 import config from "./config";
 import Authenticator from "./components/Authenticator/Authenticator";
 import HomePage from "./pages/HomePage";
-import Layout from "./components/layout";
+import Layout from "./components/Layout";
 import FeatureToggleProvider from "./providers/FeatureToggleProvider";
 import { PatientDetailsProvider } from "./providers/PatientDetailsProvider";
 import { DeleteDocumentsResponseProvider } from "./providers/DeleteDocumentsResponseProvider";
