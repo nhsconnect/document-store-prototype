@@ -1,15 +1,6 @@
 package uk.nhs.digital.docstore.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -26,6 +17,16 @@ import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.helpers.DocumentBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DocumentReferenceServiceTest {
@@ -51,7 +52,7 @@ public class DocumentReferenceServiceTest {
 
         var documentReferenceService =
                 new DocumentReferenceService(
-                        documentMetadataStore, auditPublisher, clock, serialiser);
+                        documentMetadataStore, auditPublisher, serialiser, clock);
         var expectedSensitiveAuditMessage = new CreateDocumentMetadataAuditMessage(document);
 
         when(serialiser.fromDocumentModel(document)).thenReturn(documentMetadata);
@@ -89,7 +90,7 @@ public class DocumentReferenceServiceTest {
         var expectedSensitiveAuditMessage = new DocumentUploadedAuditMessage(document);
         var documentReferenceService =
                 new DocumentReferenceService(
-                        documentMetadataStore, auditPublisher, clock, serialiser);
+                        documentMetadataStore, auditPublisher, serialiser, clock);
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(documentMetadata);
         when(serialiser.toDocumentModel(documentMetadata)).thenReturn(document);
@@ -113,7 +114,7 @@ public class DocumentReferenceServiceTest {
         var location = new DocumentLocation("s3://test/url");
         var documentReferenceService =
                 new DocumentReferenceService(
-                        documentMetadataStore, auditPublisher, Clock.systemUTC(), serialiser);
+                        documentMetadataStore, auditPublisher, serialiser, Clock.systemUTC());
 
         when(documentMetadataStore.getByLocation(location)).thenReturn(null);
         documentReferenceService.markDocumentUploaded(location);
