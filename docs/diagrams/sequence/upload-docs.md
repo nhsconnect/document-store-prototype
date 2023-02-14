@@ -15,7 +15,7 @@ sequenceDiagram
     activate API Gateway
     API Gateway->>Lambda: Invokes CreateDocumentReferenceHandler
     activate Lambda
-    Lambda->>S3: generatePresignedUrl(uploadRequest)
+    Lambda->>S3: generatePresignedUrl(generatePresignedUrlRequest)
     activate S3
     S3-->>Lambda: presignedS3Url
     deactivate S3
