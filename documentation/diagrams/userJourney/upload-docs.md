@@ -1,8 +1,8 @@
-# Upload Documents
+# Upload Docs
 
-The user journey diagram below illustrates the journey that the user goes through when uploading documents.
+The user journey diagram below illustrates the journey that the user goes through when uploading docs.
 
-This diagram assumes that has the required permissions to search for a valid NHS number and upload documents.
+This diagram assumes that has the required permissions to search for a valid NHS number and upload docs.
 
 ```mermaid
 journey

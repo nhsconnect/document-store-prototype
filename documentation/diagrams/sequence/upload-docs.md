@@ -1,4 +1,4 @@
-# Upload Documents
+# Upload Docs
 
 The sequence diagram below illustrate the interactions that occur when a user uploads docs.
 

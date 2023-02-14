@@ -1,40 +1,44 @@
-### Document metadata storage
+# Metadata Storage In DynamoDB
 
-#### Overview of DynamoDB
+## DynamoDB Overview
 
-High level overview: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html
+[High-level overview](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html)
 
 Concepts:
-* Table - collection of data
-* Item - unique entry, a collection of attributes; a collection of items make a table
-* Attribute - fundamental data element; has a type (eg. number, string, list); list of attributes can be different for items in the same table
-* Primary key - either a partition key or partition key + sort key
-* Secondary Index - enabling fast way of querying data for values of a certain field
-* GetItem - retrieve item from table knowing whole primary key
-* Query - retrieve item(s) from table or index knowing partition key and (potentially) filtering on sort key
-* Scan - retrieve item(s) from table or index by going through all entries and applying filters on any attributes; less efficient for finding items than query
 
-AWS provides a high level way of interacting with DynamoDB for CRUD operations - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBMapper.html 
+* Table - Collection of data.
+* Item - Unique entry; a collection of attributes; a collection of items make a table.
+* Attribute - Fundamental data element; has a type (eg. number, string, list); list of attributes can be different for
+  items in the same table.
+* Primary key - Either a partition key or partition key + sort key.
+* Secondary Index - Enabling fast way of querying data for values of a certain field.
+* GetItem - Retrieve item from table knowing whole primary key.
+* Query - Retrieve item(s) from table or index knowing partition key and (potentially) filtering on sort key.
+* Scan - Retrieve item(s) from table or index by going through all entries and applying filters on any attributes; less
+  efficient for finding items than query.
 
-#### Design metadata entity - first draft
+AWS provides a high level way of interacting with DynamoDB for CRUD
+operations
+called [DynamoDBMapper](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBMapper.html).
 
-Table: Metadata
+## Design Metadata Entity
 
-Primary Key: UUID (generated in the application code that's unique per document)
+* Table: Metadata 
+* Primary Key: UUID (generated in the app code that's unique per doc)
+* Attributes:
+  * NHS Number
+  * Title
+  * Filename
+  * Doc clinical type
+  * S3 location 
+* Global secondary indexes:
+  * NHS Number
+  * Doc clinical type
+  * S3 location
 
-Attributes: 
-* NHS Number
-* Title
-* File name 
-* Document clinical type
-* S3 location
+_Note: This is the first draft and may change in the future._
 
-Global secondary indexes:
-* NHS Number 
-* Document clinical type
-* S3 location
+## Maintenance
 
-#### Maintenance
-
-Use terraform to create and update tables. 
+Use Terraform to create and update tables. 
    
