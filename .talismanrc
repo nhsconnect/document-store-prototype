@@ -49,14 +49,14 @@ fileignoreconfig:
   checksum: 18548f2e92a9524531f5e497da021bff523201f5c61ec6e085ae7442b6da8a45
 - filename: app/src/main/java/uk/nhs/digital/docstore/handlers/CreateDocumentReferenceHandler.java
   checksum: b12d1fb1838a8e24f8f2d1167f5e716756a312c14dc0bbd2e6bb43a5ac664322
-- filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
-  checksum: 1555403599032524c2483dc9f31d5fae12cd82ba76f807612c8071be2094d9ee
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/entity/DocumentMetadata.java
   checksum: 8f8b83bf6d1da33d245661e2464205ad0acbc2b8d20ee76b62afdd93083acf9a
 - filename: terraform/main.tf
   checksum: 99a0f0a18323097363368d02df7e5a0d92849ea440c44bf46c7b9a93ac51676f
 - filename: app/src/e2eTest/java/uk/nhs/digital/docstore/helpers/AwsS3Helper.java
   checksum: 29d3c5cc1dc2643986d8d4abfd2c3fa9f978bf6ca33c7382217949cee2eda22e
+- filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
+  checksum: 8e2c5c61189073ccf74ecfd768e654c3c8e7b120dd2543087eb73da2326f122f
 version: ""
 scopeconfig:
   - scope: node
