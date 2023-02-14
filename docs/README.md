@@ -1,6 +1,6 @@
-# Documentation
+# Docs
 
-This directory contains documentation on the [tech](tech) involved with this codebase as well as [diagrams](diagrams) to
+This directory contains docs on the [tech](tech) involved with this codebase as well as [diagrams](diagrams) to
 illustrate the former and more.
 
 ## Mermaid

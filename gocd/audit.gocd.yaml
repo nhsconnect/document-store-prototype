@@ -7,7 +7,7 @@ pipelines:
       git:
         type: configrepo
         blacklist:
-          - documentation/*
+          - docs/*
     timer:
       spec: 0 0 7 ? * MON,TUE,WED,THU,FRI *
     stages:

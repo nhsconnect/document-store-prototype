@@ -175,7 +175,7 @@ pipelines:
         blacklist:
           - .git*
           - .idea/**/*.*
-          - documentation/**/*.*
+          - docs/**/*.*
           - gradle/**/*.*
     stages:
       - build:
@@ -226,7 +226,7 @@ pipelines:
         blacklist:
           - .git*
           - .idea/**/*.*
-          - documentation/**/*.*
+          - docs/**/*.*
           - gradle/**/*.*
       dev_env:
         pipeline: access-request-fulfilment.dev
@@ -283,7 +283,7 @@ pipelines:
         blacklist:
           - .git*
           - .idea/**/*.*
-          - documentation/**/*.*
+          - docs/**/*.*
           - gradle/**/*.*
       pre_prod_env:
         pipeline: access-request-fulfilment.pre-prod
