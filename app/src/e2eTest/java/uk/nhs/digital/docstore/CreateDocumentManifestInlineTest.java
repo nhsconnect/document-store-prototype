@@ -27,16 +27,13 @@ import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler;
-import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentManifestService;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateDocumentManifestInlineTest {
-
-    private static final String AWS_REGION = "eu-west-2";
+public class CreateDocumentManifestInlineTest extends BaseDocumentStoreInlineTest {
     @Mock private Context context;
 
     @Mock private SplunkPublisher publisher;
@@ -49,12 +46,10 @@ public class CreateDocumentManifestInlineTest {
 
     @BeforeEach
     public void setUp() {
-        var aws = new AWSServiceContainer();
-        var bucketName = new AwsS3Helper(aws.getS3Client()).getDocumentStoreBucketName();
-
         metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
-        documentStore = new DocumentStore(aws.getS3Client(), bucketName);
-        DocumentZipTraceStore zipTraceStore = new DocumentZipTraceStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+        documentStore = new DocumentStore(aws.getS3Client(), documentStoreBucketName);
+        DocumentZipTraceStore zipTraceStore =
+                new DocumentZipTraceStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         createDocumentManifestByNhsNumberHandler =
                 new CreateDocumentManifestByNhsNumberHandler(
                         new StubbedApiConfig("http://ui-url"),

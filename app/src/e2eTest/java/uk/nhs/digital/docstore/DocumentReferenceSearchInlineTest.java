@@ -22,15 +22,13 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 
 @ExtendWith(MockitoExtension.class)
-public class DocumentReferenceSearchInlineTest {
+public class DocumentReferenceSearchInlineTest extends BaseDocumentStoreInlineTest {
     private DocumentMetadataStore metadataStore;
     private DocumentReferenceSearchHandler handler;
     @Mock private Context context;
 
     @BeforeEach
     void setUp() {
-        AWSServiceContainer aws = new AWSServiceContainer();
-
         metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         handler =
                 new DocumentReferenceSearchHandler(

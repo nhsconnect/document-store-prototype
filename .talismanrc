@@ -59,6 +59,8 @@ fileignoreconfig:
   checksum: e8dcf70d13bc84a5fa2d5cc56906ad32f2dd72ef7ed56a4c0d33081507518bde
 - filename: terraform/main.tf
   checksum: 99a0f0a18323097363368d02df7e5a0d92849ea440c44bf46c7b9a93ac51676f
+- filename: app/src/e2eTest/java/uk/nhs/digital/docstore/helpers/AwsS3Helper.java
+  checksum: 29d3c5cc1dc2643986d8d4abfd2c3fa9f978bf6ca33c7382217949cee2eda22e
 version: ""
 scopeconfig:
   - scope: node

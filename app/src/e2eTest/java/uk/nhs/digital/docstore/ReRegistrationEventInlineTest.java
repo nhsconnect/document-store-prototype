@@ -34,8 +34,7 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
 @ExtendWith(MockitoExtension.class)
-public class ReRegistrationEventInlineTest {
-    private static final String AWS_REGION = "eu-west-2";
+public class ReRegistrationEventInlineTest extends BaseDocumentStoreInlineTest {
     @Mock private Context context;
     @Mock private SplunkPublisher publisher;
     private DocumentMetadataStore metadataStore;
@@ -45,7 +44,6 @@ public class ReRegistrationEventInlineTest {
 
     @BeforeEach
     void setUp() {
-        var aws = new AWSServiceContainer();
         var bucketName = new AwsS3Helper(aws.getS3Client()).getDocumentStoreBucketName();
 
         metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));

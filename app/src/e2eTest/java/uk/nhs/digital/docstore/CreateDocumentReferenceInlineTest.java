@@ -26,11 +26,10 @@ import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler;
-import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateDocumentReferenceInlineTest {
+public class CreateDocumentReferenceInlineTest extends BaseDocumentStoreInlineTest {
     @Mock private Context context;
     @Mock private AuditPublisher auditPublisher;
     private CreateDocumentReferenceHandler handler;
@@ -38,18 +37,15 @@ public class CreateDocumentReferenceInlineTest {
 
     @BeforeEach
     public void setUp() {
-        var aws = new AWSServiceContainer();
-
-        var bucketName = new AwsS3Helper(aws.getS3Client()).getDocumentStoreBucketName();
-
         handler =
                 new CreateDocumentReferenceHandler(
                         new StubbedApiConfig("http://ui-url"),
                         new DocumentReferenceService(
-                                new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient())),
+                                new DocumentMetadataStore(
+                                        new DynamoDBMapper(aws.getDynamoDBClient())),
                                 auditPublisher,
                                 new DocumentMetadataSerialiser()),
-                        new DocumentStore(aws.getS3Client(), bucketName));
+                        new DocumentStore(aws.getS3Client(), documentStoreBucketName));
         requestBuilder = new RequestEventBuilder();
     }
 

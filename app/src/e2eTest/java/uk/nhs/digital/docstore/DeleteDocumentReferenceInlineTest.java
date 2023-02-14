@@ -32,7 +32,7 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteDocumentReferenceInlineTest {
+public class DeleteDocumentReferenceInlineTest extends BaseDocumentStoreInlineTest {
     @Mock private Context context;
     @Mock private AuditPublisher auditPublisher;
 
@@ -46,10 +46,10 @@ public class DeleteDocumentReferenceInlineTest {
     @BeforeEach
     void setUp() {
         var apiConfig = new StubbedApiConfig("http://ui-url");
-        var aws = new AWSServiceContainer();
         var bucketName = new AwsS3Helper(aws.getS3Client()).getDocumentStoreBucketName();
 
-        documentMetadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+        documentMetadataStore =
+                new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         documentStore = new DocumentStore(aws.getS3Client(), bucketName);
         var deletionService =
                 new DocumentDeletionService(

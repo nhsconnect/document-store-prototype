@@ -29,8 +29,7 @@ import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 @ExtendWith(MockitoExtension.class)
-public class DocumentUploadedEventInlineTest {
-    private static final String AWS_REGION = "eu-west-2";
+public class DocumentUploadedEventInlineTest extends BaseDocumentStoreInlineTest {
     @Mock private Context context;
     private DocumentUploadedEventHandler documentUploadedEventHandler;
     private DocumentMetadataStore documentMetadataStore;
@@ -40,8 +39,8 @@ public class DocumentUploadedEventInlineTest {
 
     @BeforeEach
     void setUp() {
-        var aws = new AWSServiceContainer();
-        documentMetadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+        documentMetadataStore =
+                new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         var documentReferenceService =
                 new DocumentReferenceService(
                         documentMetadataStore, publisher, new DocumentMetadataSerialiser(), clock);
