@@ -33,6 +33,7 @@ sequenceDiagram
                 Lambda->>DynamoDB: query()
                 activate DynamoDB
                     DynamoDB->>Lambda: documentMetadataPaginatedQueryList
+                    Note over Lambda, DynamoDB: DocumentReferenceMetadata Table
                 deactivate DynamoDB
                 loop Every document in document list
                     Lambda-->>S3: getObject()
