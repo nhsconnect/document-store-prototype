@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.jayway.jsonpath.JsonPath;
@@ -45,7 +46,7 @@ public class CreateDocumentReferenceInlineTest {
                 new CreateDocumentReferenceHandler(
                         new StubbedApiConfig("http://ui-url"),
                         new DocumentReferenceService(
-                                new DocumentMetadataStore(aws.getDynamoDBMapper()),
+                                new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient())),
                                 auditPublisher,
                                 new DocumentMetadataSerialiser()),
                         new DocumentStore(aws.getS3Client(), bucketName));

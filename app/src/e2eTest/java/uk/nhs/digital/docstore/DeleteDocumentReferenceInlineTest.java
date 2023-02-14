@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -48,7 +49,7 @@ public class DeleteDocumentReferenceInlineTest {
         var aws = new AWSServiceContainer();
         var bucketName = new AwsS3Helper(aws.getS3Client()).getDocumentStoreBucketName();
 
-        documentMetadataStore = new DocumentMetadataStore(aws.getDynamoDBMapper());
+        documentMetadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         documentStore = new DocumentStore(aws.getS3Client(), bucketName);
         var deletionService =
                 new DocumentDeletionService(

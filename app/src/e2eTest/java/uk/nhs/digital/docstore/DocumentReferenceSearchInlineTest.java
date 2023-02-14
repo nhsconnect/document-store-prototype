@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.jayway.jsonpath.JsonPath;
@@ -30,7 +31,7 @@ public class DocumentReferenceSearchInlineTest {
     void setUp() {
         AWSServiceContainer aws = new AWSServiceContainer();
 
-        metadataStore = new DocumentMetadataStore(aws.getDynamoDBMapper());
+        metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         handler =
                 new DocumentReferenceSearchHandler(
                         new DocumentMetadataSearchService(
