@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 import uk.nhs.digital.docstore.helpers.DynamoDBHelper;
 
-public abstract class BaseDocumentStoreInlineTest {
+public abstract class BaseDocumentStoreTest {
     protected String metadataTableName = "DocumentReferenceMetadata";
 
     protected String manifestTableName = "DocumentZipTrace";

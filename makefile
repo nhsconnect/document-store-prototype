@@ -49,11 +49,11 @@ test-app-with-logs: ## Run /app unit tests (with logs)
 
 .PHONY: test-app-integration
 test-app-integration: ## Run /app integration tests (no logs)
-	./gradlew e2eTest
+	./gradlew integrationTest
 
 .PHONY: test-app-integration-with-logs
 test-app-integration-with-logs: ## Run /app integration tests (with logs)
-	./gradlew e2eTest --info
+	./gradlew integrationTest --info
 
 .PHONY: test-e2e
 test-e2e: ## Run E2E tests (without visible browser)

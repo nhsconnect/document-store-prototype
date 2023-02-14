@@ -22,7 +22,7 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 
 @ExtendWith(MockitoExtension.class)
-public class DocumentReferenceSearchInlineTest extends BaseDocumentStoreInlineTest {
+public class DocumentReferenceSearchTest extends BaseDocumentStoreTest {
     private DocumentMetadataStore metadataStore;
     private DocumentReferenceSearchHandler handler;
     @Mock private Context context;

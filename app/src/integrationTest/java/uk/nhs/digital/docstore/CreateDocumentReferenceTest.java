@@ -29,7 +29,7 @@ import uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateDocumentReferenceInlineTest extends BaseDocumentStoreInlineTest {
+public class CreateDocumentReferenceTest extends BaseDocumentStoreTest {
     @Mock private Context context;
     @Mock private AuditPublisher auditPublisher;
     private CreateDocumentReferenceHandler handler;

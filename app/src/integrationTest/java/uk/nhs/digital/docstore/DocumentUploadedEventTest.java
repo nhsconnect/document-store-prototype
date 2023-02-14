@@ -29,7 +29,7 @@ import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 @ExtendWith(MockitoExtension.class)
-public class DocumentUploadedEventInlineTest extends BaseDocumentStoreInlineTest {
+public class DocumentUploadedEventTest extends BaseDocumentStoreTest {
     @Mock private Context context;
     private DocumentUploadedEventHandler documentUploadedEventHandler;
     private DocumentMetadataStore documentMetadataStore;

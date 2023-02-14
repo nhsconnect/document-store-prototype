@@ -32,7 +32,7 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteDocumentReferenceInlineTest extends BaseDocumentStoreInlineTest {
+public class DeleteDocumentReferenceTest extends BaseDocumentStoreTest {
     @Mock private Context context;
     @Mock private AuditPublisher auditPublisher;
 

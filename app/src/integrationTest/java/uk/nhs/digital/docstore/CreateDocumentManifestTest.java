@@ -33,7 +33,7 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentManifestService;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateDocumentManifestInlineTest extends BaseDocumentStoreInlineTest {
+public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
     @Mock private Context context;
 
     @Mock private SplunkPublisher publisher;

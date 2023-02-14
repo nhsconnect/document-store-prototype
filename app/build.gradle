@@ -9,7 +9,7 @@ repositories {
 }
 
 sourceSets {
-	e2eTest {
+	integrationTest {
 		compileClasspath += sourceSets.main.output
 		compileClasspath += sourceSets.test.output
 		runtimeClasspath += sourceSets.main.output
@@ -21,8 +21,8 @@ sourceSets {
 }
 
 configurations {
-	e2eTestImplementation.extendsFrom testImplementation
-	e2eTestRuntime.extendsFrom testRuntime
+	integrationTestImplementation.extendsFrom testImplementation
+	integrationTestRuntime.extendsFrom testRuntime
 }
 
 tasks.withType(Test) {
@@ -61,10 +61,10 @@ dependencies {
 	testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
 	testImplementation 'org.apache.commons:commons-lang3:3.12.0'
 
-	e2eTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
-	e2eTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
-	e2eTestImplementation 'org.awaitility:awaitility:4.1.1'
-	e2eTestImplementation 'ch.qos.logback:logback-classic:1.4.5'
+	integrationTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
+	integrationTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
+	integrationTestImplementation 'org.awaitility:awaitility:4.1.1'
+	integrationTestImplementation 'ch.qos.logback:logback-classic:1.4.5'
 }
 
 java {
@@ -94,11 +94,11 @@ tasks.named('test') {
 	environment "AMPLIFY_BASE_URL", "http://localhost:4566"
 }
 
-task e2eTest(type: Test) {
+task integrationTest(type: Test) {
 	group 'verification'
 	description 'Run all end-to-end tests against LocalStack.'
-	testClassesDirs = sourceSets.e2eTest.output.classesDirs
-	classpath = sourceSets.e2eTest.runtimeClasspath
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
 }
 

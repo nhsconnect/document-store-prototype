@@ -34,7 +34,7 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
 @ExtendWith(MockitoExtension.class)
-public class ReRegistrationEventInlineTest extends BaseDocumentStoreInlineTest {
+public class ReRegistrationEventTest extends BaseDocumentStoreTest {
     @Mock private Context context;
     @Mock private SplunkPublisher publisher;
     private DocumentMetadataStore metadataStore;
