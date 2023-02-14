@@ -25,6 +25,9 @@ _Note: Ensure you have the correct Node version set before doing this._
 
 Create a config file by copying [config.js.local.example](src/config.js.local.example) and rename it to `config.js`.
 
+_Note: If cognito user pool is modified, `userPoolId` and `userPoolWebClientId` will need to be changed in the config 
+file and replaced by the new values that can be found in Cognito User Pool in the AWS Console._
+
 ### 3. Setup Config
 
 The [config.js](src/config.js) file must be modified to include values necessary to connect to backend services. This

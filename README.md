@@ -20,8 +20,7 @@ Please refer to the troubleshooting section for known problems
 ## Running Locally
 
 It is possible to run the Document Store backend locally (excl. Cognito and CIS2). Auth through the UI will
-still require either Cognito to be set up in AWS, or CIS2 to be configured. This is determined by the value
-of `CIS2_FEDERATED_IDENTITY_PROVIDER_ENABLED` feature toggle in the frontend.
+still require either Cognito to be set up in AWS, or CIS2 to be configured.
 
 ### Running The Document Store
 
