@@ -60,4 +60,23 @@ class DocumentMetadataStoreTest {
 
         assertThat(actualDocumentMetadataList).doesNotContain(softDeletedDocumentMetadata);
     }
+
+    @Test
+    void returnsOnlyUploadedDocumentsInMetadataListByNhsNumber()
+            throws IllFormedPatientDetailsException {
+        var nhsNumber = new NhsNumber("9000000011");
+        var uploadedDocumentMetadata =
+                theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(true).build();
+        var nonUploadedDocumentMetadata =
+                theMetadata().withNhsNumber(nhsNumber).withDocumentUploaded(false).build();
+
+        var documentMetadataList = List.of(uploadedDocumentMetadata, nonUploadedDocumentMetadata);
+
+        when(dynamoDBMapper.query(eq(DocumentMetadata.class), any()))
+                .thenReturn(documentMetadataPaginatedQueryList);
+        when(documentMetadataPaginatedQueryList.stream()).thenReturn(documentMetadataList.stream());
+        var actualDocumentMetadataList = documentMetadataStore.findByNhsNumber(nhsNumber);
+
+        assertThat(actualDocumentMetadataList).doesNotContain(nonUploadedDocumentMetadata);
+    }
 }

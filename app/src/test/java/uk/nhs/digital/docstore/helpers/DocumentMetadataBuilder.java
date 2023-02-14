@@ -33,7 +33,7 @@ public class DocumentMetadataBuilder {
                 new NhsNumber(nhsNumber),
                 location,
                 "text/plain",
-                null,
+                false,
                 created.toString(),
                 null,
                 null,
@@ -115,6 +115,19 @@ public class DocumentMetadataBuilder {
     }
 
     public DocumentMetadataBuilder withCreated(String created) {
+        return new DocumentMetadataBuilder(
+                id,
+                nhsNumber,
+                location,
+                contentType,
+                uploaded,
+                created,
+                indexed,
+                deleted,
+                fileName);
+    }
+
+    public DocumentMetadataBuilder withIndexed(String indexed) {
         return new DocumentMetadataBuilder(
                 id,
                 nhsNumber,

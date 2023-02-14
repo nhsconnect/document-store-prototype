@@ -57,7 +57,10 @@ public class DocumentMetadataStore extends DynamoDbConnection {
                                 .withConsistentRead(false));
 
         return metadataPaginatedQueryList.stream()
-                .filter(documentMetadata -> documentMetadata.getDeleted() == null)
+                .filter(
+                        documentMetadata ->
+                                documentMetadata.getDeleted() == null
+                                        && documentMetadata.isDocumentUploaded())
                 .collect(Collectors.toList());
     }
 

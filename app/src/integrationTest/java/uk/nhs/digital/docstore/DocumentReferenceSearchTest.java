@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.jayway.jsonpath.JsonPath;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,11 +41,18 @@ public class DocumentReferenceSearchTest extends BaseDocumentStoreTest {
     public void returnsAResourceBundleForTheGivenNhsNumber()
             throws IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("1000000009");
-        var metadataBuilder =
+        var uploadedMetadataBuilder =
                 DocumentMetadataBuilder.theMetadata()
                         .withNhsNumber(nhsNumber)
-                        .withDocumentUploaded(true);
-        var metadataItems = List.of(metadataBuilder.build(), metadataBuilder.build());
+                        .withDocumentUploaded(true)
+                        .withIndexed(Instant.now().toString());
+        var nonUploadedMetadata =
+                DocumentMetadataBuilder.theMetadata().withNhsNumber(nhsNumber).build();
+        var metadataItems =
+                List.of(
+                        uploadedMetadataBuilder.build(),
+                        uploadedMetadataBuilder.build(),
+                        nonUploadedMetadata);
 
         metadataItems.forEach(
                 (metadataItem) -> {

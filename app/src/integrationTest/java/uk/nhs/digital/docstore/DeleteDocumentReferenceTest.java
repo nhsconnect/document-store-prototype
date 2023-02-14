@@ -66,7 +66,11 @@ public class DeleteDocumentReferenceTest extends BaseDocumentStoreTest {
     void deletesDocumentAndPublishesAuditMessage()
             throws JsonProcessingException, IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("1234567890");
-        var metadata = DocumentMetadataBuilder.theMetadata().withNhsNumber(nhsNumber).build();
+        var metadata =
+                DocumentMetadataBuilder.theMetadata()
+                        .withNhsNumber(nhsNumber)
+                        .withDocumentUploaded(true)
+                        .build();
         var content = "content of file stored in S3";
 
         documentMetadataStore.save(metadata);

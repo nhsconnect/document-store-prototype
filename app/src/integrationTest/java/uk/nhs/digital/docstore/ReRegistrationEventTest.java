@@ -74,7 +74,11 @@ public class ReRegistrationEventTest extends BaseDocumentStoreTest {
         sqsMessage.setBody(message);
         var sqsEvent = new SQSEvent();
         sqsEvent.setRecords(List.of(sqsMessage));
-        var metadata = DocumentMetadataBuilder.theMetadata().withNhsNumber(nhsNumber).build();
+        var metadata =
+                DocumentMetadataBuilder.theMetadata()
+                        .withNhsNumber(nhsNumber)
+                        .withDocumentUploaded(true)
+                        .build();
         var content = "content of file stored in S3";
 
         metadataStore.save(metadata);
