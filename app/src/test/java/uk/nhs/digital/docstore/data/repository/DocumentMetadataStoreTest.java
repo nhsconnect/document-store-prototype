@@ -32,8 +32,8 @@ class DocumentMetadataStoreTest {
 
     @Test
     void returnsDocumentReferenceWithMatchingId() throws IllFormedPatientDetailsException {
-        var id = "1234";
-        var documentMetadata = theMetadata().withId(id).build();
+        var documentMetadata = theMetadata().build();
+        var id = documentMetadata.getId();
 
         when(dynamoDBMapper.load(DocumentMetadata.class, id)).thenReturn(documentMetadata);
         var documentReference = documentMetadataStore.getById(id);

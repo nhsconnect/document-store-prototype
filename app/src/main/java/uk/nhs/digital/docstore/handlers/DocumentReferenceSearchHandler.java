@@ -37,17 +37,16 @@ public class DocumentReferenceSearchHandler
     private final ApiConfig apiConfig;
 
     public DocumentReferenceSearchHandler() {
-        this(new ApiConfig());
+        this(
+                new DocumentMetadataSearchService(
+                        new DocumentMetadataStore(), new DocumentMetadataSerialiser()));
     }
 
-    public DocumentReferenceSearchHandler(ApiConfig apiConfig) {
-        this.apiConfig = apiConfig;
+    public DocumentReferenceSearchHandler(DocumentMetadataSearchService searchService) {
+        this.apiConfig = new ApiConfig();
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(DEFERRED_MODEL_SCANNING);
-
-        DocumentMetadataStore metadataStore = new DocumentMetadataStore();
-        this.searchService =
-                new DocumentMetadataSearchService(metadataStore, new DocumentMetadataSerialiser());
+        this.searchService = searchService;
     }
 
     @Override

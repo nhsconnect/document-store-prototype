@@ -3,6 +3,9 @@ package uk.nhs.digital.docstore.helpers;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
@@ -14,16 +17,27 @@ public class DocumentMetadataBuilder {
     private final String location;
     private final String contentType;
     private final Boolean uploaded;
+    private final String created;
+    private final String indexed;
     private final String deleted;
     private final String fileName;
+    private final String type = "SNOMED";
 
     public static DocumentMetadataBuilder theMetadata() throws IllFormedPatientDetailsException {
-        var id = randomAlphabetic(10);
         var nhsNumber = randomNumeric(10);
         var location = String.format("s3://%s/%s", randomAlphabetic(6), randomAlphabetic(10));
+        var created = Instant.now().minus(10, ChronoUnit.DAYS);
 
         return new DocumentMetadataBuilder(
-                id, new NhsNumber(nhsNumber), location, "text/plain", null, null, "Document Title");
+                null,
+                new NhsNumber(nhsNumber),
+                location,
+                "text/plain",
+                null,
+                created.toString(),
+                null,
+                null,
+                "Document Title");
     }
 
     private DocumentMetadataBuilder(
@@ -32,6 +46,8 @@ public class DocumentMetadataBuilder {
             String location,
             String contentType,
             Boolean uploaded,
+            String created,
+            String indexed,
             String deleted,
             String fileName) {
         this.id = id;
@@ -39,54 +55,116 @@ public class DocumentMetadataBuilder {
         this.location = location;
         this.contentType = contentType;
         this.uploaded = uploaded;
+        this.created = created;
+        this.indexed = indexed;
         this.deleted = deleted;
         this.fileName = fileName;
     }
 
-    public DocumentMetadataBuilder withId(String id) {
-        return new DocumentMetadataBuilder(
-                id, nhsNumber, location, contentType, uploaded, deleted, fileName);
-    }
-
     public DocumentMetadataBuilder withNhsNumber(NhsNumber nhsNumber) {
         return new DocumentMetadataBuilder(
-                id, nhsNumber, location, contentType, uploaded, deleted, fileName);
+                id,
+                nhsNumber,
+                location,
+                contentType,
+                uploaded,
+                created,
+                indexed,
+                deleted,
+                fileName);
     }
 
     public DocumentMetadataBuilder withLocation(String location) {
         return new DocumentMetadataBuilder(
-                id, nhsNumber, location, contentType, uploaded, deleted, fileName);
+                id,
+                nhsNumber,
+                location,
+                contentType,
+                uploaded,
+                created,
+                indexed,
+                deleted,
+                fileName);
     }
 
     public DocumentMetadataBuilder withContentType(String contentType) {
         return new DocumentMetadataBuilder(
-                id, nhsNumber, location, contentType, uploaded, deleted, fileName);
+                id,
+                nhsNumber,
+                location,
+                contentType,
+                uploaded,
+                created,
+                indexed,
+                deleted,
+                fileName);
     }
 
     public DocumentMetadataBuilder withDocumentUploaded(Boolean uploaded) {
+        var indexedAt = uploaded ? Instant.now().toString() : null;
         return new DocumentMetadataBuilder(
-                id, nhsNumber, location, contentType, uploaded, deleted, fileName);
+                id,
+                nhsNumber,
+                location,
+                contentType,
+                uploaded,
+                created,
+                indexedAt,
+                deleted,
+                fileName);
+    }
+
+    public DocumentMetadataBuilder withCreated(String created) {
+        return new DocumentMetadataBuilder(
+                id,
+                nhsNumber,
+                location,
+                contentType,
+                uploaded,
+                created,
+                indexed,
+                deleted,
+                fileName);
     }
 
     public DocumentMetadataBuilder withDeleted(String deleted) {
         return new DocumentMetadataBuilder(
-                id, nhsNumber, location, contentType, uploaded, deleted, fileName);
+                id,
+                nhsNumber,
+                location,
+                contentType,
+                uploaded,
+                created,
+                indexed,
+                deleted,
+                fileName);
     }
 
     public DocumentMetadataBuilder withFileName(String fileName) {
         return new DocumentMetadataBuilder(
-                id, nhsNumber, location, contentType, uploaded, deleted, fileName);
+                id,
+                nhsNumber,
+                location,
+                contentType,
+                uploaded,
+                created,
+                indexed,
+                deleted,
+                fileName);
     }
 
     public DocumentMetadata build() {
         var metadata = new DocumentMetadata();
-        metadata.setId(id);
+        metadata.setId(randomAlphabetic(10));
         metadata.setNhsNumber(nhsNumber.getValue());
         metadata.setLocation(location);
         metadata.setContentType(contentType);
         metadata.setDocumentUploaded(uploaded);
+        metadata.setCreated(created);
+        metadata.setIndexed(indexed);
         metadata.setDeleted(deleted);
         metadata.setFileName(fileName);
+        metadata.setType(List.of(type));
         return metadata;
     }
 }
