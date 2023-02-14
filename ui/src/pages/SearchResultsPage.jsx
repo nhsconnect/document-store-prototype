@@ -65,7 +65,6 @@ const SearchResultsPage = () => {
             {(submissionState === states.FAILED || downloadState === states.FAILED) && <ServiceError />}
             <PatientSummary patientDetails={patientDetails} />
             {submissionState === states.PENDING && <SimpleProgressBar status="Loading..."></SimpleProgressBar>}
-
             {submissionState === states.SUCCEEDED && (
                 <>
                     {searchResults.length > 0 && (
@@ -87,7 +86,7 @@ const SearchResultsPage = () => {
                                 </Table.Body>
                             </Table>
                             {downloadState === states.PENDING && (
-                                <SimpleProgressBar status={"Downloading documents..."}></SimpleProgressBar>
+                                <SimpleProgressBar status="Downloading documents..."></SimpleProgressBar>
                             )}
                             <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING}>
                                 Download All Documents
@@ -102,7 +101,6 @@ const SearchResultsPage = () => {
                                 documents for this patient. For example, if the retention period of these documents has
                                 been reached.
                             </p>
-
                             <Link
                                 role="button"
                                 className="nhsuk-button"
@@ -119,16 +117,13 @@ const SearchResultsPage = () => {
                     )}
                 </>
             )}
-
-            <>
-                {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) && (
-                    <p>
-                        <Link className="govuk-link" to="/home">
-                            Start Again
-                        </Link>
-                    </p>
-                )}
-            </>
+            {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) && (
+                <p>
+                    <Link className="govuk-link" to="/home">
+                        Start Again
+                    </Link>
+                </p>
+            )}
         </>
     );
 };
