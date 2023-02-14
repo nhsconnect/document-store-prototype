@@ -44,13 +44,16 @@ public class DocumentMetadataStore extends DynamoDbConnection {
     }
 
     public List<DocumentMetadata> findByNhsNumber(NhsNumber nhsNumber) {
-        var queryByNhsNumberExpression = new DynamoDBQueryExpression<DocumentMetadata>()
-                .withIndexName("NhsNumberIndex")
-                .withKeyConditionExpression("NhsNumber = :nhsNumber")
-                .withExpressionAttributeValues(Map.of(":nhsNumber", new AttributeValue(nhsNumber.getValue())))
-                .withConsistentRead(false);
+        var queryByNhsNumberExpression =
+                new DynamoDBQueryExpression<DocumentMetadata>()
+                        .withIndexName("NhsNumberIndex")
+                        .withKeyConditionExpression("NhsNumber = :nhsNumber")
+                        .withExpressionAttributeValues(
+                                Map.of(":nhsNumber", new AttributeValue(nhsNumber.getValue())))
+                        .withConsistentRead(false);
 
-        var metadataPaginatedQueryList = mapper.query(DocumentMetadata.class, queryByNhsNumberExpression);
+        var metadataPaginatedQueryList =
+                mapper.query(DocumentMetadata.class, queryByNhsNumberExpression);
 
         return metadataPaginatedQueryList.stream()
                 .filter(

@@ -56,7 +56,7 @@ fileignoreconfig:
 - filename: app/src/e2eTest/java/uk/nhs/digital/docstore/helpers/AwsS3Helper.java
   checksum: 29d3c5cc1dc2643986d8d4abfd2c3fa9f978bf6ca33c7382217949cee2eda22e
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
-  checksum: 8e2c5c61189073ccf74ecfd768e654c3c8e7b120dd2543087eb73da2326f122f
+  checksum: f4f832cd793d719eed52c6a60b9d8178bafbe3ec9c4eccbd49c1264f581bb083
 version: ""
 scopeconfig:
   - scope: node
