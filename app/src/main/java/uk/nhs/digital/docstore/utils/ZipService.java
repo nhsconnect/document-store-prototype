@@ -4,6 +4,7 @@ import static java.util.zip.Deflater.DEFLATED;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -34,6 +35,9 @@ public class ZipService {
 
         LOGGER.debug("Zipping documents...");
 
+        var fileNames = new ArrayList<>(List.of());
+        var duplicateFileCount = 1;
+
         for (Document document : documentList) {
             if (document.isUploaded()) {
                 LOGGER.debug(
@@ -41,7 +45,15 @@ public class ZipService {
                                 + document.getReferenceId()
                                 + ", S3 location: "
                                 + document.getLocation());
-                zipOutputStream.putNextEntry(new ZipEntry(document.getFileName().getValue()));
+
+                if (fileNames.contains(document.getFileName().getValue())) {
+                    zipOutputStream.putNextEntry(
+                            new ZipEntry(document.getFileName().getValue() + duplicateFileCount));
+                    duplicateFileCount++;
+                } else {
+                    fileNames.add(document.getFileName().getValue());
+                    zipOutputStream.putNextEntry(new ZipEntry(document.getFileName().getValue()));
+                }
 
                 IOUtils.copy(
                         documentStore.getObjectFromS3(document.getLocation()), zipOutputStream);
@@ -49,7 +61,6 @@ public class ZipService {
                 zipOutputStream.closeEntry();
             }
         }
-
         zipOutputStream.close();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }

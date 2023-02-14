@@ -42,6 +42,28 @@ class ZipServiceTest {
         assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getFileName().getValue());
     }
 
+    @Test
+    void shouldZipSpecifiedFilesFromS3IfDuplicateFileNames() throws IOException {
+        var s3Object =
+                new S3ObjectInputStream(new ByteArrayInputStream(new byte[10]), new HttpGet());
+        when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
+
+        var documentList =
+                List.of(
+                        DocumentBuilder.baseDocumentBuilder().build(),
+                        DocumentBuilder.baseDocumentBuilder().build(),
+                        DocumentBuilder.baseDocumentBuilder().build());
+
+        var result = zipService.zipDocuments(documentList);
+
+        var fileNames = listZipEntryNames(result);
+
+        assertThat(fileNames.size()).isEqualTo(3);
+        assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getFileName().getValue());
+        assertThat(fileNames.get(1)).isEqualTo(documentList.get(0).getFileName().getValue() + "1");
+        assertThat(fileNames.get(2)).isEqualTo(documentList.get(0).getFileName().getValue() + "2");
+    }
+
     public ArrayList<Object> listZipEntryNames(ByteArrayInputStream inputStream)
             throws IOException {
         var fileNameArray = new ArrayList<>();
