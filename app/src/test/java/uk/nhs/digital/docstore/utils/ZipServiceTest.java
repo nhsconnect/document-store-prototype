@@ -43,16 +43,22 @@ class ZipServiceTest {
     }
 
     @Test
-    void shouldZipSpecifiedFilesFromS3IfDuplicateFileNames() throws IOException {
+    void shouldZipSpecifiedFilesFromS3IfDuplicateFileNamesWithExtension() throws IOException {
         var s3Object =
                 new S3ObjectInputStream(new ByteArrayInputStream(new byte[10]), new HttpGet());
         when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
 
         var documentList =
                 List.of(
-                        DocumentBuilder.baseDocumentBuilder().build(),
-                        DocumentBuilder.baseDocumentBuilder().build(),
-                        DocumentBuilder.baseDocumentBuilder().build());
+                        DocumentBuilder.baseDocumentBuilder()
+                                .withFileName("some-file-name.txt")
+                                .build(),
+                        DocumentBuilder.baseDocumentBuilder()
+                                .withFileName("some-file-name.txt")
+                                .build(),
+                        DocumentBuilder.baseDocumentBuilder()
+                                .withFileName("some-file-name.txt")
+                                .build());
 
         var result = zipService.zipDocuments(documentList);
 
@@ -60,8 +66,36 @@ class ZipServiceTest {
 
         assertThat(fileNames.size()).isEqualTo(3);
         assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getFileName().getValue());
-        assertThat(fileNames.get(1)).isEqualTo(documentList.get(0).getFileName().getValue() + "1");
-        assertThat(fileNames.get(2)).isEqualTo(documentList.get(0).getFileName().getValue() + "2");
+        assertThat(fileNames.get(1)).isEqualTo("some-file-name(1).txt");
+        assertThat(fileNames.get(2)).isEqualTo("some-file-name(2).txt");
+    }
+
+    @Test
+    void shouldZipSpecifiedFilesFromS3IfDuplicateFileNamesWithOutExtension() throws IOException {
+        var s3Object =
+                new S3ObjectInputStream(new ByteArrayInputStream(new byte[10]), new HttpGet());
+        when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
+
+        var documentList =
+                List.of(
+                        DocumentBuilder.baseDocumentBuilder()
+                                .withFileName("some-file-name")
+                                .build(),
+                        DocumentBuilder.baseDocumentBuilder()
+                                .withFileName("some-file-name")
+                                .build(),
+                        DocumentBuilder.baseDocumentBuilder()
+                                .withFileName("some-file-name")
+                                .build());
+
+        var result = zipService.zipDocuments(documentList);
+
+        var fileNames = listZipEntryNames(result);
+
+        assertThat(fileNames.size()).isEqualTo(3);
+        assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getFileName().getValue());
+        assertThat(fileNames.get(1)).isEqualTo("some-file-name(1)");
+        assertThat(fileNames.get(2)).isEqualTo("some-file-name(2)");
     }
 
     public ArrayList<Object> listZipEntryNames(ByteArrayInputStream inputStream)

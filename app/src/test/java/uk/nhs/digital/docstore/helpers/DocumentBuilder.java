@@ -20,6 +20,24 @@ public class DocumentBuilder {
     private final List<String> type;
     private final DocumentLocation location;
 
+    public static DocumentBuilder baseDocumentBuilder() {
+        try {
+            return new DocumentBuilder(
+                    "123",
+                    new NhsNumber("1234567890"),
+                    "pdf",
+                    true,
+                    new FileName("some title"),
+                    Instant.parse("2023-01-21T15:44:42.370623Z"),
+                    null,
+                    Instant.parse("2023-01-21T15:44:42.372042Z"),
+                    List.of("snomed code"),
+                    new DocumentLocation("s3://test-bucket/test-path"));
+        } catch (IllFormedPatientDetailsException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public DocumentBuilder(
             String referenceId,
             NhsNumber nhsNumber,
@@ -43,22 +61,18 @@ public class DocumentBuilder {
         this.location = location;
     }
 
-    public static DocumentBuilder baseDocumentBuilder() {
-        try {
-            return new DocumentBuilder(
-                    "123",
-                    new NhsNumber("1234567890"),
-                    "pdf",
-                    true,
-                    new FileName("some title"),
-                    Instant.parse("2023-01-21T15:44:42.370623Z"),
-                    null,
-                    Instant.parse("2023-01-21T15:44:42.372042Z"),
-                    List.of("snomed code"),
-                    new DocumentLocation("s3://test-bucket/test-path"));
-        } catch (IllFormedPatientDetailsException e) {
-            throw new RuntimeException(e);
-        }
+    public DocumentBuilder withFileName(String fileName) {
+        return new DocumentBuilder(
+                referenceId,
+                nhsNumber,
+                contentType,
+                uploaded,
+                new FileName(fileName),
+                created,
+                deleted,
+                indexed,
+                type,
+                location);
     }
 
     public Document build() {

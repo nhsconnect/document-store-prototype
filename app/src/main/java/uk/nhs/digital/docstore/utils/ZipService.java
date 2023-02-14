@@ -35,10 +35,11 @@ public class ZipService {
 
         LOGGER.debug("Zipping documents...");
 
-        var fileNames = new ArrayList<>(List.of());
+        var fileNamesToBeZipped = new ArrayList<>(List.of());
         var duplicateFileCount = 1;
 
         for (Document document : documentList) {
+            var fileName = document.getFileName().getValue();
             if (document.isUploaded()) {
                 LOGGER.debug(
                         "Document ID: "
@@ -46,12 +47,12 @@ public class ZipService {
                                 + ", S3 location: "
                                 + document.getLocation());
 
-                if (fileNames.contains(document.getFileName().getValue())) {
-                    zipOutputStream.putNextEntry(
-                            new ZipEntry(document.getFileName().getValue() + duplicateFileCount));
+                if (fileNamesToBeZipped.contains(fileName)) {
+                    var uniqueFileName = createUniqueFileName(fileName, duplicateFileCount);
+                    zipOutputStream.putNextEntry(new ZipEntry(uniqueFileName));
                     duplicateFileCount++;
                 } else {
-                    fileNames.add(document.getFileName().getValue());
+                    fileNamesToBeZipped.add(document.getFileName().getValue());
                     zipOutputStream.putNextEntry(new ZipEntry(document.getFileName().getValue()));
                 }
 
@@ -63,5 +64,19 @@ public class ZipService {
         }
         zipOutputStream.close();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+    }
+
+    public String createUniqueFileName(String fileName, int duplicateFileCount) {
+        var uniqueFileName = "";
+        var FIELD_SEPARATOR = "\\.";
+
+        String[] fields = fileName.split(FIELD_SEPARATOR);
+
+        if (fields.length > 1) {
+            uniqueFileName = fields[0] + "(" + duplicateFileCount + ")" + "." + fields[1];
+        } else {
+            uniqueFileName = fileName + "(" + duplicateFileCount + ")";
+        }
+        return uniqueFileName;
     }
 }
