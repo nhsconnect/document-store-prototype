@@ -20,7 +20,7 @@ the code to go inside the aforementioned code block in the Markdown.
 
 To visualise Mermaid diagrams in IntelliJ's Markdown preview, you need to enable it by:
 
-1. Go to IntelliJ's `Settings...`
+1. Go to IntelliJ's `Preferences...`
 2. Click `Languages & Frameworks`
 3. Click `Markdown`
 4. Under `Markdown Extensions:` and next to `Mermaid`, click `Install`
