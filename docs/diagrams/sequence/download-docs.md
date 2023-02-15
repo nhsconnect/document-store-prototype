@@ -16,7 +16,7 @@ sequenceDiagram
             API Gateway->>Lambda: Invokes DocumentReferenceSearchHandler
             activate Lambda
                 Lambda->>DynamoDB: query()
-                Note over Lambda, DynamoDB: DocumentReferenceMetadata Table
+                Note over Lambda, DynamoDB: DocumentReferenceMetadata table
                 activate DynamoDB
                     DynamoDB->>Lambda: documentMetadataPaginatedQueryList
                 deactivate DynamoDB
@@ -31,7 +31,7 @@ sequenceDiagram
             API Gateway->>Lambda: Invokes CreateDocumentManifestByNhsNumberHandler
             activate Lambda
                 Lambda->>DynamoDB: query()
-                Note over Lambda, DynamoDB: DocumentReferenceMetadata Table
+                Note over Lambda, DynamoDB: DocumentReferenceMetadata table
                 activate DynamoDB
                     DynamoDB->>Lambda: documentMetadataPaginatedQueryList
                 deactivate DynamoDB
@@ -46,12 +46,13 @@ sequenceDiagram
                     S3-->>Lambda: PutObjectResult
                 deactivate S3
                 Lambda->>DynamoDB: save()
-                Note over Lambda, DynamoDB: DocumentZipTrace Table
+                Note over Lambda, DynamoDB: DocumentZipTrace table
                 Lambda-->>S3: generatePresignedUrl()
                 activate S3
                     S3-->>Lambda: URL
                 deactivate S3
                 Lambda-->>SQS: sendMessage()
+                Note over Lambda, SQS: <env>-sensitive-audit queue
                 activate SQS
                     SQS-->>Lambda: SendMessageResponse
                 deactivate SQS
@@ -67,5 +68,6 @@ sequenceDiagram
     deactivate React Web App
     loop Every 5 mins
         Splunk->>SQS: Polls for audit messages
+        Note over Splunk, SQS: <env>-sensitive-audit queue
     end
 ```

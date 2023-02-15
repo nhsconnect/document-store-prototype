@@ -22,6 +22,7 @@ sequenceDiagram
                     PDS FHIR->>Lambda: 200 Patient
                 deactivate PDS FHIR
                 Lambda-->>SQS: sendMessage()
+                Note over Lambda, SQS: <env>-sensitive-audit queue
                 activate SQS
                     SQS-->>Lambda: SendMessageResponse
                 deactivate SQS
@@ -33,5 +34,6 @@ sequenceDiagram
     deactivate React Web App
     loop Every 5 mins
         Splunk->>SQS: Polls for audit messages
+        Note over Splunk, SQS: <env>-sensitive-audit queue
     end
 ```

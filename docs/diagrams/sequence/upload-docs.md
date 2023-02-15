@@ -20,8 +20,9 @@ sequenceDiagram
                     S3->>Lambda: URL
                 deactivate S3
                 Lambda-->>DynamoDB: save()
-                Note over Lambda, DynamoDB: DocumentReferenceMetadata Table
+                Note over Lambda, DynamoDB: DocumentReferenceMetadata table
                 Lambda-->>SQS: sendMessage()
+                Note over Lambda, SQS: <env>-sensitive-audit queue
                 activate SQS
                     SQS-->>Lambda: SendMessageResponse
                 deactivate SQS
@@ -37,5 +38,6 @@ sequenceDiagram
     deactivate React Web App
     loop Every 5 mins
         Splunk->>SQS: Polls for audit messages
+        Note over Splunk, SQS: <env>-sensitive-audit queue
     end
 ```
