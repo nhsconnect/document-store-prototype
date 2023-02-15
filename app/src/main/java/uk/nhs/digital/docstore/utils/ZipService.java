@@ -69,7 +69,6 @@ public class ZipService {
 
     public String createUniqueFileName(String fileName, int duplicateFileCount) {
         var uniqueFileName = "";
-
         var baseName = FilenameUtils.getBaseName(fileName);
         var extension = FilenameUtils.getExtension(fileName);
 
@@ -78,7 +77,6 @@ public class ZipService {
         } else {
             uniqueFileName = baseName + "(" + duplicateFileCount + ")" + "." + extension;
         }
-
         return uniqueFileName;
     }
 }
