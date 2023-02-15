@@ -21,9 +21,9 @@ sequenceDiagram
                 activate DynamoDB
                     DynamoDB->>Lambda: documentMetadataPaginatedQueryList
                 deactivate DynamoDB
-                Lambda->>API Gateway: 200 List<Documents> as Bundle
+                Lambda->>API Gateway: 200 List<Document> as Bundle
             deactivate Lambda
-            API Gateway->>React Web App:  200 List<Documents> as Bundle
+            API Gateway->>React Web App:  200 List<Document> as Bundle
         deactivate API Gateway
         React Web App->>GP Practice/PCSE User: Displays docs found
         GP Practice/PCSE User->>React Web App: Clicks delete button
