@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
@@ -68,15 +69,16 @@ public class ZipService {
 
     public String createUniqueFileName(String fileName, int duplicateFileCount) {
         var uniqueFileName = "";
-        var FIELD_SEPARATOR = "\\.";
 
-        String[] fields = fileName.split(FIELD_SEPARATOR);
+        var baseName = FilenameUtils.getBaseName(fileName);
+        var extension = FilenameUtils.getExtension(fileName);
 
-        if (fields.length > 1) {
-            uniqueFileName = fields[0] + "(" + duplicateFileCount + ")" + "." + fields[1];
+        if (extension.isEmpty()) {
+            uniqueFileName = baseName + "(" + duplicateFileCount + ")";
         } else {
-            uniqueFileName = fileName + "(" + duplicateFileCount + ")";
+            uniqueFileName = baseName + "(" + duplicateFileCount + ")" + "." + extension;
         }
+
         return uniqueFileName;
     }
 }
