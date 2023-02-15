@@ -26,10 +26,10 @@ sequenceDiagram
             API Gateway->>React Web App:  200 List<Documents> as Bundle
         deactivate API Gateway
         React Web App->>GP Practice/PCSE User: Displays docs found
-        GP Practice/PCSE User->>React Web App: Submits delete confirmation
-        React Web App->>GP Practice/PCSE User: Displays deletion progress
+        GP Practice/PCSE User->>React Web App: Clicks delete button
         React Web App->>GP Practice/PCSE User: Navigates to /search/results/delete-documents-confirmation
         GP Practice/PCSE User->>React Web App: Clicks delete confirmation button
+        React Web App->>GP Practice/PCSE User: Displays deletion progress
         React Web App->>API Gateway: DELETE /DocumentReference
         activate API Gateway
             API Gateway->>Lambda: Invokes DeleteDocumentReferenceHandler
