@@ -24,7 +24,7 @@ fileignoreconfig:
 - filename: app/src/main/java/uk/nhs/digital/docstore/DeleteDocumentReferenceHandler.java
   checksum: 712ca4e85254158c04fa9f2b1bf90035aae7140a5692444238a1a6dc64abdb92
 - filename: ui/src/pages/UploadDocumentPage.jsx
-  checksum: 5ef764f51b40d8aeb41cff59652ffdc2be593a337ba0936bfad8be50b8d44d83
+  checksum: 983e6152400fea57882999f9cdc1b35ce89752c7c4ad89f772b852b03164da50
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/AccessTokenRequestBody.java
   checksum: a2c4d9590033a051f5207636f2be9c95bc0fec5a006cabfabd72bc0d8404d6ec
 - filename: terraform/alarms.tf

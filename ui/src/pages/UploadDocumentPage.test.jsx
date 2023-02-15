@@ -96,6 +96,10 @@ describe("UploadDocumentPage", () => {
                 expect(uploadForm()).not.toBeInTheDocument();
             });
 
+            expect(
+                screen.getByText("Do not close or navigate away from this browser until upload is complete.")
+            ).toBeInTheDocument();
+
             await waitFor(() => {
                 expect(getProgressBarValue(documentOne)).toEqual(0);
                 expect(getProgressBarMessage(documentOne).textContent).toContain("Uploading");

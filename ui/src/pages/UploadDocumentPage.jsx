@@ -1,4 +1,4 @@
-import { Button, Fieldset, Table } from "nhsuk-react-components";
+import { Button, Fieldset, Table, WarningCallout } from "nhsuk-react-components";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -87,6 +87,10 @@ const UploadDocumentPage = ({ nextPagePath }) => {
             {uploadStep === documentUploadSteps.UPLOADING && (
                 <>
                     <h1>Your documents are uploading</h1>
+                    <WarningCallout>
+                        <WarningCallout.Label>Stay on this page</WarningCallout.Label>
+                        <p>Do not close or navigate away from this browser until upload is complete.</p>
+                    </WarningCallout>
                     <Table
                         responsive
                         caption="Your documents are uploading"
