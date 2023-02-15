@@ -50,15 +50,24 @@ classDiagram
         +getFileMetadataList() List~FileMetadata~ 
         +getDescription() String
     }
+    class ReRegistrationAuditMessage{
+        -List~FileMetadata~ fileMetadataList
+        -String nemsMessageId
+        +getFileMetadataList() List~FileMetadata~ 
+        +getNemsMessageId() String 
+        +getDescription() String
+    }
     BaseAuditMessage <-- PatientRelatedAuditMessage: extends
     PatientRelatedAuditMessage <-- SearchPatientDetailsAuditMessage: extends
     PatientRelatedAuditMessage <-- CreateDocumentMetadataAuditMessage: extends
     PatientRelatedAuditMessage <-- DocumentUploadedAuditMessage: extends
     PatientRelatedAuditMessage <-- DeletedAllDocumentsAuditMessage: extends
     PatientRelatedAuditMessage <-- DownloadAllPatientRecordsAuditMessage: extends
+    PatientRelatedAuditMessage <-- ReRegistrationAuditMessage: extends
     AuditMessage <.. SearchPatientDetailsAuditMessage: implements
     AuditMessage <.. CreateDocumentMetadataAuditMessage: implements
     AuditMessage <.. DocumentUploadedAuditMessage: implements
     AuditMessage <.. DeletedAllDocumentsAuditMessage: implements
     AuditMessage <.. DownloadAllPatientRecordsAuditMessage: implements
+    AuditMessage <.. ReRegistrationAuditMessage: implements
 ```
