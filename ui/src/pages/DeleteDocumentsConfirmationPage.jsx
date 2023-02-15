@@ -21,6 +21,7 @@ const DeleteDocumentsConfirmationPage = () => {
     let navigate = useNavigate();
     const [patientDetails] = usePatientDetailsProviderContext();
     const [submissionState, setSubmissionState] = useState(states.IDLE);
+
     const { ref: trxRef, ...trxProps } = register("trx");
 
     const doSubmit = async (data) => {
@@ -44,7 +45,7 @@ const DeleteDocumentsConfirmationPage = () => {
         <>
             <BackButton />
             {submissionState === states.FAILED && (
-                <ServiceError message={"There has been an issue deleting these records, please try again later."} />
+                <ServiceError message="There has been an issue deleting these records, please try again later." />
             )}
             <form onSubmit={handleSubmit(doSubmit)}>
                 <Fieldset>
@@ -64,7 +65,7 @@ const DeleteDocumentsConfirmationPage = () => {
                     </Radios>
                 </Fieldset>
                 {submissionState === states.DELETING && <SimpleProgressBar status="Deleting..."></SimpleProgressBar>}
-                <Button type={"submit"} disabled={submissionState === states.DELETING}>
+                <Button type="submit" disabled={submissionState === states.DELETING}>
                     Continue
                 </Button>
             </form>

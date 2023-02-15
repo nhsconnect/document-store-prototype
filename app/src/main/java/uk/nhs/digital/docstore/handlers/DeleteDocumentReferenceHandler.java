@@ -54,6 +54,7 @@ public class DeleteDocumentReferenceHandler
             var nhsNumberSearchParameterForm =
                     new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
             var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
+
             var deletedDocuments = documentDeletionService.deleteAllDocumentsForPatient(nhsNumber);
             documentDeletionService.deleteAllDocumentsAudit(nhsNumber, deletedDocuments);
 
