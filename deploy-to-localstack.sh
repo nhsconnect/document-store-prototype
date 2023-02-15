@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
-set -euxo pipefail
+set -euo pipefail
 
 terraform -version
 cd terraform
-terraform init -backend-config local.s3.tfbackend
+terraform init --backend-config="path=/home/dojo/terraform.tfstate"
 terraform plan -var-file=local.tfvars -var lambda_jar_filename=../app/build/libs/app.jar  -out=tfplan
 terraform apply tfplan

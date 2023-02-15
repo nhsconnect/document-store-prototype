@@ -49,11 +49,11 @@ test-app-with-logs: ## Run /app unit tests (with logs)
 
 .PHONY: test-app-integration
 test-app-integration: ## Run /app integration tests (no logs)
-	./gradlew integrationTest
+	AWS_ENDPOINT="http://localhost:4566" ./gradlew integrationTest
 
 .PHONY: test-app-integration-with-logs
 test-app-integration-with-logs: ## Run /app integration tests (with logs)
-	./gradlew integrationTest --info
+	AWS_ENDPOINT="http://localhost:4566" ./gradlew integrationTest --info
 
 .PHONY: test-e2e
 test-e2e: ## Run E2E tests (without visible browser)
@@ -100,10 +100,6 @@ start-ui: ## Start the UI
 .PHONY: start-localstack
 start-localstack: ## Start LocalStack
 	./tasks start-localstack
-
-.PHONY: view-terraform-logs
-view-terraform-logs: ## View Terraform logs
-	./tasks view-terraform-logs
 
 .PHONY: view-localstack-logs
 view-localstack-logs: ## View LocalStack logs

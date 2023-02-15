@@ -30,8 +30,6 @@ common:
           - exec:
               command: dojo
               arguments:
-                - -c
-                - Dojofile-infra
                 - ./tasks configure-ui
           - exec:
               command: dojo
@@ -72,8 +70,6 @@ common:
       - exec:
           command: dojo
           arguments:
-            - -c
-            - Dojofile-infra
             - ./tasks tf_plan
   deploy_terraform: &deploy_terraform
     artifacts:
@@ -106,33 +102,21 @@ common:
           source: jars
       - exec:
           command: dojo
-          arguments:
-            - -c
-            - Dojofile-infra
             - ./tasks tf_apply
       - exec:
           command: dojo
-          arguments:
-            - -c
-            - Dojofile-infra
             - ./tasks extract-raw-terraform-output api_gateway_url
       - exec:
           command: dojo
           arguments:
-            - -c
-            - Dojofile-infra
             - ./tasks extract-json-terraform-output cognito_user_pool_ids
       - exec:
           command: dojo
           arguments:
-            - -c
-            - Dojofile-infra
             - ./tasks extract-json-terraform-output cognito_client_ids
       - exec:
           command: dojo
           arguments:
-            - -c
-            - Dojofile-infra
             - ./tasks extract-json-terraform-output amplify_app_ids
   deploy_ui: &deploy_ui
     tasks:
@@ -143,16 +127,12 @@ common:
       - exec:
           command: dojo
           arguments:
-            - -c
-            - Dojofile-infra
             - ./tasks deploy-ui
   e2e_test: &e2e_test
     tasks:
       - exec:
           command: dojo
           arguments:
-            - -c
-            - Dojofile-infra
             - ./tasks configure-e2e-test
       - exec:
           command: dojo
@@ -209,6 +189,18 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
+      - app_integration_tests:
+          environment_variables:
+            ENVIRONMENT: dev
+            NHS_CIS2_ENVIRONMENT: development
+          clean_workspace: true
+          jobs:
+            test:
+              tasks:
+                - exec:
+                    command: dojo
+                    arguments:
+                      - ./tasks run-integration-test
       - e2e_tests:
           environment_variables:
             ENVIRONMENT: dev

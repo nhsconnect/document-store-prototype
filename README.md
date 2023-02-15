@@ -24,7 +24,7 @@ still require either Cognito to be set up in AWS, or CIS2 to be configured.
 
 ### Running The Document Store
 
-#### 1. Start colima
+#### 1. Start colima (or any Docker provider)
 
 To start colima, run:
 
@@ -34,30 +34,20 @@ colima start
 
 #### 2. Start LocalStack
 
-To start LocalStack (incl. bootstrap and applying to Terraform), run:
+To start LocalStack run:
 
 ```bash
 ./tasks start-localstack
 ```
 
-**Warning: Do not close this window! You will need this when running other services.**
+After this you should have a shell session open inside the default Dojo container, which has the AWS CLI, terraform CLI, and gradle installed on it.
 
-_Note: This will deploy your API Lambdas if their JARs are already built._
+**Warning: Do not close this window! That will stop LocalStack.**
 
-#### 3. Build API Lambda JARs
-
-To build/re-build these into [app/build/libs](app/build/libs), run in a non-dojo terminal:
+#### 3 Build the app and deploy it to LocalStack.
 
 ```bash
-./tasks build-api-jars
-```
-
-#### 4. Deploy API:
-
-To deploy the API to LocalStack, run in a non-dojo terminal:
-
-```bash
-./tasks deploy-to-localstack
+./tasks _deploy-to-localstack
 ```
 
 ### Running The UI
@@ -122,8 +112,7 @@ Deleting:
 ## Testing
 
 The `test` source set contains unit tests. These don't have any dependencies on infra or external services.
-These are run in CI. There is also a suite of API tests within the `e2eTest` source set which require LocalStack to
-simulate AWS. Since we are using the open source version of LocalStack, we are unable to run the API tests in CI.
+There is also a suite of API tests within the `integrationTest` source set which run against AWS resources.
 
 ### E2E Test
 
@@ -148,18 +137,6 @@ aws --endpoint-url=http://localhost:4566 logs tail /aws/lambda/DocumentReference
 
 One may also follow log output as it happens by applying the `follow` flag to the `tail` subcommand:
 `tail --follow HANDLER`.
-
-### Env Variables
-
-LocalStack and the E2E tests support a native Docker service running on `localhost`. Other setups, such as Docker
-Machine, may need to target other IP addresses.
-
-| Variable name    | Description                                                                          |
-|------------------|--------------------------------------------------------------------------------------|
-| `EDGE_HOST_NAME` | Overrides the host that LocalStack binds its edge service to (default: `127.0.0.1`). |
-
-To use this with Docker Machine, one might add the following to the Bash profile (or a utility
-like [direnv](https://direnv.net/)): `export EDGE_HOST_NAME=0.0.0.0`.
 
 ## Monitoring
 
@@ -193,7 +170,6 @@ manager)
 If you are experiencing timeouts when running `./tasks start-localstack`, it is likely due to the Lima VM not having
 enough resources allocated to it. You can add more resources to the Lima VM by running `colima start --edit` and
 increasing the number of CPUs allocated to 4 and memory usage to 8GB.
-
 
 ## Accessibility Requirements
 

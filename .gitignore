@@ -12,6 +12,7 @@ example: *tfplan*
 .terraformrc
 terraform.rc
 /terraform/tfplan
+/terraform/.cache
 
 ### Dependencies
 node_modules

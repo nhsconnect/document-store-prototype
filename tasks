@@ -23,6 +23,23 @@ function assume_ci_role() {
   export AWS_SESSION_TOKEN="${sts[2]}"
 }
 
+function assume_test_runner_role() {
+  role_arn="arn:aws:iam::533825906475:role/integration_test_runner"
+  session_name="document-store-test-runner-session"
+
+  echo "Assuming test runner role in document store..."
+
+  sts=($(aws sts assume-role \
+    --role-arn "$role_arn" \
+    --role-session-name "$session_name" \
+    --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+    --output text))
+
+  export AWS_ACCESS_KEY_ID="${sts[0]}"
+  export AWS_SECRET_ACCESS_KEY="${sts[1]}"
+  export AWS_SESSION_TOKEN="${sts[2]}"
+}
+
 function get_ssm_parameter() {
   echo "$(aws ssm get-parameter --region ${aws_region} --name $1 --query Parameter.Value --output text)"
 }
@@ -193,24 +210,21 @@ build-api-jars)
   dojo './tasks _build-api-jars'
   ;;
 start-localstack)
-  test -e app/build/libs/app.jar || dojo 'gradle assemble'
-  dojo -c Dojofile-integration
-  ;;
-deploy-to-localstack)
-  export TERRAFORM_CONTAINER=$(docker ps -a | grep hashicorp/terraform | head -1 | cut -f 1 -d ' ')
-  docker start --attach $TERRAFORM_CONTAINER
-  ;;
-view-terraform-logs)
-  export TERRAFORM_CONTAINER=$(docker ps -a | grep hashicorp/terraform | head -1 | cut -f 1 -d ' ')
-  docker logs $TERRAFORM_CONTAINER --follow
+  dojo
   ;;
 view-localstack-logs)
   export LOCALSTACK_CONTAINER=$(docker ps -a | grep localstack/localstack | head -1 | cut -f 1 -d ' ')
   docker logs $LOCALSTACK_CONTAINER --follow
   ;;
-view-wiremock-logs)
-  export WIREMOCK_CONTAINER=$(docker ps -a | grep wiremock/wiremock | head -1 | cut -f 1 -d ' ')
-  docker logs $WIREMOCK_CONTAINER --follow
+bootstrap-terraform)
+  dojo './tasks _bootstrap-terraform'
+  ;;
+_bootstrap-terraform)
+  ./bootstrap-terraform.sh
+  ;;
+_deploy-to-localstack)
+  test -e app/build/libs/app.jar || dojo 'gradle assemble'
+  ./deploy-to-localstack.sh
   ;;
 tf_plan)
   assume_ci_role
@@ -249,6 +263,10 @@ export-aws-creds)
   assume_ci_role
   export_aws_credentials
   ;;
+run-integration-test)
+  assume_test_runner_role
+  gradle integrationTest
+  ;;
 install-e2e-test-dependencies)
   cd e2eTest
   npm ci
@@ -268,7 +286,7 @@ run-e2e-test)
 create-cognito-user)
   username=$2
   password=$3
-  dojo -c Dojofile-infra "./tasks _create-cognito-user ${username} ${password}"
+  dojo "./tasks _create-cognito-user ${username} ${password}"
   ;;
 _create-cognito-user)
   username=$2
@@ -278,7 +296,7 @@ _create-cognito-user)
   ;;
 delete-cognito-user)
   username=$2
-  dojo -c Dojofile-infra "./tasks _delete-cognito-user ${username}"
+  dojo "./tasks _delete-cognito-user ${username}"
   ;;
 _delete-cognito-user)
   username=$2
@@ -286,13 +304,13 @@ _delete-cognito-user)
   delete_cognito_user ${username}
   ;;
 attach-policy-to-ci-role)
-  dojo -c Dojofile-infra "./tasks _attach-policy-to-ci-role"
+  dojo "./tasks _attach-policy-to-ci-role"
   ;;
 _attach-policy-to-ci-role)
   aws iam put-role-policy --role-name=ci-agent --policy-name=ci-role-policy --policy-document=file://ci-role-policy.json
   ;;
 bootstrap-ci-role)
-  dojo -c Dojofile-infra "./tasks _bootstrap-ci-role"
+  dojo "./tasks _bootstrap-ci-role"
   ;;
 _bootstrap-ci-role)
   aws iam create-role --role-name=ci-agent --assume-role-policy-document=file://ci-assume-role-policy.json

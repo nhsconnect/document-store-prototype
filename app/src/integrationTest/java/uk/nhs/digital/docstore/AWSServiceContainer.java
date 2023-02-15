@@ -5,8 +5,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class AWSServiceContainer {
     private static final String AWS_REGION = "eu-west-2";
@@ -15,20 +13,27 @@ public class AWSServiceContainer {
     private final AmazonDynamoDB dynamodbClient;
 
     public AWSServiceContainer() {
-        var endpoint = String.format("http://%s:4566", getAwsHost());
+        var endpoint = System.getenv("AWS_ENDPOINT");
 
-        var endpointConfiguration =
-                new AwsClientBuilder.EndpointConfiguration(endpoint, AWS_REGION);
-        dynamodbClient =
-                AmazonDynamoDBClientBuilder.standard()
-                        .withEndpointConfiguration(endpointConfiguration)
-                        .build();
+        System.out.println("AWS endpoint set to " + endpoint);
 
-        s3Client =
-                AmazonS3ClientBuilder.standard()
-                        .withEndpointConfiguration(endpointConfiguration)
-                        .withPathStyleAccessEnabled(true)
-                        .build();
+        var dynamoDBClientBuilder = AmazonDynamoDBClientBuilder.standard();
+        var s3ClientBuilder = AmazonS3ClientBuilder.standard();
+
+        if (endpoint != null) {
+            var endpointConfiguration =
+                    new AwsClientBuilder.EndpointConfiguration(endpoint, AWS_REGION);
+
+            dynamoDBClientBuilder =
+                    dynamoDBClientBuilder.withEndpointConfiguration(endpointConfiguration);
+            s3ClientBuilder =
+                    s3ClientBuilder
+                            .withEndpointConfiguration(endpointConfiguration)
+                            .withPathStyleAccessEnabled(true);
+        }
+
+        dynamodbClient = dynamoDBClientBuilder.build();
+        s3Client = s3ClientBuilder.build();
     }
 
     public AmazonDynamoDB getDynamoDBClient() {
@@ -37,14 +42,5 @@ public class AWSServiceContainer {
 
     public AmazonS3 getS3Client() {
         return s3Client;
-    }
-
-    private static String getAwsHost() {
-        try {
-            InetAddress.getByName("localstack");
-            return "localstack";
-        } catch (UnknownHostException e) {
-            return "localhost";
-        }
     }
 }

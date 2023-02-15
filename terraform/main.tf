@@ -5,8 +5,7 @@ terraform {
       version = "4.52.0"
     }
   }
-
-  backend "s3" {}
+  backend "local" {}
 }
 
 provider "aws" {

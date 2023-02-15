@@ -1,8 +1,12 @@
 fileignoreconfig:
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/PatientSearchConfig.java  
   checksum: 2fe3bca550f9835e84f065bebb962c35ffc2ba0185c7c764bb1875e476b846ce
+- filename: Dojofile
+  checksum: 8ab545b8ed6e7bf14e8af29e21b31971f6fbae00ad91c08e193f791948bf601a
+- filename: docker-compose.yaml
+  checksum: dae0a1b6f74fb283481b761d2804aeed9dd3d3517b2dede6ce8c355934459284
 - filename: terraform/.terraform.lock.hcl
-  checksum: 67d6e4d1382ac6e96a43b616f3d4fa0dcedbe0567030694b62699efe97275359
+  checksum: a38737e394ada9d4c0a6d6ea82a964b771799810b35a3c9d2df964bf11525ccb
 - filename: ui/src/components/PatientSummary.js
   checksum: 5887e478e0ea744814ce24b013e26dd2ce4dfa3c05dfe1a4107ef41b90b21cf2
 - filename: ui/src/pages/PatientTracePage.jsx
@@ -20,7 +24,7 @@ fileignoreconfig:
 - filename: cypress/e2e/uploadAndDownload.cy.js
   checksum: bb9d538761c5398f85a8ae8b3aadf237d2d290fe190938f9cd1071d150ac7fcc
 - filename: tasks
-  checksum: 0ffd9edf7fb95a26dbd5db3ae6c6b9684ffc92683ca005d0a97cf0ed0483f801
+  checksum: ac69b01c9fba932d503578c9e5a887d3761e426c17c68fee182df97e4b70dd9e
 - filename: app/src/main/java/uk/nhs/digital/docstore/DeleteDocumentReferenceHandler.java
   checksum: 712ca4e85254158c04fa9f2b1bf90035aae7140a5692444238a1a6dc64abdb92
 - filename: ui/src/pages/UploadDocumentPage.jsx
