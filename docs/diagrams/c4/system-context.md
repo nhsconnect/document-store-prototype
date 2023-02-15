@@ -7,4 +7,4 @@ permissions to use the system.
 
 [//]: # (TODO: Replace this image with Mermaid once C4 models are fully supported.)
 
-![System Context Diagram](../../images/system-context-diagram.png)
+![System Context Diagram](../../images/system-context-diagram.drawio.png)
