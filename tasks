@@ -24,7 +24,7 @@ function assume_ci_role() {
 }
 
 function assume_test_runner_role() {
-  role_arn="arn:aws:iam::533825906475:role/integration_test_runner"
+  role_arn="arn:aws:iam::533825906475:role/IntegrationTestRunner"
   session_name="document-store-test-runner-session"
 
   echo "Assuming test runner role in document store..."
