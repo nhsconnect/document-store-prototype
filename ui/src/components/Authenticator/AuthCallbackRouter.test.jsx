@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { Navigate } from "react-router";
 import { useAuth } from "react-oidc-context";
-import AuthenticationCallbackRouter from "./AuthenticationCallbackRouter";
+import AuthCallbackRouter from "./AuthCallbackRouter";
 
 jest.mock("react-router");
 jest.mock("react-oidc-context");
@@ -15,7 +15,7 @@ describe("CIS2AuthenticationResultNavigator", () => {
         }));
 
         Navigate.mockImplementation(() => null);
-        render(<AuthenticationCallbackRouter />);
+        render(<AuthCallbackRouter />);
 
         expect(Navigate).toBeCalledWith(expect.objectContaining({ to: "/home", replace: true }), expect.anything());
     });
@@ -28,7 +28,7 @@ describe("CIS2AuthenticationResultNavigator", () => {
         }));
 
         Navigate.mockImplementation(() => null);
-        render(<AuthenticationCallbackRouter />);
+        render(<AuthCallbackRouter />);
 
         expect(Navigate).toBeCalledWith(expect.objectContaining({ to: "/", replace: true }), expect.anything());
     });
@@ -41,7 +41,7 @@ describe("CIS2AuthenticationResultNavigator", () => {
         }));
 
         Navigate.mockImplementation(() => null);
-        render(<AuthenticationCallbackRouter />);
+        render(<AuthCallbackRouter />);
 
         expect(screen.getByText("Loading...")).toBeInTheDocument();
     });

@@ -19,9 +19,9 @@ const oidcConfig = {
     extraQueryParams: {
         identity_provider: config.Auth.providerId,
     },
-    // no revoke of "access token" (https://github.com/authts/oidc-client-ts/issues/262)
+    // No revoke of "access token" (https://github.com/authts/oidc-client-ts/issues/262)
     revokeTokenTypes: ["refresh_token"],
-    // no silent renew via "prompt=none" (https://github.com/authts/oidc-client-ts/issues/366)
+    // No silent renew via "prompt=none" (https://github.com/authts/oidc-client-ts/issues/366)
     automaticSilentRenew: false,
 };
 

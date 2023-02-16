@@ -12,7 +12,7 @@ import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import StartPage from "./pages/StartPage";
-import AuthenticationCallbackRouter from "./components/Authenticator/AuthenticationCallbackRouter";
+import AuthCallbackRouter from "./components/Authenticator/AuthCallbackRouter";
 import AuthProvider from "./components/Authenticator/AuthProvider";
 import DeleteDocumentsConfirmationPage from "./pages/DeleteDocumentsConfirmationPage";
 
@@ -20,7 +20,7 @@ const AppRoutes = () => {
     return (
         <Routes>
             <Route element={<StartPage />} path="/" />
-            <Route element={<AuthenticationCallbackRouter />} path="cis2-auth-callback" />
+            <Route element={<AuthCallbackRouter />} path="cis2-auth-callback" />
             <Route
                 element={
                     <Authenticator.Protected>

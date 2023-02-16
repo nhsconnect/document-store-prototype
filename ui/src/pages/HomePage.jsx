@@ -5,11 +5,13 @@ import { useNavigate } from "react-router";
 import BackButton from "../components/BackButton";
 
 const HomePage = () => {
-    const uploadPathHref = "/upload/patient-trace";
-    const searchPathHref = "/search/patient-trace";
     const { register, handleSubmit } = useForm();
     let navigate = useNavigate();
+
     const { ref: trxRef, ...trxProps } = register("trx");
+
+    const uploadPathHref = "/upload/patient-trace";
+    const searchPathHref = "/search/patient-trace";
 
     const doSubmit = async (data) => {
         const location = data.trx === "download" ? searchPathHref : uploadPathHref;
@@ -21,7 +23,7 @@ const HomePage = () => {
             <BackButton />
             <form onSubmit={handleSubmit(doSubmit)}>
                 <Fieldset>
-                    <Fieldset.Legend headingLevel={"h1"} isPageHeading>
+                    <Fieldset.Legend headingLevel="h1" isPageHeading>
                         How do you want to use the Document Store?
                     </Fieldset.Legend>
                     <Radios name="document-store-action" hint="Select an option">
@@ -33,7 +35,7 @@ const HomePage = () => {
                         </Radios.Radio>
                     </Radios>
                 </Fieldset>
-                <Button type={"submit"}>Continue</Button>
+                <Button type="submit">Continue</Button>
             </form>
         </>
     );
