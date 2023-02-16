@@ -191,7 +191,7 @@ data aws_iam_policy_document "s3_object_access_policy_doc" {
     actions = [
       "s3:ListAllMyBuckets"
     ]
-    resources = "*"
+    resources = ["*"]
   }
   statement {
     effect  = "Allow"
