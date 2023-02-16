@@ -5,6 +5,8 @@ The sequence diagram below illustrate the interactions that occur when a user do
 The diagram assumes that AWS Amplify has served the React web app; the user is logged in; has the required
 permissions to download docs; and has found the patient they want to download docs for (where the sequence begins).
 
+_Note: This diagram does not include interactions with CloudWatch._
+
 ```mermaid
 sequenceDiagram
     actor GP Practice/PCSE User
@@ -54,7 +56,7 @@ sequenceDiagram
     Lambda -->> SQS: sendMessage()
     Note over Lambda, SQS: <env>-sensitive-audit queue
     activate SQS
-    SQS -->> Lambda: SendMessageResponse
+    SQS -->> Lambda: SendMessageResult
     deactivate SQS
     Lambda ->> API Gateway: 200 preSignedUrl
     deactivate Lambda

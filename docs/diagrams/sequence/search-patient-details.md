@@ -5,6 +5,8 @@ The sequence diagram below illustrates the interactions that occur when a user s
 This diagram assumes that AWS Amplify has served the React web app; the user is logged in; and has the required
 permissions to search for a valid NHS number.
 
+_Note: This diagram does not include interactions with CloudWatch._
+
 ```mermaid
 sequenceDiagram
     actor GP Practice/PCSE User
@@ -24,7 +26,7 @@ sequenceDiagram
     Lambda -->> SQS: sendMessage()
     Note over Lambda, SQS: <env>-sensitive-audit queue
     activate SQS
-    SQS -->> Lambda: SendMessageResponse
+    SQS -->> Lambda: SendMessageResult
     deactivate SQS
     Lambda ->> API Gateway: 200 PatientDetails
     deactivate Lambda
