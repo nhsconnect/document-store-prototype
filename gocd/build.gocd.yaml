@@ -198,6 +198,10 @@ pipelines:
           clean_workspace: true
           jobs:
             test:
+              artifacts:
+                - test:
+                    source: app/build/test-results
+                    destination: test-reports
               tasks:
                 - exec:
                     command: dojo
