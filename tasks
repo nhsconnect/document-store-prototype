@@ -114,11 +114,9 @@ function export_cypress_base_url() {
 }
 
 function get_terraform_output() {
-  assume_ci_role
   tf_init
   terraform output -json >"../$1"
   cd ..
-  clear_assumed_iam_role
 }
 
 function repackage_tgz_as_zip() {
@@ -200,6 +198,13 @@ build-ui)
   cd build
   tar -czf ../ui.tgz *
   ;;
+deploy-ui)
+  assume_ci_role
+  get_terraform_output terraform_output.json
+  repackage_tgz_as_zip tars/ui.tgz ui.zip
+  deploy_ui terraform_output.json ui.zip
+  clear_assumed_iam_role
+  ;;
 _build-api-jars)
   gradle assemble
   ;;
@@ -240,11 +245,6 @@ tf_apply)
   tf_init
   terraform apply tfplan
   clear_assumed_iam_role
-  ;;
-deploy-ui)
-  get_terraform_output terraform_output.json
-  repackage_tgz_as_zip tars/ui.tgz ui.zip
-  deploy_ui terraform_output.json ui.zip
   ;;
 extract-raw-terraform-output)
   terraform_output_name=$2
