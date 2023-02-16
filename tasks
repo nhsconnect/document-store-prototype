@@ -184,9 +184,11 @@ install-ui-dependencies)
   npm ci
   ;;
 configure-ui)
+  assume_ci_role
   get_terraform_output terraform_output.json
   create_ui_config_file terraform_output.json
   create_json_for_nhs_api_public_key
+  clear_assumed_iam_role
   ;;
 test-ui)
   cd ui
@@ -270,9 +272,11 @@ install-e2e-test-dependencies)
   npm ci
   ;;
 configure-e2e-test)
+  assume_ci_role
   get_terraform_output terraform_output.json
   export_cypress_base_url terraform_output.json
   create_cypress_config_file
+  clear_assumed_iam_role
   ;;
 run-e2e-test)
   cd e2eTest
@@ -305,12 +309,14 @@ attach-policy-to-ci-role)
   dojo "./tasks _attach-policy-to-ci-role"
   ;;
 _attach-policy-to-ci-role)
+  confirm_current_role
   aws iam put-role-policy --role-name=ci-agent --policy-name=ci-role-policy --policy-document=file://ci-role-policy.json
   ;;
 bootstrap-ci-role)
   dojo "./tasks _bootstrap-ci-role"
   ;;
 _bootstrap-ci-role)
+  confirm_current_role
   aws iam create-role --role-name=ci-agent --assume-role-policy-document=file://ci-assume-role-policy.json
   ;;
 _java-dependency-scan)
