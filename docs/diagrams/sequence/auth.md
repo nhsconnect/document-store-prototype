@@ -14,16 +14,12 @@ sequenceDiagram
     activate React Web App
     React Web App ->> Cognito: Sends auth request
     activate Cognito
+    deactivate React Web App
     Cognito ->> CIS2: Forwards auth request
     activate CIS2
-    CIS2 ->> Cognito: Requests login details
-    deactivate CIS2
-    Cognito ->> React Web App: Forwards login details request
     deactivate Cognito
-    React Web App ->> GP Practice/PCSE User: Redirects to CIS2 login
-    deactivate React Web App
+    CIS2 -->> GP Practice/PCSE User: Requests login details
     GP Practice/PCSE User -->> CIS2: Submits login credentials
-    activate CIS2
     CIS2 ->> Cognito: Returns auth code
     activate Cognito
     Cognito ->> CIS2: Requests tokens
