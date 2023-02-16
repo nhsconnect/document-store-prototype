@@ -46,6 +46,8 @@ After this you should have a shell session open inside the default Dojo containe
 
 #### 3 Build the app and deploy it to LocalStack.
 
+First, you will need to copy `terraform/local._override.tf.example` to `terraform/local._override.tf`. Then:
+
 ```bash
 ./tasks _deploy-to-localstack
 ```
