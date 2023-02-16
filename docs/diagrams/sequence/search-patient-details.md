@@ -17,10 +17,10 @@ sequenceDiagram
         activate API Gateway
             API Gateway->>Lambda: Invokes SearchPatientDetailsHandler
             activate Lambda
-                Lambda->>PDS FHIR: GET Patient/<nhsNumber>
-                activate PDS FHIR
-                    PDS FHIR->>Lambda: 200 Patient
-                deactivate PDS FHIR
+                Lambda->>PDS: GET Patient/<nhsNumber>
+                activate PDS
+                    PDS->>Lambda: 200 Patient
+                deactivate PDS
                 Lambda-->>SQS: sendMessage()
                 Note over Lambda, SQS: <env>-sensitive-audit queue
                 activate SQS
