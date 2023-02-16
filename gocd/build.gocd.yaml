@@ -151,6 +151,7 @@ pipelines:
   "access-request-fulfilment.dev":
     group: access-request-fulfilment
     label_template: "${git[:8]}"
+    lock_behavior: "unlockWhenFinished"
     materials:
       git:
         type: configrepo
