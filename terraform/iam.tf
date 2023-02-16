@@ -182,7 +182,8 @@ data aws_iam_policy_document "s3_object_access_policy_doc" {
     actions = [
       "s3:ListBucketMultipartUploads",
       "s3:ListBucketVersions",
-      "s3:ListBucket"
+      "s3:ListBuckets",
+      "s3:ListAllMyBuckets"
     ]
     resources = ["arn:aws:s3:::*"]
   }
