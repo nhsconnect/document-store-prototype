@@ -1,0 +1,3 @@
+DOJO_DOCKER_IMAGE="nhsdev/arf-infra-dojo:ab6e4fdcc420b17c9d65852e1cf3b4669d74df88"
+DOJO_DRIVER=docker-compose
+DOJO_DOCKER_COMPOSE_FILE=docker-compose.yaml

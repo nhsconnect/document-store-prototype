@@ -210,7 +210,7 @@ build-api-jars)
   dojo './tasks _build-api-jars'
   ;;
 start-localstack)
-  dojo
+  dojo -c Dojofile-dev
   ;;
 view-localstack-logs)
   export LOCALSTACK_CONTAINER=$(docker ps -a | grep localstack/localstack | head -1 | cut -f 1 -d ' ')
