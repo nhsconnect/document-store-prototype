@@ -102,9 +102,11 @@ common:
           source: jars
       - exec:
           command: dojo
+          arguments:
             - ./tasks tf_apply
       - exec:
           command: dojo
+          arguments:
             - ./tasks extract-raw-terraform-output api_gateway_url
       - exec:
           command: dojo
