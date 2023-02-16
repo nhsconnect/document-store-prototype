@@ -87,11 +87,11 @@ build-ui: ## Build the UI
 
 .PHONY: build-api-jars
 build-api-jars: ## Build API JARs
-	./tasks build-api-jars
+	./tasks _build-api-jars
 
 .PHONY: deploy-to-localstack
 deploy-to-localstack: ## Deploy to LocalStack
-	./tasks deploy-to-localstack
+	./tasks _deploy-to-localstack
 
 .PHONY: start-ui
 start-ui: ## Start the UI
