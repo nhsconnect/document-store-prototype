@@ -5,6 +5,8 @@ fileignoreconfig:
   checksum: 8ab545b8ed6e7bf14e8af29e21b31971f6fbae00ad91c08e193f791948bf601a
 - filename: docker-compose.yaml
   checksum: dae0a1b6f74fb283481b761d2804aeed9dd3d3517b2dede6ce8c355934459284
+- filename: docs/tech/local-dev-env.md
+  checksum: 02eb8e8e472b83cc580e89e406080ffa0bd9fde6862cb67b65ec2b167b18655d
 - filename: terraform/.terraform.lock.hcl
   checksum: a38737e394ada9d4c0a6d6ea82a964b771799810b35a3c9d2df964bf11525ccb
 - filename: ui/src/components/PatientSummary.js

@@ -13,10 +13,10 @@ situations.
 
 The `start-localstack` task invokes a program called [Dojo](https://github.com/kudulab/dojo), which is a wrapper around
 Docker built by a Thoughtworker. Dojo provides several benefits including ensuring containers handle termination signals
-properly, configuring Docker users correctly and forwarding env vars into the containers.
+properly, keeping a shell open for running commands, configuring Docker users correctly and forwarding env vars into the containers.
 
 The dojo command does a couple of things. First, it generates a `docker-compose.yaml.dojo` file which specifies a
-default container based on the image specified in `Dojofile-integration`, and environment variables and volumes for the
+default container based on the image specified in `Dojofile-dev`, and environment variables and volumes for the
 other containers specified in the main `docker-compose.yml`. Secondly, it runs `docker-compose` with the `-f` flag to
 merge the config from `docker-compose.yml` and `docker-compose.yaml.dojo`. Neither of the YAML files is a valid docker
 compose file in its own right; only when merged together in a single docker compose command can the project run.
@@ -24,32 +24,23 @@ compose file in its own right; only when merged together in a single docker comp
 ## What Does Docker Compose?
 
 The first container docker-compose starts is the [LocalStack](https://localstack.cloud/) container, which provides local
-versions of many AWS services. This takes a few seconds to become healthy, so we have the next
-container `bootstrap-terraform` wait for a "healthy" signal from
+versions of many AWS services. This takes a few seconds to become healthy, so we have the default container wait for a "healthy" signal from
 LocalStack, as it can't run until LocalStack has made instances of AWS S3 and DynamoDB available.
-The `bootstrap-terraform` container is an AWS CLI container which runs our`bootstrap-terraform.sh` script. This script
-is responsible for creating an S3 bucket and a
-DynamoDB table to store the terraform state for our local dev env in. These need to be recreated every
-time we start the project, because LocalStack's community edition does not persist its state in a volume.
 
-Once `bootstrap-terraform` has completed successfully, we start the Terraform container. This container runs
-the `deploy-to-localstack.sh` script, which plans and applies the Terraform using the local Terraform backend created
-by `bootstrap-terraform.sh` and the local Terraform vars in `local.tfvars`. Again, the AWS resources provisioned
-are not maintained once the LocalStack container exits (i.e. once the docker compose command stops running).
-
-Finally, once Terraform has finished, we start the `default` container, which is actually just an OpenJDK container with
+Once LocalStack is healthy, we start the `default` container, which is an OpenJDK container with the Terraform CLI and AWS CLI installed, plus
 a few modifications to allow it to work with
 Dojo. [This is the image repository](https://github.com/nhsconnect/prm-deductions-docker-openjdk-dojo). Dojo
 automatically creates a terminal session inside the default container so that you can do stuff like compile the Java
 app or run tests from inside the Docker network. Exiting the terminal session brings down the local env
-and wipes the LocalStack state.
+and wipes the LocalStack state (which means every time we start the containers, we have to re-apply our Terraform from scratch, sadly. The pro
+version of LocalStack does persist its state).
 
 At this point, we have a Docker network running that looks like this (dashed lines indicate ephemeral containers that
 only run for the duration of their entrypoint script):
 
-![Local Dev Env Network Diagram](../images/local-dev-env-network-diagram.png)
+![Local Dev Env Network Diagram](../images/local-dev-env-16022023.png)
 
-You'll have noticed that there are several elements we haven't covered yet in that diagram. Let's take a look at those.
+You'll have noticed that there are several elements we haven't covered yet in the diagram above. Let's take a look at those.
 
 ## What's Going On With Lambdas?
 
