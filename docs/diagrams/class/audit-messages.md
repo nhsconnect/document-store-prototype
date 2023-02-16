@@ -5,14 +5,14 @@ relationships.
 
 ```mermaid
 classDiagram
-    class AuditMessage{
+    class AuditMessage {
         <<interface>>
         +getTimestamp() Instant
         +getCorrelationId() String
         +getDescription() String
         +toJsonString() String
     }
-    class BaseAuditMessage{
+    class BaseAuditMessage {
         <<abstract>>
         -Instant timestamp
         -String correlationId
@@ -20,41 +20,41 @@ classDiagram
         +getCorrelationId() String
         +toJsonString() String
     }
-    class PatientRelatedAuditMessage{
+    class PatientRelatedAuditMessage {
         <<abstract>>
         -NhsNumber nhsNumber
         +getNhsNumber() String
     }
-    class SearchPatientDetailsAuditMessage{
+    class SearchPatientDetailsAuditMessage {
         -int pdsResponseStatus
         +getPdsResponseStatus() int
         +getDescription() String
     }
-    class CreateDocumentMetadataAuditMessage{
+    class CreateDocumentMetadataAuditMessage {
         -FileMetadata fileMetadata
         +getFileMetadata() FileMetadata
         +getDescription() String
     }
-    class DocumentUploadedAuditMessage{
+    class DocumentUploadedAuditMessage {
         -FileMetadata fileMetadata
         +getFileMetadata() FileMetadata
         +getDescription() String
     }
-    class DeletedAllDocumentsAuditMessage{
+    class DeletedAllDocumentsAuditMessage {
         -List~FileMetadata~ fileMetadataList
-        +getFileMetadataList() List~FileMetadata~ 
+        +getFileMetadataList() List~FileMetadata~
         +getDescription() String
     }
-    class DownloadAllPatientRecordsAuditMessage{
+    class DownloadAllPatientRecordsAuditMessage {
         -List~FileMetadata~ fileMetadataList
-        +getFileMetadataList() List~FileMetadata~ 
+        +getFileMetadataList() List~FileMetadata~
         +getDescription() String
     }
-    class ReRegistrationAuditMessage{
+    class ReRegistrationAuditMessage {
         -List~FileMetadata~ fileMetadataList
         -String nemsMessageId
-        +getFileMetadataList() List~FileMetadata~ 
-        +getNemsMessageId() String 
+        +getFileMetadataList() List~FileMetadata~
+        +getNemsMessageId() String
         +getDescription() String
     }
     BaseAuditMessage <-- PatientRelatedAuditMessage: extends
