@@ -1,16 +1,12 @@
 fileignoreconfig:
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/PatientSearchConfig.java  
   checksum: 2fe3bca550f9835e84f065bebb962c35ffc2ba0185c7c764bb1875e476b846ce
-- filename: Dojofile
-  checksum: 8ab545b8ed6e7bf14e8af29e21b31971f6fbae00ad91c08e193f791948bf601a
 - filename: docker-compose.yaml
   checksum: dae0a1b6f74fb283481b761d2804aeed9dd3d3517b2dede6ce8c355934459284
 - filename: docs/tech/local-dev-env.md
   checksum: 02eb8e8e472b83cc580e89e406080ffa0bd9fde6862cb67b65ec2b167b18655d
 - filename: Dojofile-dev
   checksum: b21b6d3c9eba665ceed98715cdf7f813be9194ef45979522241111bbfdf4632d
-- filename: Dojofile
-  checksum: 286269ea371afebedeb85eae6cc4f3892f30a78e9401c40b75a75d9bd375ce4a
 - filename: terraform/.terraform.lock.hcl
   checksum: a38737e394ada9d4c0a6d6ea82a964b771799810b35a3c9d2df964bf11525ccb
 - filename: ui/src/components/PatientSummary.js
@@ -67,6 +63,8 @@ fileignoreconfig:
   checksum: 29d3c5cc1dc2643986d8d4abfd2c3fa9f978bf6ca33c7382217949cee2eda22e
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
   checksum: f4f832cd793d719eed52c6a60b9d8178bafbe3ec9c4eccbd49c1264f581bb083
+- filename: Dojofile
+  checksum: 64416def7a6855167692f0b31de309c50ba15a68b92521e8222dc5d26219c6a1
 version: ""
 scopeconfig:
   - scope: node
