@@ -133,7 +133,7 @@ resource aws_iam_role "integration_test_runner" {
 data "aws_iam_policy_document" "integration_test_runner_trust_policy" {
   statement {
     actions = ["sts:AssumeRole"]
-    effect = "Allow"
+    effect  = "Allow"
     principals {
       identifiers = ["arn:aws:iam::327778747031:role/gocd_agent-prod"]
       type        = "AWS"
@@ -182,10 +182,16 @@ data aws_iam_policy_document "s3_object_access_policy_doc" {
     actions = [
       "s3:ListBucketMultipartUploads",
       "s3:ListBucketVersions",
-      "s3:ListBuckets",
-      "s3:ListAllMyBuckets"
+      "s3:ListBucket",
     ]
     resources = ["arn:aws:s3:::*"]
+  }
+  statement {
+    effect  = "Allow"
+    actions = [
+      "s3:ListAllMyBuckets"
+    ]
+    resources = "*"
   }
   statement {
     effect  = "Allow"
