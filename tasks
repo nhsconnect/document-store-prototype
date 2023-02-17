@@ -119,15 +119,6 @@ function get_terraform_output() {
   cd ..
 }
 
-function repackage_tgz_as_zip() {
-  mkdir ui-build-artefacts
-  cd ui-build-artefacts
-  tar -xf "../$1"
-  zip -r "../$2" *
-  cd ..
-  rm -rf ui-build-artefacts
-}
-
 function check_env {
   if [[ -z "${ENVIRONMENT}" ]]; then
     echo "Must set ENVIRONMENT"
@@ -198,12 +189,11 @@ build-ui)
   cd ui
   REACT_APP_ENV=${ENVIRONMENT} npm run build
   cd build
-  tar -czf ../ui.tgz *
+  zip ../ui.zip *
   ;;
 deploy-ui)
   assume_ci_role
   get_terraform_output terraform_output.json
-  repackage_tgz_as_zip tars/ui.tgz ui.zip
   deploy_ui terraform_output.json ui.zip
   clear_assumed_iam_role
   ;;

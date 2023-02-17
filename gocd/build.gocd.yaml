@@ -1,58 +1,28 @@
 format_version: 4
 common:
-  build:
-    jobs:
-      backend: &build_backend
-        artifacts:
-          - build:
-              source: app/build/libs
-              destination: jars
-          - test:
-              source: app/build/test-results
-              destination: test-reports
-        tasks:
-          - exec:
-              command: dojo
-              arguments:
-                - "./gradlew app:build"
-      frontend: &build_frontend
-        artifacts:
-          - build:
-              source: ui/ui.tgz
-              destination: tars
-        tasks:
-          - exec:
-              command: dojo
-              arguments:
-                - -c
-                - Dojofile-node
-                - ./tasks install-ui-dependencies
-          - exec:
-              command: dojo
-              arguments:
-                - ./tasks configure-ui
-          - exec:
-              command: dojo
-              arguments:
-                - -c
-                - Dojofile-node
-                - ./tasks test-ui
-          - exec:
-              command: dojo
-              arguments:
-                - -c
-                - Dojofile-node
-                - ./tasks build-ui
-      authoriser: &authoriser
-        artifacts:
-          - build:
-              source: authoriser/build/libs
-              destination: jars
-        tasks:
-          - exec:
-              command: dojo
-              arguments:
-                - "./gradlew authoriser:build"
+  backend: &build_backend
+    artifacts:
+      - build:
+          source: app/build/libs
+          destination: jars
+      - test:
+          source: app/build/test-results
+          destination: test-reports
+    tasks:
+      - exec:
+          command: dojo
+          arguments:
+            - "./gradlew app:build"
+  authoriser: &authoriser
+    artifacts:
+      - build:
+          source: authoriser/build/libs
+          destination: jars
+    tasks:
+      - exec:
+          command: dojo
+          arguments:
+            - "./gradlew authoriser:build"
   plan_terraform: &plan_terraform
     artifacts:
       - build:
@@ -93,10 +63,28 @@ common:
             - ./tasks tf_apply
   deploy_ui: &deploy_ui
     tasks:
-      - fetch:
-          stage: build
-          job: frontend
-          source: tars
+      - exec:
+          command: dojo
+          arguments:
+            - -c
+            - Dojofile-node
+            - ./tasks install-ui-dependencies
+      - exec:
+          command: dojo
+          arguments:
+            - ./tasks configure-ui
+      - exec:
+          command: dojo
+          arguments:
+            - -c
+            - Dojofile-node
+            - ./tasks test-ui
+      - exec:
+          command: dojo
+          arguments:
+            - -c
+            - Dojofile-node
+            - ./tasks build-ui
       - exec:
           command: dojo
           arguments:
@@ -140,7 +128,6 @@ pipelines:
           clean_workspace: true
           jobs:
             backend: *build_backend
-            frontend: *build_frontend
             authoriser: *authoriser
       - plan_terraform:
           environment_variables:
@@ -210,7 +197,6 @@ pipelines:
           clean_workspace: true
           jobs:
             backend: *build_backend
-            frontend: *build_frontend
             authoriser: *authoriser
       - plan_terraform:
           environment_variables:
@@ -267,7 +253,6 @@ pipelines:
           clean_workspace: true
           jobs:
             backend: *build_backend
-            frontend: *build_frontend
             authoriser: *authoriser
       - plan_terraform:
           environment_variables:
