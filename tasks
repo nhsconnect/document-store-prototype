@@ -173,6 +173,7 @@ case "${command}" in
 install-ui-dependencies)
   cd ui
   npm ci
+  cd ..
   ;;
 configure-ui)
   assume_ci_role
@@ -188,12 +189,12 @@ test-ui)
 build-ui)
   cd ui
   REACT_APP_ENV=${ENVIRONMENT} npm run build
-  cd build
-  zip ../ui.zip *
+  cd ..
   ;;
 deploy-ui)
   assume_ci_role
   get_terraform_output terraform_output.json
+  zip ui.zip ui/build/*
   deploy_ui terraform_output.json ui.zip
   clear_assumed_iam_role
   ;;
