@@ -33,3 +33,38 @@ sequenceDiagram
     React Web App ->> GP Practice/PCSE User: Redirects to /home
     deactivate React Web App
 ```
+
+The proposal for a new auth flow will look like this:
+
+```mermaid
+sequenceDiagram
+    actor Browser
+    Browser ->> ARF API : /login
+    ARF API ->> CIS2 : Redirect Request
+    CIS2 -->> Browser  : Request Credentials
+    Browser ->> CIS2 : Submit Credentials
+    CIS2 -->> ARF API : Return Auth Code
+    ARF API ->> CIS2 : Request Token
+    CIS2 -->> ARF API : Return Access and ID tokens
+    ARF API ->> Session Storage : Persist Session
+    ARF API -->> Browser : Session Cookie
+    Browser ->> ARF API : Endpoint Request With Cookie
+    ARF API ->> Session Storage : Check for Valid Session
+    ARF API -->> Browser : 200 OK Response
+    Browser ->> ARF API : /logout
+    ARF API ->> Session Storage : Remove Session
+    ARF API -->> Browser : Redirect to Start Page
+```
+The Back-Channel Logout will allow CIS2 to request the removal of an ongoing session:
+
+```mermaid
+sequenceDiagram
+    actor Browser
+    
+    CIS2 ->> ARF API : /BClogout
+    ARF API ->> Session Storage : Remove Session
+    ARF API -->> CIS2 : 200 OK Response
+    Browser ->> ARF API : Endpoint Request With Cookie
+    ARF API ->> Session Storage : Check for Valid Session
+    ARF API -->> Browser : 401 Auth Error
+```
