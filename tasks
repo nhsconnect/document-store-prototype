@@ -194,7 +194,9 @@ build-ui)
 deploy-ui)
   assume_ci_role
   get_terraform_output terraform_output.json
-  zip -r ui.zip ui/build/*
+  cd ui/build
+  zip -r ../../ui.zip *
+  cd ../..
   deploy_ui terraform_output.json ui.zip
   clear_assumed_iam_role
   ;;
