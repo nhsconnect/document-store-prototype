@@ -124,7 +124,6 @@ pipelines:
           environment_variables:
             ENVIRONMENT: dev
             NHS_CIS2_ENVIRONMENT: development
-            OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
           jobs:
             backend: *build_backend
@@ -147,6 +146,7 @@ pipelines:
           environment_variables:
             ENVIRONMENT: dev
             NHS_CIS2_ENVIRONMENT: development
+            OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
@@ -193,7 +193,6 @@ pipelines:
           environment_variables:
             ENVIRONMENT: pre-prod
             NHS_CIS2_ENVIRONMENT: development
-            OIDC_PROVIDER_ID: "COGNITO"
           clean_workspace: true
           jobs:
             backend: *build_backend
@@ -219,6 +218,7 @@ pipelines:
           environment_variables:
             ENVIRONMENT: pre-prod
             NHS_CIS2_ENVIRONMENT: development
+            OIDC_PROVIDER_ID: "COGNITO"
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
@@ -249,7 +249,6 @@ pipelines:
           environment_variables:
             ENVIRONMENT: prod
             NHS_CIS2_ENVIRONMENT: development
-            OIDC_PROVIDER_ID: "COGNITO"
           clean_workspace: true
           jobs:
             backend: *build_backend
@@ -274,6 +273,7 @@ pipelines:
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: prod
+            OIDC_PROVIDER_ID: "COGNITO"
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
