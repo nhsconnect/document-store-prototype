@@ -72,8 +72,8 @@ resource aws_dynamodb_table "access_request_fulfilment_auth" {
   }
 }
 
-resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
-  name = "dynamodb_query_locations_policy"
+resource "aws_iam_role_policy" "arf_doc_store_data_access_policy" {
+  name = "doc_store_data_access_policy"
   role = aws_iam_role.lambda_execution_role.id
 
   policy = jsonencode({
@@ -97,18 +97,7 @@ resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
           "${aws_dynamodb_table.doc_ref_store.arn}/index/NhsNumberIndex",
           "${aws_dynamodb_table.doc_ref_store.arn}/index/LocationsIndex"
         ]
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy" "dynamodb_get_document_reference_policy" {
-  name = "get_document_reference_policy"
-  role = aws_iam_role.lambda_execution_role.id
-
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
+      },
       {
         "Effect" : "Allow",
         "Action" : [
