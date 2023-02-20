@@ -40,10 +40,18 @@ flowchart TB
         end
         planTerraformDev --> deployTerraformDev(Deploy Terraform)
         deployTerraformDev --> deployUiDev(Deploy UI)
+        deployUiDev -.-> deployUiJobsDev
+        subgraph deployUiJobsDev[Deploy UI Jobs]
+            direction TB
+            installDependenciesUiDev(Install Dependencies) --> configureUiDev(Configure)
+            configureUiDev --> testUiDev(Test)
+            testUiDev --> buildUiDev(Build)
+            buildUiDev --> deployUiDevSub(Deploy)
+        end
         deployUiDev --> integrationTestsDev(Integration Tests)
         integrationTestsDev --> e2eTestsDev(E2E Tests)
     end
-    e2eTestsDev -- Triggers On Completion --> buildPreProd
+    e2eTestsDev -- Triggers On - Completion --> buildPreProd
     subgraph pre-prod
         buildPreProd(Build) --> planTerraformPreProd(Plan Terraform)
         buildPreProd -.-> buildJobsPreProd
@@ -52,10 +60,18 @@ flowchart TB
         end
         planTerraformPreProd -- Manual Trigger --> deployTerraformPreProd(Deploy Terraform)
         deployTerraformPreProd --> deployUiPreProd(Deploy UI)
+        deployUiPreProd -.-> deployUiJobsPreProd
+        subgraph deployUiJobsPreProd[Deploy UI Jobs]
+            direction TB
+            installDependenciesUiPreProd(Install Dependencies) --> configureUiPreProd(Configure)
+            configureUiPreProd --> testUiPreProd(Test)
+            testUiPreProd --> buildUiPreProd(Build)
+            buildUiPreProd --> deployUiPreProdSub(Deploy)
+        end
         deployUiPreProd --> integrationTestsPreProd(Integration Tests)
         integrationTestsPreProd --> e2eTestsPreProd(E2E Tests)
     end
-    e2eTestsPreProd -- Triggers On Completion --> buildProd
+    e2eTestsPreProd -- Triggers On - Completion --> buildProd
     subgraph prod
         buildProd(Build) --> planTerraformProd(Plan Terraform)
         buildProd -.-> buildJobsProd
@@ -64,5 +80,13 @@ flowchart TB
         end
         planTerraformProd -- Manual Trigger --> deployTerraformProd(Deploy Terraform)
         deployTerraformProd --> deployUiProd(Deploy UI)
+        deployUiProd -.-> deployUiJobsProd
+        subgraph deployUiJobsProd[Deploy UI Jobs]
+            direction TB
+            installDependenciesUiProd(Install Dependencies) --> configureUiProd(Configure)
+            configureUiProd --> testUiProd(Test)
+            testUiProd --> buildUiProd(Build)
+            buildUiProd --> deployUiProdSub(Deploy)
+        end
     end
 ```
