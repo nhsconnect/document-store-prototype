@@ -15,7 +15,7 @@ _Note: All deployment steps (incl. during dev) are dependent pipeline being gree
 flowchart LR
     kickOff(Kick-Off) --> inDev(In Dev)
     inDev --> deskCheck(Desk-Check)
-    deskCheck -- ACs Met -->  inDev
+    deskCheck -- ACs Not Met -->  inDev
     deskCheck --> qa(QA)
     qa  -- ACs Not Met -->  inDev
     qa --> signOff(Sign-Off)
