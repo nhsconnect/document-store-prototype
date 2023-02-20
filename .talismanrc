@@ -65,6 +65,8 @@ fileignoreconfig:
   checksum: f4f832cd793d719eed52c6a60b9d8178bafbe3ec9c4eccbd49c1264f581bb083
 - filename: Dojofile
   checksum: 64416def7a6855167692f0b31de309c50ba15a68b92521e8222dc5d26219c6a1
+- filename: docs/diagrams/flow/path-to-prod.md
+  checksum: 0e7b76864e59beb4636164ebb764923926151bdb16ce6870114ab518161e313f
 version: ""
 scopeconfig:
   - scope: node
