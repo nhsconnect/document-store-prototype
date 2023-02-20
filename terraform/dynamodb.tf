@@ -49,6 +49,29 @@ resource "aws_dynamodb_table" "doc_zip_trace_store" {
   }
 }
 
+resource aws_dynamodb_table "access_request_fulfilment_auth" {
+  name = "ARFAuth"
+  hash_key = "PK"
+  range_key = "SK"
+  billing_mode   = "PAY_PER_REQUEST"
+  stream_enabled = false
+
+  ttl {
+    attribute_name = "TimeToExist"
+    enabled        = true
+  }
+
+  attribute {
+    name = "PK"
+    type = "S"
+  }
+
+  attribute {
+    name = "SK"
+    type = "S"
+  }
+}
+
 resource "aws_iam_role_policy" "dynamodb_query_locations_policy" {
   name = "dynamodb_query_locations_policy"
   role = aws_iam_role.lambda_execution_role.id
