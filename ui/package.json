@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "start": "react-scripts start REACT_APP_ENV=local",
+        "start": "REACT_APP_ENV=local react-scripts start",
         "build": "react-scripts build",
         "eject": "react-scripts eject",
         "format": "prettier --write .",
