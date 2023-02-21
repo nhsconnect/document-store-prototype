@@ -2,10 +2,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import DocumentsInput from "./DocumentsInput";
 import { useForm } from "react-hook-form";
 import userEvent from "@testing-library/user-event";
-import { formatSize } from "../utils/utils";
+import { formatSize } from "../../utils/utils";
 
-jest.mock("../utils/utils", () => ({
-    ...jest.requireActual("../utils/utils"),
+jest.mock("../../utils/utils", () => ({
+    ...jest.requireActual("../../utils/utils"),
     toFileList: () => [],
 }));
 

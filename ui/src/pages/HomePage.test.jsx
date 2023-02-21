@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import HomePage from "./HomePage";
 import { BrowserRouter } from "react-router-dom";
 
-
 describe("The home page", () => {
     it("provides a link to the multi step upload path", () => {
         render(

@@ -2,8 +2,8 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { nanoid } from "nanoid/non-secure";
 import UploadSummary from "./UploadSummary";
-import { documentUploadStates } from "../enums/documentUploads";
-import { formatSize, getFormattedDate } from "../utils/utils";
+import { documentUploadStates } from "../../enums/documentUploads";
+import { formatSize, getFormattedDate } from "../../utils/utils";
 
 describe("The upload summary component", () => {
     const patientData = {

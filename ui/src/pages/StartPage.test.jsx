@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import StartPage from "./StartPage";
-import { useFeatureToggle, useBaseAPIUrl } from "../providers/ConfigurationProvider";
-import config from "../config";
+import { useBaseAPIUrl, useFeatureToggle } from "../providers/ConfigurationProvider";
 
 jest.mock("../providers/ConfigurationProvider");
 

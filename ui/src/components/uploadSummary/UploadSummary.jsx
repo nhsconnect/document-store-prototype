@@ -1,7 +1,7 @@
 import { Details, ErrorSummary, Table, WarningCallout } from "nhsuk-react-components";
-import { documentUploadStates } from "../enums/documentUploads";
-import { formatSize, getFormattedDate } from "../utils/utils";
-import PatientSummary from "./PatientSummary";
+import { documentUploadStates } from "../../enums/documentUploads";
+import { formatSize, getFormattedDate } from "../../utils/utils";
+import PatientSummary from "../patientSummary/PatientSummary";
 import React from "react";
 
 const tableMargin = { marginBottom: 50 };

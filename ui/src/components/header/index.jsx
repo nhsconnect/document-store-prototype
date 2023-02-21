@@ -1,6 +1,6 @@
 import React from "react";
 import { Header } from "nhsuk-react-components";
-import Authenticator from "../Authenticator/Authenticator";
+import Authenticator from "../authenticator/Authenticator";
 
 export const HeaderContainer = () => {
     return (

@@ -2,9 +2,9 @@ import { nanoid } from "nanoid/non-secure";
 import { Input, Table, WarningCallout } from "nhsuk-react-components";
 import React, { useRef } from "react";
 import { useController } from "react-hook-form";
-import { documentUploadStates } from "../enums/documentUploads";
-import { fileSizes } from "../enums/fileSizes";
-import { formatSize, toFileList } from "../utils/utils";
+import { documentUploadStates } from "../../enums/documentUploads";
+import { fileSizes } from "../../enums/fileSizes";
+import { formatSize, toFileList } from "../../utils/utils";
 
 const DocumentsInput = ({ control }) => {
     const inputRef = useRef(null);

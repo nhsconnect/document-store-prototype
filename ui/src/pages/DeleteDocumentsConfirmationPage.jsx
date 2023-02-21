@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
-import BackButton from "../components/BackButton";
+import BackButton from "../components/backButton/BackButton";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import ServiceError from "../components/ServiceError";
-import SimpleProgressBar from "../components/SimpleProgressBar";
+import ServiceError from "../components/serviceError/ServiceError";
+import SimpleProgressBar from "../components/simpleProgressBar/SimpleProgressBar";
 import { useDocumentStore } from "../apiClients/documentStore";
 
 const states = {
