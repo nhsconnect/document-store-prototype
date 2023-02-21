@@ -20,7 +20,11 @@ const config = {
             },
         ],
     },
-    features: {},
+     features: {
+            local: {
+                COGNITO_FEDERATION: true,
+            }
+        },
 };
 
 export default config;
