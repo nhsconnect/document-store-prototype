@@ -45,7 +45,8 @@ resource "aws_sqs_queue_policy" "re_registration_queue_policy" {
         "Sid" : "SendMessageToReRegistrationQueue"
         "Effect" : "Allow",
         "Principal" : {
-          "AWS" : "*"
+          "identifiers" : ["sns.amazonaws.com"]
+          "type" : "Service"
         },
         "Action" : "sqs:SendMessage",
         "Resource" : aws_sqs_queue.re_registration.arn,
