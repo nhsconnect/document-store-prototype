@@ -9,23 +9,23 @@ import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.Role;
 
-import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
-
-public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEvent, IamPolicyResponse> {
+public class Authoriser
+        implements RequestHandler<APIGatewayCustomAuthorizerEvent, IamPolicyResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Authoriser.class);
 
     private final AuthConfig authConfig;
     private final Algorithm algorithm;
 
-    public final static String ASSOCIATED_ORG = "custom:nhsid_user_orgs";
-    public final static String RBAC_ROLES = "custom:nhsid_nrbac_roles";
+    public static final String ASSOCIATED_ORG = "custom:nhsid_user_orgs";
+    public static final String RBAC_ROLES = "custom:nhsid_nrbac_roles";
 
     public Authoriser(AuthConfig authConfig, Algorithm algorithm) {
         this.authConfig = authConfig;
@@ -70,7 +70,9 @@ public class Authoriser implements RequestHandler<APIGatewayCustomAuthorizerEven
             var iamPolicy = new IamPolicyResponse();
             iamPolicy.setPrincipalId(decodedJWT.getSubject());
 
-            var generatePolicy = new PolicyDocumentGenerator(authConfig, Arrays.asList(organisations), Arrays.asList(roles));
+            var generatePolicy =
+                    new PolicyDocumentGenerator(
+                            authConfig, Arrays.asList(organisations), Arrays.asList(roles));
             var policyDocument = generatePolicy.getPolicyDocument();
 
             iamPolicy.setPolicyDocument(policyDocument);

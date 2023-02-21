@@ -2,7 +2,6 @@ package uk.nhs.digital.docstore.authoriser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.Map;
 
 public class JsonMapper {

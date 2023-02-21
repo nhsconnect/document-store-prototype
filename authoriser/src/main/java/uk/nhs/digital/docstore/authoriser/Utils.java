@@ -7,5 +7,4 @@ public class Utils {
     public static String decodeURL(String value) {
         return java.net.URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
-
 }

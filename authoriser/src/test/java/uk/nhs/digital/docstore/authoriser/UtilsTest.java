@@ -10,6 +10,6 @@ public class UtilsTest {
 
         var value = "%7B%22org_name%22%3A%22NHSID+DEV%22%2C%22org_code%22%3A%22A9A5A%22%7D";
         var result = Utils.decodeURL(value);
-        Assertions.assertEquals("{\"org_name\":\"NHSID DEV\",\"org_code\":\"A9A5A\"}",  result);
+        Assertions.assertEquals("{\"org_name\":\"NHSID DEV\",\"org_code\":\"A9A5A\"}", result);
     }
 }

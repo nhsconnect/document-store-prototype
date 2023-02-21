@@ -16,21 +16,22 @@ public class AccessTokenClaimMapper {
         this.jwt = jwt;
     }
 
-    public <T> T deserialiseClaim(String claimName, Class<T> className) throws InvalidAccessTokenException {
-        LOGGER.debug("claim name: " + claimName );
+    public <T> T deserialiseClaim(String claimName, Class<T> className)
+            throws InvalidAccessTokenException {
+        LOGGER.debug("claim name: " + claimName);
         String claimValue = jwt.getClaim(claimName).asString();
-        LOGGER.debug("claim value without decode: " + claimValue );
-        try{
+        LOGGER.debug("claim value without decode: " + claimValue);
+        try {
             var decodeValue = decodeValue(claimValue);
-            LOGGER.debug("claim value decode: " + decodeValue );
+            LOGGER.debug("claim value decode: " + decodeValue);
             return mapper.readValue(decodeValue, className);
-        }catch(JsonProcessingException | IllegalArgumentException e){
-            LOGGER.debug("an exception happened when deserialise claim" + e );
+        } catch (JsonProcessingException | IllegalArgumentException e) {
+            LOGGER.debug("an exception happened when deserialise claim" + e);
             throw new InvalidAccessTokenException();
         }
     }
 
-    public String decodeValue(String value) throws InvalidAccessTokenException{
+    public String decodeValue(String value) throws InvalidAccessTokenException {
         try {
             return Utils.decodeURL(value);
         } catch (Exception e) {

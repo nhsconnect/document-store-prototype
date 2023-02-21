@@ -22,11 +22,11 @@ public class JWTValidator {
 
     public DecodedJWT verify() throws InvalidJWTException {
         try {
-            LOGGER.debug("token for verifier: " + jwt );
+            LOGGER.debug("token for verifier: " + jwt);
             JWTVerifier verifier = JWT.require(algorithm).build();
             return verifier.verify(jwt);
         } catch (Exception e) {
-            LOGGER.debug("an exception happened when the token was verified" + e );
+            LOGGER.debug("an exception happened when the token was verified" + e);
             throw new InvalidJWTException();
         }
     }

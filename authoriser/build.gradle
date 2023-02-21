@@ -13,6 +13,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
     implementation 'com.auth0:jwks-rsa:0.21.3'
     implementation 'ch.qos.logback:logback-classic:1.2.6'
+    implementation 'com.nimbusds:oauth2-oidc-sdk:10.7'
 
     testImplementation 'org.json:json:20211205'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
