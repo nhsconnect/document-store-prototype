@@ -1,16 +1,15 @@
 import { useAuth } from "react-oidc-context";
 import axios from "axios";
-import config from "../config";
 import { useMemo } from "react";
 import { useDocumentStoreAuthErrorInterceptor } from "./useDocumentStoreAuthErrorInterceptor";
+import { useBaseAPIUrl } from "../providers/ConfigurationProvider";
 
 const DOCUMENT_STORE_API = "doc-store-api";
 
 export const useDocumentStoreClient = () => {
     const { user } = useAuth();
+    const baseUrl = useBaseAPIUrl(DOCUMENT_STORE_API);
     const documentStoreAuthErrorInterceptor = useDocumentStoreAuthErrorInterceptor();
-
-    const baseUrl = config.API.endpoints.find((endpoint) => endpoint.name === DOCUMENT_STORE_API).endpoint;
 
     return useMemo(() => {
         const axiosInstance = axios.create({

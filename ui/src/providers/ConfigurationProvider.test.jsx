@@ -1,11 +1,15 @@
 import { render, screen } from "@testing-library/react";
-import FeatureToggleProvider, { useFeatureToggle } from "./FeatureToggleProvider";
+import ConfigurationProvider, { useBaseAPIUrl, useFeatureToggle } from "./ConfigurationProvider";
 
 const TestComponent = () => {
     const featureToggle = useFeatureToggle("TEST");
-    if (featureToggle === true) return "active";
-    else if (featureToggle === false) return "inactive";
-    else return "undefined";
+    const baseAPIUrl = useBaseAPIUrl("test");
+    return (
+        <>
+            {featureToggle !== undefined && <p>{featureToggle ? "active" : "inactive"}</p>}
+            <p>{baseAPIUrl}</p>
+        </>
+    );
 };
 
 describe("The feature toggle provider", () => {
@@ -17,13 +21,28 @@ describe("The feature toggle provider", () => {
         process.env.REACT_APP_ENV = env;
     });
 
+    const baseConfig = {
+        API: {
+            endpoints: [
+                {
+                    name: "test",
+                    endpoint: "https://test.api/",
+                },
+            ],
+        },
+        features: { development: { TEST: undefined } },
+    };
+
     it("allows the consuming component to detect when a feature is active", () => {
         process.env.REACT_APP_ENV = "development";
-        const config = { features: { development: { TEST: true } } };
+        const config = {
+            ...baseConfig,
+            features: { development: { TEST: true } },
+        };
         render(
-            <FeatureToggleProvider config={config}>
+            <ConfigurationProvider config={config}>
                 <TestComponent />
-            </FeatureToggleProvider>
+            </ConfigurationProvider>
         );
 
         expect(screen.getByText("active")).toBeInTheDocument();
@@ -31,22 +50,28 @@ describe("The feature toggle provider", () => {
 
     it("allows the consuming component to detect when a feature is inactive", () => {
         process.env.REACT_APP_ENV = "development";
-        const config = { features: { development: { TEST: false } } };
+        const config = {
+            ...baseConfig,
+            features: { development: { TEST: false } },
+        };
         render(
-            <FeatureToggleProvider config={config}>
+            <ConfigurationProvider config={config}>
                 <TestComponent />
-            </FeatureToggleProvider>
+            </ConfigurationProvider>
         );
         expect(screen.getByText("inactive")).toBeInTheDocument();
     });
 
     it("provides a default value of false to the consuming component when a toggle is not defined", () => {
         process.env.REACT_APP_ENV = "development";
-        const config = { features: { development: { TEST: undefined } } };
+        const config = {
+            ...baseConfig,
+            features: { development: { TEST: undefined } },
+        };
         render(
-            <FeatureToggleProvider config={config}>
+            <ConfigurationProvider config={config}>
                 <TestComponent />
-            </FeatureToggleProvider>
+            </ConfigurationProvider>
         );
         expect(screen.getByText("inactive")).toBeInTheDocument();
     });
@@ -54,20 +79,20 @@ describe("The feature toggle provider", () => {
     it("provides a default value of false when feature toggles are not defined for the current environment", () => {
         process.env.REACT_APP_ENV = "non-existent-env";
         render(
-            <FeatureToggleProvider>
+            <ConfigurationProvider config={baseConfig}>
                 <TestComponent />
-            </FeatureToggleProvider>
+            </ConfigurationProvider>
         );
         expect(screen.getByText("inactive")).toBeInTheDocument();
     });
 
     it("provides a default value of false to the consuming component when REACT_APP_ENV is not defined", () => {
         process.env.REACT_APP_ENV = undefined;
-        const config = { features: { development: { TEST: undefined } } };
+        const config = { ...baseConfig };
         render(
-            <FeatureToggleProvider config={config}>
+            <ConfigurationProvider config={config}>
                 <TestComponent />
-            </FeatureToggleProvider>
+            </ConfigurationProvider>
         );
         expect(screen.getByText("inactive")).toBeInTheDocument();
     });

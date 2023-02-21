@@ -76,8 +76,8 @@ npm test
 ## Feature Toggles
 
 We have implemented a rudimentary feature toggle system using the `config.js` file. Feature activation is determined at
-build time depending on the `NODE_ENV` environment variable. There is a feature toggle
-React [context provider](src/providers/FeatureToggleProvider.jsx) and custom hook for checking the value of the
+build time depending on the `NODE_ENV` environment variable. There is a configuration
+React [context provider](src/providers/ConfigurationProvider.jsx) and a custom hook for checking the value of the
 toggle.
 
 ## Design

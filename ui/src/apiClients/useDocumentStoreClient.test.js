@@ -1,21 +1,26 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { useDocumentStoreClient } from "./useDocumentStoreClient";
 import { useAuth } from "react-oidc-context";
-import config from "../config";
 import { useDocumentStoreAuthErrorInterceptor } from "./useDocumentStoreAuthErrorInterceptor";
+import { useBaseAPIUrl } from "../providers/ConfigurationProvider";
 
 jest.mock("react-oidc-context");
 jest.mock("./useDocumentStoreAuthErrorInterceptor");
+jest.mock("../providers/ConfigurationProvider");
 
 describe("useDocumentStoreClient()", () => {
     it("returns a configured request object", () => {
         const user = { id_token: "foo" };
+        const apiName = "doc-store-api";
+        const baseAPIURL = "https://api.url";
 
         useAuth.mockImplementation(() => ({ user }));
         useDocumentStoreAuthErrorInterceptor.mockReturnValue(jest.fn());
-        const { result } = renderHook(() => useDocumentStoreClient(config.API.endpoints[0].name));
+        useBaseAPIUrl.mockReturnValue(baseAPIURL);
+        const { result } = renderHook(() => useDocumentStoreClient());
 
-        expect(result.current.defaults.baseURL).toEqual(config.API.endpoints[0].endpoint);
+        expect(useBaseAPIUrl).toHaveBeenCalledWith(apiName);
+        expect(result.current.defaults.baseURL).toEqual(baseAPIURL);
         expect(result.current.defaults.headers["Accept"]).toEqual("application/fhir+json");
         expect(result.current.defaults.headers["Authorization"]).toEqual(`Bearer ${user.id_token}`);
     });

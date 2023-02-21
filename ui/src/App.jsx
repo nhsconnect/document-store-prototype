@@ -5,7 +5,6 @@ import config from "./config";
 import Authenticator from "./components/Authenticator/Authenticator";
 import HomePage from "./pages/HomePage";
 import Layout from "./components/Layout";
-import FeatureToggleProvider from "./providers/FeatureToggleProvider";
 import { PatientDetailsProvider } from "./providers/PatientDetailsProvider";
 import { DeleteDocumentsResponseProvider } from "./providers/DeleteDocumentsResponseProvider";
 import { PatientTracePage } from "./pages/PatientTracePage";
@@ -15,6 +14,7 @@ import StartPage from "./pages/StartPage";
 import AuthCallbackRouter from "./components/Authenticator/AuthCallbackRouter";
 import AuthProvider from "./components/Authenticator/AuthProvider";
 import DeleteDocumentsConfirmationPage from "./pages/DeleteDocumentsConfirmationPage";
+import ConfigurationProvider from "./providers/ConfigurationProvider";
 
 const AppRoutes = () => {
     return (
@@ -73,7 +73,7 @@ const AppRoutes = () => {
 
 const App = () => {
     return (
-        <FeatureToggleProvider config={config}>
+        <ConfigurationProvider config={config}>
             <Router>
                 <AuthProvider>
                     <Layout>
@@ -82,7 +82,7 @@ const App = () => {
                     </Layout>
                 </AuthProvider>
             </Router>
-        </FeatureToggleProvider>
+        </ConfigurationProvider>
     );
 };
 
