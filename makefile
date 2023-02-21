@@ -4,7 +4,7 @@ default: help
 pre-push: format lint test-ui test-app test-e2e ## Format, lint, & test
 
 .PHONY: format
-format: format-ui format-app format-e2e-test ## Format files
+format: format-ui format-app format-auth format-e2e-test ## Format files
 
 .PHONY: format-ui
 format-ui: ## Format /ui files
@@ -13,6 +13,10 @@ format-ui: ## Format /ui files
 .PHONY: format-app
 format-app: ## Format /app files
 	./gradlew :app:spotlessApply
+
+.PHONY: format-auth
+format-auth: ## Format /authoriser files
+	./gradlew :authoriser:spotlessApply
 
 .PHONY: format-e2e-test
 format-e2e-test: ## Format /e2eTest files

@@ -10,6 +10,13 @@ resource "aws_lambda_function" "login_redirect_lambda" {
   layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
+  environment {
+    variables = {
+      OIDC_AUTHORIZE_URL = var.cognito_cis2_provider_authorize_url
+      OIDC_CALLBACK_URL = var.cognito_cis2_client_callback_urls[0]
+      OIDC_CLIENT_ID = var.cognito_cis2_provider_client_id
+    }
+  }
 }
 
 resource "aws_api_gateway_resource" "auth_resource" {

@@ -6,23 +6,22 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.Nonce;
-import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class AuthenticationRequestFactory {
     private final AuthenticationRequest.Builder builder;
 
-    public AuthenticationRequestFactory(OIDCClientMetadata metadata) {
+    public AuthenticationRequestFactory(OIDCClientConfig oidcClientConfig) {
 
         try {
             this.builder =
                     new AuthenticationRequest.Builder(
                             ResponseType.CODE,
                             new Scope("openid"),
-                            new ClientID("foo"),
-                            new URI("https://our-callback.url"));
-            this.builder.endpointURI(metadata.getInitiateLoginURI());
+                            new ClientID(oidcClientConfig.getClientID()),
+                            new URI(oidcClientConfig.getCallbackURL()));
+            this.builder.endpointURI(new URI(oidcClientConfig.getAuthorizeURL()));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

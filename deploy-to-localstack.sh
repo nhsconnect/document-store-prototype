@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+# TODO: Fetch CIS2 client ID from parameter store and add to local terraform deployments
+
 terraform -version
 cd terraform
 terraform init --backend-config="path=/home/dojo/terraform.tfstate"
