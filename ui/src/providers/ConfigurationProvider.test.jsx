@@ -1,26 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import ConfigurationProvider, { useBaseAPIUrl, useFeatureToggle } from "./ConfigurationProvider";
+import ConfigurationProvider, { useFeatureToggle } from "./ConfigurationProvider";
 
-const TestComponent = () => {
-    const featureToggle = useFeatureToggle("TEST");
-    const baseAPIUrl = useBaseAPIUrl("test");
-    return (
-        <>
-            {featureToggle !== undefined && <p>{featureToggle ? "active" : "inactive"}</p>}
-            <p>{baseAPIUrl}</p>
-        </>
-    );
-};
-
-describe("The feature toggle provider", () => {
-    let env;
-    beforeAll(() => {
-        env = process.env.REACT_APP_ENV;
-    });
-    afterAll(() => {
-        process.env.REACT_APP_ENV = env;
-    });
-
+describe("<ConfigurationProvider />", () => {
+    const reactAppEnv = process.env.REACT_APP_ENV;
     const baseConfig = {
         API: {
             endpoints: [
@@ -30,15 +12,20 @@ describe("The feature toggle provider", () => {
                 },
             ],
         },
-        features: { development: { TEST: undefined } },
+        features: {},
     };
 
+    afterAll(() => {
+        process.env.REACT_APP_ENV = reactAppEnv;
+    });
+
     it("allows the consuming component to detect when a feature is active", () => {
-        process.env.REACT_APP_ENV = "development";
         const config = {
             ...baseConfig,
             features: { development: { TEST: true } },
         };
+
+        process.env.REACT_APP_ENV = "development";
         render(
             <ConfigurationProvider config={config}>
                 <TestComponent />
@@ -49,51 +36,62 @@ describe("The feature toggle provider", () => {
     });
 
     it("allows the consuming component to detect when a feature is inactive", () => {
-        process.env.REACT_APP_ENV = "development";
         const config = {
             ...baseConfig,
             features: { development: { TEST: false } },
         };
+
+        process.env.REACT_APP_ENV = "development";
         render(
             <ConfigurationProvider config={config}>
                 <TestComponent />
             </ConfigurationProvider>
         );
+
         expect(screen.getByText("inactive")).toBeInTheDocument();
     });
 
-    it("provides a default value of false to the consuming component when a toggle is not defined", () => {
-        process.env.REACT_APP_ENV = "development";
+    it("provides a default value of false to the consuming component when a toggle is undefined", () => {
         const config = {
             ...baseConfig,
             features: { development: { TEST: undefined } },
         };
+
+        process.env.REACT_APP_ENV = "development";
         render(
             <ConfigurationProvider config={config}>
                 <TestComponent />
             </ConfigurationProvider>
         );
+
         expect(screen.getByText("inactive")).toBeInTheDocument();
     });
 
-    it("provides a default value of false when feature toggles are not defined for the current environment", () => {
+    it("provides a default value of false when feature toggle are undefined for the current env", () => {
         process.env.REACT_APP_ENV = "non-existent-env";
         render(
             <ConfigurationProvider config={baseConfig}>
                 <TestComponent />
             </ConfigurationProvider>
         );
+
         expect(screen.getByText("inactive")).toBeInTheDocument();
     });
 
-    it("provides a default value of false to the consuming component when REACT_APP_ENV is not defined", () => {
+    it("provides a default value of false to the consuming component when REACT_APP_ENV is undefined", () => {
         process.env.REACT_APP_ENV = undefined;
-        const config = { ...baseConfig };
         render(
-            <ConfigurationProvider config={config}>
+            <ConfigurationProvider config={baseConfig}>
                 <TestComponent />
             </ConfigurationProvider>
         );
+
         expect(screen.getByText("inactive")).toBeInTheDocument();
     });
 });
+
+const TestComponent = () => {
+    const featureToggle = useFeatureToggle("TEST");
+
+    return featureToggle !== undefined && <>{featureToggle ? "active" : "inactive"}</>;
+};

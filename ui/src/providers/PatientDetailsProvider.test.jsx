@@ -1,35 +1,38 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { usePatientDetailsProviderContext, PatientDetailsProvider } from "./PatientDetailsProvider";
+import { PatientDetailsProvider, usePatientDetailsProviderContext } from "./PatientDetailsProvider";
 
-const TestComponent = ({ newPatientDetails }) => {
-    const [patientDetails, setPatientDetails] = usePatientDetailsProviderContext();
-    return (
-        <div>
-            <p>NHS Number: {patientDetails?.nhsNumber || "Null"}</p>
-            <p>Family Name: {patientDetails?.familyName || "Null"}</p>
-            <button onClick={() => setPatientDetails(newPatientDetails)}>Update NHS Number</button>
-        </div>
-    );
-};
-
-describe("The NHS number provider", () => {
-    it("provides an NHS number value and setter", () => {
+describe("<PatientDetailsProvider />", () => {
+    it("provides NHS number and family name", () => {
         const patientDetails = {
             nhsNumber: 23456,
             familyName: "Smith",
         };
+
         render(
             <PatientDetailsProvider>
-                <TestComponent newPatientDetails={patientDetails} />
+                <TestComponent patientDetails={patientDetails} />
             </PatientDetailsProvider>
         );
+
         expect(screen.getByText("NHS Number: Null")).toBeInTheDocument();
         expect(screen.getByText("Family Name: Null")).toBeInTheDocument();
 
-        userEvent.click(screen.getByText("Update NHS Number"));
+        userEvent.click(screen.getByRole("button", { name: "Update NHS Number" }));
 
         expect(screen.getByText(`NHS Number: ${patientDetails.nhsNumber}`)).toBeInTheDocument();
         expect(screen.getByText(`Family Name: ${patientDetails.familyName}`)).toBeInTheDocument();
     });
 });
+
+const TestComponent = (props) => {
+    const [patientDetails, setPatientDetails] = usePatientDetailsProviderContext();
+
+    return (
+        <>
+            <p>NHS Number: {patientDetails?.nhsNumber || "Null"}</p>
+            <p>Family Name: {patientDetails?.familyName || "Null"}</p>
+            <button onClick={() => setPatientDetails(props.patientDetails)}>Update NHS Number</button>
+        </>
+    );
+};

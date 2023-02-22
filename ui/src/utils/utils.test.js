@@ -2,10 +2,10 @@ import { downloadFile, formatSize, getFormattedDate, setUrlHostToLocalHost } fro
 
 describe("utils", () => {
     describe("setUrlHostToLocalHost()", () => {
-        const env = process.env.NODE_ENV;
+        const nodeEnv = process.env.NODE_ENV;
 
         afterAll(() => {
-            process.env.NODE_ENV = env;
+            process.env.NODE_ENV = nodeEnv;
         });
 
         it("changes URL host to localhost if in the development env", () => {

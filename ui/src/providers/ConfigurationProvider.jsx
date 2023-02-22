@@ -1,19 +1,22 @@
 import { createContext, useContext } from "react";
 
-const ConfigurationContext = createContext();
+const ConfigurationContext = createContext(undefined);
 
 export const useFeatureToggle = (toggleName) => {
     const config = useContext(ConfigurationContext);
+
     const features = config?.features[process.env["REACT_APP_ENV"]];
 
     if (features === undefined || features[toggleName] === undefined) {
         return false;
     }
+
     return features[toggleName];
 };
 
 export const useBaseAPIUrl = (apiName) => {
     const config = useContext(ConfigurationContext);
+
     const apiEndpoints = config?.API.endpoints;
 
     if (apiEndpoints === undefined) {

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-const PatientDetailsProviderContext = createContext();
+const PatientDetailsProviderContext = createContext(undefined);
 
 export const PatientDetailsProvider = ({ children }) => {
     const patientDetailsState = useState();
