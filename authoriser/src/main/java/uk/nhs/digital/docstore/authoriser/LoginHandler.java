@@ -14,6 +14,7 @@ public class LoginHandler
     public static final int SEE_OTHER_STATUS_CODE = 303;
     private final AuthenticationRequestFactory authenticationRequestFactory;
     private final UUIDProvider uuidProvider;
+
     @SuppressWarnings("unused")
     public LoginHandler() {
         this(new AuthenticationRequestFactory(new OIDCClientConfig()), new UUIDProvider());
