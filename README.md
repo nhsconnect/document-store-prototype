@@ -32,7 +32,11 @@ To start colima, run:
 colima start
 ```
 
-#### 2. Start LocalStack
+#### 2. Set Environment variables
+
+Create a .env file using the .env.example file
+
+#### 3. Start LocalStack
 
 To start LocalStack run:
 
@@ -44,7 +48,7 @@ After this you should have a shell session open inside the default Dojo containe
 
 **Warning: Do not close this window! That will stop LocalStack.**
 
-#### 3 Build the app and deploy it to LocalStack.
+#### 4 Build the app and deploy it to LocalStack.
 
 First, you will need to copy `terraform/local._override.tf.example` to `terraform/local._override.tf`. Then:
 

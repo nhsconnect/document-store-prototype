@@ -11,7 +11,10 @@ The `tasks` file is a Bash script containing most of the command required to pro
 including starting the app, building the project, and provisioning AWS resources. It is used in both local and cloud
 situations.
 
-The `start-localstack` task invokes a program called [Dojo](https://github.com/kudulab/dojo), which is a wrapper around
+The `start-localstack` task does two things: 
+1 Sets environment variables sourced from the .env file
+
+2 Runs a program called [Dojo](https://github.com/kudulab/dojo), which is a wrapper around
 Docker built by a Thoughtworker. Dojo provides several benefits including ensuring containers handle termination signals
 properly, keeping a shell open for running commands, configuring Docker users correctly and forwarding env vars into the containers.
 

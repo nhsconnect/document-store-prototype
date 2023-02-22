@@ -207,6 +207,7 @@ build-api-jars)
   dojo './tasks _build-api-jars'
   ;;
 start-localstack)
+  source .env
   dojo -c Dojofile-dev
   ;;
 view-localstack-logs)

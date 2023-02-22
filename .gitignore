@@ -1,3 +1,6 @@
+### Env variables
+.env
+
 ### Terraform
 terraform.json
 **/.terraform/*
