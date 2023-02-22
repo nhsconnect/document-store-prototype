@@ -10,6 +10,7 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -17,7 +18,9 @@ public class LoginHandlerTest {
     @Test
     public void returnsAnHttpRedirectToTheOIDCAuthorizeEndpoint() throws URISyntaxException {
         var request = new APIGatewayProxyRequestEvent();
+        var uuid = UUID.randomUUID();
         var authenticationRequestFactory = Mockito.mock(AuthenticationRequestFactory.class);
+        var uuidProvider = Mockito.mock(UUIDProvider.class);
 
         var authRequestBuilder =
                 new AuthenticationRequest.Builder(
@@ -28,11 +31,14 @@ public class LoginHandlerTest {
         authRequestBuilder.endpointURI(new URI("https://oidc.server"));
         var authRequest = authRequestBuilder.build();
         Mockito.when(authenticationRequestFactory.build()).thenReturn(authRequest);
+        Mockito.when(uuidProvider.generateUUID()).thenReturn(uuid);
 
-        var handler = new LoginHandler(authenticationRequestFactory);
+        var handler = new LoginHandler(authenticationRequestFactory, uuidProvider);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getHeaders().get("Location")).isEqualTo(authRequest.toURI().toString());
+        assertThat(response.getHeaders().get("Set-Cookie"))
+                .isEqualTo("SessionId=" + uuid + "; SameSite=Strict; Secure; HttpOnly");
     }
 }

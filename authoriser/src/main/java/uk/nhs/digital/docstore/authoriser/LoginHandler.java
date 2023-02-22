@@ -13,27 +13,39 @@ public class LoginHandler
     public static final Logger LOGGER = LoggerFactory.getLogger(LoginHandler.class);
     public static final int SEE_OTHER_STATUS_CODE = 303;
     private final AuthenticationRequestFactory authenticationRequestFactory;
-
+    private final UUIDProvider uuidProvider;
+    @SuppressWarnings("unused")
     public LoginHandler() {
-        this(new AuthenticationRequestFactory(new OIDCClientConfig()));
+        this(new AuthenticationRequestFactory(new OIDCClientConfig()), new UUIDProvider());
     }
 
-    public LoginHandler(AuthenticationRequestFactory authenticationRequestFactory) {
+    public LoginHandler(
+            AuthenticationRequestFactory authenticationRequestFactory, UUIDProvider uuidProvider) {
         this.authenticationRequestFactory = authenticationRequestFactory;
+        this.uuidProvider = uuidProvider;
     }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent input, Context context) {
-        // TODO: Create a new session, store a random and secure session identifier and the OIDC
-        // request state in Dynamo for use in callback route
+        // TODO: Create a random and secure new session ID,
+        //  store the session identifier
+        //  set the OIDC request state in Dynamo for use in callback route
+        //  set an expiry so that incomplete sessions are not left cached
 
         var authRequest = authenticationRequestFactory.build();
         LOGGER.debug("Redirecting user to " + authRequest.toURI().toString());
+        var sessionId = uuidProvider.generateUUID();
+        var headers =
+                Map.of(
+                        "Location",
+                        authRequest.toURI().toString(),
+                        "Set-Cookie",
+                        "SessionId=" + sessionId + "; SameSite=Strict; Secure; HttpOnly");
 
         var response = new APIGatewayProxyResponseEvent();
         response.setStatusCode(SEE_OTHER_STATUS_CODE);
-        response.setHeaders(Map.of("Location", authRequest.toURI().toString()));
+        response.setHeaders(headers);
         response.setIsBase64Encoded(false);
         response.setBody("");
 
