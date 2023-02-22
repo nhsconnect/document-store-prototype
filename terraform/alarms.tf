@@ -70,6 +70,15 @@ module re_registration_alarms {
   environment                = var.environment
 }
 
+module login_redirect_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.login_redirect_lambda.function_name
+  lambda_timeout             = aws_lambda_function.login_redirect_lambda.timeout
+  lambda_short_name          = "login_redirect_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
 resource "aws_cloudwatch_metric_alarm" "sensitive_index_age_of_oldest_message" {
   alarm_name        = "prs_${var.environment}_sensitive_index_age_of_oldest_message"
   alarm_description = "Triggers when a message has been in the ${aws_sqs_queue.sensitive_audit.name} queue for more than 10 minutes."
