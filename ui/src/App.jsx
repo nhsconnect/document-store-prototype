@@ -3,16 +3,16 @@ import { BrowserRouter as Router, Outlet, Route, Routes } from "react-router-dom
 import "./App.scss";
 import config from "./config";
 import Authenticator from "./components/authenticator/Authenticator";
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/homePage/HomePage";
 import Layout from "./components/layout/Layout";
 import { PatientDetailsProvider } from "./providers/PatientDetailsProvider";
-import { PatientTracePage } from "./pages/PatientTracePage";
-import UploadDocumentPage from "./pages/UploadDocumentPage";
-import SearchResultsPage from "./pages/SearchResultsPage";
-import StartPage from "./pages/StartPage";
+import { PatientTracePage } from "./pages/patientTracePage/PatientTracePage";
+import UploadDocumentPage from "./pages/uploadDocumentPage/UploadDocumentPage";
+import SearchResultsPage from "./pages/searchResultsPage/SearchResultsPage";
+import StartPage from "./pages/startPage/StartPage";
 import AuthCallbackRouter from "./components/authenticator/AuthCallbackRouter";
 import AuthProvider from "./components/authenticator/AuthProvider";
-import DeleteDocumentsConfirmationPage from "./pages/DeleteDocumentsConfirmationPage";
+import DeleteDocumentsConfirmationPage from "./pages/deleteDocumentsConfirmationPage/DeleteDocumentsConfirmationPage";
 import ConfigurationProvider from "./providers/ConfigurationProvider";
 
 const AppRoutes = () => {

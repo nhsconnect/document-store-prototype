@@ -1,10 +1,10 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { Factory } from "fishery";
-import "../apiClients/documentStore";
-import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
+import "../../apiClients/documentStore";
+import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
-import { downloadFile } from "../utils/utils";
+import { downloadFile } from "../../utils/utils";
 import { MemoryRouter } from "react-router";
 
 const mockDocumentStore = {
@@ -12,12 +12,12 @@ const mockDocumentStore = {
     getPresignedUrlForZip: () => "test-url",
 };
 
-jest.mock("../apiClients/documentStore", () => {
+jest.mock("../../apiClients/documentStore", () => {
     return {
         useDocumentStore: () => mockDocumentStore,
     };
 });
-jest.mock("../providers/PatientDetailsProvider", () => ({
+jest.mock("../../providers/PatientDetailsProvider", () => ({
     usePatientDetailsProviderContext: jest.fn(),
 }));
 const mockNavigate = jest.fn();
@@ -25,7 +25,7 @@ jest.mock("react-router", () => ({
     ...jest.requireActual("react-router"),
     useNavigate: () => mockNavigate,
 }));
-jest.mock("../utils/utils");
+jest.mock("../../utils/utils");
 
 const searchResultFactory = Factory.define(() => ({
     id: "some-id",

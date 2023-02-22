@@ -1,6 +1,6 @@
 import React from "react";
 import { ButtonLink } from "nhsuk-react-components";
-import { useBaseAPIUrl, useFeatureToggle } from "../providers/ConfigurationProvider";
+import { useBaseAPIUrl, useFeatureToggle } from "../../providers/ConfigurationProvider";
 
 export default function StartPage() {
     const isCognitoFederationActive = useFeatureToggle("COGNITO_FEDERATION");

@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import StartPage from "./StartPage";
-import { useBaseAPIUrl, useFeatureToggle } from "../providers/ConfigurationProvider";
+import { useBaseAPIUrl, useFeatureToggle } from "../../providers/ConfigurationProvider";
 
-jest.mock("../providers/ConfigurationProvider");
+jest.mock("../../providers/ConfigurationProvider");
 
 describe("<StartPage/>", () => {
     it("renders the page header", () => {

@@ -1,22 +1,22 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
-import "../apiClients/documentStore";
-import { documentUploadStates } from "../enums/documentUploads";
-import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
+import "../../apiClients/documentStore";
+import { documentUploadStates } from "../../enums/documentUploads";
+import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
 import UploadDocumentPage from "./UploadDocumentPage";
 
 const mockDocumentStore = {
     uploadDocument: () => null,
 };
 
-jest.mock("../apiClients/documentStore", () => {
+jest.mock("../../apiClients/documentStore", () => {
     return {
         useDocumentStore: () => mockDocumentStore,
     };
 });
 
-jest.mock("../providers/PatientDetailsProvider", () => ({
+jest.mock("../../providers/PatientDetailsProvider", () => ({
     usePatientDetailsProviderContext: jest.fn(),
 }));
 const mockNavigate = jest.fn();

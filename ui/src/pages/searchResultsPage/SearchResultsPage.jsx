@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table } from "nhsuk-react-components";
-import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
+import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import BackButton from "../components/backButton/BackButton";
-import { downloadFile } from "../utils/utils";
-import PatientSummary from "../components/patientSummary/PatientSummary";
-import SimpleProgressBar from "../components/simpleProgressBar/SimpleProgressBar";
-import ServiceError from "../components/serviceError/ServiceError";
-import { useDocumentStore } from "../apiClients/documentStore";
+import BackButton from "../../components/backButton/BackButton";
+import { downloadFile } from "../../utils/utils";
+import PatientSummary from "../../components/patientSummary/PatientSummary";
+import SimpleProgressBar from "../../components/simpleProgressBar/SimpleProgressBar";
+import ServiceError from "../../components/serviceError/ServiceError";
+import { useDocumentStore } from "../../apiClients/documentStore";
 
 const states = {
     INITIAL: "initial",

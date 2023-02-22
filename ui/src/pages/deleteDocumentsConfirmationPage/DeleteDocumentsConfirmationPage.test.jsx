@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import DeleteDocumentsConfirmationPage from "./DeleteDocumentsConfirmationPage";
-import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
-import "../apiClients/documentStore";
+import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
+import "../../apiClients/documentStore";
 import userEvent from "@testing-library/user-event";
 
 const mockNavigate = jest.fn();
@@ -9,7 +9,7 @@ const mockNavigate = jest.fn();
 const mockDocumentStore = {
     deleteAllDocuments: () => "Test message",
 };
-jest.mock("../apiClients/documentStore", () => {
+jest.mock("../../apiClients/documentStore", () => {
     return {
         useDocumentStore: () => mockDocumentStore,
     };
@@ -18,7 +18,7 @@ jest.mock("../apiClients/documentStore", () => {
 jest.mock("react-router", () => ({
     useNavigate: () => mockNavigate,
 }));
-jest.mock("../providers/PatientDetailsProvider", () => ({
+jest.mock("../../providers/PatientDetailsProvider", () => ({
     usePatientDetailsProviderContext: jest.fn(),
 }));
 const fakeNhsNumber = "9000000009";

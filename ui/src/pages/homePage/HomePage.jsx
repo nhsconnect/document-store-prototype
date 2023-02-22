@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import BackButton from "../components/backButton/BackButton";
+import BackButton from "../../components/backButton/BackButton";
 
 const HomePage = () => {
     const { register, handleSubmit } = useForm();
