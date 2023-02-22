@@ -29,6 +29,12 @@ describe("<StartPage/>", () => {
         );
     });
 
+    it("opens the service issue guidance link in a new tab", () => {
+        render(<StartPage />);
+
+        expect(screen.getByRole("link", { name: /National Service Desk/ })).toHaveAttribute("target", "_blank");
+    });
+
     it("renders a 'Before you start' section", () => {
         render(<StartPage />);
 

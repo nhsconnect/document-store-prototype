@@ -26,7 +26,10 @@ const StartPage = () => {
             </p>
             <p>
                 If there is an issue with the service please contact the{" "}
-                <a href="https://digital.nhs.uk/about-nhs-digital/contact-us">NHS Digital National Service Desk</a>.
+                <a href="https://digital.nhs.uk/about-nhs-digital/contact-us" target="_blank" rel="noreferrer">
+                    NHS Digital National Service Desk
+                </a>
+                .
             </p>
             <h2>Before You Start</h2>
             <p>You can only use this service if you have a valid NHS smartcard.</p>
