@@ -10,6 +10,7 @@ repositories {
 dependencies {
 	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
 	implementation 'com.amazonaws:aws-lambda-java-events:3.9.0'
+	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
 	implementation 'com.auth0:java-jwt:4.2.1'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
 	implementation 'com.auth0:jwks-rsa:0.21.3'

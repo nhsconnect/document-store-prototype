@@ -67,6 +67,8 @@ fileignoreconfig:
   checksum: 64416def7a6855167692f0b31de309c50ba15a68b92521e8222dc5d26219c6a1
 - filename: docs/diagrams/flow/path-to-prod.md
   checksum: 0e7b76864e59beb4636164ebb764923926151bdb16ce6870114ab518161e313f
+- filename: authoriser/src/test/java/uk/nhs/digital/docstore/authoriser/LoginHandlerTest.java
+  checksum: 532dac271245e70175b6f3554f102f3b7b5342b727b56dfa69fe52e27863500c
 version: ""
 scopeconfig:
   - scope: node
