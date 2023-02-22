@@ -6,7 +6,6 @@ import Authenticator from "./components/authenticator/Authenticator";
 import HomePage from "./pages/HomePage";
 import Layout from "./components/layout/Layout";
 import { PatientDetailsProvider } from "./providers/PatientDetailsProvider";
-import { DeleteDocumentsResponseProvider } from "./providers/DeleteDocumentsResponseProvider";
 import { PatientTracePage } from "./pages/PatientTracePage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
@@ -38,21 +37,10 @@ const AppRoutes = () => {
                     }
                 >
                     <Route path="/search/patient-trace" element={<PatientTracePage nextPage="/search/results" />} />
-                    <Route
-                        path="/search/results"
-                        element={
-                            <DeleteDocumentsResponseProvider>
-                                <SearchResultsPage />
-                            </DeleteDocumentsResponseProvider>
-                        }
-                    />
+                    <Route path="/search/results" element={<SearchResultsPage />} />
                     <Route
                         path="/search/results/delete-documents-confirmation"
-                        element={
-                            <DeleteDocumentsResponseProvider>
-                                <DeleteDocumentsConfirmationPage />
-                            </DeleteDocumentsResponseProvider>
-                        }
+                        element={<DeleteDocumentsConfirmationPage />}
                     />
                 </Route>
                 <Route

@@ -3,7 +3,6 @@ import DeleteDocumentsConfirmationPage from "./DeleteDocumentsConfirmationPage";
 import { usePatientDetailsProviderContext } from "../providers/PatientDetailsProvider";
 import "../apiClients/documentStore";
 import userEvent from "@testing-library/user-event";
-import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
 
 const mockNavigate = jest.fn();
 
@@ -22,11 +21,7 @@ jest.mock("react-router", () => ({
 jest.mock("../providers/PatientDetailsProvider", () => ({
     usePatientDetailsProviderContext: jest.fn(),
 }));
-jest.mock("../providers/DeleteDocumentsResponseProvider", () => ({
-    useDeleteDocumentsResponseProviderContext: jest.fn(),
-}));
 const fakeNhsNumber = "9000000009";
-const deleteDocumentsResponse = "";
 const patientData = {
     birthDate: "2010-10-22",
     familyName: "Doe",
@@ -38,7 +33,6 @@ const patientData = {
 describe("<DeleteDocumentsConfirmationPage />", () => {
     it("renders the page", async () => {
         usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
-        useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         render(<DeleteDocumentsConfirmationPage />);
         expect(
             screen.getByRole("heading", {
@@ -61,7 +55,6 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
 
     it('should navigate to SearchResultsPage when user choose radio button "NO" and click on continue button', async () => {
         usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
-        useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         render(<DeleteDocumentsConfirmationPage />);
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
@@ -73,10 +66,8 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
 
     describe("when user choose YES radio button and clicks continue", () => {
         it('should navigate to search results page with delete document response as "successful" when deleteAllDocuments api method returns successfully deleted message ', async () => {
-            const deleteDocumentsResponse = "successful";
             (mockDocumentStore.deleteAllDocuments = () => "successfully deleted"),
                 usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
-            useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
             render(<DeleteDocumentsConfirmationPage />);
             expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument();
             userEvent.click(screen.getByRole("radio", { name: "Yes" }));
@@ -117,7 +108,6 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
 
     it("should navigate to search results page when user choose No and clicks continue", async () => {
         usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
-        useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
 
         render(<DeleteDocumentsConfirmationPage />);
         expect(screen.getByRole("radio", { name: "No" })).toBeInTheDocument();

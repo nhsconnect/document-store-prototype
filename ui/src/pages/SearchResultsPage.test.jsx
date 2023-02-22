@@ -5,7 +5,6 @@ import { usePatientDetailsProviderContext } from "../providers/PatientDetailsPro
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
 import { downloadFile } from "../utils/utils";
-import { useDeleteDocumentsResponseProviderContext } from "../providers/DeleteDocumentsResponseProvider";
 import { MemoryRouter } from "react-router";
 
 const mockDocumentStore = {
@@ -20,9 +19,6 @@ jest.mock("../apiClients/documentStore", () => {
 });
 jest.mock("../providers/PatientDetailsProvider", () => ({
     usePatientDetailsProviderContext: jest.fn(),
-}));
-jest.mock("../providers/DeleteDocumentsResponseProvider", () => ({
-    useDeleteDocumentsResponseProviderContext: jest.fn(),
 }));
 const mockNavigate = jest.fn();
 jest.mock("react-router", () => ({
@@ -56,11 +52,9 @@ describe("<SearchResultsPage />", () => {
             nhsNumber: nhsNumber,
             postalCode: "LS1 6AE",
         };
-        const deleteDocumentsResponse = "";
 
         beforeEach(() => {
             usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
-            useDeleteDocumentsResponseProviderContext.mockReturnValue([deleteDocumentsResponse, jest.fn()]);
         });
 
         it("renders the page", async () => {
@@ -248,7 +242,6 @@ describe("<SearchResultsPage />", () => {
     describe("when there is NOT an NHS number", () => {
         beforeEach(() => {
             usePatientDetailsProviderContext.mockReturnValue([undefined, jest.fn()]);
-            useDeleteDocumentsResponseProviderContext.mockReturnValue(["", jest.fn()]);
         });
 
         it("redirects to patient trace page when the NHS number is NOT available", () => {
