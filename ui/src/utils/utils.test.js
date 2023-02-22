@@ -47,6 +47,12 @@ describe("utils", () => {
     });
 
     describe("downloadFile()", () => {
+        const createElementFn = document.createElement;
+
+        afterEach(() => {
+            Object.defineProperty(document, "createElement", { value: createElementFn, configurable: true });
+        });
+
         it("creates and clicks a link once", () => {
             const link = { click: jest.fn() };
 
