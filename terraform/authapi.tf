@@ -13,7 +13,7 @@ resource "aws_lambda_function" "login_redirect_lambda" {
   environment {
     variables = {
       OIDC_AUTHORIZE_URL = var.cognito_cis2_provider_authorize_url
-      OIDC_CALLBACK_URL = var.cognito_cis2_client_callback_urls[0]
+      OIDC_CALLBACK_URL = var.cloud_only_service_instances ? "${local.amplify_base_url}/cis2-auth-callback" : var.cognito_cis2_client_callback_urls[0]
       OIDC_CLIENT_ID = var.cognito_cis2_provider_client_id
     }
   }

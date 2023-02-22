@@ -2,11 +2,11 @@ environment                          = "prod"
 account_id                           = "487224344892"
 cognito_domain_prefix                = "prod-"
 cognito_oidc_providers               = ["COGNITO"]
-cognito_cis2_provider_oidc_issuer    = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc"
-cognito_cis2_provider_authorize_url  = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/authorize"
-cognito_cis2_provider_token_url      = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/access_token"
-cognito_cis2_provider_attributes_url = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/userinfo"
-cognito_cis2_provider_jwks_uri       = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/connect/jwk_uri"
+cognito_cis2_provider_oidc_issuer    = "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_IeQo9ubVl"
+cognito_cis2_provider_authorize_url  = "https://prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/authorize"
+cognito_cis2_provider_token_url      = "https://prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/token"
+cognito_cis2_provider_attributes_url = "https://prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/userInfo"
+cognito_cis2_provider_jwks_uri       = "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_IeQo9ubVl/.well-known/jwks.json"
 cognito_cis2_client_callback_urls    = []
 cognito_cis2_client_signout_urls     = []
 cognito_key_id                       = "cQxrtAvRbEfCQ71CNv4rNtdYQdO8fiTvFpypj4h+gj8="
