@@ -10,14 +10,15 @@ public class Session {
     private UUID id;
     private String sk;
     private long timeToExist;
-
     private State authStateParameter;
+
+    public static final String KEY_PREFIX = "SESSION#";
 
     public static Session create(UUID id, Long timeToExist, State authStateParameter) {
         var session = new Session();
         session.setId(id);
-        session.setPK("SESSION#" + id);
-        session.setSK("SESSION#" + id);
+        session.setPK(KEY_PREFIX + id);
+        session.setSK(KEY_PREFIX + id);
         session.setTimeToExist(timeToExist);
         session.setAuthStateParameter(authStateParameter);
 
@@ -71,8 +72,7 @@ public class Session {
         this.authStateParameter = authStateParameter;
     }
 
-    private static class UUIDConverter implements DynamoDBTypeConverter<String, UUID> {
-
+    public static class UUIDConverter implements DynamoDBTypeConverter<String, UUID> {
         @Override
         public String convert(UUID object) {
             return object.toString();
@@ -84,8 +84,7 @@ public class Session {
         }
     }
 
-    private static class StateConverter implements DynamoDBTypeConverter<String, State> {
-
+    public static class StateConverter implements DynamoDBTypeConverter<String, State> {
         @Override
         public String convert(State object) {
             return object.toString();

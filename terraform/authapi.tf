@@ -12,9 +12,10 @@ resource "aws_lambda_function" "login_redirect_lambda" {
   ]
   environment {
     variables = {
+      DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
       OIDC_AUTHORIZE_URL = var.cognito_cis2_provider_authorize_url
-      OIDC_CALLBACK_URL = var.cloud_only_service_instances > 0 ? "${local.amplify_base_url}/cis2-auth-callback" : var.cognito_cis2_client_callback_urls[0]
-      OIDC_CLIENT_ID = var.cognito_cis2_provider_client_id
+      OIDC_CALLBACK_URL  = var.cloud_only_service_instances > 0 ? "${local.amplify_base_url}/cis2-auth-callback" : var.cognito_cis2_client_callback_urls[0]
+      OIDC_CLIENT_ID     = var.cognito_cis2_provider_client_id
     }
   }
 }
@@ -47,8 +48,8 @@ resource "aws_api_gateway_method" "proxy_method" {
 }
 
 resource "aws_api_gateway_integration" "lambda_integration" {
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  resource_id   = aws_api_gateway_resource.login_resource.id
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_resource.login_resource.id
   http_method = "GET"
 
   integration_http_method = "POST"

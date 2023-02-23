@@ -53,7 +53,7 @@ public class LoginHandlerTest {
         assertThat(response.getHeaders().get("Set-Cookie"))
                 .isEqualTo("SessionId=" + sessionID + "; SameSite=Strict; Secure; HttpOnly");
 
-        var session = sessionStore.load(sessionID.toString());
+        var session = sessionStore.load(sessionID);
         assertThat(session.isPresent()).isTrue();
         assertThat(session.get().getId()).isEqualTo(sessionID);
         assertThat(session.get().getAuthStateParameter()).isEqualTo(authRequest.getState());

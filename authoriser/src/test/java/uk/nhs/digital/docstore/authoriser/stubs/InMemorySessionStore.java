@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore.authoriser.stubs;
 
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.UUID;
 import uk.nhs.digital.docstore.authoriser.SessionStore;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 
@@ -19,7 +20,7 @@ public class InMemorySessionStore implements SessionStore {
     }
 
     @Override
-    public Optional<Session> load(String sessionID) {
+    public Optional<Session> load(UUID sessionID) {
         return Optional.ofNullable(sessions.get("SESSION#" + sessionID + "SESSION#" + sessionID));
     }
 }

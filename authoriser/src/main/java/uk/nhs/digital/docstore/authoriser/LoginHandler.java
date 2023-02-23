@@ -1,5 +1,9 @@
 package uk.nhs.digital.docstore.authoriser;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -14,6 +18,9 @@ import uk.nhs.digital.docstore.authoriser.models.Session;
 
 public class LoginHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    private static final String AWS_REGION = "eu-west-2";
+    private static final String DEFAULT_ENDPOINT = "";
+
     public static final Logger LOGGER = LoggerFactory.getLogger(LoginHandler.class);
     public static final int SEE_OTHER_STATUS_CODE = 303;
     private final AuthenticationRequestFactory authenticationRequestFactory;
@@ -25,7 +32,7 @@ public class LoginHandler
     public LoginHandler() {
         this(
                 new AuthenticationRequestFactory(new OIDCClientConfig()),
-                new DynamoDBSessionStore(),
+                new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
                 new UUIDProvider(),
                 Clock.systemUTC());
     }
@@ -51,6 +58,7 @@ public class LoginHandler
         var sessionId = uuidProvider.generateUUID();
         var timeToExist = Instant.now(clock).plus(1, ChronoUnit.HOURS).getEpochSecond();
         var session = Session.create(sessionId, timeToExist, authRequest.getState());
+
         sessionStore.save(session);
 
         var headers =
@@ -67,5 +75,17 @@ public class LoginHandler
         response.setBody("");
 
         return response;
+    }
+
+    private static AmazonDynamoDB getDynamodbClient() {
+        var clientBuilder = AmazonDynamoDBClientBuilder.standard();
+        var dynamodbEndpoint = System.getenv("DYNAMODB_ENDPOINT");
+        if (!dynamodbEndpoint.equals(DEFAULT_ENDPOINT)) {
+            clientBuilder =
+                    clientBuilder.withEndpointConfiguration(
+                            new AwsClientBuilder.EndpointConfiguration(
+                                    dynamodbEndpoint, AWS_REGION));
+        }
+        return clientBuilder.build();
     }
 }
