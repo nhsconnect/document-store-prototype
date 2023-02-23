@@ -9,7 +9,6 @@ import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Clock;
@@ -56,10 +55,9 @@ public class LoginHandlerTest {
 
         var session = sessionStore.load(sessionID.toString());
         assertThat(session.isPresent()).isTrue();
-        assertThat(session.get().getId()).isEqualTo(sessionID.toString());
-        assertThat(session.get().getAuthStateParameter())
-                .isEqualTo(authRequest.getState().toString());
-        var timeToExit = Instant.now(clock).plus(1, ChronoUnit.HOURS).getEpochSecond();
-        assertThat(session.get().getTimeToExist()).isEqualTo(BigInteger.valueOf(timeToExit));
+        assertThat(session.get().getId()).isEqualTo(sessionID);
+        assertThat(session.get().getAuthStateParameter()).isEqualTo(authRequest.getState());
+        var timeToExist = Instant.now(clock).plus(1, ChronoUnit.HOURS).getEpochSecond();
+        assertThat(session.get().getTimeToExist()).isEqualTo(timeToExist);
     }
 }

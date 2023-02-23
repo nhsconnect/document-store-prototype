@@ -1,21 +1,19 @@
 package uk.nhs.digital.docstore.authoriser.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import java.math.BigInteger;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.nimbusds.oauth2.sdk.id.State;
+import java.util.UUID;
 
 @DynamoDBTable(tableName = "ARFAuth")
 public class Session {
     private String pk;
-    private String id;
+    private UUID id;
     private String sk;
-    private BigInteger timeToExist;
+    private long timeToExist;
 
-    private String authStateParameter;
+    private State authStateParameter;
 
-    public static Session create(String id, BigInteger timeToExist, String authStateParameter) {
+    public static Session create(UUID id, Long timeToExist, State authStateParameter) {
         var session = new Session();
         session.setId(id);
         session.setPK("SESSION#" + id);
@@ -44,30 +42,58 @@ public class Session {
         this.sk = sk;
     }
 
+    @DynamoDBTypeConverted(converter = UUIDConverter.class)
     @DynamoDBAttribute(attributeName = "Id")
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
     @DynamoDBAttribute(attributeName = "TimeToExist")
-    public BigInteger getTimeToExist() {
+    public Long getTimeToExist() {
         return timeToExist;
     }
 
-    public void setTimeToExist(BigInteger timeToExist) {
+    public void setTimeToExist(Long timeToExist) {
         this.timeToExist = timeToExist;
     }
 
+    @DynamoDBTypeConverted(converter = StateConverter.class)
     @DynamoDBAttribute(attributeName = "AuthStateParameter")
-    public String getAuthStateParameter() {
+    public State getAuthStateParameter() {
         return authStateParameter;
     }
 
-    public void setAuthStateParameter(String authStateParameter) {
+    public void setAuthStateParameter(State authStateParameter) {
         this.authStateParameter = authStateParameter;
+    }
+
+    private static class UUIDConverter implements DynamoDBTypeConverter<String, UUID> {
+
+        @Override
+        public String convert(UUID object) {
+            return object.toString();
+        }
+
+        @Override
+        public UUID unconvert(String uuid) {
+            return UUID.fromString(uuid);
+        }
+    }
+
+    private static class StateConverter implements DynamoDBTypeConverter<String, State> {
+
+        @Override
+        public String convert(State object) {
+            return object.toString();
+        }
+
+        @Override
+        public State unconvert(String state) {
+            return new State(state);
+        }
     }
 }

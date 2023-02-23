@@ -4,7 +4,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import java.math.BigInteger;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -23,12 +22,12 @@ public class LoginHandler
     private final Clock clock;
 
     @SuppressWarnings("unused")
-    public LoginHandler(Clock clock) {
+    public LoginHandler() {
         this(
                 new AuthenticationRequestFactory(new OIDCClientConfig()),
                 new DynamoDBSessionStore(),
                 new UUIDProvider(),
-                clock);
+                Clock.systemUTC());
     }
 
     public LoginHandler(
@@ -50,12 +49,8 @@ public class LoginHandler
         LOGGER.debug("Redirecting user to " + authRequest.toURI().toString());
 
         var sessionId = uuidProvider.generateUUID();
-        var timeToExit = Instant.now(clock).plus(1, ChronoUnit.HOURS).getEpochSecond();
-        var session =
-                Session.create(
-                        sessionId.toString(),
-                        BigInteger.valueOf(timeToExit),
-                        authRequest.getState().toString());
+        var timeToExist = Instant.now(clock).plus(1, ChronoUnit.HOURS).getEpochSecond();
+        var session = Session.create(sessionId, timeToExist, authRequest.getState());
         sessionStore.save(session);
 
         var headers =
