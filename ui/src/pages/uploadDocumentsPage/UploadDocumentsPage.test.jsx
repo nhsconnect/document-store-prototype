@@ -4,7 +4,7 @@ import { act } from "react-dom/test-utils";
 import "../../apiClients/documentStore";
 import { documentUploadStates } from "../../enums/documentUploads";
 import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
-import UploadDocumentPage from "./UploadDocumentPage";
+import UploadDocumentsPage from "./UploadDocumentsPage";
 
 const mockDocumentStore = {
     uploadDocument: () => null,
@@ -24,7 +24,7 @@ jest.mock("react-router", () => ({
     useNavigate: () => mockNavigate,
 }));
 
-describe("UploadDocumentPage", () => {
+describe("<UploadDocumentsPage />", () => {
     const nextPagePath = "/next";
 
     describe("when there is an NHS number", () => {
@@ -43,7 +43,7 @@ describe("UploadDocumentPage", () => {
         });
 
         it("renders the page", () => {
-            render(<UploadDocumentPage nextPagePath={nextPagePath} />);
+            render(<UploadDocumentsPage nextPagePath={nextPagePath} />);
 
             expect(screen.getByRole("heading", { name: "Upload documents" })).toBeInTheDocument();
             expect(screen.getByText(nhsNumber)).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe("UploadDocumentPage", () => {
                 });
             };
 
-            render(<UploadDocumentPage nextPagePath={nextPagePath} />);
+            render(<UploadDocumentsPage nextPagePath={nextPagePath} />);
 
             const documentOne = makeTextFile("one", 100);
             const documentTwo = makeTextFile("two", 200);
@@ -180,7 +180,7 @@ describe("UploadDocumentPage", () => {
             usePatientDetailsProviderContext.mockReturnValue([undefined, jest.fn()]);
         });
         it("redirects to patient trace page when the NHS number is NOT available", () => {
-            render(<UploadDocumentPage />);
+            render(<UploadDocumentsPage />);
 
             expect(mockNavigate).toHaveBeenCalledWith("/upload/patient-trace");
         });

@@ -19,12 +19,13 @@ const uploadStateMessages = {
     [stateNames.FAILED]: "Upload failed",
 };
 
-const UploadDocumentPage = ({ nextPagePath }) => {
+const UploadDocumentsPage = ({ nextPagePath }) => {
     const documentStore = useDocumentStore();
     const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
-    const documents = watch("documents");
     const [patientDetails] = usePatientDetailsProviderContext();
     const navigate = useNavigate();
+
+    const documents = watch("documents");
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
@@ -73,7 +74,7 @@ const UploadDocumentPage = ({ nextPagePath }) => {
             {uploadStep === documentUploadSteps.SELECTING_FILES && (
                 <form onSubmit={handleSubmit(doSubmit)} noValidate data-testid="upload-document-form">
                     <Fieldset>
-                        <Fieldset.Legend headingLevel={"h1"} isPageHeading>
+                        <Fieldset.Legend headingLevel="h1" isPageHeading>
                             Upload documents
                         </Fieldset.Legend>
                         <PatientSummary patientDetails={patientDetails} />
@@ -143,4 +144,4 @@ const UploadDocumentPage = ({ nextPagePath }) => {
     );
 };
 
-export default UploadDocumentPage;
+export default UploadDocumentsPage;

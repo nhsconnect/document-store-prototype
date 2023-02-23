@@ -7,7 +7,7 @@ import HomePage from "./pages/homePage/HomePage";
 import Layout from "./components/layout/Layout";
 import { PatientDetailsProvider } from "./providers/PatientDetailsProvider";
 import { PatientTracePage } from "./pages/patientTracePage/PatientTracePage";
-import UploadDocumentPage from "./pages/uploadDocumentPage/UploadDocumentPage";
+import UploadDocumentsPage from "./pages/uploadDocumentsPage/UploadDocumentsPage";
 import SearchResultsPage from "./pages/searchResultsPage/SearchResultsPage";
 import StartPage from "./pages/startPage/StartPage";
 import AuthCallbackRouter from "./components/authenticator/AuthCallbackRouter";
@@ -52,7 +52,7 @@ const AppRoutes = () => {
                     }
                 >
                     <Route path="/upload/patient-trace" element={<PatientTracePage nextPage="/upload/submit" />} />
-                    <Route path="/upload/submit" element={<UploadDocumentPage nextPagePath="/home" />} />
+                    <Route path="/upload/submit" element={<UploadDocumentsPage nextPagePath="/home" />} />
                 </Route>
             </Route>
         </Routes>
