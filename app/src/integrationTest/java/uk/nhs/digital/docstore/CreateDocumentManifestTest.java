@@ -30,7 +30,6 @@ import uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
-import uk.nhs.digital.docstore.services.DocumentManifestService;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
@@ -56,7 +55,7 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
                         metadataStore,
                         zipTraceStore,
                         documentStore,
-                        new DocumentManifestService(publisher),
+                        publisher,
                         "1");
     }
 

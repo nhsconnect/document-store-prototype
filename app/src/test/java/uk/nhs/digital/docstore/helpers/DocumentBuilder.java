@@ -61,13 +61,27 @@ public class DocumentBuilder {
         this.location = location;
     }
 
-    public DocumentBuilder withFileName(String fileName) {
+    public DocumentBuilder withNhsNumber(NhsNumber nhsNumber) {
         return new DocumentBuilder(
                 referenceId,
                 nhsNumber,
                 contentType,
                 uploaded,
-                new FileName(fileName),
+                fileName,
+                created,
+                deleted,
+                indexed,
+                type,
+                location);
+    }
+
+    public DocumentBuilder withFileName(FileName fileName) {
+        return new DocumentBuilder(
+                referenceId,
+                nhsNumber,
+                contentType,
+                uploaded,
+                fileName,
                 created,
                 deleted,
                 indexed,

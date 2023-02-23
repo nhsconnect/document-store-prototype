@@ -1,10 +1,13 @@
 package uk.nhs.digital.docstore.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.ByteArrayInputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -17,14 +20,19 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.DownloadAllPatientRecordsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
+import uk.nhs.digital.docstore.data.repository.DocumentStore;
+import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.model.Document;
+import uk.nhs.digital.docstore.helpers.DocumentBuilder;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentManifestServiceTest {
     @Mock private SplunkPublisher publisher;
+    @Mock private DocumentStore documentStore;
+    @Mock private DocumentZipTraceStore zipTraceStore;
 
     @Captor
     private ArgumentCaptor<DownloadAllPatientRecordsAuditMessage> sensitiveAuditMessageCaptor;
@@ -33,24 +41,39 @@ class DocumentManifestServiceTest {
 
     @BeforeEach
     void setUp() {
-        documentManifestService = new DocumentManifestService(publisher);
+        documentManifestService =
+                new DocumentManifestService(publisher, zipTraceStore, documentStore, "1");
     }
 
     @Test
-    void shouldSendAuditMessage() throws JsonProcessingException, IllFormedPatientDetailsException {
-        var nhsNumber = new NhsNumber("9123456780");
+    void shouldSaveZipInS3AndMetadataInZipTraceDb()
+            throws IllFormedPatientDetailsException, MalformedURLException,
+                    JsonProcessingException {
+        var zipInputStream = new ByteArrayInputStream(new byte[10]);
+        var nhsNumber = new NhsNumber("9087654321");
+        var documentLocation = new DocumentLocation("s3://s3/location");
+        var presignedUrl = new URL("https://presigned-url-with-filename");
         var fileName = new FileName("Document Title");
         var document =
-                new Document("123", nhsNumber, "pdf", true, fileName, null, null, null, null, null);
-
+                DocumentBuilder.baseDocumentBuilder()
+                        .withNhsNumber(nhsNumber)
+                        .withFileName(fileName)
+                        .build();
         var documentList = List.of(document);
         var expectedSensitiveAuditMessage =
                 new DownloadAllPatientRecordsAuditMessage(nhsNumber, documentList);
 
-        documentManifestService.audit(nhsNumber, documentList);
+        when(documentStore.addDocument(anyString(), eq(zipInputStream)))
+                .thenReturn(documentLocation);
+        doNothing().when(zipTraceStore).save(any());
+        when(documentStore.generatePreSignedUrlForZip(eq(documentLocation), any(FileName.class)))
+                .thenReturn(presignedUrl);
 
+        var actualPresignedUrlString =
+                documentManifestService.saveZip(zipInputStream, documentList, nhsNumber);
+
+        assertEquals(presignedUrl.toString(), actualPresignedUrlString);
         verify(publisher).publish(sensitiveAuditMessageCaptor.capture());
-
         var actualSensitiveAuditMessage = sensitiveAuditMessageCaptor.getValue();
         assertThat(actualSensitiveAuditMessage)
                 .usingRecursiveComparison()

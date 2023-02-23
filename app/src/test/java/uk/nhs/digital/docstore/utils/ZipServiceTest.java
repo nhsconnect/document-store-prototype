@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.helpers.DocumentBuilder;
+import uk.nhs.digital.docstore.model.FileName;
 
 @ExtendWith(MockitoExtension.class)
 class ZipServiceTest {
@@ -46,26 +47,21 @@ class ZipServiceTest {
     void shouldZipSpecifiedFilesFromS3IfDuplicateFileNamesWithExtension() throws IOException {
         var s3Object =
                 new S3ObjectInputStream(new ByteArrayInputStream(new byte[10]), new HttpGet());
-        when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
-
+        var fileName = new FileName("some-file-name.txt");
         var documentList =
                 List.of(
-                        DocumentBuilder.baseDocumentBuilder()
-                                .withFileName("some-file-name.txt")
-                                .build(),
-                        DocumentBuilder.baseDocumentBuilder()
-                                .withFileName("some-file-name.txt")
-                                .build(),
-                        DocumentBuilder.baseDocumentBuilder()
-                                .withFileName("some-file-name.txt")
-                                .build());
+                        DocumentBuilder.baseDocumentBuilder().withFileName(fileName).build(),
+                        DocumentBuilder.baseDocumentBuilder().withFileName(fileName).build(),
+                        DocumentBuilder.baseDocumentBuilder().withFileName(fileName).build());
+
+        when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
 
         var result = zipService.zipDocuments(documentList);
 
         var fileNames = listZipEntryNames(result);
 
         assertThat(fileNames.size()).isEqualTo(3);
-        assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getFileName().getValue());
+        assertThat(fileNames.get(0)).isEqualTo(fileName.getValue());
         assertThat(fileNames.get(1)).isEqualTo("some-file-name(1).txt");
         assertThat(fileNames.get(2)).isEqualTo("some-file-name(2).txt");
     }
@@ -74,26 +70,21 @@ class ZipServiceTest {
     void shouldZipSpecifiedFilesFromS3IfDuplicateFileNamesWithOutExtension() throws IOException {
         var s3Object =
                 new S3ObjectInputStream(new ByteArrayInputStream(new byte[10]), new HttpGet());
-        when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
-
+        var fileName = new FileName("some-file-name");
         var documentList =
                 List.of(
-                        DocumentBuilder.baseDocumentBuilder()
-                                .withFileName("some-file-name")
-                                .build(),
-                        DocumentBuilder.baseDocumentBuilder()
-                                .withFileName("some-file-name")
-                                .build(),
-                        DocumentBuilder.baseDocumentBuilder()
-                                .withFileName("some-file-name")
-                                .build());
+                        DocumentBuilder.baseDocumentBuilder().withFileName(fileName).build(),
+                        DocumentBuilder.baseDocumentBuilder().withFileName(fileName).build(),
+                        DocumentBuilder.baseDocumentBuilder().withFileName(fileName).build());
+
+        when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
 
         var result = zipService.zipDocuments(documentList);
 
         var fileNames = listZipEntryNames(result);
 
         assertThat(fileNames.size()).isEqualTo(3);
-        assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getFileName().getValue());
+        assertThat(fileNames.get(0)).isEqualTo(fileName.getValue());
         assertThat(fileNames.get(1)).isEqualTo("some-file-name(1)");
         assertThat(fileNames.get(2)).isEqualTo("some-file-name(2)");
     }
@@ -102,26 +93,21 @@ class ZipServiceTest {
     void shouldZipSpecifiedFilesFromS3IfDuplicateAndIncludesSpecialCharacters() throws IOException {
         var s3Object =
                 new S3ObjectInputStream(new ByteArrayInputStream(new byte[10]), new HttpGet());
-        when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
-
+        var fileName = new FileName("so.me-file-name.txt");
         var documentList =
                 List.of(
-                        DocumentBuilder.baseDocumentBuilder()
-                                .withFileName("so.me-file-name.txt")
-                                .build(),
-                        DocumentBuilder.baseDocumentBuilder()
-                                .withFileName("so.me-file-name.txt")
-                                .build(),
-                        DocumentBuilder.baseDocumentBuilder()
-                                .withFileName("so.me-file-name.txt")
-                                .build());
+                        DocumentBuilder.baseDocumentBuilder().withFileName(fileName).build(),
+                        DocumentBuilder.baseDocumentBuilder().withFileName(fileName).build(),
+                        DocumentBuilder.baseDocumentBuilder().withFileName(fileName).build());
+
+        when(documentStore.getObjectFromS3(any())).thenReturn(s3Object);
 
         var result = zipService.zipDocuments(documentList);
 
         var fileNames = listZipEntryNames(result);
 
         assertThat(fileNames.size()).isEqualTo(3);
-        assertThat(fileNames.get(0)).isEqualTo(documentList.get(0).getFileName().getValue());
+        assertThat(fileNames.get(0)).isEqualTo(fileName.getValue());
         assertThat(fileNames.get(1)).isEqualTo("so.me-file-name(1).txt");
         assertThat(fileNames.get(2)).isEqualTo("so.me-file-name(2).txt");
     }
