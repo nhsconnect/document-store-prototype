@@ -47,14 +47,15 @@ const DocumentsInput = ({ control }) => {
             );
         });
 
-    const changeHandler = (e) => {
-        const newFiles = e.target.files instanceof Array ? e.target.files : Array.from(e.target.files);
+    const changeHandler = (event) => {
+        const newFiles = event.target.files instanceof Array ? event.target.files : Array.from(event.target.files);
         const newDocumentObjects = newFiles.map((file) => ({
             id: nanoid(),
             file,
             state: documentUploadStates.SELECTED,
             progress: 0,
         }));
+
         onChange(value ? value.concat(newDocumentObjects) : newDocumentObjects);
     };
 
@@ -65,9 +66,9 @@ const DocumentsInput = ({ control }) => {
 
     return (
         <>
-            {/* override the width attribute because the value of the file input is read-only, so when we remove a file it doesn't update */}
+            {/* TODO: Override the width attribute because the value of the file input is read-only, so when we remove a file it doesn't update */}
             <Input
-                id={"documents-input"}
+                id="documents-input"
                 label="Select file(s)"
                 hint={
                     <ul>
@@ -75,7 +76,10 @@ const DocumentsInput = ({ control }) => {
                         <li>{"You can select multiple files to upload at once."}</li>
                         <li>
                             In the event documents cannot be uploaded, they must be printed and sent via{" "}
-                            <a href="https://secure.pcse.england.nhs.uk/">Primary Care Support England</a>.
+                            <a href="https://secure.pcse.england.nhs.uk/" target="_blank" rel="noreferrer">
+                                Primary Care Support England
+                            </a>
+                            .
                         </li>
                     </ul>
                 }
@@ -105,7 +109,7 @@ const DocumentsInput = ({ control }) => {
                                     <Table.Cell>{formatSize(document.file.size)}</Table.Cell>
                                     <Table.Cell>
                                         <a
-                                            href={"#"}
+                                            href="#"
                                             aria-label={`Remove ${document.file.name} from selection`}
                                             onClick={() => onRemove(index)}
                                         >

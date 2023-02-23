@@ -9,19 +9,10 @@ jest.mock("../../utils/utils", () => ({
     toFileList: () => [],
 }));
 
-const FormWrapper = () => {
-    const { control, handleSubmit } = useForm();
-    return (
-        <form onSubmit={handleSubmit()}>
-            <DocumentsInput control={control} />
-            <button type="submit">Submit</button>
-        </form>
-    );
-};
-
-describe("DocumentsInput", () => {
+describe("<DocumentsInput />", () => {
     it("renders the choose file input", () => {
-        render(<FormWrapper />);
+        render(<DocumentsInputFormWrapper />);
+
         expect(screen.getByLabelText("Select file(s)")).toBeInTheDocument();
         expect(
             screen.getByText("A patient's full electronic health record including attachments must be uploaded.")
@@ -31,8 +22,6 @@ describe("DocumentsInput", () => {
     });
 
     it("renders a list of the selected documents", async () => {
-        render(<FormWrapper />);
-
         const documentOne = new File(["one"], "one.txt", {
             type: "text/plain",
         });
@@ -40,6 +29,7 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
+        render(<DocumentsInputFormWrapper />);
         userEvent.upload(screen.getByLabelText("Select file(s)"), [documentOne, documentTwo]);
 
         expect(await screen.findByText(documentOne.name)).toBeInTheDocument();
@@ -49,56 +39,50 @@ describe("DocumentsInput", () => {
     });
 
     it("validates that a file has been selected", async () => {
-        render(<FormWrapper />);
-
+        render(<DocumentsInputFormWrapper />);
         userEvent.click(screen.getByText("Submit"));
 
         expect(await screen.findByText("Please select a file")).toBeInTheDocument();
     });
 
     it("validates that all of the selected files are less than 5GB", async () => {
-        render(<FormWrapper />);
-
         const documentOne = new File(["one"], "one.txt", {
             type: "text/plain",
         });
-
         const documentTwo = new File(["two"], "two.txt", {
             type: "text/plain",
         });
         Object.defineProperty(documentTwo, "size", {
             value: 5 * Math.pow(1024, 3) + 1,
         });
-
         const documentThree = new File(["three"], "three.txt", {
             type: "text/plain",
         });
 
+        render(<DocumentsInputFormWrapper />);
         userEvent.upload(screen.getByLabelText("Select file(s)"), [documentOne, documentTwo, documentThree]);
-
         userEvent.click(screen.getByText("Submit"));
 
         expect(await screen.findByText("Please ensure that all files are less than 5GB in size"));
     });
-    it("should be able to remove selected file", async () => {
-        render(<FormWrapper />);
+
+    it("removes selected file", async () => {
         const document = new File(["test"], "test.txt", {
             type: "text/plain",
         });
-        userEvent.upload(screen.getByLabelText("Select file(s)"), [document]);
 
-        expect(screen.getByText(document.name)).toBeInTheDocument();
+        render(<DocumentsInputFormWrapper />);
+        userEvent.upload(screen.getByLabelText("Select file(s)"), [document]);
         userEvent.click(
-            screen.getByRole("link", {
+            await screen.findByRole("link", {
                 name: `Remove ${document.name} from selection`,
             })
         );
-        await waitFor(() => expect(screen.queryByText(document.name)).not.toBeInTheDocument());
+
+        expect(screen.queryByText(document.name)).not.toBeInTheDocument();
     });
 
     it("adds new file selections to the existing selection", async () => {
-        render(<FormWrapper />);
-
         const documentOne = new File(["one"], "one.txt", {
             type: "text/plain",
         });
@@ -106,30 +90,32 @@ describe("DocumentsInput", () => {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Select file(s)"), [documentOne]);
+        render(<DocumentsInputFormWrapper />);
+        const selectFilesLabel = screen.getByLabelText("Select file(s)");
+        userEvent.upload(selectFilesLabel, [documentOne]);
+        const documentOneName = await screen.findByText(documentOne.name);
 
-        expect(await screen.findByText(documentOne.name)).toBeInTheDocument();
+        expect(documentOneName).toBeInTheDocument();
 
-        userEvent.upload(screen.getByLabelText("Select file(s)"), [documentTwo]);
+        userEvent.upload(selectFilesLabel, [documentTwo]);
 
-        expect(screen.getByText(documentOne.name)).toBeInTheDocument();
-
+        expect(documentOneName).toBeInTheDocument();
         expect(await screen.findByText(documentTwo.name)).toBeInTheDocument();
     });
 
     it("warns the user if they have added the same file twice", async () => {
-        render(<FormWrapper />);
         const document = new File(["test"], "test.txt", {
             type: "text/plain",
         });
         const duplicateDocument = new File(["test"], "test.txt", {
             type: "text/plain",
         });
+        const duplicateFileWarning = "There are two or more documents with the same name.";
+
+        render(<DocumentsInputFormWrapper />);
         userEvent.upload(screen.getByLabelText("Select file(s)"), [document, duplicateDocument]);
 
-        await waitFor(() =>
-            expect(screen.queryByText("There are two or more documents with the same name.")).toBeInTheDocument()
-        );
+        expect(await screen.findByText(duplicateFileWarning)).toBeInTheDocument();
 
         userEvent.click(
             screen.getAllByRole("link", {
@@ -137,28 +123,41 @@ describe("DocumentsInput", () => {
             })[1]
         );
 
-        await waitFor(() =>
-            expect(screen.queryByText("There are two or more documents with the same name.")).not.toBeInTheDocument()
-        );
+        await waitFor(() => {
+            expect(screen.queryByText(duplicateFileWarning)).not.toBeInTheDocument();
+        });
     });
 
     it("allows the user to add the same file again if they remove it", async () => {
-        render(<FormWrapper />);
         const document = new File(["test"], "test.txt", {
             type: "text/plain",
         });
 
-        userEvent.upload(screen.getByLabelText("Select file(s)"), document);
-        expect(await screen.findByText(document.name)).toBeInTheDocument();
+        render(<DocumentsInputFormWrapper />);
+        const selectFilesLabel = screen.getByLabelText("Select file(s)");
+        userEvent.upload(selectFilesLabel, document);
+        userEvent.click(await screen.findByRole("link", { name: `Remove ${document.name} from selection` }));
+        userEvent.upload(selectFilesLabel, document);
 
-        userEvent.click(
-            screen.getByRole("link", {
-                name: `Remove ${document.name} from selection`,
-            })
-        );
-        await waitFor(() => expect(screen.queryByText(document.name)).not.toBeInTheDocument());
-
-        userEvent.upload(screen.getByLabelText("Select file(s)"), document);
         expect(await screen.findByText(document.name)).toBeInTheDocument();
     });
+
+    it("renders link to PCSE that opens in a new tab", () => {
+        render(<DocumentsInputFormWrapper />);
+
+        const pcseLink = screen.getByRole("link", { name: "Primary Care Support England" });
+        expect(pcseLink).toHaveAttribute("href", "https://secure.pcse.england.nhs.uk/");
+        expect(pcseLink).toHaveAttribute("target", "_blank");
+    });
 });
+
+const DocumentsInputFormWrapper = () => {
+    const { control, handleSubmit } = useForm();
+
+    return (
+        <form onSubmit={handleSubmit(undefined, undefined)}>
+            <DocumentsInput control={control} />
+            <button type="submit">Submit</button>
+        </form>
+    );
+};

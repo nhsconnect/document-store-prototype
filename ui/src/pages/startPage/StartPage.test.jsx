@@ -19,20 +19,13 @@ describe("<StartPage/>", () => {
         expect(screen.getByText(/PCSE should use this service/)).toBeInTheDocument();
     });
 
-    it("renders service issue guidance with a link to service desk", () => {
+    it("renders service issue guidance with a link to service desk that opens in a new tab", () => {
         render(<StartPage />);
 
         expect(screen.getByText(/If there is an issue/)).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: /National Service Desk/ })).toHaveAttribute(
-            "href",
-            "https://digital.nhs.uk/about-nhs-digital/contact-us"
-        );
-    });
-
-    it("opens the service issue guidance link in a new tab", () => {
-        render(<StartPage />);
-
-        expect(screen.getByRole("link", { name: /National Service Desk/ })).toHaveAttribute("target", "_blank");
+        const nationalServiceDeskLink = screen.getByRole("link", { name: /National Service Desk/ });
+        expect(nationalServiceDeskLink).toHaveAttribute("href", "https://digital.nhs.uk/about-nhs-digital/contact-us");
+        expect(nationalServiceDeskLink).toHaveAttribute("target", "_blank");
     });
 
     it("renders a 'Before you start' section", () => {
