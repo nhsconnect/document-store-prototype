@@ -5,6 +5,9 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import java.math.BigInteger;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,37 +20,42 @@ public class LoginHandler
     private final AuthenticationRequestFactory authenticationRequestFactory;
     private final SessionStore sessionStore;
     private final UUIDProvider uuidProvider;
+    private final Clock clock;
 
     @SuppressWarnings("unused")
-    public LoginHandler() {
+    public LoginHandler(Clock clock) {
         this(
                 new AuthenticationRequestFactory(new OIDCClientConfig()),
                 new DynamoDBSessionStore(),
-                new UUIDProvider());
+                new UUIDProvider(),
+                clock);
     }
 
     public LoginHandler(
             AuthenticationRequestFactory authenticationRequestFactory,
             SessionStore sessionStore,
-            UUIDProvider uuidProvider) {
+            UUIDProvider uuidProvider,
+            Clock clock) {
         this.authenticationRequestFactory = authenticationRequestFactory;
         this.sessionStore = sessionStore;
         this.uuidProvider = uuidProvider;
+        this.clock = clock;
     }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent input, Context context) {
-        // TODO:
-        //  set an expiry so that incomplete sessions are not left cached
 
         var authRequest = authenticationRequestFactory.build();
         LOGGER.debug("Redirecting user to " + authRequest.toURI().toString());
 
         var sessionId = uuidProvider.generateUUID();
+        var timeToExit = Instant.now(clock).plus(1, ChronoUnit.HOURS).getEpochSecond();
         var session =
                 Session.create(
-                        sessionId.toString(), BigInteger.ONE, authRequest.getState().toString());
+                        sessionId.toString(),
+                        BigInteger.valueOf(timeToExit),
+                        authRequest.getState().toString());
         sessionStore.save(session);
 
         var headers =

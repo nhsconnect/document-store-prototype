@@ -9,8 +9,13 @@ import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.TimeZone;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,6 +28,7 @@ public class LoginHandlerTest {
         var sessionID = UUID.randomUUID();
         var authenticationRequestFactory = Mockito.mock(AuthenticationRequestFactory.class);
         var uuidProvider = Mockito.mock(UUIDProvider.class);
+        var clock = Clock.fixed(Instant.now(), TimeZone.getDefault().toZoneId());
 
         var authRequestBuilder =
                 new AuthenticationRequest.Builder(
@@ -39,7 +45,8 @@ public class LoginHandlerTest {
         Mockito.when(uuidProvider.generateUUID()).thenReturn(sessionID);
 
         var sessionStore = new InMemorySessionStore();
-        var handler = new LoginHandler(authenticationRequestFactory, sessionStore, uuidProvider);
+        var handler =
+                new LoginHandler(authenticationRequestFactory, sessionStore, uuidProvider, clock);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(303);
@@ -52,5 +59,7 @@ public class LoginHandlerTest {
         assertThat(session.get().getId()).isEqualTo(sessionID.toString());
         assertThat(session.get().getAuthStateParameter())
                 .isEqualTo(authRequest.getState().toString());
+        var timeToExit = Instant.now(clock).plus(1, ChronoUnit.HOURS).getEpochSecond();
+        assertThat(session.get().getTimeToExist()).isEqualTo(BigInteger.valueOf(timeToExit));
     }
 }
