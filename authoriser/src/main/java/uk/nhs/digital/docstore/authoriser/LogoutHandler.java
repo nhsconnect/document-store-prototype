@@ -32,7 +32,6 @@ public class LogoutHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent input, Context context) {
-
         var cookies = HttpCookie.parse(input.getHeaders().get("Cookie"));
         var sessionIdCookie = cookies.stream().filter(httpCookie -> httpCookie.getName().equals("SessionId")).findFirst();
 
@@ -42,7 +41,11 @@ public class LogoutHandler extends BaseAuthRequestHandler
 
         var sessionId = UUID.fromString(sessionIdCookie.get().getValue());
 
+        LOGGER.debug("Deleting session " + sessionId);
+
         sessionStore.delete(sessionId);
+
+        LOGGER.debug("Successfully deleted session " + sessionId);
 
         var queryStringParameters = input.getQueryStringParameters();
         var headers = Map.of(
@@ -50,6 +53,7 @@ public class LogoutHandler extends BaseAuthRequestHandler
                 "Set-Cookie", "SessionId=" + sessionId + "; Path=/; Max-Age=0"
         );
 
+        LOGGER.debug("Redirecting to " + headers.get("Location"));
         var response = new APIGatewayProxyResponseEvent();
 
         response.setStatusCode(SEE_OTHER_STATUS_CODE);
