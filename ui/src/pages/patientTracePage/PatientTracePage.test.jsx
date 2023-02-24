@@ -24,6 +24,7 @@ describe("<PatientTracePage/>", () => {
         givenName: ["Jane"],
         nhsNumber: "9000000009",
         postalCode: "LS1 6AE",
+        superseded: false,
     };
     const patientDetailsResponse = {
         result: {
@@ -202,6 +203,32 @@ describe("<PatientTracePage/>", () => {
         await waitFor(() => {
             expect(screen.getByRole("progressbar")).toBeInTheDocument();
         });
+    });
+
+    it("displays a message when nhs number is superseded", async () => {
+        const patientDetails = {
+            birthDate: "2010-10-22",
+            familyName: "Smith",
+            givenName: ["Steve"],
+            nhsNumber: "9000000012",
+            postalCode: "LS1 6AE",
+            superseded: true,
+        };
+
+        usePatientDetailsProviderContext.mockReturnValue([patientDetails, mockSetPatientDetails]);
+
+        mockDocumentStore.getPatientDetails = () => {
+            return {
+                result: { patientDetails },
+            };
+        };
+
+        render(<PatientTracePage />);
+
+        userEvent.type(screen.getByLabelText("Enter NHS number"), fakeNhsNumber);
+        startSearch();
+
+        expect(await screen.findByText("The NHS number for this patient has changed."));
     });
 
     it("displays an error message when the form is submitted and the NHS number is missing", async () => {
