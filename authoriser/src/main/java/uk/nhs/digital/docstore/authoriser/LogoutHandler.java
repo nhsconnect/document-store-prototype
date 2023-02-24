@@ -7,6 +7,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.HttpCookie;
 import java.util.Map;
 
 public class LogoutHandler
@@ -18,8 +19,19 @@ public class LogoutHandler
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent input, Context context) {
 
+        var cookies = HttpCookie.parse(input.getHeaders().get("Cookie"));
+        var sessionIdCookie = cookies.stream().filter(httpCookie -> httpCookie.getName().equals("SessionId")).findFirst();
+
+        if (sessionIdCookie.isEmpty()) {
+            throw new RuntimeException("Handling of missing session cookie not yet implemented");
+        }
+
+        var sessionId = sessionIdCookie.get().getValue();
         var queryStringParameters = input.getQueryStringParameters();
-        var headers = Map.of("Location", queryStringParameters.get("redirect_uri"));
+        var headers = Map.of(
+                "Location", queryStringParameters.get("redirect_uri"),
+                "Set-Cookie", "SessionId=" + sessionId + "; Path=/; Max-Age=0"
+        );
 
         var response = new APIGatewayProxyResponseEvent();
 

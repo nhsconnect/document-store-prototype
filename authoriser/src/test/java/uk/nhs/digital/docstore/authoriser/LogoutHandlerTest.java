@@ -16,7 +16,8 @@ public class LogoutHandlerTest {
     public void removeExistingSessionIdFromSessionStore() {
         var request = new APIGatewayProxyRequestEvent();
         var sessionID = UUID.randomUUID();
-        LogoutHandler handler = new LogoutHandler();
+
+        var handler = new LogoutHandler();
         request.setHeaders(Map.of(
                 "Cookie",
                 "SessionId=" + sessionID
@@ -31,5 +32,6 @@ public class LogoutHandlerTest {
         Assertions.assertThat(response.getIsBase64Encoded()).isFalse();
         Assertions.assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getHeaders().get("Location")).isEqualTo(redirectUrl);
+        assertThat(response.getHeaders().get("Set-Cookie")).isEqualTo("SessionId=" + sessionID + "; Path=/; Max-Age=0");
     }
 }
