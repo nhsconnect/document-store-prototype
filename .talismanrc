@@ -9,8 +9,8 @@ fileignoreconfig:
   checksum: b21b6d3c9eba665ceed98715cdf7f813be9194ef45979522241111bbfdf4632d
 - filename: terraform/.terraform.lock.hcl
   checksum: a38737e394ada9d4c0a6d6ea82a964b771799810b35a3c9d2df964bf11525ccb
-- filename: ui/src/components/PatientSummary.js
-  checksum: 5887e478e0ea744814ce24b013e26dd2ce4dfa3c05dfe1a4107ef41b90b21cf2
+- filename: ui/src/components/patientSummary/PatientSummary.jsx
+  checksum: 3a792a4b4c0d49824323be103aa969f34d7c6b9f1f9428b28d7340616db6d6b5
 - filename: ui/src/pages/PatientTracePage.jsx
   checksum: c977a7264b9471475fade1959b6b804554714c8c7cdf800a27cdc10237f0b6b7
 - filename: ui/src/components/DocumentsInput.js
