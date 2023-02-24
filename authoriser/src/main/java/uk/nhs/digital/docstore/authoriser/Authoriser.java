@@ -13,6 +13,8 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.authoriser.exceptions.InvalidAccessTokenException;
+import uk.nhs.digital.docstore.authoriser.exceptions.InvalidJWTException;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.Role;
 

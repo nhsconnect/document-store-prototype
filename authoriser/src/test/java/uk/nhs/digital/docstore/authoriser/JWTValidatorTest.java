@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.authoriser.exceptions.InvalidJWTException;
 
 public class JWTValidatorTest {
 

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.authoriser.exceptions.InvalidAccessTokenException;
 import uk.nhs.digital.docstore.authoriser.models.AssociatedOrganisations;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
 
