@@ -10,13 +10,16 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.authoriser.requests.LogoutRequestEvent;
 
 import java.net.HttpCookie;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class LogoutHandler extends BaseAuthRequestHandler
-        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+        implements RequestHandler<LogoutRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(LogoutHandler.class);
 
     private final SessionStore sessionStore;
@@ -30,40 +33,37 @@ public class LogoutHandler extends BaseAuthRequestHandler
     }
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(
-            APIGatewayProxyRequestEvent input, Context context) {
-        var cookies = HttpCookie.parse(input.getHeaders().get("Cookie"));
-        var sessionIdCookie = cookies.stream().filter(httpCookie -> httpCookie.getName().equals("SessionId")).findFirst();
-
-        if (sessionIdCookie.isEmpty()) {
-            throw new RuntimeException("Handling of missing session cookie not yet implemented");
-        }
-
-        var sessionId = UUID.fromString(sessionIdCookie.get().getValue());
+    public APIGatewayProxyResponseEvent handleRequest(LogoutRequestEvent input, Context context) {
+        var sessionId = input.getSessionId();
 
         LOGGER.debug("Deleting session " + sessionId);
 
-        sessionStore.delete(sessionId);
+        sessionId.ifPresent(sessionStore::delete);
 
         LOGGER.debug("Successfully deleted session " + sessionId);
 
-        var queryStringParameters = input.getQueryStringParameters();
-        var headers = Map.of(
-                "Location", queryStringParameters.get("redirect_uri"),
-                "Set-Cookie", "SessionId=" + sessionId + "; Path=/; Max-Age=0"
-        );
+        var response = new APIGatewayProxyResponseEvent();
+        response.setIsBase64Encoded(false);
+        var headers = new HashMap<String, String>();
+        try {
+            headers.put("Location", input.getRedirectUri().orElseThrow());
+            sessionId.ifPresent(uuid -> headers.put("Set-Cookie", "SessionId=" + uuid + "; Path=/; Max-Age=0"));
+        } catch (NoSuchElementException e) {
+            LOGGER.error("Logout request is missing query parameter: redirect_uri");
+            headers.put("Content-Type", "text/html");
+            response.setStatusCode(400);
+            response.setBody("<html><head></head><body><p>Missing query parameter: redirect_uri</p></body></html>");
+            return response;
+        }
 
         LOGGER.debug("Redirecting to " + headers.get("Location"));
-        var response = new APIGatewayProxyResponseEvent();
 
         response.setStatusCode(SEE_OTHER_STATUS_CODE);
         response.setHeaders(headers);
         response.setBody("");
-        response.setIsBase64Encoded(false);
 
         return response;
     }
-
 }
 
 //delete the session id
