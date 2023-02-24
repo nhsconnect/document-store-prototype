@@ -104,7 +104,7 @@ export const PatientTracePage = ({ nextPage }) => {
                     <h1>Verify patient details</h1>
                     {patientDetails.superseded && (
                         <WarningCallout>
-                            <WarningCallout.Label headingLevel="h2">Superseded Patient</WarningCallout.Label>
+                            <WarningCallout.Label headingLevel="h2">Information</WarningCallout.Label>
                             <p>The NHS number for this patient has changed.</p>
                         </WarningCallout>
                     )}
