@@ -1,5 +1,9 @@
 package uk.nhs.digital.docstore.authoriser;
 
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -9,11 +13,21 @@ import org.slf4j.LoggerFactory;
 
 import java.net.HttpCookie;
 import java.util.Map;
+import java.util.UUID;
 
-public class LogoutHandler
+public class LogoutHandler extends BaseAuthRequestHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(LogoutHandler.class);
-    public static final int SEE_OTHER_STATUS_CODE = 303;
+
+    private final SessionStore sessionStore;
+
+    public LogoutHandler(SessionStore sessionStore) {
+        this.sessionStore = sessionStore;
+    }
+
+    public LogoutHandler() {
+        this(new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())));
+    }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
@@ -26,7 +40,10 @@ public class LogoutHandler
             throw new RuntimeException("Handling of missing session cookie not yet implemented");
         }
 
-        var sessionId = sessionIdCookie.get().getValue();
+        var sessionId = UUID.fromString(sessionIdCookie.get().getValue());
+
+        sessionStore.delete(sessionId);
+
         var queryStringParameters = input.getQueryStringParameters();
         var headers = Map.of(
                 "Location", queryStringParameters.get("redirect_uri"),
@@ -42,8 +59,7 @@ public class LogoutHandler
 
         return response;
     }
+
 }
 
-//Location header
-//cookie
 //delete the session id

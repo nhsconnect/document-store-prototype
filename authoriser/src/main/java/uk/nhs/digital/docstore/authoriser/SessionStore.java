@@ -8,4 +8,6 @@ public interface SessionStore {
     void save(Session session);
 
     Optional<Session> load(UUID sessionID);
+
+    void delete(UUID sessionID);
 }

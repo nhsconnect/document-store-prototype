@@ -24,4 +24,8 @@ public class DynamoDBSessionStore implements SessionStore {
         var session = dynamoDBMapper.load(Session.class, key, key);
         return Optional.ofNullable(session);
     }
+
+    @Override
+    public void delete(UUID sessionID) {
+    }
 }

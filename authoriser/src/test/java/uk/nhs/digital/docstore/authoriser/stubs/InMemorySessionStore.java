@@ -23,4 +23,9 @@ public class InMemorySessionStore implements SessionStore {
     public Optional<Session> load(UUID sessionID) {
         return Optional.ofNullable(sessions.get("SESSION#" + sessionID + "SESSION#" + sessionID));
     }
+
+    @Override
+    public void delete(UUID sessionID) {
+        this.sessions.remove("SESSION#" + sessionID + "SESSION#" + sessionID);
+    }
 }
