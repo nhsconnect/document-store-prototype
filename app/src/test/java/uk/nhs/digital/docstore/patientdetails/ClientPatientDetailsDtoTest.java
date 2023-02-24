@@ -23,7 +23,8 @@ class ClientPatientDetailsDtoTest {
                         new PatientName("Smith"),
                         new BirthDate("2003-10-23"),
                         new Postcode("PO1 2ST"),
-                        new NhsNumber("9123456780"));
+                        new NhsNumber("9123456780"),
+                        true);
 
         var clientPatientDetailsDto = ClientPatientDetailsDto.fromPatientDetails(patientDetails);
 
@@ -51,7 +52,7 @@ class ClientPatientDetailsDtoTest {
     void createClientPatientDetailsDtoFromPatientDetailsWithIncompleteInfo()
             throws IllFormedPatientDetailsException {
         var patientDetails =
-                new PatientDetails(null, null, null, null, new NhsNumber("9123456780"));
+                new PatientDetails(null, null, null, null, new NhsNumber("9123456780"), false);
 
         var clientPatientDetailsDto = ClientPatientDetailsDto.fromPatientDetails(patientDetails);
 

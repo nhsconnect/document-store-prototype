@@ -42,7 +42,7 @@ fileignoreconfig:
 - filename: app/src/test/java/uk/nhs/digital/docstore/services/DocumentMetadataSearchServiceTest.java
   checksum: 2fdc418445c4e65b4b6605a437274ecc69962335cdefb7da8f07c078abf779c4
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
-  checksum: 44de7b866f1116761d62c39832ff182c32da6e699eb45bd7756661ccd36bf3f9
+  checksum: dc4fafc0bd7dce0234ca74633a22c97cd3c8844434101efff45414f3969b447d
 - filename: app/src/main/java/uk/nhs/digital/docstore/handlers/DocumentUploadedEventHandler.java
   checksum: 157c62551effdcf34a6d996ec7c998cb01d747dbef9216e77cacfe93294f40bd
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/auth/SignedJwtBuilderTest.java

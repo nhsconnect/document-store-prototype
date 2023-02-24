@@ -70,7 +70,8 @@ class RealPdsFhirServiceTest {
                         new PatientName("Doe"),
                         new BirthDate("Test"),
                         new Postcode("EX1 2EX"),
-                        nhsNumber);
+                        nhsNumber,
+                        false);
 
         when(httpClient.get(any(), any(), eq(accessToken)))
                 .thenReturn(new StubPdsResponse(200, getJSONPatientDetails(nhsNumber)));
@@ -205,7 +206,8 @@ class RealPdsFhirServiceTest {
                         new PatientName("Doe"),
                         new BirthDate("Test"),
                         new Postcode("EX1 2EX"),
-                        nhsNumber);
+                        nhsNumber,
+                        false);
 
         when(httpClient.get(any(), any(), eq(accessToken)))
                 .thenReturn(

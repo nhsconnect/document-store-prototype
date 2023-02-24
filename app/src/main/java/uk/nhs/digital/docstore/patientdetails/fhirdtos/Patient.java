@@ -103,7 +103,8 @@ public class Patient {
         }
     }
 
-    public PatientDetails parse() throws IllFormedPatientDetailsException {
+    public PatientDetails parse(NhsNumber requestedNhsNumber)
+            throws IllFormedPatientDetailsException {
         var currentName = this.getCurrentUsualName();
         var currentHomeAddress = this.getCurrentHomeAddress();
 
@@ -121,6 +122,7 @@ public class Patient {
                         .filter(address -> address.getPostalCode() != null)
                         .map(address -> new Postcode(address.getPostalCode()))
                         .orElse(null),
-                new NhsNumber(id));
+                new NhsNumber(id),
+                !requestedNhsNumber.getValue().equals(id));
     }
 }

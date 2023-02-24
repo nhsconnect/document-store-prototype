@@ -32,9 +32,11 @@ public class PatientDetailsTest {
                         + postalCode
                         + ", nhsNumber='"
                         + nhsNumber
+                        + ", superseded="
+                        + true
                         + '}';
         var patientDetails =
-                new PatientDetails(givenName, familyName, birthDate, postalCode, nhsNumber);
+                new PatientDetails(givenName, familyName, birthDate, postalCode, nhsNumber, true);
 
         assertThat(patientDetails.toString()).isEqualTo(expectedPatientDetailsString);
     }
@@ -59,8 +61,10 @@ public class PatientDetailsTest {
                         + null
                         + ", nhsNumber='"
                         + nhsNumber
+                        + ", superseded="
+                        + false
                         + '}';
-        var patientDetails = new PatientDetails(null, null, null, null, nhsNumber);
+        var patientDetails = new PatientDetails(null, null, null, null, nhsNumber, false);
 
         assertThat(patientDetails.toString()).isEqualTo(expectedPatientDetailsString);
     }
@@ -74,9 +78,9 @@ public class PatientDetailsTest {
         NhsNumber nhsNumber = new NhsNumber("9876543210");
 
         var patientDetails1 =
-                new PatientDetails(givenName, familyName, birthDate, postalCode, nhsNumber);
+                new PatientDetails(givenName, familyName, birthDate, postalCode, nhsNumber, false);
         var patientDetails2 =
-                new PatientDetails(givenName, familyName, birthDate, postalCode, nhsNumber);
+                new PatientDetails(givenName, familyName, birthDate, postalCode, nhsNumber, false);
 
         assertEquals(patientDetails1, patientDetails2);
     }
@@ -91,9 +95,9 @@ public class PatientDetailsTest {
         Postcode postalCode2 = new Postcode("UR2 3FG");
 
         var patientDetails1 =
-                new PatientDetails(givenName, familyName, birthDate, postalCode1, nhsNumber);
+                new PatientDetails(givenName, familyName, birthDate, postalCode1, nhsNumber, false);
         var patientDetails2 =
-                new PatientDetails(givenName, familyName, birthDate, postalCode2, nhsNumber);
+                new PatientDetails(givenName, familyName, birthDate, postalCode2, nhsNumber, false);
 
         assertNotEquals(patientDetails1, patientDetails2);
     }

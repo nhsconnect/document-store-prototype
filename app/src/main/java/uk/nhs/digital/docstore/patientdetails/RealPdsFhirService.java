@@ -65,7 +65,7 @@ public class RealPdsFhirService implements PdsFhirService {
 
         if (pdsResponse.statusCode() == 200) {
             var fhirPatient = Patient.parseFromJson(pdsResponse.body());
-            return fhirPatient.parse();
+            return fhirPatient.parse(nhsNumber);
         }
 
         if (statusCode == 400) {

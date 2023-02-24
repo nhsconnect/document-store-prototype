@@ -13,18 +13,21 @@ public class PatientDetails {
     @Nullable private final BirthDate birthDate;
     @Nullable private final Postcode postalCode;
     @Nonnull private final NhsNumber nhsNumber;
+    private final boolean superseded;
 
     public PatientDetails(
             @Nullable List<PatientName> givenName,
             @Nullable PatientName familyName,
             @Nullable BirthDate birthDate,
             @Nullable Postcode postalCode,
-            @Nonnull NhsNumber nhsNumber) {
+            @Nonnull NhsNumber nhsNumber,
+            boolean superseded) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.birthDate = birthDate;
         this.postalCode = postalCode;
         this.nhsNumber = nhsNumber;
+        this.superseded = superseded;
     }
 
     public Optional<List<PatientName>> getGivenName() {
@@ -46,6 +49,10 @@ public class PatientDetails {
     @Nonnull
     public NhsNumber getNhsNumber() {
         return nhsNumber;
+    }
+
+    public boolean isSuperseded() {
+        return superseded;
     }
 
     @Override
@@ -74,6 +81,8 @@ public class PatientDetails {
                 + postalCode
                 + ", nhsNumber='"
                 + nhsNumber
+                + ", superseded="
+                + superseded
                 + '}';
     }
 }

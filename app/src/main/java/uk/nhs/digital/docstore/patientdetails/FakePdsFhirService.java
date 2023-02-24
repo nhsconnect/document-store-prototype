@@ -26,6 +26,19 @@ public class FakePdsFhirService implements PdsFhirService {
         var currentPeriod = new Period(LocalDate.now().minusYears(1), null);
         var nhsNumberValue = nhsNumber.getValue();
         switch (nhsNumberValue) {
+            case "9000000012":
+                var supersededPatientName =
+                        new Name(currentPeriod, "usual", List.of("John"), "Smith");
+                var supersededPatientAddress = new Address(currentPeriod, "AB1 2CD", "home");
+
+                sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, 200));
+
+                return new Patient(
+                                "9000000035",
+                                "2007-12-30",
+                                List.of(supersededPatientAddress),
+                                List.of(supersededPatientName))
+                        .parse(nhsNumber);
             case "9000000025":
                 var restrictedPatientName =
                         new Name(currentPeriod, "usual", List.of("Janet"), "Smythe");
@@ -34,7 +47,7 @@ public class FakePdsFhirService implements PdsFhirService {
 
                 return new Patient(
                                 nhsNumberValue, "2010-10-22", null, List.of(restrictedPatientName))
-                        .parse();
+                        .parse(nhsNumber);
             case "9111231130":
                 sensitiveIndex.publish(new SearchPatientDetailsAuditMessage(nhsNumber, 500));
 
@@ -50,7 +63,7 @@ public class FakePdsFhirService implements PdsFhirService {
                                 "2010-10-22",
                                 List.of(defaultAddress),
                                 List.of(defaultName))
-                        .parse();
+                        .parse(nhsNumber);
         }
     }
 }
