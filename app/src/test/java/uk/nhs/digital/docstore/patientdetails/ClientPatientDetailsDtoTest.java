@@ -46,6 +46,7 @@ class ClientPatientDetailsDtoTest {
                 patientDetails.getPostalCode().get().getValue());
         assertEquals(
                 clientPatientDetailsDto.getNhsNumber(), patientDetails.getNhsNumber().getValue());
+        assertEquals(clientPatientDetailsDto.isSuperseded(), patientDetails.isSuperseded());
     }
 
     @Test
@@ -62,5 +63,6 @@ class ClientPatientDetailsDtoTest {
         assertEquals(clientPatientDetailsDto.getGivenName(), Collections.emptyList());
         assertEquals(
                 clientPatientDetailsDto.getNhsNumber(), patientDetails.getNhsNumber().getValue());
+        assertEquals(clientPatientDetailsDto.isSuperseded(), patientDetails.isSuperseded());
     }
 }

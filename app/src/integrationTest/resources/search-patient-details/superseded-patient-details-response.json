@@ -1,0 +1,14 @@
+{
+  "result": {
+    "patientDetails": {
+      "birthDate": "2007-12-30",
+      "familyName": "Smith",
+      "givenName": [
+        "John"
+      ],
+      "nhsNumber": "9000000035",
+      "postalCode": "AB1 2CD",
+      "superseded": true
+    }
+  }
+}

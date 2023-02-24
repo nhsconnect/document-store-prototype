@@ -3,9 +3,12 @@
     "patientDetails": {
       "birthDate": "2010-10-22",
       "familyName": "Smith",
-      "givenName": ["Jane"],
+      "givenName": [
+        "Jane"
+      ],
       "nhsNumber": "9000000009",
-      "postalCode": "LS1 6AE"
+      "postalCode": "LS1 6AE",
+      "superseded": false
     }
   }
 }

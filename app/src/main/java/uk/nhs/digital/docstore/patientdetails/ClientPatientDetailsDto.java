@@ -3,11 +3,7 @@ package uk.nhs.digital.docstore.patientdetails;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import uk.nhs.digital.docstore.model.BirthDate;
-import uk.nhs.digital.docstore.model.NhsNumber;
-import uk.nhs.digital.docstore.model.PatientDetails;
-import uk.nhs.digital.docstore.model.PatientName;
-import uk.nhs.digital.docstore.model.Postcode;
+import uk.nhs.digital.docstore.model.*;
 
 public class ClientPatientDetailsDto {
     private final List<PatientName> givenName;
@@ -15,18 +11,21 @@ public class ClientPatientDetailsDto {
     private final BirthDate birthDate;
     private final Postcode postalCode;
     private final NhsNumber nhsNumber;
+    private final boolean isSuperseded;
 
     public ClientPatientDetailsDto(
             List<PatientName> givenName,
             PatientName familyName,
             BirthDate birthDate,
             Postcode postalCode,
-            NhsNumber nhsNumber) {
+            NhsNumber nhsNumber,
+            boolean isSuperseded) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.birthDate = birthDate;
         this.postalCode = postalCode;
         this.nhsNumber = nhsNumber;
+        this.isSuperseded = isSuperseded;
     }
 
     public List<String> getGivenName() {
@@ -49,12 +48,17 @@ public class ClientPatientDetailsDto {
         return nhsNumber.getValue();
     }
 
+    public boolean isSuperseded() {
+        return isSuperseded;
+    }
+
     public static ClientPatientDetailsDto fromPatientDetails(PatientDetails patientDetails) {
         return new ClientPatientDetailsDto(
                 patientDetails.getGivenName().orElse(Collections.emptyList()),
                 patientDetails.getFamilyName().orElse(new PatientName("")),
                 patientDetails.getBirthDate().orElse(new BirthDate("")),
                 patientDetails.getPostalCode().orElse(new Postcode("")),
-                patientDetails.getNhsNumber());
+                patientDetails.getNhsNumber(),
+                patientDetails.isSuperseded());
     }
 }

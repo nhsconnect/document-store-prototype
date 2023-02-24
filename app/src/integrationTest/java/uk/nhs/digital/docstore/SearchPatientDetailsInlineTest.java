@@ -80,6 +80,25 @@ public class SearchPatientDetailsInlineTest {
     }
 
     @Test
+    void returnsSuccessResponseWhenPatientIsSuperseded() throws IOException {
+        var nhsNumber = "9000000012";
+        var request =
+                requestBuilder
+                        .addQueryParameter("https://fhir.nhs.uk/Id/nhs-number|" + nhsNumber)
+                        .build();
+
+        var responseEvent = searchPatientDetailsHandler.handleRequest(request, context);
+
+        assertThat(responseEvent.getStatusCode()).isEqualTo(200);
+        assertThat(responseEvent.getHeaders().get("Content-Type"))
+                .isEqualTo("application/fhir+json");
+        assertThatJson(responseEvent.getBody())
+                .isEqualTo(
+                        getContentFromResource(
+                                "search-patient-details/superseded-patient-details-response.json"));
+    }
+
+    @Test
     void returnsMissingPatientResponseWhenPatientDetailsNotFound() throws IOException {
         var request =
                 requestBuilder

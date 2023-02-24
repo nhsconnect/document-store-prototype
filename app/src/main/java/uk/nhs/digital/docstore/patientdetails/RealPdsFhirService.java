@@ -1,7 +1,6 @@
 package uk.nhs.digital.docstore.patientdetails;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.net.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
@@ -14,6 +13,8 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 import uk.nhs.digital.docstore.model.PatientDetails;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.fhirdtos.Patient;
+
+import java.net.http.HttpResponse;
 
 public class RealPdsFhirService implements PdsFhirService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RealPdsFhirService.class);
@@ -43,7 +44,7 @@ public class RealPdsFhirService implements PdsFhirService {
 
     public PatientDetails fetchPatientDetails(NhsNumber nhsNumber)
             throws JsonProcessingException, MissingEnvironmentVariableException,
-                    IllFormedPatientDetailsException {
+            IllFormedPatientDetailsException {
         var accessToken = authService.retrieveAccessToken();
 
         var pdsResponse = makeRequestWithPdsAndSendAuditMessage(accessToken, nhsNumber);
@@ -65,6 +66,12 @@ public class RealPdsFhirService implements PdsFhirService {
 
         if (pdsResponse.statusCode() == 200) {
             var fhirPatient = Patient.parseFromJson(pdsResponse.body());
+            var patientDetails = fhirPatient.parse(nhsNumber);
+
+            if (patientDetails.isSuperseded()) {
+                LOGGER.info("Patient is superseded");
+            }
+
             return fhirPatient.parse(nhsNumber);
         }
 
