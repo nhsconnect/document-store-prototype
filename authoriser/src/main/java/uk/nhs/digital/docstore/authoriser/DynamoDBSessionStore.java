@@ -26,6 +26,5 @@ public class DynamoDBSessionStore implements SessionStore {
     }
 
     @Override
-    public void delete(UUID sessionID) {
-    }
+    public void delete(UUID sessionID) {}
 }
