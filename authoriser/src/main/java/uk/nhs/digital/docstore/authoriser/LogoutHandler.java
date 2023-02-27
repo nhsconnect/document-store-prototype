@@ -30,7 +30,8 @@ public class LogoutHandler extends BaseAuthRequestHandler
 
         LOGGER.debug("Deleting session " + sessionId);
 
-        sessionId.ifPresent(sessionStore::delete);
+        var session = sessionId.flatMap(sessionStore::load);
+        session.ifPresent(sessionStore::delete);
 
         LOGGER.debug("Successfully deleted session " + sessionId);
 

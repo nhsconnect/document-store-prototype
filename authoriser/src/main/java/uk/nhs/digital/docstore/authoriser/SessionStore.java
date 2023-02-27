@@ -9,5 +9,5 @@ public interface SessionStore {
 
     Optional<Session> load(UUID sessionID);
 
-    void delete(UUID sessionID);
+    void delete(Session session);
 }

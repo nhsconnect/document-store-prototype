@@ -25,7 +25,7 @@ public class InMemorySessionStore implements SessionStore {
     }
 
     @Override
-    public void delete(UUID sessionID) {
-        this.sessions.remove("SESSION#" + sessionID + "SESSION#" + sessionID);
+    public void delete(Session session) {
+        this.sessions.remove(session.getPK() + session.getSK());
     }
 }

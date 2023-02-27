@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nimbusds.oauth2.sdk.id.State;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ public class DynamoDBSessionStoreTest {
     }
 
     @Test
-    public void shouldPersistSessionsToDynamoDb() {
+    public void shouldPersistSessionsToDynamoDB() {
         var uuid = UUID.randomUUID();
         var timeToExist = 1L;
         var state = new State("some-state");
@@ -39,7 +40,7 @@ public class DynamoDBSessionStoreTest {
     }
 
     @Test
-    public void shouldReadSessionsFromDynamo() {
+    public void shouldReadSessionsFromDynamoDB() {
         var uuid = UUID.randomUUID();
         var timeToExist = 1L;
         var state = new State("some-state");
@@ -51,5 +52,21 @@ public class DynamoDBSessionStoreTest {
 
         assertTrue(expected.isPresent());
         assertEquals(session.getId(), expected.get().getId());
+    }
+
+    @Test
+    public void shouldDeleteSessionFromDynamoDB() {
+        var uuid = UUID.randomUUID();
+        var timeToExist = 1L;
+        var state = new State("some-state");
+        var session = Session.create(uuid, timeToExist, state);
+        dynamoDBMapper.save(session);
+
+        db.delete(session);
+
+        var expectedEmpty =
+                Optional.ofNullable(
+                        dynamoDBMapper.load(Session.class, session.getPK(), session.getSK()));
+        assertTrue(expectedEmpty.isEmpty());
     }
 }
