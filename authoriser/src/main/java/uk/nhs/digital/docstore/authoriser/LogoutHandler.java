@@ -14,14 +14,20 @@ public class LogoutHandler extends BaseAuthRequestHandler
         implements RequestHandler<LogoutRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(LogoutHandler.class);
 
+    private final OIDCClientConfig config;
+
     private final SessionStore sessionStore;
 
-    public LogoutHandler(SessionStore sessionStore) {
+    public LogoutHandler(SessionStore sessionStore, OIDCClientConfig config) {
         this.sessionStore = sessionStore;
+        this.config = config;
     }
 
+    @SuppressWarnings("unused")
     public LogoutHandler() {
-        this(new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())));
+        this(
+                new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
+                new OIDCClientConfig());
     }
 
     @Override
@@ -43,11 +49,13 @@ public class LogoutHandler extends BaseAuthRequestHandler
                     uuid -> headers.put("Set-Cookie", "SessionId=" + uuid + "; Path=/; Max-Age=0"));
         } catch (NoSuchElementException e) {
             LOGGER.error("Logout request is missing query parameter: redirect_uri");
-            headers.put("Content-Type", "text/html");
-            response.setStatusCode(400);
-            response.setBody(
-                    "<html><head></head><body><p>Missing query parameter:"
-                            + " redirect_uri</p></body></html>");
+            headers.put(
+                    "Location",
+                    config.getAuthFailureRedirectUri()
+                            + "?error=missing_parameter&error_description=missing_redirect_URI");
+            response.setStatusCode(303);
+            response.setHeaders(headers);
+            response.setBody("");
             return response;
         }
 

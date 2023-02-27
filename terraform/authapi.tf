@@ -74,6 +74,7 @@ resource "aws_lambda_function" "logout_lambda" {
   environment {
     variables = {
       DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
+      AUTH_FAILURE_REDIRECT_URI = "${local.amplify_base_url}/auth-error"
     }
   }
 }

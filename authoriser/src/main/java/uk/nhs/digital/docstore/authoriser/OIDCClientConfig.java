@@ -3,14 +3,10 @@ package uk.nhs.digital.docstore.authoriser;
 import java.util.Map;
 
 public class OIDCClientConfig {
-    private final String clientID;
-    private final String authorizeURL;
-    private final String callbackURL;
+    private final Map<String, String> env;
 
     public OIDCClientConfig(Map<String, String> env) {
-        clientID = env.get("OIDC_CLIENT_ID");
-        authorizeURL = env.get("OIDC_AUTHORIZE_URL");
-        callbackURL = env.get("OIDC_CALLBACK_URL");
+        this.env = env;
     }
 
     public OIDCClientConfig() {
@@ -18,14 +14,18 @@ public class OIDCClientConfig {
     }
 
     public String getClientID() {
-        return clientID;
+        return env.get("OIDC_CLIENT_ID");
     }
 
     public String getAuthorizeURL() {
-        return authorizeURL;
+        return env.get("OIDC_AUTHORIZE_URL");
     }
 
     public String getCallbackURL() {
-        return callbackURL;
+        return env.get("OIDC_CALLBACK_URL");
+    }
+
+    public String getAuthFailureRedirectUri() {
+        return env.get("AUTH_FAILURE_REDIRECT_URI");
     }
 }

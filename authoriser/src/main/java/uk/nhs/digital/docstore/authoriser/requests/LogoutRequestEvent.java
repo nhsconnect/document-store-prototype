@@ -8,7 +8,7 @@ import java.util.UUID;
 public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
     public Optional<UUID> getSessionId() {
         var headers = getHeaders();
-        if (headers == null) {
+        if (headers == null || headers.get("Cookie") == null) {
             return Optional.empty();
         }
         var cookies = HttpCookie.parse(headers.get("Cookie"));
