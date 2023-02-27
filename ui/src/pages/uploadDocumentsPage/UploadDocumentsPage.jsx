@@ -12,13 +12,6 @@ import UploadSummary from "../../components/uploadSummary/UploadSummary";
 import { useDocumentStore } from "../../apiClients/documentStore";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
 
-const uploadStateMessages = {
-    [stateNames.SELECTED]: "Waiting...",
-    [stateNames.UPLOADING]: "Uploading...",
-    [stateNames.SUCCEEDED]: "Uploaded",
-    [stateNames.FAILED]: "Upload failed",
-};
-
 const UploadDocumentsPage = ({ nextPagePath }) => {
     const documentStore = useDocumentStore();
     const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
@@ -26,6 +19,12 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
     const navigate = useNavigate();
 
     const documents = watch("documents");
+    const uploadStateMessages = {
+        [stateNames.SELECTED]: "Waiting...",
+        [stateNames.UPLOADING]: "Uploading...",
+        [stateNames.SUCCEEDED]: "Uploaded",
+        [stateNames.FAILED]: "Upload failed",
+    };
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
@@ -33,21 +32,21 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
         }
     }, [patientDetails, navigate]);
 
-    const doSubmit = async (data) => {
-        const doUpload = async (document) => {
-            await documentStore.uploadDocument(document.file, patientDetails?.nhsNumber, (state, progress) => {
-                setValue(
-                    "documents",
-                    produce(getValues("documents"), (draft) => {
-                        const documentIndex = draft.findIndex((draftDocument) => draftDocument.id === document.id);
-                        draft[documentIndex].state = state;
-                        draft[documentIndex].progress = progress;
-                    })
-                );
-            });
-        };
+    const uploadDocuments = async (data) => {
+        await Promise.all(data.documents.map(uploadDocument));
+    };
 
-        await Promise.all(data.documents.map(doUpload));
+    const uploadDocument = async (document) => {
+        await documentStore.uploadDocument(document.file, patientDetails?.nhsNumber, (state, progress) => {
+            setValue(
+                "documents",
+                produce(getValues("documents"), (draft) => {
+                    const documentIndex = draft.findIndex((draftDocument) => draftDocument.id === document.id);
+                    draft[documentIndex].state = state;
+                    draft[documentIndex].progress = progress;
+                })
+            );
+        });
     };
 
     const inferUploadStep = () => {
@@ -66,13 +65,11 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
         return documentUploadSteps.UPLOADING;
     };
 
-    const uploadStep = inferUploadStep();
-
     return (
         <>
             <BackButton />
-            {uploadStep === documentUploadSteps.SELECTING_FILES && (
-                <form onSubmit={handleSubmit(doSubmit)} noValidate data-testid="upload-document-form">
+            {inferUploadStep() === documentUploadSteps.SELECTING_FILES && (
+                <form onSubmit={handleSubmit(uploadDocuments)} noValidate data-testid="upload-document-form">
                     <Fieldset>
                         <Fieldset.Legend headingLevel="h1" isPageHeading>
                             Upload documents
@@ -85,7 +82,7 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
                     </Button>
                 </form>
             )}
-            {uploadStep === documentUploadSteps.UPLOADING && (
+            {inferUploadStep() === documentUploadSteps.UPLOADING && (
                 <>
                     <h1>Your documents are uploading</h1>
                     <WarningCallout>
@@ -127,10 +124,10 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
                     </Table>
                 </>
             )}
-            {uploadStep === documentUploadSteps.COMPLETE && (
+            {inferUploadStep() === documentUploadSteps.COMPLETE && (
                 <>
                     <UploadSummary documents={documents} patientDetails={patientDetails}></UploadSummary>
-                    <p style={{ fontWeight: "600" }}>{"If you want to upload another patient's health record"}</p>
+                    <p style={{ fontWeight: "600" }}>If you want to upload another patient&apos;s health record</p>
                     <Button
                         onClick={() => {
                             navigate(nextPagePath);
