@@ -30,28 +30,6 @@ provider "aws" {
   }
 }
 
-resource "aws_lambda_function" "document_uploaded_lambda" {
-  handler       = "uk.nhs.digital.docstore.handlers.DocumentUploadedEventHandler::handleRequest"
-  function_name = "DocumentUploadedEventHandler"
-  runtime       = "java11"
-  role          = aws_iam_role.lambda_execution_role.arn
-
-  timeout     = 15
-  memory_size = 256
-
-  filename = var.lambda_jar_filename
-
-  source_code_hash = filebase64sha256(var.lambda_jar_filename)
-
-  layers = [
-    "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
-  ]
-
-  environment {
-    variables = local.common_environment_variables
-  }
-}
-
 resource "aws_iam_role" "lambda_execution_role" {
   name = "LambdaExecution"
 
@@ -107,25 +85,6 @@ resource "aws_api_gateway_deployment" "api_deploy" {
   }
 }
 
-resource "aws_api_gateway_authorizer" "cognito_authorizer" {
-  name          = "cognito-authorizer"
-  type          = "COGNITO_USER_POOLS"
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  provider_arns = var.cloud_only_service_instances > 0 ? [
-  for pool_arn in aws_cognito_user_pool.pool[*].arn :pool_arn
-  ] : [
-    ""
-  ]
-  authorizer_credentials = aws_iam_role.lambda_execution_role.arn
-}
-
-resource "aws_api_gateway_authorizer" "cis2_authoriser" {
-  name                   = "cis2-authoriser"
-  rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
-  authorizer_uri         = aws_lambda_function.authoriser.invoke_arn
-  authorizer_credentials = aws_iam_role.authoriser_execution.arn
-}
-
 resource "aws_api_gateway_gateway_response" "doc_store_unauthorised_response" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   response_type = "DEFAULT_4XX"
@@ -156,12 +115,34 @@ resource "aws_api_gateway_gateway_response" "doc_store_bad_gateway_response" {
   }
 }
 
-resource "aws_lambda_permission" "s3_permission_for_document_upload_event" {
-  statement_id  = "AllowExecutionFromS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.document_uploaded_lambda.arn
-  principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.document_store.arn
+resource aws_iam_policy "dynamodb_table_access_policy" {
+  name   = "DynamoDBTableAccess"
+  policy = data.aws_iam_policy_document.dynamodb_table_access_policy_doc.json
+}
+
+data aws_iam_policy_document "dynamodb_table_access_policy_doc" {
+  statement {
+    effect  = "Allow"
+    actions = [
+      "dynamodb:BatchGetItem",
+      "dynamodb:BatchWriteItem",
+      "dynamodb:UpdateTimeToLive",
+      "dynamodb:ConditionCheckItem",
+      "dynamodb:PutItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:PartiQLUpdate",
+      "dynamodb:Scan",
+      "dynamodb:Query",
+      "dynamodb:UpdateItem",
+      "dynamodb:DescribeTimeToLive",
+      "dynamodb:PartiQLSelect",
+      "dynamodb:DescribeTable",
+      "dynamodb:PartiQLInsert",
+      "dynamodb:GetItem",
+      "dynamodb:PartiQLDelete"
+    ]
+    resources = ["arn:aws:dynamodb:*:*:table/*"]
+  }
 }
 
 output "api_gateway_rest_api_id" {
@@ -176,66 +157,14 @@ output "api_gateway_url" {
   value = aws_api_gateway_deployment.api_deploy.invoke_url
 }
 
-resource "aws_iam_role" "authoriser_execution_role" {
-  name = "AuthoriserLambdaExecution"
-
-  assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [
-      {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Sid       = ""
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "authoriser_lambda_execution_policy" {
-  role       = aws_iam_role.authoriser_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
-resource "aws_iam_role_policy_attachment" "authoriser_insights_policy" {
-  role       = aws_iam_role.authoriser_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
-}
-
-resource "aws_lambda_function" "authoriser" {
-  handler       = "uk.nhs.digital.docstore.authoriser.Authoriser::handleRequest"
-  function_name = "Authoriser"
-  runtime       = "java11"
-  role          = aws_iam_role.authoriser_execution_role.arn
-
-  timeout     = 15
-  memory_size = 256
-
-  filename = var.authoriser_lambda_jar_filename
-
-  source_code_hash = filebase64sha256(var.authoriser_lambda_jar_filename)
-  layers           = [
-    "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
-  ]
-
-  environment {
-    variables = {
-      AUTH_CONFIG = jsonencode({
-        resourcesForPCSEUsers = [
-          local.search_patient_details_invocation_arn,
-          local.search_document_reference_invocation_arn,
-          local.get_document_manifest_invocation_arn,
-          local.delete_document_reference_invocation_arn
-        ],
-        resourcesForClinicalUsers = [
-          local.search_patient_details_invocation_arn,
-          local.create_document_reference_invocation_arn,
-        ]
-      })
-      COGNITO_PUBLIC_KEY_URL = var.cloud_only_service_instances > 0 ? "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.pool[0].id}" : ""
-      COGNITO_KEY_ID         = var.cognito_key_id
-    }
+locals {
+  common_environment_variables             = {
+    DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
+    DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
+    S3_ENDPOINT                = var.s3_endpoint
+    S3_USE_PATH_STYLE          = var.s3_use_path_style
+    SQS_ENDPOINT               = var.sqs_endpoint
+    SQS_AUDIT_QUEUE_URL        = aws_sqs_queue.sensitive_audit.url
   }
+  amplify_base_url = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
 }

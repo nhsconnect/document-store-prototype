@@ -1,3 +1,28 @@
+data "aws_ssm_parameter" "pds_fhir_private_key" {
+  name  = "/prs/${var.environment}/user-input/pds-fhir-private-key"
+  count = var.cloud_only_service_instances
+}
+
+data "aws_ssm_parameter" "nhs_api_key" {
+  name  = "/prs/${var.environment}/user-input/nhs-api-key"
+  count = var.cloud_only_service_instances
+}
+
+data "aws_ssm_parameter" "nhs_oauth_endpoint" {
+  name  = "/prs/${var.environment}/user-input/nhs-oauth-endpoint"
+  count = var.cloud_only_service_instances
+}
+
+data "aws_ssm_parameter" "pds_fhir_endpoint" {
+  name  = "/prs/${var.environment}/user-input/pds-fhir-endpoint"
+  count = var.cloud_only_service_instances
+}
+
+data "aws_ssm_parameter" "pds_fhir_kid" {
+  name  = "/prs/${var.environment}/user-input/pds-fhir-kid"
+  count = var.cloud_only_service_instances
+}
+
 module "patient_details_endpoint" {
   source         = "./modules/api_gateway_endpoint"
   api_gateway_id = aws_api_gateway_rest_api.lambda_api.id
@@ -13,6 +38,15 @@ module "patient_details_collection_preflight" {
   resource_id    = aws_api_gateway_resource.patient_details_collection_resource.id
   origin         = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
   methods        = "'GET,OPTIONS,POST'"
+}
+
+module search_patient_details_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.search_patient_details_lambda.function_name
+  lambda_timeout             = aws_lambda_function.search_patient_details_lambda.timeout
+  lambda_short_name          = "search_patient_details_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
 }
 
 resource "aws_lambda_function" "search_patient_details_lambda" {

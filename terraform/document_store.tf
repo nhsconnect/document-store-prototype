@@ -115,6 +115,54 @@ resource "aws_iam_role_policy" "s3_get_document_data_policy" {
   })
 }
 
+resource aws_iam_policy "s3_object_access_policy" {
+  name   = "S3ObjectAccess"
+  policy = data.aws_iam_policy_document.s3_object_access_policy_doc.json
+}
+
+data aws_iam_policy_document "s3_object_access_policy_doc" {
+  statement {
+    effect  = "Allow"
+    actions = [
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucketVersions",
+      "s3:ListBucket",
+    ]
+    resources = ["arn:aws:s3:::*"]
+  }
+  statement {
+    effect  = "Allow"
+    actions = [
+      "s3:ListAllMyBuckets"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    effect  = "Allow"
+    actions = [
+      "s3:DeleteObjectTagging",
+      "s3:GetObjectRetention",
+      "s3:DeleteObjectVersion",
+      "s3:GetObjectVersionTagging",
+      "s3:GetObjectAttributes",
+      "s3:RestoreObject",
+      "s3:PutObjectVersionTagging",
+      "s3:DeleteObjectVersionTagging",
+      "s3:GetObjectVersionAttributes",
+      "s3:PutObject",
+      "s3:GetObjectAcl",
+      "s3:GetObject",
+      "s3:AbortMultipartUpload",
+      "s3:GetObjectVersionAcl",
+      "s3:GetObjectTagging",
+      "s3:PutObjectTagging",
+      "s3:DeleteObject",
+      "s3:GetObjectVersion"
+    ]
+    resources = ["arn:aws:s3:::*/*"]
+  }
+}
+
 output "document-store-bucket" {
   value = aws_s3_bucket.document_store.bucket
 }

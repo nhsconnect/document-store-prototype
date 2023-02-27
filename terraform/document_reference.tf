@@ -1,3 +1,17 @@
+module "doc_ref_collection_preflight" {
+  source         = "./modules/api_gateway_preflight"
+  api_gateway_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id    = aws_api_gateway_resource.doc_ref_collection_resource.id
+  origin         = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
+  methods        = "'GET,OPTIONS,POST,DELETE'"
+}
+
+resource "aws_api_gateway_resource" "doc_ref_collection_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
+  path_part   = "DocumentReference"
+}
+
 resource "aws_dynamodb_table" "doc_ref_store" {
   name           = "DocumentReferenceMetadata"
   hash_key       = "ID"
@@ -29,46 +43,6 @@ resource "aws_dynamodb_table" "doc_ref_store" {
     name            = "NhsNumberIndex"
     hash_key        = "NhsNumber"
     projection_type = "ALL"
-  }
-}
-
-resource "aws_dynamodb_table" "doc_zip_trace_store" {
-  name           = "DocumentZipTrace"
-  hash_key       = "ID"
-  billing_mode   = "PAY_PER_REQUEST"
-  stream_enabled = false
-
-  attribute {
-    name = "ID"
-    type = "S"
-  }
-
-  ttl {
-    attribute_name = "ExpiryDate"
-    enabled        = true
-  }
-}
-
-resource aws_dynamodb_table "access_request_fulfilment_auth" {
-  name = "ARFAuth"
-  hash_key = "PK"
-  range_key = "SK"
-  billing_mode   = "PAY_PER_REQUEST"
-  stream_enabled = false
-
-  ttl {
-    attribute_name = "TimeToExist"
-    enabled        = true
-  }
-
-  attribute {
-    name = "PK"
-    type = "S"
-  }
-
-  attribute {
-    name = "SK"
-    type = "S"
   }
 }
 
@@ -112,38 +86,4 @@ resource "aws_iam_role_policy" "arf_doc_store_data_access_policy" {
       }
     ]
   })
-}
-
-resource aws_iam_policy "arf_auth_table_policy" {
-  name = "arf_auth_table_policy"
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "dynamodb:Query",
-        ],
-        "Resource" : [
-          aws_dynamodb_table.access_request_fulfilment_auth.arn
-        ]
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
-        ],
-        "Resource" : [
-          aws_dynamodb_table.access_request_fulfilment_auth.arn
-        ]
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "auth_role_auth_table_access" {
-  policy_arn = aws_iam_policy.arf_auth_table_policy.arn
-  role       = aws_iam_role.authoriser_execution_role.name
 }

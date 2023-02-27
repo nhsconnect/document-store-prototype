@@ -46,9 +46,33 @@ resource "aws_lambda_permission" "api_gateway_permission_for_document_manifest" 
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.document_manifest_lambda.arn
   principal     = "apigateway.amazonaws.com"
-  # The "/*/*" portion grants access from any method on any resource
-  # within the API Gateway REST API.
   source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
+}
+
+module create_document_manifest_by_nhs_number_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.document_manifest_lambda.function_name
+  lambda_timeout             = aws_lambda_function.document_manifest_lambda.timeout
+  lambda_short_name          = "create_document_manifest_by_nhs_number_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
+
+resource "aws_dynamodb_table" "doc_zip_trace_store" {
+  name           = "DocumentZipTrace"
+  hash_key       = "ID"
+  billing_mode   = "PAY_PER_REQUEST"
+  stream_enabled = false
+
+  attribute {
+    name = "ID"
+    type = "S"
+  }
+
+  ttl {
+    attribute_name = "ExpiryDate"
+    enabled        = true
+  }
 }
 
 locals {

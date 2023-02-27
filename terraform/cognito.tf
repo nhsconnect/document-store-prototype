@@ -72,26 +72,6 @@ resource "aws_cognito_user_pool_domain" "domain" {
   count        = var.cloud_only_service_instances
 }
 
-output "cognito_user_pool_ids" {
-  value = aws_cognito_user_pool.pool[*].id
-}
-
-output "cognito_user_pool_domain" {
-  value = [for domain in aws_cognito_user_pool_domain.domain[*].domain : "${domain}.auth.${var.region}.amazoncognito.com"]
-}
-
-output "cognito_client_ids" {
-  value = aws_cognito_user_pool_client.client[*].id
-}
-
-output "cognito_redirect_signin" {
-  value = aws_cognito_user_pool_client.client[*].default_redirect_uri
-}
-
-output "cognito_redirect_signout" {
-  value = var.cloud_only_service_instances > 0 ? element(aws_cognito_user_pool_client.client[*].logout_urls, 0) : []
-}
-
 resource "aws_cognito_identity_provider" "cis2_identity_provider" {
   user_pool_id  = aws_cognito_user_pool.pool[0].id
   provider_name = "cis2devoidc"
@@ -115,4 +95,24 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
   }
 
   count = var.cloud_only_service_instances
+}
+
+output "cognito_user_pool_ids" {
+  value = aws_cognito_user_pool.pool[*].id
+}
+
+output "cognito_user_pool_domain" {
+  value = [for domain in aws_cognito_user_pool_domain.domain[*].domain : "${domain}.auth.${var.region}.amazoncognito.com"]
+}
+
+output "cognito_client_ids" {
+  value = aws_cognito_user_pool_client.client[*].id
+}
+
+output "cognito_redirect_signin" {
+  value = aws_cognito_user_pool_client.client[*].default_redirect_uri
+}
+
+output "cognito_redirect_signout" {
+  value = var.cloud_only_service_instances > 0 ? element(aws_cognito_user_pool_client.client[*].logout_urls, 0) : []
 }

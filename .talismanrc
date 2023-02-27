@@ -3,12 +3,10 @@ fileignoreconfig:
   checksum: 2fe3bca550f9835e84f065bebb962c35ffc2ba0185c7c764bb1875e476b846ce
 - filename: docker-compose.yaml
   checksum: dae0a1b6f74fb283481b761d2804aeed9dd3d3517b2dede6ce8c355934459284
-- filename: docs/tech/local-dev-env.md
-  checksum: 02eb8e8e472b83cc580e89e406080ffa0bd9fde6862cb67b65ec2b167b18655d
 - filename: Dojofile-dev
   checksum: b21b6d3c9eba665ceed98715cdf7f813be9194ef45979522241111bbfdf4632d
 - filename: terraform/.terraform.lock.hcl
-  checksum: a38737e394ada9d4c0a6d6ea82a964b771799810b35a3c9d2df964bf11525ccb
+  checksum: 3735c2c1c4bfc6d5c51286ee1bf49089646907669643284449286ff6eb45435f
 - filename: ui/src/components/patientSummary/PatientSummary.jsx
   checksum: 3a792a4b4c0d49824323be103aa969f34d7c6b9f1f9428b28d7340616db6d6b5
 - filename: ui/src/pages/PatientTracePage.jsx
@@ -26,7 +24,7 @@ fileignoreconfig:
 - filename: cypress/e2e/uploadAndDownload.cy.js
   checksum: bb9d538761c5398f85a8ae8b3aadf237d2d290fe190938f9cd1071d150ac7fcc
 - filename: tasks
-  checksum: ac69b01c9fba932d503578c9e5a887d3761e426c17c68fee182df97e4b70dd9e
+  checksum: 5ed7f9826581fdb01e668b694b9a6d6ddcca7b5065f8017f8f2bebe1655cf011
 - filename: app/src/main/java/uk/nhs/digital/docstore/DeleteDocumentReferenceHandler.java
   checksum: 712ca4e85254158c04fa9f2b1bf90035aae7140a5692444238a1a6dc64abdb92
 - filename: ui/src/pages/UploadDocumentsPage.jsx
@@ -34,7 +32,7 @@ fileignoreconfig:
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/AccessTokenRequestBody.java
   checksum: a2c4d9590033a051f5207636f2be9c95bc0fec5a006cabfabd72bc0d8404d6ec
 - filename: terraform/alarms.tf
-  checksum: b84967a463db22849e0c90636946092e261668a956ef3cad3fc489e5d09ea05f
+  checksum: 0c0221749e8d98ff6e4a92fb65d8040251b777b78e1c2963f4e098755dace29d
 - filename: app/src/e2eTest/java/uk/nhs/digital/docstore/CreateDocumentManifestE2eTest.java
   checksum: 245367c77d638126b0b6b7e28b1654b9bccc4bdcd48e9b796d3b7612e0c0d9bc
 - filename: app/src/test/java/uk/nhs/digital/docstore/filestorage/GeneratePresignedUrlRequestFactoryTest.java
@@ -44,7 +42,7 @@ fileignoreconfig:
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
   checksum: dc4fafc0bd7dce0234ca74633a22c97cd3c8844434101efff45414f3969b447d
 - filename: app/src/main/java/uk/nhs/digital/docstore/handlers/DocumentUploadedEventHandler.java
-  checksum: 157c62551effdcf34a6d996ec7c998cb01d747dbef9216e77cacfe93294f40bd
+  checksum: 01acb34290060c451d9c3445e1de1ac82a4a7790dc7a23a60cdb70ace6449f6d
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/auth/SignedJwtBuilderTest.java
   checksum: 2a28956f8ed4aaa703476d2a268b66c1cc2bc96c62ff90e6df629912f86afd62
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/auth/SignedJwtBuilder.java
@@ -54,21 +52,109 @@ fileignoreconfig:
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/auth/SigningKeyProvider.java
   checksum: 18548f2e92a9524531f5e497da021bff523201f5c61ec6e085ae7442b6da8a45
 - filename: app/src/main/java/uk/nhs/digital/docstore/handlers/CreateDocumentReferenceHandler.java
-  checksum: b12d1fb1838a8e24f8f2d1167f5e716756a312c14dc0bbd2e6bb43a5ac664322
+  checksum: f11dc74d87b94bfe6ae003465991136f4c548f85fdd16301c4cb359564c4143d
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/entity/DocumentMetadata.java
   checksum: 8f8b83bf6d1da33d245661e2464205ad0acbc2b8d20ee76b62afdd93083acf9a
 - filename: terraform/main.tf
-  checksum: 99a0f0a18323097363368d02df7e5a0d92849ea440c44bf46c7b9a93ac51676f
+  checksum: 0fe1626fdc66c406ae70587a90f9b99018e670e327e811dfa817a35727ab9f88
 - filename: app/src/e2eTest/java/uk/nhs/digital/docstore/helpers/AwsS3Helper.java
   checksum: 29d3c5cc1dc2643986d8d4abfd2c3fa9f978bf6ca33c7382217949cee2eda22e
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
-  checksum: f4f832cd793d719eed52c6a60b9d8178bafbe3ec9c4eccbd49c1264f581bb083
+  checksum: d2165ea4b4c798643ba5680f40b4db3842237c9f8d0fec5d4c3596397eb686ad
 - filename: Dojofile
   checksum: 64416def7a6855167692f0b31de309c50ba15a68b92521e8222dc5d26219c6a1
 - filename: docs/diagrams/flow/path-to-prod.md
-  checksum: 0e7b76864e59beb4636164ebb764923926151bdb16ce6870114ab518161e313f
+  checksum: 011fb55fff5554a7e8e7b23a0c34f319bf43be047abda0527e75b1873801ba5b
 - filename: authoriser/src/test/java/uk/nhs/digital/docstore/authoriser/LoginHandlerTest.java
   checksum: 532dac271245e70175b6f3554f102f3b7b5342b727b56dfa69fe52e27863500c
+- filename: .env.example
+  checksum: b028c70371f3bba5d505bf262c5673f84c2ebe7a746ddab615d058e0d3e1b839
+- filename: docs/images/local-dev-env-16022023.png
+  checksum: e140d5428b4aa9336c0d463f92e174089980e442aa91770fdddec6f9f6cbcba2
+- filename: docs/tech/local-dev-env.md
+  checksum: 92c259ce6afe7807484800d0f8dd7f35aa82fc2c44ad0d0c83039755572db61f
+- filename: e2eTest/cypress.env.json.example
+  checksum: d131ecbf9831371d673e721147549d9b3e23eeb348e18f2fb2b619f6aa59f368
+- filename: Dojofile-node
+  checksum: ec95f7a244c433beeae5cd841e5843b4c6406bcfd8b639a42446eb556cd38bd2
+- filename: docs/images/container-diagram.drawio.png
+  checksum: 90395b00108e4c75864189f5cb2aae09393acc2dd1b3d4c789466f6473d08011
+- filename: docs/images/system-context-diagram.drawio.png
+  checksum: d70b022db702ced3c89b114b4fffbd95f47a7c1b7fc47739e7c5ba36c41d36b2
+- filename: e2eTest/cypress/fixtures/test_patient_record.pdf
+  checksum: 9a90e78883022e95256da925949570a27a2cbabc300d92113cea2b4d1a20d379
+- filename: e2eTest/cypress/fixtures/test_patient_record_two.pdf
+  checksum: a5816cc7662ca44ca704fee0e51b94dacdc0f88885b83e8d9505c79e0320df50
+- filename: terraform/prod.tfvars
+  checksum: 15c8317229083a4053c14b3a139de1509098b02bef8f4d91f58e62da21e73a2e
+- filename: terraform/dev.tfvars
+  checksum: 33f008e82f08de65bb42d20fd92c3245400e88d0533431a70754d4b36ce38f8b
+- filename: terraform/pre-prod.tfvars
+  checksum: 5db57c15e7a0a9743ebd2548c0f87258a6b74477f5ebd96d60e894a80c3b79bc
+- filename: docs/diagrams/flow/path-to-prod.md
+  checksum: 011fb55fff5554a7e8e7b23a0c34f319bf43be047abda0527e75b1873801ba5b
+- filename: terraform/.terraform.lock.hcl
+  checksum: 3735c2c1c4bfc6d5c51286ee1bf49089646907669643284449286ff6eb45435f
+- filename: e2eTest/cypress/support/commands.js
+  checksum: 34e7116e3d9aedebd11db9c12cff3c634a284aff81804c24c5e7471109f4ff8d
+- filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentStore.java
+  checksum: d0e2ce5d02269a63253f0d1f6db6a6bca6b60c0d62c53afd872f58b66d07ad6b
+- filename: app/src/integrationTest/java/uk/nhs/digital/docstore/helpers/AwsS3Helper.java
+  checksum: 70f29ae53e3c7ec268d645210571f3024be77e87ba4a21091bb3e2120478a814
+- filename: terraform/authoriser.tf
+  checksum: 82777b8520f7385ee83dddfbda62401b5f00729f4b148a53f683eea9a1dad505
+- filename: terraform/cognito.tf
+  checksum: 5a5bd0b1b86027a0cba2405aa31da115ac3bca0fec0060bb2c5b53d3a5829c33
+- filename: ui/src/components/documentsInput/DocumentsInput.jsx
+  checksum: 2e2f63b6b9169f88dd7a03c1cdced26b0ef84d7e4813de5719a149d25722b2e0
+- filename: terraform/pre-prod.s3.tfbackend
+  checksum: 3d7e53e7e3ae0c0b9797008f31732ea91f1cf342c2b075c496c777ddb58fdcf0
+- filename: terraform/dev.s3.tfbackend
+  checksum: c9f24c877e0a4d95c500417af322ba2e070287bdf6c84b3eade3792fb5f89b84
+- filename: ui/src/pages/searchResultsPage/SearchResultsPage.jsx
+  checksum: 806352a49e739a6007920051bba367232b911595025167a27f1da15ada02f7ec
+- filename: terraform/modules/api_gateway_preflight/main.tf
+  checksum: e0ad220c61603e02a4385b80a37e042091a0b95c661a9f7e6a8a3aafc2b99c96
+- filename: terraform/document_reference.tf
+  checksum: 2d568f43fbb17d4d66fe07e5075b1a383ceea8fc03229c5c1e95a44ceafb6f7e
+- filename: ui/src/pages/uploadDocumentsPage/UploadDocumentsPage.jsx
+  checksum: 7d63fadaf29efbf02cbc2b4d21093c5ef4b399c4da3f2678a41e7719843bdbf0
+- filename: terraform/patient_details.tf
+  checksum: ec14718bf43f91f1f7bf59156ae6e5eb2b2d4f51ef88fe8ebebcf18482fff91b
+- filename: terraform/prod.s3.tfbackend
+  checksum: 9865c4afbc2789dbbe39584695faa7edf2bdcbbb6867136a4cd05f13d4907c4d
+- filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/DynamoDBSessionStore.java
+  checksum: f25041c2b7fcdacaead2acd7946244f48752f3366d67665917935cda819808a1
+- filename: ui/src/components/simpleProgressBar/SimpleProgressBar.test.jsx
+  checksum: d934b079414ce14e35cb5b358274ca9d53d468e8660a959c8978a5a1b77e3cfd
+- filename: ui/src/components/uploadSummary/UploadSummary.jsx
+  checksum: e3e663c45dd54d71dc7f7a3de9bc3e60abaf004e746c6a66a26bccb72709c8a2
+- filename: bootstrap-terraform.sh
+  checksum: 935a1a818d95c875287b8986d6f91ebe206c9af7c12a32824959e7c0014d6c62
+- filename: create-key-pair.sh
+  checksum: adaa4f19ad8dc3319fd96636eb9bc14caaa56a7b6328e84bf60a7dadbb4f66a4
+- filename: e2eTest/cypress/e2e/uploadAndDownload.cy.js
+  checksum: a7c74049d0d001a741ae47b0e9d44e2a281586d152f127f52577d5e233d131ad
+- filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/models/Session.java
+  checksum: e2e4ed093d05187a4a7a08f007b41389b7a57501d4f0bc00ee3e4c444da34698
+- filename: docs/tech/metadata-storage-in-dynamo-db.md
+  checksum: 737ef81ed0a4f2abbf5712383fd009de3db684651bca498f502adb25dc3efbaf
+- filename: docs/tech/pds-fhir-integration.md
+  checksum: 495ebb9a8a12daaebc1993cf45d2512aefd117eb92b38de858bc3fd28bd8c7e0
+- filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
+  checksum: d2165ea4b4c798643ba5680f40b4db3842237c9f8d0fec5d4c3596397eb686ad
+- filename: app/src/main/java/uk/nhs/digital/docstore/handlers/DocumentUploadedEventHandler.java
+  checksum: 01acb34290060c451d9c3445e1de1ac82a4a7790dc7a23a60cdb70ace6449f6d
+- filename: terraform/alarms.tf
+  checksum: 0c0221749e8d98ff6e4a92fb65d8040251b777b78e1c2963f4e098755dace29d
+- filename: tasks
+  checksum: 5ed7f9826581fdb01e668b694b9a6d6ddcca7b5065f8017f8f2bebe1655cf011
+- filename: app/src/main/java/uk/nhs/digital/docstore/handlers/CreateDocumentReferenceHandler.java
+  checksum: f11dc74d87b94bfe6ae003465991136f4c548f85fdd16301c4cb359564c4143d
+- filename: terraform/main.tf
+  checksum: 0fe1626fdc66c406ae70587a90f9b99018e670e327e811dfa817a35727ab9f88
+- filename: docs/images/user-journey-architecture-diagram.png
+  checksum: 968be502fb78179616144b9d2a9da6b6d88c6d1660a5de7e2dde33c24d3c087b
 version: ""
 scopeconfig:
   - scope: node

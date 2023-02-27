@@ -41,7 +41,7 @@ EOF
   }
 }
 
-resource "aws_api_gateway_integration_response" "doc_ref_collection_preflight_integration_response" {
+resource "aws_api_gateway_integration_response" "preflight_integration_response" {
   rest_api_id         = var.api_gateway_id
   resource_id         = var.resource_id
   http_method         = aws_api_gateway_method.preflight_method.http_method
