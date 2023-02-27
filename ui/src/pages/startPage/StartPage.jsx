@@ -6,8 +6,6 @@ const StartPage = () => {
     const isCognitoFederationActive = useFeatureToggle("COGNITO_FEDERATION");
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
 
-    const startButtonHref = isCognitoFederationActive ? "/home" : `${baseAPIUrl}/Auth/Login`;
-
     return (
         <>
             <h1>Inactive Patient Record Administration</h1>
@@ -33,7 +31,7 @@ const StartPage = () => {
             </p>
             <h2>Before You Start</h2>
             <p>You can only use this service if you have a valid NHS smartcard.</p>
-            <ButtonLink href={startButtonHref}>Start now</ButtonLink>
+            <ButtonLink href={isCognitoFederationActive ? "/home" : `${baseAPIUrl}/Auth/Login`}>Start now</ButtonLink>
         </>
     );
 };

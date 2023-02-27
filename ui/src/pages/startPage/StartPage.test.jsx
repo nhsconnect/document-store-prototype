@@ -4,7 +4,7 @@ import { useBaseAPIUrl, useFeatureToggle } from "../../providers/ConfigurationPr
 
 jest.mock("../../providers/ConfigurationProvider");
 
-describe("<StartPage/>", () => {
+describe("<StartPage />", () => {
     it("renders the page header", () => {
         render(<StartPage />);
 
@@ -46,6 +46,7 @@ describe("<StartPage/>", () => {
 
     it("renders a button link with an href to the auth login endpoint when Cognito federation is disabled", () => {
         const baseAPIUrl = "https://api.url";
+
         useFeatureToggle.mockReturnValueOnce(false);
         useBaseAPIUrl.mockReturnValueOnce(baseAPIUrl);
 
