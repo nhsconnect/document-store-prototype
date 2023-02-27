@@ -51,5 +51,3 @@ public class LogoutHandler extends BaseAuthRequestHandler
         return response;
     }
 }
-
-// delete the session id
