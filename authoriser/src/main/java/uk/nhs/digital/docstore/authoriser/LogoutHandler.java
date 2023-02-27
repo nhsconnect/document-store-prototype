@@ -4,6 +4,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
@@ -48,11 +51,21 @@ public class LogoutHandler extends BaseAuthRequestHandler
             sessionId.ifPresent(
                     uuid -> headers.put("Set-Cookie", "SessionId=" + uuid + "; Path=/; Max-Age=0"));
         } catch (NoSuchElementException e) {
+            var errorDescription = "";
+            try {
+                errorDescription =
+                        URLEncoder.encode(
+                                "Logout request is missing query parameter: redirect_uri",
+                                StandardCharsets.UTF_8.toString());
+            } catch (UnsupportedEncodingException ex) {
+                throw new RuntimeException(ex);
+            }
             LOGGER.error("Logout request is missing query parameter: redirect_uri");
             headers.put(
                     "Location",
                     config.getAuthFailureRedirectUri()
-                            + "?error=missing_parameter&error_description=missing_redirect_URI");
+                            + "?error=invalid_request&error_description="
+                            + errorDescription);
             response.setStatusCode(303);
             response.setHeaders(headers);
             response.setBody("");

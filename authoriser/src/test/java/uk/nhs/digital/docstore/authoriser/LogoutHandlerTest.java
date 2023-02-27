@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.id.State;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
@@ -50,7 +53,8 @@ public class LogoutHandlerTest {
     }
 
     @Test
-    public void returnsBadRequestErrorWhenRedirectUriParameterIsMissing() {
+    public void returnsBadRequestErrorWhenRedirectUriParameterIsMissing()
+            throws UnsupportedEncodingException {
         var sessionStore = new InMemorySessionStore();
         var sessionID = UUID.randomUUID();
         var session = Session.create(sessionID, 1L, new State());
@@ -68,8 +72,12 @@ public class LogoutHandlerTest {
         assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getHeaders().get("Location"))
                 .startsWith(config.getAuthFailureRedirectUri());
+        var errorDescription =
+                URLEncoder.encode(
+                        "Logout request is missing query parameter: redirect_uri",
+                        StandardCharsets.UTF_8.toString());
         assertThat(response.getHeaders().get("Location"))
-                .endsWith("?error=missing_parameter&error_description=missing_redirect_URI");
+                .endsWith("?error=invalid_request&error_description=" + errorDescription);
     }
 
     @Test
