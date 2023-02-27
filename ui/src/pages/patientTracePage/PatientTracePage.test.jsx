@@ -5,6 +5,7 @@ import { MemoryRouter, useNavigate } from "react-router";
 import "../../apiClients/documentStore";
 import { PatientDetailsProvider } from "../../providers/PatientDetailsProvider";
 import { useDocumentStore } from "../../apiClients/documentStore";
+import { buildPatientDetails } from "../../utils/testBuilders";
 
 jest.mock("react-router", () => {
     return {
@@ -214,16 +215,4 @@ const renderPatientTracePage = (propsOverride) => {
             </PatientDetailsProvider>
         </MemoryRouter>
     );
-};
-
-const buildPatientDetails = (patientDetailsOverride) => {
-    return {
-        birthDate: "1970-01-01",
-        familyName: "Default Surname",
-        givenName: ["Default Given Name"],
-        nhsNumber: "0000000000",
-        postalCode: "AA1 1AA",
-        superseded: false,
-        ...patientDetailsOverride,
-    };
 };
