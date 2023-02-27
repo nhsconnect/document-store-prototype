@@ -4,11 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.requests.LogoutRequestEvent;
@@ -17,20 +13,15 @@ public class LogoutHandler extends BaseAuthRequestHandler
         implements RequestHandler<LogoutRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(LogoutHandler.class);
 
-    private final OIDCClientConfig config;
-
     private final SessionStore sessionStore;
 
-    public LogoutHandler(SessionStore sessionStore, OIDCClientConfig config) {
+    public LogoutHandler(SessionStore sessionStore) {
         this.sessionStore = sessionStore;
-        this.config = config;
     }
 
     @SuppressWarnings("unused")
     public LogoutHandler() {
-        this(
-                new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
-                new OIDCClientConfig());
+        this(new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())));
     }
 
     @Override
@@ -43,37 +34,15 @@ public class LogoutHandler extends BaseAuthRequestHandler
 
         LOGGER.debug("Successfully deleted session " + sessionId);
 
-        var response = new APIGatewayProxyResponseEvent();
-        response.setIsBase64Encoded(false);
         var headers = new HashMap<String, String>();
-        try {
-            headers.put("Location", input.getRedirectUri().orElseThrow());
-            sessionId.ifPresent(
-                    uuid -> headers.put("Set-Cookie", "SessionId=" + uuid + "; Path=/; Max-Age=0"));
-        } catch (NoSuchElementException e) {
-            var errorDescription = "";
-            try {
-                errorDescription =
-                        URLEncoder.encode(
-                                "Logout request is missing query parameter: redirect_uri",
-                                StandardCharsets.UTF_8.toString());
-            } catch (UnsupportedEncodingException ex) {
-                throw new RuntimeException(ex);
-            }
-            LOGGER.error("Logout request is missing query parameter: redirect_uri");
-            headers.put(
-                    "Location",
-                    config.getAuthFailureRedirectUri()
-                            + "?error=invalid_request&error_description="
-                            + errorDescription);
-            response.setStatusCode(303);
-            response.setHeaders(headers);
-            response.setBody("");
-            return response;
-        }
+        headers.put("Location", input.getRedirectUri().orElseThrow());
+        sessionId.ifPresent(
+                uuid -> headers.put("Set-Cookie", "SessionId=" + uuid + "; Path=/; Max-Age=0"));
 
         LOGGER.debug("Redirecting to " + headers.get("Location"));
 
+        var response = new APIGatewayProxyResponseEvent();
+        response.setIsBase64Encoded(false);
         response.setStatusCode(SEE_OTHER_STATUS_CODE);
         response.setHeaders(headers);
         response.setBody("");

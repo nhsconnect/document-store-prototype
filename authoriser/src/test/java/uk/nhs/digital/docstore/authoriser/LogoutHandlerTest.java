@@ -4,12 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.id.State;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.models.Session;
@@ -17,14 +13,6 @@ import uk.nhs.digital.docstore.authoriser.requests.LogoutRequestEvent;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 
 public class LogoutHandlerTest {
-    private static OIDCClientConfig config;
-
-    @BeforeAll
-    public static void setup() {
-        var environmentVars = Map.of("AUTH_FAILURE_REDIRECT_URI", "http/redirect");
-        config = new OIDCClientConfig(environmentVars);
-    }
-
     @Test
     public void removeExistingSessionIdFromSessionStore() {
         var sessionStore = new InMemorySessionStore();
@@ -32,7 +20,7 @@ public class LogoutHandlerTest {
         var session = Session.create(sessionID, 1L, new State());
         sessionStore.save(session);
 
-        var handler = new LogoutHandler(sessionStore, config);
+        var handler = new LogoutHandler(sessionStore);
 
         var request = new LogoutRequestEvent();
         request.setHeaders(Map.of("Cookie", "SessionId=" + sessionID));
@@ -53,39 +41,11 @@ public class LogoutHandlerTest {
     }
 
     @Test
-    public void returnsBadRequestErrorWhenRedirectUriParameterIsMissing()
-            throws UnsupportedEncodingException {
-        var sessionStore = new InMemorySessionStore();
-        var sessionID = UUID.randomUUID();
-        var session = Session.create(sessionID, 1L, new State());
-        sessionStore.save(session);
-
-        var handler = new LogoutHandler(sessionStore, config);
-
-        var request = new LogoutRequestEvent();
-        request.setHeaders(Map.of("Cookie", "SessionId=" + sessionID));
-
-        var response = handler.handleRequest(request, Mockito.mock(Context.class));
-
-        assertThat(response.getBody()).isEmpty();
-        assertThat(response.getIsBase64Encoded()).isFalse();
-        assertThat(response.getStatusCode()).isEqualTo(303);
-        assertThat(response.getHeaders().get("Location"))
-                .startsWith(config.getAuthFailureRedirectUri());
-        var errorDescription =
-                URLEncoder.encode(
-                        "Logout request is missing query parameter: redirect_uri",
-                        StandardCharsets.UTF_8.toString());
-        assertThat(response.getHeaders().get("Location"))
-                .endsWith("?error=invalid_request&error_description=" + errorDescription);
-    }
-
-    @Test
     public void removesNonExistingSessionIdFromSessionStoreDoesNothing() {
         var sessionStore = new InMemorySessionStore();
         var sessionID = UUID.randomUUID();
 
-        var handler = new LogoutHandler(sessionStore, config);
+        var handler = new LogoutHandler(sessionStore);
 
         var request = new LogoutRequestEvent();
         request.setHeaders(Map.of("Cookie", "SessionId=" + sessionID));
@@ -107,7 +67,7 @@ public class LogoutHandlerTest {
     public void doesNothingIfSessionCookieDoesNotExist() {
         var sessionStore = new InMemorySessionStore();
 
-        var handler = new LogoutHandler(sessionStore, config);
+        var handler = new LogoutHandler(sessionStore);
 
         var request = new LogoutRequestEvent();
 
