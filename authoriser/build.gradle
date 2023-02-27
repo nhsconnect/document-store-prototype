@@ -66,3 +66,11 @@ spotless {
 		googleJavaFormat('1.15.0').aosp().reflowLongStrings()
 	}
 }
+
+task integrationTest(type: Test) {
+	group 'verification'
+	description 'Run all end-to-end tests against LocalStack.'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+}
