@@ -13,6 +13,9 @@ sourceSets {
 		compileClasspath += sourceSets.test.output
 		runtimeClasspath += sourceSets.main.output
 		runtimeClasspath += sourceSets.test.output
+		java {
+			srcDirs 'src/integrationTest'
+		}
 	}
 }
 
@@ -44,6 +47,10 @@ java {
 }
 
 test {
+	useJUnitPlatform()
+}
+
+tasks.withType(Test) {
 	useJUnitPlatform()
 }
 
