@@ -24,22 +24,21 @@ class TokenRequestHandlerTest {
         //        Update cache with user info
         //        Redirect browser with User Roles cookie
         var request = new TokenRequestEvent();
+
         String redirectUrl = "some-url";
         var authCode = new AuthorizationCode();
         var state = new State();
         request.setQueryStringParameters(
                 Map.of("redirect_uri", redirectUrl, "code", authCode.getValue(), "state", state.getValue()));
+        request.setHeaders(Map.of("Cookie", "State=" + state.getValue() + ""));
 
         var session = new Session();
         session.setRole("Role");
-        session.setAuthStateParameter(state);
+
         var cis2Client = Mockito.mock(CIS2Client.class);
         Mockito.when(cis2Client.authoriseSession(authCode)).thenReturn(Optional.of(session));
 
-        var sessionStore = new InMemorySessionStore();
-        sessionStore.save(session);
-
-        var handler = new TokenRequestHandler(cis2Client, sessionStore);
+        var handler = new TokenRequestHandler(cis2Client);
 
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
@@ -59,15 +58,17 @@ class TokenRequestHandlerTest {
                 "code", authCode.getValue(),
                 "state", new State().getValue()
         ));
+        request.setHeaders(Map.of(
+                "Cookie", "State=" + new State().getValue() + "; Secure; HttpOnly"
+        ));
 
         var session = new Session();
         session.setRole("some-role");
 
-        var sessionStore = new InMemorySessionStore();
         var cis2Client = Mockito.mock(CIS2Client.class);
 
         Mockito.when(cis2Client.authoriseSession(authCode)).thenReturn(Optional.of(session));
-        var handler = new TokenRequestHandler(cis2Client, sessionStore);
+        var handler = new TokenRequestHandler(cis2Client);
 
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
