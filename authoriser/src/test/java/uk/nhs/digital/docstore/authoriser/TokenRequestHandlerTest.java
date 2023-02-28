@@ -50,6 +50,8 @@ class TokenRequestHandlerTest {
         assertThat(response.getHeaders().get("Location")).startsWith(redirectUrl);
         assertThat(response.getHeaders().get("Location")).contains("Role=Role");
         assertThat(response.getIsBase64Encoded()).isFalse();
+        assertThat(response.getHeaders().get("Set-Cookie"))
+                .isEqualTo("State=" + state + "; SameSite=Strict; Secure; HttpOnly; Max-Age=0");
     }
 
     @Test

@@ -7,7 +7,7 @@ import java.net.HttpCookie;
 import java.util.Optional;
 
 public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
-    public Optional<State> getState() {
+    public Optional<State> getCookieState() {
         var headers = getHeaders();
         if (headers == null || headers.get("Cookie") == null) {
             return Optional.empty();

@@ -22,7 +22,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             throw new RuntimeException("Auth code is empty");
         }
         var queryParameterState = input.getQueryParameterState();
-        var cookieState = input.getState();
+        var cookieState = input.getCookieState();
         if (queryParameterState.isEmpty()
                 || cookieState.isEmpty()
                 || !queryParameterState.get().equals(cookieState.get())) {
@@ -42,6 +42,11 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         headers.put(
                 "Location",
                 input.getRedirectUri().orElseThrow() + "?Role=" + session.get().getRole());
+        headers.put(
+                "Set-Cookie",
+                "State="
+                        + input.getCookieState().orElseThrow()
+                        + "; SameSite=Strict; Secure; HttpOnly; Max-Age=0");
 
         var response = new APIGatewayProxyResponseEvent();
         response.setIsBase64Encoded(false);
