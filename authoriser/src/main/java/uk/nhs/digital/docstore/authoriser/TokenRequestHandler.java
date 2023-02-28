@@ -11,7 +11,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
     private final CIS2Client cis2Client;
 
-    public TokenRequestHandler(CIS2Client cis2Client) {
+    public TokenRequestHandler(CIS2Client cis2Client, SessionStore sessionStore) {
         this.cis2Client = cis2Client;
     }
 
