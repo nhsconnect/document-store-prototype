@@ -16,13 +16,12 @@ public class Session {
 
     public static final String KEY_PREFIX = "SESSION#";
 
-    public static Session create(UUID id, Long timeToExist, State authStateParameter) {
+    public static Session create(UUID id, Long timeToExist) {
         var session = new Session();
         session.setId(id);
         session.setPK(KEY_PREFIX + id);
         session.setSK(KEY_PREFIX + id);
         session.setTimeToExist(timeToExist);
-        session.setAuthStateParameter(authStateParameter);
 
         return session;
     }

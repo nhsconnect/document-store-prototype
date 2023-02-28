@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.nimbusds.oauth2.sdk.id.State;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,8 +29,7 @@ public class DynamoDBSessionStoreTest {
     public void shouldPersistSessionsToDynamoDB() {
         var uuid = UUID.randomUUID();
         var timeToExist = 1L;
-        var state = new State("some-state");
-        var session = Session.create(uuid, timeToExist, state);
+        var session = Session.create(uuid, timeToExist);
 
         db.save(session);
 
@@ -43,8 +41,7 @@ public class DynamoDBSessionStoreTest {
     public void shouldReadSessionsFromDynamoDB() {
         var uuid = UUID.randomUUID();
         var timeToExist = 1L;
-        var state = new State("some-state");
-        var session = Session.create(uuid, timeToExist, state);
+        var session = Session.create(uuid, timeToExist);
 
         dynamoDBMapper.save(session);
 
@@ -58,8 +55,7 @@ public class DynamoDBSessionStoreTest {
     public void shouldDeleteSessionFromDynamoDB() {
         var uuid = UUID.randomUUID();
         var timeToExist = 1L;
-        var state = new State("some-state");
-        var session = Session.create(uuid, timeToExist, state);
+        var session = Session.create(uuid, timeToExist);
         dynamoDBMapper.save(session);
 
         db.delete(session);
