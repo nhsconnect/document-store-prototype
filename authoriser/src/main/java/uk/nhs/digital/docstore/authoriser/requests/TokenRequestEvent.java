@@ -33,7 +33,7 @@ public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
 
     public Optional<State> getQueryParameterState() {
         return Optional.ofNullable(getQueryStringParameters())
-                .map(parameters -> parameters.get("State"))
+                .map(parameters -> parameters.get("state"))
                 .map(State::new);
     }
 }
