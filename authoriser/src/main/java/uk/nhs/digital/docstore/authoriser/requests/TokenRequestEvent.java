@@ -2,22 +2,22 @@ package uk.nhs.digital.docstore.authoriser.requests;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
+import com.nimbusds.oauth2.sdk.id.State;
 import java.net.HttpCookie;
 import java.util.Optional;
-import java.util.UUID;
 
 public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
-    public Optional<UUID> getSessionId() {
+    public Optional<State> getState() {
         var headers = getHeaders();
         if (headers == null || headers.get("Cookie") == null) {
             return Optional.empty();
         }
         var cookies = HttpCookie.parse(headers.get("Cookie"));
-        var sessionIdCookie =
+        var stateCookie =
                 cookies.stream()
-                        .filter(httpCookie -> httpCookie.getName().equals("SessionId"))
+                        .filter(httpCookie -> httpCookie.getName().equals("State"))
                         .findFirst();
-        return sessionIdCookie.map(HttpCookie::getValue).map(UUID::fromString);
+        return stateCookie.map(HttpCookie::getValue).map(State::new);
     }
 
     public Optional<AuthorizationCode> getAuthCode() {
@@ -29,5 +29,11 @@ public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
     public Optional<String> getRedirectUri() {
         return Optional.ofNullable(getQueryStringParameters())
                 .map(parameters -> parameters.get("redirect_uri"));
+    }
+
+    public Optional<State> getQueryParameterState() {
+        return Optional.ofNullable(getQueryStringParameters())
+                .map(parameters -> parameters.get("State"))
+                .map(State::new);
     }
 }

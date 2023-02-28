@@ -21,7 +21,13 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         if (authCode.isEmpty()) {
             throw new RuntimeException("Auth code is empty");
         }
-
+        if (input.getQueryParameterState() != input.getState()) {
+            var invalidStateResponse = new APIGatewayProxyResponseEvent();
+            invalidStateResponse.setStatusCode(400);
+            invalidStateResponse.setIsBase64Encoded(false);
+            invalidStateResponse.setBody("");
+            return invalidStateResponse;
+        }
         var session = cis2Client.authoriseSession(authCode.get());
 
         if (session.isEmpty()) {

@@ -18,8 +18,7 @@ public class LoginHandler extends BaseAuthRequestHandler
         this(new AuthenticationRequestFactory(new OIDCClientConfig()));
     }
 
-    public LoginHandler(
-            AuthenticationRequestFactory authenticationRequestFactory) {
+    public LoginHandler(AuthenticationRequestFactory authenticationRequestFactory) {
         this.authenticationRequestFactory = authenticationRequestFactory;
     }
 
@@ -35,7 +34,9 @@ public class LoginHandler extends BaseAuthRequestHandler
                         "Location",
                         authRequest.toURI().toString(),
                         "Set-Cookie",
-                        "State=" + authRequest.getState().getValue() + "; SameSite=Strict; Secure; HttpOnly");
+                        "State="
+                                + authRequest.getState().getValue()
+                                + "; SameSite=Strict; Secure; HttpOnly");
 
         var response = new APIGatewayProxyResponseEvent();
         response.setStatusCode(SEE_OTHER_STATUS_CODE);

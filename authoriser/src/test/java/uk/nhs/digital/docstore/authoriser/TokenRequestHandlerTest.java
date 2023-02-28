@@ -4,15 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
+import com.nimbusds.oauth2.sdk.id.State;
 import java.util.Map;
 import java.util.Optional;
-
-import com.nimbusds.oauth2.sdk.id.State;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requests.TokenRequestEvent;
-import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 
 class TokenRequestHandlerTest {
 
@@ -29,7 +27,13 @@ class TokenRequestHandlerTest {
         var authCode = new AuthorizationCode();
         var state = new State();
         request.setQueryStringParameters(
-                Map.of("redirect_uri", redirectUrl, "code", authCode.getValue(), "state", state.getValue()));
+                Map.of(
+                        "redirect_uri",
+                        redirectUrl,
+                        "code",
+                        authCode.getValue(),
+                        "state",
+                        state.getValue()));
         request.setHeaders(Map.of("Cookie", "State=" + state.getValue() + ""));
 
         var session = new Session();
@@ -53,14 +57,13 @@ class TokenRequestHandlerTest {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
 
-        request.setQueryStringParameters(Map.of(
-                "redirect_uri", "https://redirect.uri",
-                "code", authCode.getValue(),
-                "state", new State().getValue()
-        ));
-        request.setHeaders(Map.of(
-                "Cookie", "State=" + new State().getValue() + "; Secure; HttpOnly"
-        ));
+        request.setQueryStringParameters(
+                Map.of(
+                        "redirect_uri", "https://redirect.uri",
+                        "code", authCode.getValue(),
+                        "state", new State().getValue()));
+        request.setHeaders(
+                Map.of("Cookie", "State=" + new State().getValue() + "; Secure; HttpOnly"));
 
         var session = new Session();
         session.setRole("some-role");
@@ -73,5 +76,7 @@ class TokenRequestHandlerTest {
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(400);
+        assertThat(response.getBody()).isEqualTo("");
+        assertThat(response.getIsBase64Encoded()).isFalse();
     }
 }
