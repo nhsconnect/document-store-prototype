@@ -51,6 +51,7 @@ sequenceDiagram
     ARF API ->> CIS2 : Request Token
     CIS2 -->> ARF API : Return Access and ID tokens
     ARF API ->> Session Storage : Update session with user info
+    ARF API -->> Browser : Redirect with User Roles cookie
     Browser ->> ARF API : Endpoint Request With Cookie
     ARF API ->> Session Storage : Check valid session exists
     ARF API -->> Browser : 200 OK Response

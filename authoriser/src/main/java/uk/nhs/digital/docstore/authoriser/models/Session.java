@@ -12,6 +12,8 @@ public class Session {
     private long timeToExist;
     private State authStateParameter;
 
+    private String role;
+
     public static final String KEY_PREFIX = "SESSION#";
 
     public static Session create(UUID id, Long timeToExist, State authStateParameter) {
@@ -70,6 +72,14 @@ public class Session {
 
     public void setAuthStateParameter(State authStateParameter) {
         this.authStateParameter = authStateParameter;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public static class UUIDConverter implements DynamoDBTypeConverter<String, UUID> {
