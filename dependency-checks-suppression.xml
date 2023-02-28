@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk7-1.5.31.jar
+   reason: not exploitable in our application
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-stdlib\-jdk7@.*$</packageUrl>
+        <cve>CVE-2022-24329</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk8-1.5.31.jar
+   reason: not exploitable in our application
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-stdlib\-jdk8@.*$</packageUrl>
+        <cpe>cpe:/a:jetbrains:kotlin</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jackson-core-2.14.2.jar
+   reason: only a security threat if parsing XML sent from a third party
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-core@.*$</packageUrl>
+        <cve>CVE-2022-45688</cve>
+    </suppress>
 </suppressions>
 
 
