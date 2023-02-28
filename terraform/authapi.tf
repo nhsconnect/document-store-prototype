@@ -113,7 +113,7 @@ resource "aws_api_gateway_integration" "logout_lambda_integration" {
 # token request infra
 
 resource "aws_lambda_function" "token_request_lambda" {
-  handler          = "uk.nhs.digital.docstore.authoriser.LogoutHandler::handleRequest"
+  handler          = "uk.nhs.digital.docstore.authoriser.TokenRequestHandler::handleRequest"
   function_name    = "TokenRequestHandler"
   runtime          = "java11"
   role             = aws_iam_role.authoriser_execution_role.arn
@@ -160,5 +160,5 @@ resource "aws_api_gateway_integration" "token_request_lambda_integration" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.logout_lambda.invoke_arn
+  uri                     = aws_lambda_function.token_request_lambda.invoke_arn
 }
