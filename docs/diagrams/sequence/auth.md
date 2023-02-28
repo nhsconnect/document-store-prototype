@@ -40,18 +40,16 @@ The proposal for a new auth flow will look like this:
 sequenceDiagram
     actor Browser
     Browser ->> ARF API : /login
-    ARF API ->> Session Storage: Create session and state
-    ARF API -->> Browser: Store session ID in cookie
+    ARF API -->> Browser: Store request state in cookie
     Browser ->> CIS2 : Redirected to CIS2
     CIS2 -->> Browser  : Request Credentials
     Browser ->> CIS2 : Submit Credentials
     CIS2 -->> Browser : Return Auth Code
     Browser ->> ARF API: Redirected to ARF API with auth code and cookie 
-    ARF API ->> Session Storage: Check valid session exists
     ARF API ->> CIS2 : Request Token
     CIS2 -->> ARF API : Return Access and ID tokens
-    ARF API ->> Session Storage : Update session with user info
-    ARF API -->> Browser : Redirect with User Roles cookie
+    ARF API ->> Session Storage : Create session
+    ARF API -->> Browser : Redirect with session cookie
     Browser ->> ARF API : Endpoint Request With Cookie
     ARF API ->> Session Storage : Check valid session exists
     ARF API -->> Browser : 200 OK Response
