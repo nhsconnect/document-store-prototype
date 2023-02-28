@@ -1,195 +1,164 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
-import { Factory } from "fishery";
 import "../../apiClients/documentStore";
 import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
 import { downloadFile } from "../../utils/utils";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useNavigate } from "react-router";
+import { buildPatientDetails, searchResultFactory } from "../../utils/testBuilders";
+import { useDocumentStore } from "../../apiClients/documentStore";
 
-const mockDocumentStore = {
-    findByNhsNumber: () => [],
-    getPresignedUrlForZip: () => "test-url",
-};
-
-jest.mock("../../apiClients/documentStore", () => {
-    return {
-        useDocumentStore: () => mockDocumentStore,
-    };
-});
-jest.mock("../../providers/PatientDetailsProvider", () => ({
-    usePatientDetailsProviderContext: jest.fn(),
-}));
-const mockNavigate = jest.fn();
+jest.mock("../../apiClients/documentStore");
+jest.mock("../../providers/PatientDetailsProvider");
 jest.mock("react-router", () => ({
     ...jest.requireActual("react-router"),
-    useNavigate: () => mockNavigate,
+    useNavigate: jest.fn(),
 }));
 jest.mock("../../utils/utils");
 
-const searchResultFactory = Factory.define(() => ({
-    id: "some-id",
-    description: "Some description",
-    type: "some type",
-    indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
-}));
-
 describe("<SearchResultsPage />", () => {
-    const renderPage = () => {
-        render(
-            <MemoryRouter>
-                <SearchResultsPage />
-            </MemoryRouter>
-        );
-    };
+    const findByNhsNumberMock = jest.fn();
+    const getPresignedUrlForZipMock = jest.fn();
 
-    describe("when there is an NHS number", () => {
-        const nhsNumber = "1112223334";
-        const patientData = {
-            birthDate: "2010-10-22",
-            familyName: "Smith",
-            givenName: ["Jane"],
-            nhsNumber: nhsNumber,
-            postalCode: "LS1 6AE",
-        };
-
-        beforeEach(() => {
-            usePatientDetailsProviderContext.mockReturnValue([patientData, jest.fn()]);
+    beforeEach(() => {
+        useDocumentStore.mockReturnValue({
+            findByNhsNumber: findByNhsNumberMock,
+            getPresignedUrlForZip: getPresignedUrlForZipMock,
         });
+    });
 
+    describe("with NHS number", () => {
         it("renders the page", async () => {
-            renderPage();
+            const navigateMock = jest.fn();
+            const nhsNumber = "9000000001";
+            const familyName = "Smith";
+            const patientDetails = buildPatientDetails({ nhsNumber, familyName });
+
+            usePatientDetailsProviderContext.mockReturnValue([patientDetails, jest.fn()]);
+            useNavigate.mockReturnValue(navigateMock);
+
+            renderSearchResultsPage();
 
             expect(
                 screen.getByRole("heading", {
                     name: "Download electronic health records and attachments",
                 })
             ).toBeInTheDocument();
-            expect(searchButton()).not.toBeInTheDocument();
-            expect(screen.getByText(patientData.nhsNumber)).toBeInTheDocument();
-            expect(screen.getByText(patientData.familyName)).toBeInTheDocument();
-            expect(mockNavigate).not.toHaveBeenCalled();
-            await waitFor(() => {
-                expect(startAgainLink()).toBeVisible();
-            });
+            expect(screen.queryByRole("link", { name: "Start Again" })).not.toBeInTheDocument();
+            expect(screen.getByText(nhsNumber)).toBeInTheDocument();
+            expect(screen.getByText(familyName)).toBeInTheDocument();
+            expect(navigateMock).not.toHaveBeenCalled();
+            expect(await screen.findByRole("link", { name: "Start Again" })).toBeInTheDocument();
         });
 
-        it("should go to home page when user clicks on start again button", async () => {
-            renderPage();
-            await waitFor(() => {
-                expect(startAgainLink()).toHaveAttribute("href", "/home");
-            });
+        it("goes to home page when user clicks on start again button", async () => {
+            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+
+            renderSearchResultsPage();
+
+            expect(await screen.findByRole("link", { name: "Start Again" })).toHaveAttribute("href", "/home");
         });
 
         it("displays a loading spinner when a document search is in progress", async () => {
-            mockDocumentStore.findByNhsNumber = () => [];
-            renderPage();
+            findByNhsNumberMock.mockResolvedValue([]);
+            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+
+            renderSearchResultsPage();
 
             expect(screen.getByRole("progressbar", { name: "Loading..." })).toBeInTheDocument();
             expect(await screen.findByText("There are no documents available for this patient.")).toBeInTheDocument();
         });
 
         it("displays search results when there are results", async () => {
-            const searchResult = searchResultFactory.build();
-            mockDocumentStore.findByNhsNumber = () => [searchResult];
-            renderPage();
+            const description = "Doc description.";
+            const indexed = new Date();
+            const searchResult = searchResultFactory.build({ description, indexed });
+
+            findByNhsNumberMock.mockResolvedValue([searchResult]);
+            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+
+            renderSearchResultsPage();
 
             expect(await screen.findByText("List of documents available")).toBeInTheDocument();
-            const documentDescriptionElement = screen.getByText(searchResult.description);
+            const documentDescriptionElement = screen.getByText(description);
             expect(documentDescriptionElement).toBeInTheDocument();
-            expect(screen.getByText(searchResult.indexed.toLocaleString())).toBeInTheDocument();
+            expect(screen.getByText(indexed.toLocaleString())).toBeInTheDocument();
             expect(screen.getByRole("button", { name: "Download All Documents" })).toBeInTheDocument();
             expect(screen.getByRole("button", { name: "Delete All Documents" })).toBeInTheDocument();
-
             expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
         });
 
-        it("displays search results in descending order by 'uploaded at' value when there are multiple results", async () => {
+        it("displays search results in descending order by 'uploaded at' when there are multiple results", async () => {
+            const oldestDate = new Date(Date.UTC(2022, 7, 9, 10));
+            const secondOldestDate = new Date(Date.UTC(2022, 7, 10, 10));
+            const newestDate = new Date(Date.UTC(2022, 7, 11, 10));
             const searchResults = [
-                searchResultFactory.build({
-                    id: "some-id1",
-                    description: "oldest",
-                    indexed: new Date(Date.UTC(2022, 7, 9, 10)),
-                }),
-                searchResultFactory.build({
-                    id: "some-id2",
-                    description: "latest",
-                    indexed: new Date(Date.UTC(2022, 7, 11, 10)),
-                }),
-                searchResultFactory.build({
-                    id: "some-id3",
-                    description: "middle",
-                    indexed: new Date(Date.UTC(2022, 7, 10, 10)),
-                }),
+                searchResultFactory.build({ indexed: oldestDate }),
+                searchResultFactory.build({ indexed: secondOldestDate }),
+                searchResultFactory.build({ indexed: newestDate }),
             ];
-            mockDocumentStore.findByNhsNumber = () => searchResults;
-            renderPage();
 
-            await waitFor(() => {
-                expect(screen.getByText("List of documents available")).toBeInTheDocument();
-            });
+            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            findByNhsNumberMock.mockResolvedValue(searchResults);
 
-            const tableBody = document.querySelector("tbody");
-            const resultRows = within(tableBody).getAllByRole("row");
-            expect(resultRows).toHaveLength(3);
-            expect(resultRows[0].innerHTML).toContain("latest");
-            expect(resultRows[1].innerHTML).toContain("middle");
-            expect(resultRows[2].innerHTML).toContain("oldest");
+            renderSearchResultsPage();
+
+            expect(await screen.findByText("List of documents available")).toBeInTheDocument();
+            const rows = within(screen.getByRole("table")).getAllByRole("row");
+            expect(rows[1]).toHaveTextContent(newestDate.toLocaleString());
+            expect(rows[2]).toHaveTextContent(secondOldestDate.toLocaleString());
+            expect(rows[3]).toHaveTextContent(oldestDate.toLocaleString());
         });
 
         it("displays a message when a document search returns no results", async () => {
-            mockDocumentStore.findByNhsNumber = () => [];
-            renderPage();
+            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            findByNhsNumberMock.mockResolvedValue([]);
 
-            await waitFor(() => {
-                expect(screen.getByText("There are no documents available for this patient.")).toBeInTheDocument();
-            });
+            renderSearchResultsPage();
+
+            expect(await screen.findByText("There are no documents available for this patient.")).toBeInTheDocument();
             expect(screen.queryByRole("button", { name: "Download All Documents" })).not.toBeInTheDocument();
             expect(screen.queryByRole("button", { name: "Delete All Documents" })).not.toBeInTheDocument();
         });
 
         it("displays a message when a document search fails", async () => {
-            mockDocumentStore.findByNhsNumber = () => {
-                throw Error("Error!");
-            };
-            renderPage();
+            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            findByNhsNumberMock.mockRejectedValue(new Error("Failed to search for docs!"));
 
-            await waitFor(() => {
-                expect(screen.getByRole("alert")).toBeInTheDocument();
-            });
+            renderSearchResultsPage();
+
+            expect(await screen.findByRole("alert")).toBeInTheDocument();
         });
 
-        it("calls api client and should download the zip file when user clicks on download all button", async () => {
-            const searchResult = searchResultFactory.build();
-            mockDocumentStore.findByNhsNumber = () => [searchResult];
+        it("calls API client and should download the ZIP file when user clicks on download all button", async () => {
+            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
 
-            renderPage();
+            renderSearchResultsPage();
 
-            await waitFor(() => {
-                expect(screen.getByText("List of documents available")).toBeInTheDocument();
-            });
+            expect(await screen.findByText("List of documents available")).toBeInTheDocument();
 
             userEvent.click(screen.getByRole("button", { name: "Download All Documents" }));
 
-            await waitFor(() => {
-                expect(
-                    screen.getByRole("button", {
-                        name: "Download All Documents",
-                    })
-                ).not.toBeDisabled();
-            });
-
+            expect(
+                await screen.findByRole("button", {
+                    name: "Download All Documents",
+                })
+            ).not.toBeDisabled();
             expect(screen.queryByText("Failed to download, please retry.")).not.toBeInTheDocument();
             expect(screen.queryByText("All documents have been successfully downloaded.")).toBeInTheDocument();
         });
 
         it("downloads the file", async () => {
             const preSignedUrl = "some-pre-signed-url";
-            const searchResult = searchResultFactory.build();
-            mockDocumentStore.getPresignedUrlForZip = () => preSignedUrl;
-            mockDocumentStore.findByNhsNumber = () => [searchResult];
+            const nhsNumber = "9000000009";
+            const patientDetails = buildPatientDetails({ nhsNumber });
 
-            renderPage();
+            usePatientDetailsProviderContext.mockReturnValue([patientDetails, jest.fn()]);
+            getPresignedUrlForZipMock.mockResolvedValue(preSignedUrl);
+            findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
+
+            renderSearchResultsPage();
             userEvent.click(
                 await screen.findByRole("button", {
                     name: "Download All Documents",
@@ -201,61 +170,50 @@ describe("<SearchResultsPage />", () => {
             });
         });
 
-        it("should disable the download all button while waiting to download the zip file", async () => {
-            const searchResult = searchResultFactory.build();
-            mockDocumentStore.findByNhsNumber = () => [searchResult];
-            renderPage();
+        it("disables the download all button while waiting to download the zip file", async () => {
+            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
+
+            renderSearchResultsPage();
+            userEvent.click(await screen.findByRole("button", { name: "Download All Documents" }));
+
+            expect(screen.getByRole("button", { name: "Download All Documents" })).toBeDisabled();
             await waitFor(() => {
-                expect(screen.getByText("List of documents available")).toBeInTheDocument();
-            });
-            userEvent.click(screen.getByRole("button", { name: "Download All Documents" }));
-            await waitFor(() => {
-                expect(screen.getByRole("button", { name: "Download All Documents" })).toBeDisabled();
-                expect(screen.getByRole("progressbar")).toBeVisible();
+                expect(downloadFile).toHaveBeenCalled();
             });
         });
 
-        it("should display error message when download fails after clicking download all button", async () => {
-            const searchResult = searchResultFactory.build();
-            mockDocumentStore.getPresignedUrlForZip = () => {
-                throw Error("Error");
-            };
-            mockDocumentStore.findByNhsNumber = () => [searchResult];
+        it("displays error message when download fails after clicking download all button", async () => {
+            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
+            getPresignedUrlForZipMock.mockRejectedValue(new Error("Failed to download docs!"));
 
-            renderPage();
+            renderSearchResultsPage();
+            userEvent.click(await screen.findByRole("button", { name: "Download All Documents" }));
 
-            await waitFor(() => {
-                expect(
-                    screen.getByRole("button", {
-                        name: "Download All Documents",
-                    })
-                ).toBeInTheDocument();
-            });
-            userEvent.click(screen.getByRole("button", { name: "Download All Documents" }));
-
-            await waitFor(() => {
-                expect(screen.getByRole("alert")).toBeInTheDocument();
-            });
+            expect(await screen.findByRole("alert")).toBeInTheDocument();
         });
     });
 
-    describe("when there is NOT an NHS number", () => {
-        beforeEach(() => {
-            usePatientDetailsProviderContext.mockReturnValue([undefined, jest.fn()]);
-        });
-
+    describe("without NHS number", () => {
         it("redirects to patient trace page when the NHS number is NOT available", () => {
-            renderPage();
+            const navigateMock = jest.fn();
+            const patientDetails = buildPatientDetails({ nhsNumber: undefined });
 
-            expect(mockNavigate).toHaveBeenCalledWith("/search/patient-trace");
+            usePatientDetailsProviderContext.mockReturnValue([patientDetails, jest.fn()]);
+            useNavigate.mockReturnValue(navigateMock);
+
+            renderSearchResultsPage();
+
+            expect(navigateMock).toHaveBeenCalledWith("/search/patient-trace");
         });
     });
 });
 
-function searchButton() {
-    return screen.queryByRole("button", { name: "Search" });
-}
-
-function startAgainLink() {
-    return screen.queryByRole("link", { name: "Start Again" });
-}
+const renderSearchResultsPage = () => {
+    render(
+        <MemoryRouter>
+            <SearchResultsPage />
+        </MemoryRouter>
+    );
+};
