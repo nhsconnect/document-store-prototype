@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.authoriser;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
@@ -10,6 +11,13 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
 
     private final CIS2Client cis2Client;
+
+    public TokenRequestHandler() {
+        this(
+                new CIS2HttpClient(
+                        new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
+                        new OIDCTokenFetcher()));
+    }
 
     public TokenRequestHandler(CIS2Client cis2Client) {
         this.cis2Client = cis2Client;
