@@ -55,7 +55,7 @@ public class BaseAuthRequestHandler {
                     new OIDCProviderMetadata(
                             new Issuer(env.get("OIDC_ISSUER_URL")),
                             List.of(SubjectType.PUBLIC),
-                            new URI("OIDC_JWKS_URL"));
+                            new URI(env.get("OIDC_JWKS_URL")));
             providerMetadata.setAuthorizationEndpointURI(new URI(env.get("OIDC_AUTHORIZE_URL")));
             providerMetadata.setScopes(
                     new Scope("openid", "profile", "nationalrbacaccess", "associatedorgs"));

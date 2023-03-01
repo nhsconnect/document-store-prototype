@@ -6,7 +6,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.State;
 import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.models.Session;
@@ -15,9 +14,9 @@ import uk.nhs.digital.docstore.authoriser.requests.TokenRequestEvent;
 class TokenRequestHandlerTest {
 
     @Test
-    void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() {
+    void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws Exception {
         //        Check valid session exists in cache
-        //        Request Token frmo cis2
+        //        Request Token from cis2
         //        take Access and ID tokens from cis2
         //        Update cache with user info
         //        Redirect browser with User Roles cookie
@@ -40,7 +39,8 @@ class TokenRequestHandlerTest {
         session.setRole("Role");
 
         var cis2Client = Mockito.mock(CIS2Client.class);
-        Mockito.when(cis2Client.authoriseSession(authCode)).thenReturn(Optional.of(session));
+
+        Mockito.when(cis2Client.authoriseSession(authCode)).thenReturn(session);
 
         var handler = new TokenRequestHandler(cis2Client);
 
@@ -55,7 +55,7 @@ class TokenRequestHandlerTest {
     }
 
     @Test
-    void handleRequestReturnsBadRequestResponseWhenTheRequestStateIsInvalid() {
+    void handleRequestReturnsBadRequestResponseWhenTheRequestStateIsInvalid() throws Exception {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
 
@@ -72,7 +72,7 @@ class TokenRequestHandlerTest {
 
         var cis2Client = Mockito.mock(CIS2Client.class);
 
-        Mockito.when(cis2Client.authoriseSession(authCode)).thenReturn(Optional.of(session));
+        Mockito.when(cis2Client.authoriseSession(authCode)).thenReturn(session);
         var handler = new TokenRequestHandler(cis2Client);
 
         var response = handler.handleRequest(request, Mockito.mock(Context.class));

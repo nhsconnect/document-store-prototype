@@ -1,11 +1,13 @@
 package uk.nhs.digital.docstore.authoriser;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimNames;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import java.text.ParseException;
-import java.util.Optional;
+import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
+import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.util.UUID;
+import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 
@@ -13,33 +15,36 @@ public class CIS2HttpClient implements CIS2Client {
 
     private final SessionStore sessionStore;
     private final OIDCTokenFetcher tokenFetcher;
+    private final IDTokenValidator tokenValidator;
 
-    public CIS2HttpClient(SessionStore sessionStore, OIDCTokenFetcher tokenFetcher) {
+    public CIS2HttpClient(
+            SessionStore sessionStore,
+            OIDCTokenFetcher tokenFetcher,
+            IDTokenValidator tokenValidator) {
         this.sessionStore = sessionStore;
         this.tokenFetcher = tokenFetcher;
+        this.tokenValidator = tokenValidator;
     }
 
     @Override
-    public Optional<Session> authoriseSession(AuthorizationCode authCode) {
+    public Session authoriseSession(AuthorizationCode authCode) throws AuthorisationException {
         JWT token;
         try {
             token = tokenFetcher.fetchToken(authCode);
         } catch (TokenFetchingException e) {
-            throw new RuntimeException(e);
+            throw new AuthorisationException(e);
         }
 
-        // Verify token signature and claims
-        long expirationTime;
+        IDTokenClaimsSet claimsSet;
         try {
-            var claimsSet = token.getJWTClaimsSet();
-            expirationTime = claimsSet.getLongClaim(JWTClaimNames.EXPIRATION_TIME);
-        } catch (ParseException e) {
-            // Should we return an empty optional or throw an exception here?
-            throw new RuntimeException(e);
+            // TODO: Add nonce validation
+            claimsSet = tokenValidator.validate(token, null);
+        } catch (BadJOSEException | JOSEException e) {
+            throw new AuthorisationException(e);
         }
 
-        var session = Session.create(UUID.randomUUID(), expirationTime);
+        var session = Session.create(UUID.randomUUID(), claimsSet.getExpirationTime().getTime());
         sessionStore.save(session);
-        return Optional.of(session);
+        return session;
     }
 }

@@ -4,7 +4,12 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
+import java.net.MalformedURLException;
 import java.util.HashMap;
+import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
+import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requests.TokenRequestEvent;
 
 public class TokenRequestHandler extends BaseAuthRequestHandler
@@ -17,7 +22,8 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         this(
                 new CIS2HttpClient(
                         new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
-                        new OIDCTokenFetcher()));
+                        new OIDCTokenFetcher(),
+                        makeIDTokenValidator()));
     }
 
     public TokenRequestHandler(CIS2Client cis2Client) {
@@ -41,16 +47,16 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             invalidStateResponse.setBody("");
             return invalidStateResponse;
         }
-        var session = cis2Client.authoriseSession(authCode.get());
-
-        if (session.isEmpty()) {
-            throw new RuntimeException("No session returned by CIS2 client");
+        Session session;
+        try {
+            session = cis2Client.authoriseSession(authCode.get());
+        } catch (AuthorisationException e) {
+            throw new RuntimeException(e);
         }
 
         var headers = new HashMap<String, String>();
         headers.put(
-                "Location",
-                input.getRedirectUri().orElseThrow() + "?Role=" + session.get().getRole());
+                "Location", input.getRedirectUri().orElseThrow() + "?Role=" + session.getRole());
         headers.put(
                 "Set-Cookie",
                 "State="
@@ -63,5 +69,19 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         response.setHeaders(headers);
 
         return response;
+    }
+
+    private static IDTokenValidator makeIDTokenValidator() {
+        var clientInfo = getClientInformation();
+        var providerMetadata = getProviderMetadata();
+        try {
+            return new IDTokenValidator(
+                    providerMetadata.getIssuer(),
+                    clientInfo.getID(),
+                    JWSAlgorithm.RS256,
+                    providerMetadata.getJWKSetURI().toURL());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

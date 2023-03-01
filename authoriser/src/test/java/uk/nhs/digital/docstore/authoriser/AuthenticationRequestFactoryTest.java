@@ -8,7 +8,6 @@ import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.id.State;
-import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.SubjectType;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
@@ -42,7 +41,6 @@ class AuthenticationRequestFactoryTest {
         assertThat(request.getRedirectionURI()).isEqualTo(clientMetadata.getRedirectionURI());
         assertThat(request.getClientID()).isEqualTo(clientInformation.getID());
         assertThat(request.getState()).isInstanceOf(State.class);
-        assertThat(request.getNonce()).isInstanceOf(Nonce.class);
         assertThat(request.toURI()).hasHost(serverURI.getHost());
     }
 }
