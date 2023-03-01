@@ -1,7 +1,6 @@
 package uk.nhs.digital.docstore.authoriser.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.nimbusds.oauth2.sdk.id.State;
 import java.util.UUID;
 
 @DynamoDBTable(tableName = "ARFAuth")
@@ -10,7 +9,6 @@ public class Session {
     private UUID id;
     private String sk;
     private long timeToExist;
-    private State authStateParameter;
 
     private String role;
 
@@ -63,16 +61,6 @@ public class Session {
         this.timeToExist = timeToExist;
     }
 
-    @DynamoDBTypeConverted(converter = StateConverter.class)
-    @DynamoDBAttribute(attributeName = "AuthStateParameter")
-    public State getAuthStateParameter() {
-        return authStateParameter;
-    }
-
-    public void setAuthStateParameter(State authStateParameter) {
-        this.authStateParameter = authStateParameter;
-    }
-
     public String getRole() {
         return role;
     }
@@ -90,18 +78,6 @@ public class Session {
         @Override
         public UUID unconvert(String uuid) {
             return UUID.fromString(uuid);
-        }
-    }
-
-    public static class StateConverter implements DynamoDBTypeConverter<String, State> {
-        @Override
-        public String convert(State object) {
-            return object.toString();
-        }
-
-        @Override
-        public State unconvert(String state) {
-            return new State(state);
         }
     }
 }
