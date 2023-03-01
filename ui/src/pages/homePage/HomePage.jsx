@@ -22,7 +22,7 @@ const HomePage = () => {
             <form onSubmit={handleSubmit(submit)}>
                 <Fieldset>
                     <Fieldset.Legend headingLevel="h1" isPageHeading>
-                        How do you want to use the Document Store?
+                        How do you want to use the service?
                     </Fieldset.Legend>
                     <Radios hint="Select an option">
                         <Radios.Radio
@@ -31,7 +31,7 @@ const HomePage = () => {
                             value="download"
                             inputRef={isDownloadOrUploadRef}
                         >
-                            Download and view a stored document
+                            Download and/or delete documents
                         </Radios.Radio>
                         <Radios.Radio
                             {...isDownloadOrUploadProps}
@@ -39,7 +39,7 @@ const HomePage = () => {
                             value="upload"
                             inputRef={isDownloadOrUploadRef}
                         >
-                            Upload a document
+                            Upload documents
                         </Radios.Radio>
                     </Radios>
                 </Fieldset>

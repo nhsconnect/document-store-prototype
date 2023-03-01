@@ -10,24 +10,24 @@ describe("<HomePage />", () => {
         render(<HomePage />);
 
         expect(screen.getByText("Back")).toBeInTheDocument();
-        const form = within(screen.getByRole("group", { name: "How do you want to use the Document Store?" }));
-        expect(form.getByRole("heading", { name: "How do you want to use the Document Store?" })).toBeInTheDocument();
+        const form = within(screen.getByRole("group", { name: "How do you want to use the service?" }));
+        expect(form.getByRole("heading", { name: "How do you want to use the service?" })).toBeInTheDocument();
         expect(form.getByText("Select an option")).toBeInTheDocument();
-        expect(form.getByRole("radio", { name: "Upload a document" })).toBeInTheDocument();
-        expect(form.getByRole("radio", { name: "Download and view a stored document" })).toBeInTheDocument();
+        expect(form.getByRole("radio", { name: "Upload documents" })).toBeInTheDocument();
+        expect(form.getByRole("radio", { name: "Download and/or delete documents" })).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Continue" })).toBeInTheDocument();
     });
 
     it("no radio buttons selected by default", () => {
         render(<HomePage />);
 
-        expect(screen.getByRole("radio", { name: "Upload a document" })).not.toBeChecked();
-        expect(screen.getByRole("radio", { name: "Download and view a stored document" })).not.toBeChecked();
+        expect(screen.getByRole("radio", { name: "Upload documents" })).not.toBeChecked();
+        expect(screen.getByRole("radio", { name: "Download and/or delete documents" })).not.toBeChecked();
     });
 
     it.each([
-        ["upload", "Upload a document"],
-        ["search", "Download and view a stored document"],
+        ["upload", "Upload documents"],
+        ["search", "Download and/or delete documents"],
     ])("navigates to %s path when '%s' selected", async (path, radioButtonName) => {
         const navigateMock = jest.fn();
 
