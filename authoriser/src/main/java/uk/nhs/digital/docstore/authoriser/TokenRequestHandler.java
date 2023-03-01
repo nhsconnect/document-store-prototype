@@ -12,6 +12,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
     private final CIS2Client cis2Client;
 
+    @SuppressWarnings("unused")
     public TokenRequestHandler() {
         this(
                 new CIS2HttpClient(

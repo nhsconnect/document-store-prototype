@@ -34,7 +34,8 @@ colima start
 
 #### 2. Set Environment variables
 
-Create a .env file using the .env.example file
+Create a .env file by copying the .env.example file and adding any missing values. This file is sourced to your shell environment so make sure it doesn't have
+any extra whitespace, comments etc. Secrets can be obtained from AWS Parameter Store.
 
 #### 3. Start LocalStack
 

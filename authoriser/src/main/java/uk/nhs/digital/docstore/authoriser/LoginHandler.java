@@ -15,7 +15,7 @@ public class LoginHandler extends BaseAuthRequestHandler
 
     @SuppressWarnings("unused")
     public LoginHandler() {
-        this(new AuthenticationRequestFactory(new OIDCClientConfig()));
+        this(new AuthenticationRequestFactory(getClientInformation(), getProviderMetadata()));
     }
 
     public LoginHandler(AuthenticationRequestFactory authenticationRequestFactory) {

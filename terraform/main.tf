@@ -166,5 +166,14 @@ locals {
     SQS_ENDPOINT               = var.sqs_endpoint
     SQS_AUDIT_QUEUE_URL        = aws_sqs_queue.sensitive_audit.url
   }
+  authoriser_environment_variables = {
+    DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
+    OIDC_ISSUER_URL    = var.cognito_cis2_provider_oidc_issuer
+    OIDC_AUTHORIZE_URL = var.cognito_cis2_provider_authorize_url
+    OIDC_JWKS_URL      = var.cognito_cis2_provider_jwks_uri
+    OIDC_CALLBACK_URL  = var.cloud_only_service_instances > 0 ? "${local.amplify_base_url}/cis2-auth-callback" : var.cognito_cis2_client_callback_urls[0]
+    OIDC_CLIENT_ID     = var.cognito_cis2_provider_client_id
+    OIDC_CLIENT_SECRET = var.cognito_cis2_provider_client_secret
+  }
   amplify_base_url = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
 }

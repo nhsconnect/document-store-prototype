@@ -20,12 +20,7 @@ resource "aws_lambda_function" "login_redirect_lambda" {
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {
-    variables = {
-      DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
-      OIDC_AUTHORIZE_URL = var.cognito_cis2_provider_authorize_url
-      OIDC_CALLBACK_URL  = var.cloud_only_service_instances > 0 ? "${local.amplify_base_url}/cis2-auth-callback" : var.cognito_cis2_client_callback_urls[0]
-      OIDC_CLIENT_ID     = var.cognito_cis2_provider_client_id
-    }
+    variables = local.authoriser_environment_variables
   }
 }
 

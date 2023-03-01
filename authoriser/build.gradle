@@ -8,6 +8,12 @@ repositories {
 }
 
 sourceSets {
+	main {
+		java {
+			srcDirs 'src/main'
+			exclude 'src/main/java/uk/nhs/digital/docstore/authoriser/Runner.java'
+		}
+	}
 	integrationTest {
 		compileClasspath += sourceSets.main.output
 		compileClasspath += sourceSets.test.output

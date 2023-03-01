@@ -11,9 +11,7 @@ resource "aws_lambda_function" "token_request_lambda" {
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {
-    variables = {
-      DYNAMODB_ENDPOINT = var.dynamodb_endpoint
-    }
+    variables = local.authoriser_environment_variables
   }
 }
 
