@@ -69,7 +69,7 @@ const DeleteDocumentsConfirmationPage = () => {
                         <Radios.Radio
                             {...shouldDeleteAllDocsProps}
                             id="no"
-                            value="No"
+                            value="no"
                             inputRef={shouldDeleteAllDocsRef}
                             defaultChecked
                         >
