@@ -18,26 +18,29 @@ const states = {
 const DeleteDocumentsConfirmationPage = () => {
     const documentStore = useDocumentStore();
     const { register, handleSubmit } = useForm();
-    let navigate = useNavigate();
-    const [patientDetails] = usePatientDetailsProviderContext();
+    const navigate = useNavigate();
+    const [{ nhsNumber, givenName, familyName }] = usePatientDetailsProviderContext();
     const [submissionState, setSubmissionState] = useState(states.IDLE);
 
-    const { ref: trxRef, ...trxProps } = register("trx");
+    const { ref: shouldDeleteAllDocsRef, ...shouldDeleteAllDocsProps } = register("shouldDeleteAllDocs");
 
-    const doSubmit = async (data) => {
-        if (data.trx === "yes") {
+    const doSubmit = async ({ shouldDeleteAllDocs }) => {
+        const searchResultsPageUrl = "/search/results";
+
+        if (shouldDeleteAllDocs === "yes") {
             setSubmissionState(states.DELETING);
             try {
-                const response = await documentStore.deleteAllDocuments(patientDetails.nhsNumber);
+                const response = await documentStore.deleteAllDocuments(nhsNumber);
+
                 if (response === "successfully deleted") {
                     setSubmissionState(states.SUCCEEDED);
-                    navigate("/search/results");
+                    navigate(searchResultsPageUrl);
                 }
             } catch (error) {
                 setSubmissionState(states.FAILED);
             }
         } else {
-            navigate("/search/results");
+            navigate(searchResultsPageUrl);
         }
     };
 
@@ -51,15 +54,25 @@ const DeleteDocumentsConfirmationPage = () => {
                 <Fieldset>
                     <Fieldset.Legend isPageHeading>Delete health records and attachments</Fieldset.Legend>
                     <Fieldset.Legend size="m">
-                        Are you sure you want to permanently delete all files for patient{" "}
-                        {patientDetails.givenName?.join(" ")} {patientDetails.familyName} NHS number{" "}
-                        {patientDetails.nhsNumber} ?
+                        Are you sure you want to permanently delete all files for patient {givenName?.join(" ")}{" "}
+                        {familyName} NHS number {nhsNumber}?
                     </Fieldset.Legend>
-                    <Radios name="delete-documents-action">
-                        <Radios.Radio id="yes" value="yes" inputRef={trxRef} {...trxProps}>
+                    <Radios>
+                        <Radios.Radio
+                            {...shouldDeleteAllDocsProps}
+                            id="yes"
+                            value="yes"
+                            inputRef={shouldDeleteAllDocsRef}
+                        >
                             Yes
                         </Radios.Radio>
-                        <Radios.Radio id="no" value="no" inputRef={trxRef} {...trxProps} defaultChecked>
+                        <Radios.Radio
+                            {...shouldDeleteAllDocsProps}
+                            id="no"
+                            value="No"
+                            inputRef={shouldDeleteAllDocsRef}
+                            defaultChecked
+                        >
                             No
                         </Radios.Radio>
                     </Radios>
