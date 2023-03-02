@@ -22,7 +22,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         this(
                 new CIS2HttpClient(
                         new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
-                        new OIDCTokenFetcher(),
+                        new OIDCTokenFetcher(getClientInformation(), null, getProviderMetadata()),
                         makeIDTokenValidator()));
     }
 

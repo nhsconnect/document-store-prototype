@@ -67,6 +67,8 @@ fileignoreconfig:
   checksum: 011fb55fff5554a7e8e7b23a0c34f319bf43be047abda0527e75b1873801ba5b
 - filename: authoriser/src/test/java/uk/nhs/digital/docstore/authoriser/LoginHandlerTest.java
   checksum: 532dac271245e70175b6f3554f102f3b7b5342b727b56dfa69fe52e27863500c
+- filename: authoriser/src/test/java/uk/nhs/digital/docstore/authoriser/OIDCTokenFetcherTest.java
+  checksum: 805b97b3413161898d6c2d782e3d2cf9b169502ae1cf1d6520112dae420d8bca
 - filename: .env.example
   checksum: 7885569c7da26aee8f525b1f383c6433c8f5ee471c3621eb1b37e308861f4551
 - filename: docs/images/local-dev-env-16022023.png
