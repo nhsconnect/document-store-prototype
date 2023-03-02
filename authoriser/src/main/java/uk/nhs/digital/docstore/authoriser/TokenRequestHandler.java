@@ -15,19 +15,19 @@ import uk.nhs.digital.docstore.authoriser.requests.TokenRequestEvent;
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private final CIS2Client cis2Client;
+    private final OIDCClient OIDCClient;
 
     @SuppressWarnings("unused")
     public TokenRequestHandler() {
         this(
-                new CIS2HttpClient(
+                new OIDCHttpClient(
                         new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
                         new OIDCTokenFetcher(getClientInformation(), null, getProviderMetadata()),
                         makeIDTokenValidator()));
     }
 
-    public TokenRequestHandler(CIS2Client cis2Client) {
-        this.cis2Client = cis2Client;
+    public TokenRequestHandler(OIDCClient OIDCClient) {
+        this.OIDCClient = OIDCClient;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         }
         Session session;
         try {
-            session = cis2Client.authoriseSession(authCode.get());
+            session = OIDCClient.authoriseSession(authCode.get());
         } catch (AuthorisationException e) {
             throw new RuntimeException(e);
         }

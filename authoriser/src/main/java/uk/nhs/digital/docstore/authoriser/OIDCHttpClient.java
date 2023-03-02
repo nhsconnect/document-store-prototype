@@ -11,13 +11,13 @@ import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 
-public class CIS2HttpClient implements CIS2Client {
+public class OIDCHttpClient implements OIDCClient {
 
     private final SessionStore sessionStore;
     private final OIDCTokenFetcher tokenFetcher;
     private final IDTokenValidator tokenValidator;
 
-    public CIS2HttpClient(
+    public OIDCHttpClient(
             SessionStore sessionStore,
             OIDCTokenFetcher tokenFetcher,
             IDTokenValidator tokenValidator) {

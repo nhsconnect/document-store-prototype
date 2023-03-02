@@ -13,7 +13,7 @@ import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 
-class CIS2HttpClientTest {
+class OIDCHttpClientTest {
     @Test
     void createsAUserSessionWhenTheAuthCodeCanBeExchangedForAValidIdToken() throws Exception {
         var authCode = new AuthorizationCode();
@@ -29,7 +29,7 @@ class CIS2HttpClientTest {
                         Issuer.parse(claimsSet.getIssuer()),
                         new ClientID(claimsSet.getAudience().get(0)));
 
-        var client = new CIS2HttpClient(sessionStore, tokenFetcher, tokenValidator);
+        var client = new OIDCHttpClient(sessionStore, tokenFetcher, tokenValidator);
 
         Session result;
         try {
@@ -59,7 +59,7 @@ class CIS2HttpClientTest {
         ClientID clientID = new ClientID("test");
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
 
-        var client = new CIS2HttpClient(sessionStore, tokenFetcher, tokenValidator);
+        var client = new OIDCHttpClient(sessionStore, tokenFetcher, tokenValidator);
 
         Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode))
                 .isInstanceOf(AuthorisationException.class);
@@ -77,7 +77,7 @@ class CIS2HttpClientTest {
         ClientID clientID = new ClientID("test");
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
 
-        var client = new CIS2HttpClient(sessionStore, tokenFetcher, tokenValidator);
+        var client = new OIDCHttpClient(sessionStore, tokenFetcher, tokenValidator);
 
         Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode))
                 .isInstanceOf(AuthorisationException.class);

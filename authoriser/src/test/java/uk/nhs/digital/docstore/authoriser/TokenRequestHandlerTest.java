@@ -38,11 +38,11 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("Role");
 
-        var cis2Client = Mockito.mock(CIS2Client.class);
+        var oidcClient = Mockito.mock(OIDCClient.class);
 
-        Mockito.when(cis2Client.authoriseSession(authCode)).thenReturn(session);
+        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
 
-        var handler = new TokenRequestHandler(cis2Client);
+        var handler = new TokenRequestHandler(oidcClient);
 
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
@@ -70,10 +70,10 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
-        var cis2Client = Mockito.mock(CIS2Client.class);
+        var oidcClient = Mockito.mock(OIDCClient.class);
 
-        Mockito.when(cis2Client.authoriseSession(authCode)).thenReturn(session);
-        var handler = new TokenRequestHandler(cis2Client);
+        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
+        var handler = new TokenRequestHandler(oidcClient);
 
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
