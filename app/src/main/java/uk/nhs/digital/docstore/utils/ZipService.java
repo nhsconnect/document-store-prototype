@@ -4,17 +4,17 @@ import static java.util.zip.Deflater.DEFLATED;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.model.Document;
+import uk.nhs.digital.docstore.model.FileName;
 
 public class ZipService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZipService.class);
@@ -36,8 +36,7 @@ public class ZipService {
 
         LOGGER.debug("Zipping documents...");
 
-        var fileNamesToBeZipped = new ArrayList<>(List.of());
-        var duplicateFileCount = 1;
+        var fileNamesToBeZipped = new HashMap<String, Integer>();
 
         for (Document document : documentList) {
             var fileName = document.getFileName().getValue();
@@ -48,13 +47,15 @@ public class ZipService {
                                 + ", S3 location: "
                                 + document.getLocation());
 
-                if (fileNamesToBeZipped.contains(fileName)) {
-                    var uniqueFileName = createUniqueFileName(fileName, duplicateFileCount);
+                var isDuplicate = fileNamesToBeZipped.get(fileName);
+
+                if (isDuplicate != null) {
+                    fileNamesToBeZipped.put(fileName, isDuplicate + 1);
+                    var uniqueFileName = createUniqueFileName(document.getFileName(), isDuplicate);
                     zipOutputStream.putNextEntry(new ZipEntry(uniqueFileName));
-                    duplicateFileCount++;
                 } else {
-                    fileNamesToBeZipped.add(document.getFileName().getValue());
-                    zipOutputStream.putNextEntry(new ZipEntry(document.getFileName().getValue()));
+                    fileNamesToBeZipped.put(fileName, 1);
+                    zipOutputStream.putNextEntry(new ZipEntry(fileName));
                 }
 
                 IOUtils.copy(
@@ -67,16 +68,7 @@ public class ZipService {
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
-    public String createUniqueFileName(String fileName, int duplicateFileCount) {
-        var uniqueFileName = "";
-        var baseName = FilenameUtils.getBaseName(fileName);
-        var extension = FilenameUtils.getExtension(fileName);
-
-        if (extension.isEmpty()) {
-            uniqueFileName = baseName + "(" + duplicateFileCount + ")";
-        } else {
-            uniqueFileName = baseName + "(" + duplicateFileCount + ")" + "." + extension;
-        }
-        return uniqueFileName;
+    public String createUniqueFileName(FileName fileName, int duplicateFileCount) {
+        return fileName.getBaseName() + "(" + duplicateFileCount + ")" + fileName.getExtension();
     }
 }

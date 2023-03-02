@@ -1,7 +1,7 @@
 package uk.nhs.digital.docstore.model;
 
-import java.util.Arrays;
 import javax.annotation.Nonnull;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -17,6 +17,15 @@ public class FileName {
         return value;
     }
 
+    public String getBaseName() {
+        return FilenameUtils.getBaseName(value);
+    }
+
+    public String getExtension() {
+        var extension = FilenameUtils.getExtension(value);
+        return extension.length() > 0 ? "." + extension : "";
+    }
+
     @Override
     public boolean equals(Object other) {
         return EqualsBuilder.reflectionEquals(this, other);
@@ -29,24 +38,10 @@ public class FileName {
 
     @Override
     public String toString() {
-        var fileNameAndTypes = value.split("\\.");
+        var baseFileName = getBaseName();
         var redactedFileName =
-                fileNameAndTypes[0].charAt(0)
-                        + "***"
-                        + fileNameAndTypes[0].charAt(fileNameAndTypes[0].length() - 1);
-        var fileTypes = fileNameAndTypes.length > 1 ? extractFileTypes(fileNameAndTypes) : "";
+                baseFileName.charAt(0) + "***" + baseFileName.charAt(baseFileName.length() - 1);
 
-        return redactedFileName + fileTypes;
-    }
-
-    private String extractFileTypes(String[] fileNameAndTypes) {
-        var fileTypes = Arrays.asList(fileNameAndTypes).subList(1, fileNameAndTypes.length);
-        var stringBuilder = new StringBuilder();
-
-        for (String fileType : fileTypes) {
-            stringBuilder.append(".").append(fileType);
-        }
-
-        return stringBuilder.toString();
+        return redactedFileName + getExtension();
     }
 }

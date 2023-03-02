@@ -43,6 +43,27 @@ class FileNameTest {
     }
 
     @Test
+    void returnFileNameWithoutExtensionWhenGettingBaseName() {
+        var fileName = new FileName("hello.txt");
+
+        assertEquals(fileName.getBaseName(), "hello");
+    }
+
+    @Test
+    void returnFileExtensionWhenGettingExtension() {
+        var fileName = new FileName("hello.txt");
+
+        assertEquals(fileName.getExtension(), ".txt");
+    }
+
+    @Test
+    void returnEmptyStringWhenThereIsNoExtension() {
+        var fileName = new FileName("test-file");
+
+        assertEquals(fileName.getExtension(), "");
+    }
+
+    @Test
     void isEqualWhenFileNameValuesAreSame() {
         var fileName1 = new FileName("filename1.pdf");
         var fileName2 = new FileName("filename1.pdf");
