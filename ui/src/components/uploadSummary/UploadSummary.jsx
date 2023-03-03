@@ -4,16 +4,14 @@ import { formatSize, getFormattedDate } from "../../utils/utils";
 import PatientSummary from "../patientSummary/PatientSummary";
 import React from "react";
 
-const tableMargin = { marginBottom: 50 };
-
 const UploadSummary = ({ patientDetails, documents }) => {
     const successfulUploads = documents.filter((document) => {
         return document.state === documentUploadStates.SUCCEEDED;
     });
-
     const failedUploads = documents.filter((document) => {
         return document.state === documentUploadStates.FAILED;
     });
+    const tableMargin = { marginBottom: 50 };
 
     return (
         <section>
@@ -31,7 +29,7 @@ const UploadSummary = ({ patientDetails, documents }) => {
                             </p>
                             <p>
                                 Please check your internet connection. If the issue persists please contact the{" "}
-                                <a href={"https://digital.nhs.uk/about-nhs-digital/contact-us"}>
+                                <a href="https://digital.nhs.uk/about-nhs-digital/contact-us">
                                     NHS Digital National Service Desk
                                 </a>
                                 .
@@ -95,9 +93,8 @@ const UploadSummary = ({ patientDetails, documents }) => {
                 <WarningCallout.Label>Before you close this page</WarningCallout.Label>
                 <ul>
                     <li>
-                        {
-                            "We recommend that you take a screenshot of this summary page and attach it to the patient's record"
-                        }
+                        We recommend that you take a screenshot of this summary page and attach it to the patient&apos;s
+                        record
                     </li>
                     <li>
                         When you have finished uploading documents for this patient and they are deducted from your

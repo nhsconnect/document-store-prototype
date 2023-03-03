@@ -6,7 +6,7 @@ import { documentUploadStates } from "../../enums/documentUploads";
 import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
 import UploadDocumentsPage from "./UploadDocumentsPage";
 import { useNavigate } from "react-router";
-import { buildPatientDetails } from "../../utils/testBuilders";
+import { buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
 import { useDocumentStore } from "../../apiClients/documentStore";
 
 jest.mock("../../apiClients/documentStore");
@@ -37,9 +37,9 @@ describe("<UploadDocumentsPage />", () => {
             const patientDetails = buildPatientDetails({ nhsNumber });
             const navigateMock = jest.fn();
             const uploadDocumentMock = jest.fn();
-            const documentOne = makeTextFile("one", 100);
-            const documentTwo = makeTextFile("two", 200);
-            const documentThree = makeTextFile("three", 100);
+            const documentOne = buildTextFile("one", 100);
+            const documentTwo = buildTextFile("two", 200);
+            const documentThree = buildTextFile("three", 100);
             const uploadStateChangeTriggers = {};
             const resolvers = {};
             const triggerUploadStateChange = (document, state, progress) => {
@@ -176,20 +176,6 @@ describe("<UploadDocumentsPage />", () => {
         });
     });
 });
-
-const makeTextFile = (name, size) => {
-    const file = new File(["test"], `${name}.txt`, {
-        type: "text/plain",
-    });
-
-    if (size) {
-        Object.defineProperty(file, "size", {
-            value: size,
-        });
-    }
-
-    return file;
-};
 
 const renderUploadDocumentsPage = (propsOverride) => {
     const props = {

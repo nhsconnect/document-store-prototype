@@ -1,139 +1,144 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { nanoid } from "nanoid/non-secure";
 import UploadSummary from "./UploadSummary";
 import { documentUploadStates } from "../../enums/documentUploads";
 import { formatSize, getFormattedDate } from "../../utils/utils";
+import { buildDocument, buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
 
-describe("The upload summary component", () => {
-    const patientData = {
-        birthDate: "2003-01-22",
-        familyName: "Smith",
-        givenName: ["Jane"],
-        nhsNumber: "9234567801",
-        postalCode: "LS1 6AE",
-    };
+describe("<UploadSummary />", () => {
+    it("renders the page", () => {
+        const nhsNumber = "9000000009";
+        const patientDetails = buildPatientDetails({ nhsNumber });
 
-    it("displays patient details for the records that have been uploaded", () => {
-        render(<UploadSummary patientDetails={patientData} documents={[]}></UploadSummary>);
+        renderUploadSummary({ patientDetails, documents: [] });
 
-        expect(screen.getByText("Upload Summary")).toBeInTheDocument();
-        expect(screen.getByText(patientData.nhsNumber)).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Upload Summary" })).toBeInTheDocument();
+        expect(
+            screen.getByRole("heading", { name: /All documents have been successfully uploaded on/ })
+        ).toBeInTheDocument();
+        expect(screen.getByText(nhsNumber)).toBeInTheDocument();
         expect(screen.getByText("Before you close this page")).toBeInTheDocument();
+        expect(screen.queryByText("Some of your documents failed to upload")).not.toBeInTheDocument();
+        expect(screen.queryByText("View successfully uploaded documents")).not.toBeInTheDocument();
     });
 
-    it("displays a collapsible list of the successfully uploaded files", async () => {
-        const files = [makeTextFile("one", 100), makeTextFile("two", 101)];
-        const documents = files.map((file) => makeDocument(file, documentUploadStates.SUCCEEDED));
+    it("displays successfully uploaded docs", () => {
+        const files = [buildTextFile("one", 100), buildTextFile("two", 101)];
+        const documents = files.map((file) => buildDocument(file, documentUploadStates.SUCCEEDED));
 
-        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
+        renderUploadSummary({ documents });
 
-        toggleSuccessfulUploads();
-
-        expect(await screen.findByRole("table", { name: "Successfully uploaded documents" })).toBeInTheDocument();
-        files.forEach((file) => {
-            expect(screen.getByText(file.name)).toBeVisible();
-            expect(screen.getByText(formatSize(file.size))).toBeVisible();
-        });
-
-        toggleSuccessfulUploads();
-
-        await waitFor(() => {
-            expect(screen.getByRole("table", { name: "Successfully uploaded documents" })).not.toBeVisible();
+        expect(screen.getByText(/All documents have been successfully uploaded on/)).toBeInTheDocument();
+        expect(screen.getByText("View successfully uploaded documents")).toBeInTheDocument();
+        const uploadedDocsTable = screen.getByRole("table", { name: "Successfully uploaded documents" });
+        files.forEach(({ name, size }) => {
+            expect(within(uploadedDocsTable).getByText(name)).toBeInTheDocument();
+            expect(within(uploadedDocsTable).getByText(formatSize(size))).toBeInTheDocument();
         });
     });
 
-    it("does not include failed uploads in the successful uploads list", async () => {
-        const files = [makeTextFile("one", 100), makeTextFile("two", 101)];
+    it("displays a collapsible list of successfully uploaded docs", () => {
+        const files = [buildTextFile(), buildTextFile()];
+        const documents = files.map((file) => buildDocument(file, documentUploadStates.SUCCEEDED));
+
+        renderUploadSummary({ documents });
+
+        expect(screen.queryByRole("table", { name: "Successfully uploaded documents" })).not.toBeVisible();
+
+        userEvent.click(screen.getByText("View successfully uploaded documents"));
+
+        expect(screen.getByRole("table", { name: "Successfully uploaded documents" })).toBeVisible();
+
+        userEvent.click(screen.getByText("View successfully uploaded documents"));
+
+        expect(screen.queryByRole("table", { name: "Successfully uploaded documents" })).not.toBeVisible();
+    });
+
+    it("does not include docs that failed to upload in the successfully uploaded docs list", () => {
+        const uploadedFileName = "one";
+        const failedToUploadFileName = "two";
         const documents = [
-            makeDocument(files[0], documentUploadStates.SUCCEEDED),
-            makeDocument(files[1], documentUploadStates.FAILED),
+            buildDocument(buildTextFile(uploadedFileName, 100), documentUploadStates.SUCCEEDED),
+            buildDocument(buildTextFile(failedToUploadFileName, 101), documentUploadStates.FAILED),
         ];
 
-        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
-
-        toggleSuccessfulUploads();
-
-        expect(await screen.findByRole("table", { name: "Successfully uploaded documents" })).toBeVisible();
-        expect(screen.queryByText("All documents have been successfully uploaded")).not.toBeInTheDocument();
-        expect(
-            within(screen.getByRole("table", { name: "Successfully uploaded documents" })).getByText(files[0].name)
-        ).toBeVisible();
+        renderUploadSummary({ documents });
 
         expect(
-            within(screen.getByRole("table", { name: "Successfully uploaded documents" })).queryByText(files[1].name)
+            screen.queryByRole("heading", { name: /All documents have been successfully uploaded on/ })
+        ).not.toBeInTheDocument();
+        const uploadedDocsTable = screen.getByRole("table", { name: "Successfully uploaded documents" });
+        expect(within(uploadedDocsTable).getByText(`${uploadedFileName}.txt`)).toBeInTheDocument();
+        expect(within(uploadedDocsTable).queryByText(`${failedToUploadFileName}.txt`)).not.toBeInTheDocument();
+    });
+
+    it("does not display the successfully uploads docs list when all of the docs failed to upload", () => {
+        const documents = [buildDocument(buildTextFile(), documentUploadStates.FAILED)];
+
+        renderUploadSummary({ documents });
+
+        expect(
+            screen.queryByRole("heading", { name: /All documents have been successfully uploaded on/ })
+        ).not.toBeInTheDocument();
+        expect(screen.queryByText("View successfully uploaded documents")).not.toBeInTheDocument();
+    });
+
+    it("displays message and does not display an alert if all the docs were uploaded successfully", () => {
+        const files = [buildTextFile("one", 100)];
+        const documents = [buildDocument(files[0], documentUploadStates.SUCCEEDED)];
+
+        renderUploadSummary({ documents });
+
+        expect(
+            screen.getByRole("heading", {
+                name: "All documents have been successfully uploaded on " + getFormattedDate(new Date()),
+            })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole("alert", { name: "Some of your documents failed to upload" })
         ).not.toBeInTheDocument();
     });
 
-    it("does not display the successful uploads list when all of the documents failed to upload", () => {
-        const files = [makeTextFile("one", 100)];
-        const documents = [makeDocument(files[0], documentUploadStates.FAILED)];
-
-        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
-
-        expect(screen.queryByText("View successfully uploaded documents")).not.toBeInTheDocument();
-        expect(screen.getByText("Some of your documents failed to upload")).toBeInTheDocument();
-    });
-
-    it("does not display an alert if all the documents were uploaded successfully", () => {
-        const files = [makeTextFile("one", 100)];
-        const documents = [makeDocument(files[0], documentUploadStates.SUCCEEDED)];
-
-        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
-
-        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-        expect(
-            screen.getByText("All documents have been successfully uploaded on " + getFormattedDate(new Date()))
-        ).toBeInTheDocument();
-    });
-
-    it("displays an alert if some of the documents failed to upload successfully", () => {
-        const files = [makeTextFile("one", 100), makeTextFile("two", 101)];
+    it("displays an alert if some of the docs failed to upload", () => {
         const documents = [
-            makeDocument(files[0], documentUploadStates.SUCCEEDED),
-            makeDocument(files[1], documentUploadStates.FAILED),
+            buildDocument(buildTextFile(), documentUploadStates.SUCCEEDED),
+            buildDocument(buildTextFile(), documentUploadStates.FAILED),
         ];
 
-        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
+        renderUploadSummary({ documents });
 
-        expect(screen.getByRole("alert")).toBeInTheDocument();
+        expect(screen.getByRole("alert", { name: "Some of your documents failed to upload" })).toBeInTheDocument();
+        expect(
+            screen.getByText(
+                "You can try to upload the documents again if you wish and/or make a note of the failures for future reference."
+            )
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText(/Please check your internet connection. If the issue persists please contact the/)
+        ).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "NHS Digital National Service Desk" })).toBeInTheDocument();
     });
 
-    it("renders the name of each document that failed to upload inside a table", () => {
-        const files = [makeTextFile("one", 100), makeTextFile("two", 101)];
-        const documents = files.map((file) => makeDocument(file, documentUploadStates.FAILED));
+    it("displays each doc that failed to upload in a table", () => {
+        const files = [buildTextFile("one", 100), buildTextFile("two", 101)];
+        const documents = files.map((file) => buildDocument(file, documentUploadStates.FAILED));
 
-        render(<UploadSummary patientDetails={patientData} documents={documents}></UploadSummary>);
+        renderUploadSummary({ documents });
 
-        expect(screen.getByRole("table", { name: "Failed uploads" })).toBeInTheDocument();
-        files.forEach((file) => {
-            expect(screen.getByText(file.name)).toBeVisible();
-            expect(screen.getByText(formatSize(file.size))).toBeVisible();
+        const failedToUploadDocsTable = screen.getByRole("table", { name: "Failed uploads" });
+        files.forEach(({ name, size }) => {
+            expect(within(failedToUploadDocsTable).getByText(name)).toBeInTheDocument();
+            expect(within(failedToUploadDocsTable).getByText(formatSize(size))).toBeInTheDocument();
         });
     });
 });
 
-const toggleSuccessfulUploads = () => {
-    userEvent.click(screen.getByLabelText("View successfully uploaded documents"));
-};
-
-const makeDocument = (file, uploadStatus) => {
-    return {
-        file,
-        state: uploadStatus ?? documentUploadStates.SUCCEEDED,
-        progress: 0,
-        id: nanoid(),
+const renderUploadSummary = (propsOverride) => {
+    const props = {
+        patientDetails: buildPatientDetails(),
+        documents: [],
+        ...propsOverride,
     };
-};
 
-const makeTextFile = (name, size) => {
-    const file = new File(["test"], `${name}.txt`, {
-        type: "text/plain",
-    });
-    if (size) {
-        Object.defineProperty(file, "size", {
-            value: size,
-        });
-    }
-    return file;
+    render(<UploadSummary {...props} />);
 };
