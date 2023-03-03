@@ -11,6 +11,7 @@ import com.nimbusds.oauth2.sdk.client.ClientMetadata;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
+import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.SubjectType;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
@@ -51,20 +52,17 @@ class OIDCTokenFetcherTest {
         var authCode = new AuthorizationCode("test");
         var expectedAuthGrant = new AuthorizationCodeGrant(authCode, redirectURI);
 
-        var result = fetcher.fetchToken(authCode);
+        var result = fetcher.fetchToken(authCode, new Nonce());
 
         var latestRequest = oidcClient.getLatestRequest();
-        // Assert that request was sent
         assertThat(latestRequest).isNotNull();
-        // Assert that token request has correct token endpoint configured
         assertThat(latestRequest.getEndpointURI()).isEqualTo(tokenURI);
-        // Assert token request has correct authorization grant
         assertThat(latestRequest.getAuthorizationGrant()).isEqualTo(expectedAuthGrant);
+
         // Assert token request has client ID secret included as parameters
         // no method to retrieve secret
         assertThat(latestRequest.getClientAuthentication().getClientID()).isEqualTo(clientID);
-        // Assert that the result token is the same token we passed into our fake token request
-        // client constructor
+
         assertThat(result).isEqualTo(token);
     }
 
@@ -90,7 +88,7 @@ class OIDCTokenFetcherTest {
 
         assertThrows(
                 TokenFetchingException.class,
-                () -> fetcher.fetchToken(new AuthorizationCode("some-code")));
+                () -> fetcher.fetchToken(new AuthorizationCode("some-code"), new Nonce()));
     }
 
     private static class FakeTokenRequestClient implements TokenRequestClient {

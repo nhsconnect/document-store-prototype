@@ -7,7 +7,10 @@ import com.nimbusds.oauth2.sdk.TokenErrorResponse;
 import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretPost;
 import com.nimbusds.oauth2.sdk.client.ClientInformation;
+import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
+import java.util.List;
+import java.util.Map;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 
 public class OIDCTokenFetcher {
@@ -24,13 +27,14 @@ public class OIDCTokenFetcher {
         this.providerMetadata = providerMetadata;
     }
 
-    public JWT fetchToken(AuthorizationCode authCode) throws TokenFetchingException {
+    public JWT fetchToken(AuthorizationCode authCode, Nonce nonce) throws TokenFetchingException {
         var tokenEndpoint = providerMetadata.getTokenEndpointURI();
         var clientAuth = new ClientSecretPost(clientInfo.getID(), clientInfo.getSecret());
         var codeGrant =
                 new AuthorizationCodeGrant(authCode, clientInfo.getMetadata().getRedirectionURI());
-
-        TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientAuth, codeGrant);
+        var customParams = Map.of("nonce", List.of(nonce.getValue()));
+        TokenRequest tokenRequest =
+                new TokenRequest(tokenEndpoint, clientAuth, codeGrant, null, null, customParams);
         var tokenResponse = oidcClient.getResponse(tokenRequest);
 
         if (!tokenResponse.indicatesSuccess()) {

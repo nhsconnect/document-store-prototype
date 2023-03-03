@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         }
         Session session;
         try {
-            session = OIDCClient.authoriseSession(authCode.get());
+            session = OIDCClient.authoriseSession(authCode.get(), new Nonce());
         } catch (AuthorisationException e) {
             throw new RuntimeException(e);
         }
