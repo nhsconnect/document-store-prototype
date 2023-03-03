@@ -57,6 +57,7 @@ public class BaseAuthRequestHandler {
                             List.of(SubjectType.PUBLIC),
                             new URI(env.get("OIDC_JWKS_URL")));
             providerMetadata.setAuthorizationEndpointURI(new URI(env.get("OIDC_AUTHORIZE_URL")));
+            providerMetadata.setTokenEndpointURI(new URI(env.get("OIDC_TOKEN_URL")));
             providerMetadata.setScopes(
                     new Scope("openid", "profile", "nationalrbacaccess", "associatedorgs"));
         } catch (URISyntaxException e) {

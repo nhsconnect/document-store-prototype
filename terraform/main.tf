@@ -174,6 +174,7 @@ locals {
     OIDC_CALLBACK_URL  = var.cloud_only_service_instances > 0 ? "${local.amplify_base_url}/cis2-auth-callback" : var.cognito_cis2_client_callback_urls[0]
     OIDC_CLIENT_ID     = var.cognito_cis2_provider_client_id
     OIDC_CLIENT_SECRET = var.cognito_cis2_provider_client_secret
+    OIDC_TOKEN_URL     = var.cognito_cis2_provider_token_url
   }
   amplify_base_url = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
 }

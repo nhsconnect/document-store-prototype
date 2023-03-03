@@ -37,7 +37,6 @@ public class OIDCHttpClient implements OIDCClient {
 
         IDTokenClaimsSet claimsSet;
         try {
-            // TODO: Add nonce validation
             claimsSet = tokenValidator.validate(token, null);
         } catch (BadJOSEException | JOSEException e) {
             throw new AuthorisationException(e);
