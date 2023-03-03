@@ -27,7 +27,7 @@ class OIDCTokenFetcherTest {
 
     @Test
     void fetchTokenReturnsTheIDTokenIfTheRequestIsSuccessful() throws Exception {
-        var token = new PlainJWT(IDTokenClaimsSetBuilder.buildClaimsSet());
+        var token = new PlainJWT(IDTokenClaimsSetBuilder.buildClaimsSet().toJWTClaimsSet());
 
         var oidcClient =
                 new FakeTokenRequestClient(new OIDCTokens(token, new BearerAccessToken(), null));

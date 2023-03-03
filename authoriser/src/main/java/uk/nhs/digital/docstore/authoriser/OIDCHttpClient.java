@@ -43,7 +43,12 @@ public class OIDCHttpClient implements OIDCClient {
             throw new AuthorisationException(e);
         }
 
-        var session = Session.create(UUID.randomUUID(), claimsSet.getExpirationTime().getTime());
+        var session =
+                Session.create(
+                        UUID.randomUUID(),
+                        claimsSet.getExpirationTime().getTime(),
+                        claimsSet.getSubject(),
+                        claimsSet.getSessionID());
         sessionStore.save(session);
         return session;
     }

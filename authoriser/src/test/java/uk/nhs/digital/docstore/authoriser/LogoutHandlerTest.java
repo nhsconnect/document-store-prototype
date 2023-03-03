@@ -3,6 +3,8 @@ package uk.nhs.digital.docstore.authoriser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.nimbusds.oauth2.sdk.id.Subject;
+import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -16,7 +18,7 @@ public class LogoutHandlerTest {
     public void removeExistingSessionIdFromSessionStore() {
         var sessionStore = new InMemorySessionStore();
         var sessionID = UUID.randomUUID();
-        var session = Session.create(sessionID, 1L);
+        var session = Session.create(sessionID, 1L, new Subject("sub"), new SessionID("sid"));
         sessionStore.save(session);
 
         var handler = new LogoutHandler(sessionStore);

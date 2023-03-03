@@ -1,6 +1,8 @@
 package uk.nhs.digital.docstore.authoriser.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.nimbusds.oauth2.sdk.id.Subject;
+import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.util.UUID;
 
 @DynamoDBTable(tableName = "ARFAuth")
@@ -9,17 +11,20 @@ public class Session {
     private UUID id;
     private String sk;
     private long timeToExist;
-
     private String role;
+    private String oidcSubject;
 
+    private String oidcSessionID;
     public static final String KEY_PREFIX = "SESSION#";
 
-    public static Session create(UUID id, Long timeToExist) {
+    public static Session create(UUID id, Long timeToExist, Subject subject, SessionID sessionID) {
         var session = new Session();
         session.setId(id);
         session.setPK(KEY_PREFIX + id);
         session.setSK(KEY_PREFIX + id);
         session.setTimeToExist(timeToExist);
+        session.setOIDCSubject(subject.getValue());
+        session.setOidcSessionID(sessionID.getValue());
 
         return session;
     }
@@ -67,6 +72,22 @@ public class Session {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getOIDCSubject() {
+        return oidcSubject;
+    }
+
+    public void setOIDCSubject(String oidcSubject) {
+        this.oidcSubject = oidcSubject;
+    }
+
+    public String getOidcSessionID() {
+        return oidcSessionID;
+    }
+
+    public void setOidcSessionID(String oidcSessionID) {
+        this.oidcSessionID = oidcSessionID;
     }
 
     public static class UUIDConverter implements DynamoDBTypeConverter<String, UUID> {

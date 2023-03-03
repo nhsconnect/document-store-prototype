@@ -22,13 +22,12 @@ class OIDCHttpClientTest {
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
-        var idToken = new PlainJWT(claimsSet);
+        var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
         Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(idToken);
 
         var tokenValidator =
                 new IDTokenValidator(
-                        Issuer.parse(claimsSet.getIssuer()),
-                        new ClientID(claimsSet.getAudience().get(0)));
+                        claimsSet.getIssuer(), new ClientID(claimsSet.getAudience().get(0)));
 
         var client = new OIDCHttpClient(sessionStore, tokenFetcher, tokenValidator);
 
@@ -45,6 +44,11 @@ class OIDCHttpClientTest {
 
         Assertions.assertThat(session.getTimeToExist())
                 .isEqualTo(claimsSet.getExpirationTime().getTime());
+
+        Assertions.assertThat(session.getOIDCSubject())
+                .isEqualTo(claimsSet.getSubject().getValue());
+        Assertions.assertThat(session.getOidcSessionID())
+                .isEqualTo(claimsSet.getSessionID().getValue());
     }
 
     @Test
@@ -54,7 +58,7 @@ class OIDCHttpClientTest {
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
-        var idToken = new PlainJWT(claimsSet);
+        var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
         Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(idToken);
 
         ClientID clientID = new ClientID("test");
