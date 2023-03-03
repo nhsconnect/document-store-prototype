@@ -1,7 +1,5 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -13,6 +11,7 @@ import com.nimbusds.openid.connect.sdk.validators.LogoutTokenValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import uk.nhs.digital.docstore.authoriser.builders.LogoutTokenClaimsSetBuilder;
 
 class BackChannelLogoutHandlerTest {
 

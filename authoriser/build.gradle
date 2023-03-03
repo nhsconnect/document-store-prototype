@@ -80,6 +80,10 @@ spotless {
 	}
 }
 
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
 task integrationTest(type: Test) {
 	group 'verification'
 	description 'Run all end-to-end tests against LocalStack.'

@@ -8,6 +8,7 @@ import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
