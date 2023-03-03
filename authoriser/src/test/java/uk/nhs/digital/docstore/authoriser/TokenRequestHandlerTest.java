@@ -15,11 +15,6 @@ class TokenRequestHandlerTest {
 
     @Test
     void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws Exception {
-        //        Check valid session exists in cache
-        //        Request Token from cis2
-        //        take Access and ID tokens from cis2
-        //        Update cache with user info
-        //        Redirect browser with User Roles cookie
         var request = new TokenRequestEvent();
 
         String redirectUrl = "some-url";
@@ -37,6 +32,7 @@ class TokenRequestHandlerTest {
 
         var session = new Session();
         session.setRole("Role");
+        session.setOIDCSubject("subject");
 
         var oidcClient = Mockito.mock(OIDCClient.class);
 

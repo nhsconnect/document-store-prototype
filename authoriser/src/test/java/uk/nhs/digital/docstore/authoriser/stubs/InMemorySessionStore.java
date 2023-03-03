@@ -1,6 +1,8 @@
 package uk.nhs.digital.docstore.authoriser.stubs;
 
+import com.nimbusds.oauth2.sdk.id.Subject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import uk.nhs.digital.docstore.authoriser.SessionStore;
@@ -20,12 +22,22 @@ public class InMemorySessionStore implements SessionStore {
     }
 
     @Override
-    public Optional<Session> load(UUID sessionID) {
-        return Optional.ofNullable(sessions.get("SESSION#" + sessionID + "SESSION#" + sessionID));
+    public Optional<Session> load(Subject subject, UUID sessionID) {
+        return Optional.ofNullable(
+                sessions.get(
+                        Session.PARTITION_KEY_PREFIX
+                                + subject.getValue()
+                                + Session.SORT_KEY_PREFIX
+                                + sessionID));
     }
 
     @Override
     public void delete(Session session) {
         this.sessions.remove(session.getPK() + session.getSK());
+    }
+
+    @Override
+    public List<Session> queryByOIDCSubject(Subject subject) {
+        return null;
     }
 }

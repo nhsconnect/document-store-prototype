@@ -8,6 +8,8 @@ import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.authoriser.DynamoDBSessionStore;
@@ -43,11 +45,11 @@ public class DynamoDBSessionStoreTest {
     public void shouldReadSessionsFromDynamoDB() {
         var uuid = UUID.randomUUID();
         var timeToExist = 1L;
-        var session = Session.create(uuid, timeToExist, new Subject("sub"), new SessionID("sid"));
+        Subject subject = new Subject("sub");
+        var session = Session.create(uuid, timeToExist, subject, new SessionID("sid"));
 
         dynamoDBMapper.save(session);
-
-        var expected = db.load(session.getId());
+        var expected = db.load(subject, session.getId());
 
         assertTrue(expected.isPresent());
         assertEquals(session.getId(), expected.get().getId());
@@ -66,5 +68,23 @@ public class DynamoDBSessionStoreTest {
                 Optional.ofNullable(
                         dynamoDBMapper.load(Session.class, session.getPK(), session.getSK()));
         assertTrue(expectedEmpty.isEmpty());
+    }
+
+    @Test
+    public void shouldLoadAllSessionsForASubjectFromDynamoDB() {
+        var timeToExist = 1L;
+        var subject = new Subject(UUID.randomUUID().toString());
+        var oidcSessionIDOne = new SessionID("one");
+        var oidcSessionIDTwo = new SessionID("two");
+
+        var sessionOne = Session.create(UUID.randomUUID(), timeToExist, subject, oidcSessionIDOne);
+        var sessionTwo = Session.create(UUID.randomUUID(), timeToExist, subject, oidcSessionIDTwo);
+        dynamoDBMapper.save(sessionOne);
+        dynamoDBMapper.save(sessionTwo);
+
+        var results = db.queryByOIDCSubject(subject);
+        var sessionIds = results.stream().map(Session::getId).collect(Collectors.toList());
+
+        Assertions.assertThat(sessionIds).contains(sessionOne.getId(), sessionTwo.getId());
     }
 }

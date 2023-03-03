@@ -17,14 +17,16 @@ public class LogoutHandlerTest {
     @Test
     public void removeExistingSessionIdFromSessionStore() {
         var sessionStore = new InMemorySessionStore();
+        var subject = new Subject("foo");
         var sessionID = UUID.randomUUID();
-        var session = Session.create(sessionID, 1L, new Subject("sub"), new SessionID("sid"));
+        var session = Session.create(sessionID, 1L, subject, new SessionID("sid"));
         sessionStore.save(session);
 
         var handler = new LogoutHandler(sessionStore);
 
         var request = new LogoutRequestEvent();
-        request.setHeaders(Map.of("Cookie", "SessionId=" + sessionID));
+        request.setHeaders(
+                Map.of("Cookie", "SessionId=" + sessionID + ";Subject=" + subject.getValue()));
 
         String redirectUrl = "some-url";
         request.setQueryStringParameters(Map.of("redirect_uri", redirectUrl));
@@ -35,21 +37,27 @@ public class LogoutHandlerTest {
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getHeaders().get("Location")).isEqualTo(redirectUrl);
-        assertThat(response.getHeaders().get("Set-Cookie"))
-                .isEqualTo("SessionId=" + sessionID + "; Path=/; Max-Age=0");
 
-        assertThat(sessionStore.load(session.getId())).isEmpty();
+        var setCookieHeaders = response.getMultiValueHeaders().get("Set-Cookie");
+        assertThat(setCookieHeaders.get(0))
+                .isEqualTo("SessionId=" + sessionID + "; Path=/; Max-Age=0");
+        assertThat(setCookieHeaders.get(1))
+                .isEqualTo("Subject=" + subject.getValue() + "; Path=/; Max-Age=0");
+
+        assertThat(sessionStore.load(subject, session.getId())).isEmpty();
     }
 
     @Test
     public void removesNonExistingSessionIdFromSessionStoreDoesNothing() {
         var sessionStore = new InMemorySessionStore();
         var sessionID = UUID.randomUUID();
+        var subject = new Subject("foo");
 
         var handler = new LogoutHandler(sessionStore);
 
         var request = new LogoutRequestEvent();
-        request.setHeaders(Map.of("Cookie", "SessionId=" + sessionID));
+        request.setHeaders(
+                Map.of("Cookie", "SessionId=" + sessionID + ";Subject=" + subject.getValue()));
 
         String redirectUrl = "some-url";
         request.setQueryStringParameters(Map.of("redirect_uri", redirectUrl));
@@ -60,8 +68,12 @@ public class LogoutHandlerTest {
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getHeaders().get("Location")).isEqualTo(redirectUrl);
-        assertThat(response.getHeaders().get("Set-Cookie"))
+
+        var setCookieHeaders = response.getMultiValueHeaders().get("Set-Cookie");
+        assertThat(setCookieHeaders.get(0))
                 .isEqualTo("SessionId=" + sessionID + "; Path=/; Max-Age=0");
+        assertThat(setCookieHeaders.get(1))
+                .isEqualTo("Subject=" + subject.getValue() + "; Path=/; Max-Age=0");
     }
 
     @Test

@@ -127,8 +127,6 @@ fileignoreconfig:
   checksum: ec14718bf43f91f1f7bf59156ae6e5eb2b2d4f51ef88fe8ebebcf18482fff91b
 - filename: terraform/prod.s3.tfbackend
   checksum: 9865c4afbc2789dbbe39584695faa7edf2bdcbbb6867136a4cd05f13d4907c4d
-- filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/DynamoDBSessionStore.java
-  checksum: f25041c2b7fcdacaead2acd7946244f48752f3366d67665917935cda819808a1
 - filename: ui/src/components/simpleProgressBar/SimpleProgressBar.test.jsx
   checksum: d934b079414ce14e35cb5b358274ca9d53d468e8660a959c8978a5a1b77e3cfd
 - filename: ui/src/components/uploadSummary/UploadSummary.jsx
@@ -139,8 +137,6 @@ fileignoreconfig:
   checksum: adaa4f19ad8dc3319fd96636eb9bc14caaa56a7b6328e84bf60a7dadbb4f66a4
 - filename: e2eTest/cypress/e2e/uploadAndDownload.cy.js
   checksum: a7c74049d0d001a741ae47b0e9d44e2a281586d152f127f52577d5e233d131ad
-- filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/models/Session.java
-  checksum: e2e4ed093d05187a4a7a08f007b41389b7a57501d4f0bc00ee3e4c444da34698
 - filename: docs/tech/metadata-storage-in-dynamo-db.md
   checksum: 737ef81ed0a4f2abbf5712383fd009de3db684651bca498f502adb25dc3efbaf
 - filename: docs/tech/pds-fhir-integration.md
@@ -157,6 +153,10 @@ fileignoreconfig:
   checksum: f11dc74d87b94bfe6ae003465991136f4c548f85fdd16301c4cb359564c4143d
 - filename: docs/images/user-journey-architecture-diagram.png
   checksum: 968be502fb78179616144b9d2a9da6b6d88c6d1660a5de7e2dde33c24d3c087b
+- filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/models/Session.java
+  checksum: c95aa502d8f1d8c459547c043e430c90f80a11e406ca44079a3b3a58333d23c3
+- filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/DynamoDBSessionStore.java
+  checksum: 3df6627c7979bcf16911cddcbf0ebf492bed6c380b67dc7003e5b3c371d4b908
 version: ""
 scopeconfig:
   - scope: node

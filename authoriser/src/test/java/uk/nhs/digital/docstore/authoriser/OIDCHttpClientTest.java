@@ -4,6 +4,7 @@ import com.nimbusds.jwt.*;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
+import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,8 @@ class OIDCHttpClientTest {
             throw new RuntimeException(e);
         }
 
-        var optionalSession = sessionStore.load(result.getId());
+        var optionalSession =
+                sessionStore.load(new Subject(result.getOIDCSubject()), result.getId());
         Assertions.assertThat(optionalSession).isPresent();
         var session = optionalSession.get();
 

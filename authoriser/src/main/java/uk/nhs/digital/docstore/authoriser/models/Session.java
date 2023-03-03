@@ -15,13 +15,14 @@ public class Session {
     private String oidcSubject;
 
     private String oidcSessionID;
-    public static final String KEY_PREFIX = "SESSION#";
+    public static final String PARTITION_KEY_PREFIX = "OIDCSUBJECT#";
+    public static final String SORT_KEY_PREFIX = "SESSION#";
 
     public static Session create(UUID id, Long timeToExist, Subject subject, SessionID sessionID) {
         var session = new Session();
         session.setId(id);
-        session.setPK(KEY_PREFIX + id);
-        session.setSK(KEY_PREFIX + id);
+        session.setPK(PARTITION_KEY_PREFIX + subject.getValue());
+        session.setSK(SORT_KEY_PREFIX + id);
         session.setTimeToExist(timeToExist);
         session.setOIDCSubject(subject.getValue());
         session.setOidcSessionID(sessionID.getValue());
@@ -88,6 +89,13 @@ public class Session {
 
     public void setOidcSessionID(String oidcSessionID) {
         this.oidcSessionID = oidcSessionID;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj.getClass() != Session.class) return false;
+        return id == ((Session) obj).getId();
     }
 
     public static class UUIDConverter implements DynamoDBTypeConverter<String, UUID> {

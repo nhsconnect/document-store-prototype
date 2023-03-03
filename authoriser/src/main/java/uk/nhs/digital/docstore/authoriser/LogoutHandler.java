@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import java.util.HashMap;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.requests.LogoutRequestEvent;
@@ -27,18 +28,28 @@ public class LogoutHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(LogoutRequestEvent input, Context context) {
         var sessionId = input.getSessionId();
+        var subject = input.getSubject();
 
-        LOGGER.debug("Deleting session " + sessionId);
+        var multiValueHeaders = new HashMap<String, List<String>>();
 
-        var session = sessionId.flatMap(sessionStore::load);
-        session.ifPresent(sessionStore::delete);
+        if (sessionId.isPresent() && subject.isPresent()) {
+            var session = sessionStore.load(subject.get(), sessionId.get());
 
-        LOGGER.debug("Successfully deleted session " + sessionId);
+            if (session.isPresent()) {
+                LOGGER.debug("Deleting session " + sessionId);
+                sessionStore.delete(session.get());
+                LOGGER.debug("Successfully deleted session " + sessionId);
+            }
+
+            multiValueHeaders.put(
+                    "Set-Cookie",
+                    List.of(
+                            "SessionId=" + sessionId.get() + "; Path=/; Max-Age=0",
+                            "Subject=" + subject.get().getValue() + "; Path=/; Max-Age=0"));
+        }
 
         var headers = new HashMap<String, String>();
         headers.put("Location", input.getRedirectUri().orElseThrow());
-        sessionId.ifPresent(
-                uuid -> headers.put("Set-Cookie", "SessionId=" + uuid + "; Path=/; Max-Age=0"));
 
         LOGGER.debug("Redirecting to " + headers.get("Location"));
 
@@ -46,6 +57,7 @@ public class LogoutHandler extends BaseAuthRequestHandler
         response.setIsBase64Encoded(false);
         response.setStatusCode(SEE_OTHER_STATUS_CODE);
         response.setHeaders(headers);
+        response.setMultiValueHeaders(multiValueHeaders);
         response.setBody("");
 
         return response;

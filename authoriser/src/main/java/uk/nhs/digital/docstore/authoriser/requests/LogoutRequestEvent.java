@@ -1,22 +1,36 @@
 package uk.nhs.digital.docstore.authoriser.requests;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import java.net.HttpCookie;
-import java.util.Optional;
-import java.util.UUID;
+import com.nimbusds.oauth2.sdk.id.Subject;
+import java.util.*;
 
 public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
-    public Optional<UUID> getSessionId() {
+    private Optional<String> getCookie(String cookieName) {
         var headers = getHeaders();
-        if (headers == null || headers.get("Cookie") == null) {
+
+        if (headers == null || headers.get("Cookie") == null || headers.get("Cookie").isEmpty()) {
             return Optional.empty();
         }
-        var cookies = HttpCookie.parse(headers.get("Cookie"));
-        var sessionIdCookie =
-                cookies.stream()
-                        .filter(httpCookie -> httpCookie.getName().equals("SessionId"))
-                        .findFirst();
-        return sessionIdCookie.map(HttpCookie::getValue).map(UUID::fromString);
+
+        String[] cookiesArr = headers.get("Cookie").split(";");
+
+        Map<String, String> cookiesMap = new HashMap<>();
+        String[] cookieSplits;
+
+        for (String cookie : cookiesArr) {
+            cookieSplits = cookie.trim().split("=");
+            cookiesMap.put(cookieSplits[0], cookieSplits[1]);
+        }
+
+        return Optional.ofNullable(cookiesMap.get(cookieName));
+    }
+
+    public Optional<UUID> getSessionId() {
+        return getCookie("SessionId").map(UUID::fromString);
+    }
+
+    public Optional<Subject> getSubject() {
+        return getCookie("Subject").map(Subject::new);
     }
 
     public Optional<String> getRedirectUri() {
