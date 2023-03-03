@@ -3,17 +3,17 @@
 The sequence diagram below illustrate the interactions that occur when a patient registers at a practice after having
 been suspended.
 
-The diagram assumes that the patient was successfully re-registered; a NEMS message was created for that re-registration
-and made available to the Suspension Service through the MESH mailbox; Suspension Service successfully delivered the
-re-registration event to ARF re-registration SQS queue (where the sequence begins); finally, some documents were
-uploaded in the ARF service for that patient.
+The diagram assumes that a patient, with uploaded documents, has re-registered and a NEMS message was published
+through the MESH mailbox. Then, the re-registration event has been sent to the ARF re-registration SQS queue (where the
+sequence begins).
 
+_Note: The MESH mailbox is owned by the ORC team._
 _Note: This diagram does not include interactions with CloudWatch._
 
 ```mermaid
 sequenceDiagram
-    Suspension Service ->> SQS: sendMessage()
-    Note over Suspension Service, SQS: <env>-re-registration queue
+    SPINE ->> SQS: Sends re-registration NEMS message
+    Note over SPINE, SQS: <env>-re-registration queue
     activate SQS
     SQS ->> Lambda: Invokes ReRegistrationEventHandler
     deactivate SQS
