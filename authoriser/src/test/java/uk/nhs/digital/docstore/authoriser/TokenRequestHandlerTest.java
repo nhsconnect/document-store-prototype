@@ -1,13 +1,10 @@
 package uk.nhs.digital.docstore.authoriser;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.State;
-import com.nimbusds.openid.connect.sdk.Nonce;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -39,8 +36,7 @@ class TokenRequestHandlerTest {
 
         var oidcClient = Mockito.mock(OIDCClient.class);
 
-        Mockito.when(oidcClient.authoriseSession(eq(authCode), any(Nonce.class)))
-                .thenReturn(session);
+        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
 
         var handler = new TokenRequestHandler(oidcClient);
 
@@ -72,8 +68,7 @@ class TokenRequestHandlerTest {
 
         var oidcClient = Mockito.mock(OIDCClient.class);
 
-        Mockito.when(oidcClient.authoriseSession(eq(authCode), any(Nonce.class)))
-                .thenReturn(session);
+        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
         var handler = new TokenRequestHandler(oidcClient);
 
         var response = handler.handleRequest(request, Mockito.mock(Context.class));

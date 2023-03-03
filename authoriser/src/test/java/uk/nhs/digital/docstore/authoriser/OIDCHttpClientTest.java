@@ -24,7 +24,7 @@ class OIDCHttpClientTest {
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
         var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
-        Mockito.when(tokenFetcher.fetchToken(authCode, null)).thenReturn(idToken);
+        Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(idToken);
 
         var tokenValidator =
                 new IDTokenValidator(
@@ -34,7 +34,7 @@ class OIDCHttpClientTest {
 
         Session result;
         try {
-            result = client.authoriseSession(authCode, null);
+            result = client.authoriseSession(authCode);
         } catch (AuthorisationException e) {
             throw new RuntimeException(e);
         }
@@ -61,14 +61,14 @@ class OIDCHttpClientTest {
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
         var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
-        Mockito.when(tokenFetcher.fetchToken(authCode, null)).thenReturn(idToken);
+        Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(idToken);
 
         ClientID clientID = new ClientID("test");
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
 
         var client = new OIDCHttpClient(sessionStore, tokenFetcher, tokenValidator);
 
-        Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode, null))
+        Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode))
                 .isInstanceOf(AuthorisationException.class);
     }
 
@@ -78,7 +78,7 @@ class OIDCHttpClientTest {
         var sessionStore = new InMemorySessionStore();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
 
-        Mockito.when(tokenFetcher.fetchToken(authCode, null))
+        Mockito.when(tokenFetcher.fetchToken(authCode))
                 .thenThrow(new TokenFetchingException("error"));
 
         ClientID clientID = new ClientID("test");
@@ -86,7 +86,7 @@ class OIDCHttpClientTest {
 
         var client = new OIDCHttpClient(sessionStore, tokenFetcher, tokenValidator);
 
-        Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode, null))
+        Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode))
                 .isInstanceOf(AuthorisationException.class);
     }
 }
