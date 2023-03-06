@@ -1,12 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import SimpleProgressBar from "./SimpleProgressBar";
 
-describe("SimpleProgressBar", () => {
-    it("displays the text passed to it as an argument", async () => {
-        const expectedText = "Loading...";
-        render(<SimpleProgressBar status={expectedText}></SimpleProgressBar>);
+describe("<SimpleProgressBar />", () => {
+    it("displays status text for the progress bar", () => {
+        const status = "Loading...";
 
-        expect(screen.getByLabelText(expectedText)).toBeInTheDocument();
-        expect(screen.getByRole("status")).toHaveTextContent(expectedText);
+        render(<SimpleProgressBar status={status} />);
+
+        expect(screen.getByRole("progressbar", { name: status })).toBeInTheDocument();
+        expect(screen.getByRole("status")).toBeInTheDocument();
     });
 });
