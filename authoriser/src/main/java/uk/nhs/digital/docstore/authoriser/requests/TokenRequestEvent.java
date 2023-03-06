@@ -36,4 +36,12 @@ public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
                 .map(parameters -> parameters.get("state"))
                 .map(State::new);
     }
+
+    public boolean hasMatchingStateValues() {
+        var queryParameterState = getQueryParameterState();
+        var cookieState = getCookieState();
+        return queryParameterState.isPresent()
+                && cookieState.isPresent()
+                && queryParameterState.get().equals(cookieState.get());
+    }
 }

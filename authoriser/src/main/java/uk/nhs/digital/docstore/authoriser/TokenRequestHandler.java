@@ -49,12 +49,9 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         if (authCode.isEmpty()) {
             throw new RuntimeException("Auth code is empty");
         }
-        var queryParameterState = input.getQueryParameterState();
-        var cookieState = input.getCookieState();
+
         // possibly move to request event class
-        if (queryParameterState.isEmpty()
-                || cookieState.isEmpty()
-                || !queryParameterState.get().equals(cookieState.get())) {
+        if (!input.hasMatchingStateValues()) {
             var invalidStateResponse = new APIGatewayProxyResponseEvent();
             invalidStateResponse.setStatusCode(400);
             invalidStateResponse.setIsBase64Encoded(false);
