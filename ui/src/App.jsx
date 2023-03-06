@@ -10,7 +10,7 @@ import { PatientTracePage } from "./pages/patientTracePage/PatientTracePage";
 import UploadDocumentsPage from "./pages/uploadDocumentsPage/UploadDocumentsPage";
 import SearchResultsPage from "./pages/searchResultsPage/SearchResultsPage";
 import StartPage from "./pages/startPage/StartPage";
-import AuthCallbackRouter from "./components/authenticator/AuthCallbackRouter";
+import CognitoAuthCallbackRouter from "./components/authenticator/CognitoAuthCallbackRouter";
 import AuthProvider from "./components/authenticator/AuthProvider";
 import DeleteDocumentsConfirmationPage from "./pages/deleteDocumentsConfirmationPage/DeleteDocumentsConfirmationPage";
 import ConfigurationProvider from "./providers/ConfigurationProvider";
@@ -19,7 +19,7 @@ const AppRoutes = () => {
     return (
         <Routes>
             <Route element={<StartPage />} path="/" />
-            <Route element={<AuthCallbackRouter />} path="cis2-auth-callback" />
+            <Route element={<CognitoAuthCallbackRouter />} path="cis2-auth-callback" />
             <Route
                 element={
                     <Authenticator.Protected>
