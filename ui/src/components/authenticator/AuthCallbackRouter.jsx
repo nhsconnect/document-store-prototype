@@ -5,8 +5,8 @@ const AuthCallbackRouter = () => {
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
 
     useEffect(() => {
-        const params = window.location.search;
-        window.location.assign(`${baseAPIUrl}/Auth/TokenRequest${params}`);
+        const queryParams = window.location.search;
+        window.location.assign(`${baseAPIUrl}/Auth/TokenRequest${queryParams}`);
     }, [baseAPIUrl]);
 
     return "Loading...";

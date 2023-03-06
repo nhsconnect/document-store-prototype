@@ -12,20 +12,16 @@ describe("<AuthCallbackRouter />", () => {
     });
 
     it("navigates to the token request handler", () => {
-        const code = "some-auth-code";
-        const state = "some-state";
-        const queryParams = `?code=${code}&state=${state}`;
+        const queryParams = "?code=some-auth-code&state=some-state";
         const baseAPIUrl = "https://api.url";
         const tokenRequestHandlerUrl = `${baseAPIUrl}/Auth/TokenRequest${queryParams}`;
+        const windowLocationProperties = {
+            search: { value: queryParams },
+            assign: { value: jest.fn() },
+        };
 
         delete window.location;
-        window.location = Object.defineProperties(
-            {},
-            {
-                search: { value: queryParams },
-                assign: { value: jest.fn() },
-            }
-        );
+        window.location = Object.defineProperties({}, windowLocationProperties);
 
         useBaseAPIUrl.mockReturnValue(baseAPIUrl);
 
