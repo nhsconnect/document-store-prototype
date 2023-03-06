@@ -11,7 +11,7 @@ public class ClientPatientDetailsDto {
     private final BirthDate birthDate;
     private final Postcode postalCode;
     private final NhsNumber nhsNumber;
-    private final boolean isSuperseded;
+    private final boolean superseded;
     private final boolean restricted;
 
     public ClientPatientDetailsDto(
@@ -20,14 +20,14 @@ public class ClientPatientDetailsDto {
             BirthDate birthDate,
             Postcode postalCode,
             NhsNumber nhsNumber,
-            boolean isSuperseded,
+            boolean superseded,
             boolean restricted) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.birthDate = birthDate;
         this.postalCode = postalCode;
         this.nhsNumber = nhsNumber;
-        this.isSuperseded = isSuperseded;
+        this.superseded = superseded;
         this.restricted = restricted;
     }
 
@@ -52,7 +52,7 @@ public class ClientPatientDetailsDto {
     }
 
     public boolean isSuperseded() {
-        return isSuperseded;
+        return superseded;
     }
 
     public boolean isRestricted() {
