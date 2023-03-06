@@ -12,6 +12,7 @@ public class ClientPatientDetailsDto {
     private final Postcode postalCode;
     private final NhsNumber nhsNumber;
     private final boolean isSuperseded;
+    private final boolean restricted;
 
     public ClientPatientDetailsDto(
             List<PatientName> givenName,
@@ -19,13 +20,15 @@ public class ClientPatientDetailsDto {
             BirthDate birthDate,
             Postcode postalCode,
             NhsNumber nhsNumber,
-            boolean isSuperseded) {
+            boolean isSuperseded,
+            boolean restricted) {
         this.givenName = givenName;
         this.familyName = familyName;
         this.birthDate = birthDate;
         this.postalCode = postalCode;
         this.nhsNumber = nhsNumber;
         this.isSuperseded = isSuperseded;
+        this.restricted = restricted;
     }
 
     public List<String> getGivenName() {
@@ -52,6 +55,10 @@ public class ClientPatientDetailsDto {
         return isSuperseded;
     }
 
+    public boolean isRestricted() {
+        return restricted;
+    }
+
     public static ClientPatientDetailsDto fromPatientDetails(PatientDetails patientDetails) {
         return new ClientPatientDetailsDto(
                 patientDetails.getGivenName().orElse(Collections.emptyList()),
@@ -59,6 +66,7 @@ public class ClientPatientDetailsDto {
                 patientDetails.getBirthDate().orElse(new BirthDate("")),
                 patientDetails.getPostalCode().orElse(new Postcode("")),
                 patientDetails.getNhsNumber(),
-                patientDetails.isSuperseded());
+                patientDetails.isSuperseded(),
+                patientDetails.isRestricted());
     }
 }

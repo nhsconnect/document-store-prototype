@@ -8,7 +8,8 @@
       ],
       "nhsNumber": "9000000035",
       "postalCode": "AB1 2CD",
-      "superseded": true
+      "superseded": true,
+      "restricted": false
     }
   }
 }

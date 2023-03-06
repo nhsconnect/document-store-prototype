@@ -48,6 +48,7 @@ class ClientPatientDetailsDtoTest {
         assertEquals(
                 clientPatientDetailsDto.getNhsNumber(), patientDetails.getNhsNumber().getValue());
         assertEquals(clientPatientDetailsDto.isSuperseded(), patientDetails.isSuperseded());
+        assertEquals(clientPatientDetailsDto.isRestricted(), patientDetails.isRestricted());
     }
 
     @Test
@@ -66,5 +67,6 @@ class ClientPatientDetailsDtoTest {
         assertEquals(
                 clientPatientDetailsDto.getNhsNumber(), patientDetails.getNhsNumber().getValue());
         assertEquals(clientPatientDetailsDto.isSuperseded(), patientDetails.isSuperseded());
+        assertEquals(clientPatientDetailsDto.isRestricted(), patientDetails.isRestricted());
     }
 }
