@@ -40,12 +40,18 @@ resource "aws_sqs_queue" "sensitive_audit" {
   name                      = "${var.environment}-sensitive-audit"
   message_retention_seconds = 1209600
   sqs_managed_sse_enabled   = true
+  tags = {
+    Environment = var.environment
+  }
 }
 
 resource "aws_sqs_queue" "sensitive_nems_audit" {
   name                      = "${var.environment}-sensitive-nems-audit"
   message_retention_seconds = 1209600
   sqs_managed_sse_enabled   = true
+  tags = {
+    Environment = var.environment
+  }
 }
 
 resource "aws_iam_role" "splunk_sqs_forwarder" {
