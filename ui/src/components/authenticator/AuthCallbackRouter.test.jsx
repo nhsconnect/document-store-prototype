@@ -14,11 +14,13 @@ describe("<AuthCallbackRouter />", () => {
     it("navigates to the token request handler URl", () => {
         const codeAndStateQueryParams = "code=some-auth-code&state=some-state";
         const allQueryParams = `?${codeAndStateQueryParams}&client_id=some-client-id`;
+        const baseUiUrl = "http://localhost:3000";
         const baseAPIUrl = "https://api.url";
-        const tokenRequestHandlerUrl = `${baseAPIUrl}/Auth/TokenRequest?${codeAndStateQueryParams}`;
+        const tokenRequestHandlerUrl = `${baseAPIUrl}/Auth/TokenRequest?${codeAndStateQueryParams}&redirect_uri=${baseUiUrl}/home`;
         const windowLocationProperties = {
             search: { value: allQueryParams },
-            assign: { value: jest.fn() },
+            replace: { value: jest.fn() },
+            href: { value: baseUiUrl },
         };
 
         delete window.location;
@@ -28,7 +30,7 @@ describe("<AuthCallbackRouter />", () => {
         render(<AuthCallbackRouter />);
 
         expect(useBaseAPIUrl).toHaveBeenCalledWith("doc-store-api");
-        expect(window.location.assign).toHaveBeenCalledWith(tokenRequestHandlerUrl);
+        expect(window.location.replace).toHaveBeenCalledWith(tokenRequestHandlerUrl);
     });
 
     it("returns a loading state until redirection to token request handler", () => {
