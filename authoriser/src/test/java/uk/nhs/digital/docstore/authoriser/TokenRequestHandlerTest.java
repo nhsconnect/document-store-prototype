@@ -32,7 +32,7 @@ class TokenRequestHandlerTest {
                         authCode.getValue(),
                         "state",
                         state.getValue()));
-        request.setHeaders(Map.of("Cookie", "State=" + state.getValue() + ""));
+        request.setHeaders(Map.of("cookie", "State=" + state.getValue() + ""));
 
         var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
         var fixedTime = Instant.now(clock);
@@ -54,6 +54,7 @@ class TokenRequestHandlerTest {
         assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getHeaders().get("Location")).startsWith(redirectUrl);
         assertThat(response.getHeaders().get("Location")).contains("Role=Role");
+        assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains("State=" + state + "; SameSite=Strict; Secure; HttpOnly; Max-Age=0");
@@ -82,7 +83,7 @@ class TokenRequestHandlerTest {
                         "code", authCode.getValue(),
                         "state", new State().getValue()));
         request.setHeaders(
-                Map.of("Cookie", "State=" + new State().getValue() + "; Secure; HttpOnly"));
+                Map.of("cookie", "State=" + new State().getValue() + "; Secure; HttpOnly"));
 
         var session = new Session();
         session.setRole("some-role");

@@ -87,6 +87,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         response.setIsBase64Encoded(false);
         response.setStatusCode(SEE_OTHER_STATUS_CODE);
         response.setHeaders(headers);
+        response.setBody("");
         response.setMultiValueHeaders(multiValueHeaders);
 
         return response;

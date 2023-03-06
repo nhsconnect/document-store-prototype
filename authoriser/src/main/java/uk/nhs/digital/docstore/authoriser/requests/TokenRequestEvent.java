@@ -9,10 +9,10 @@ import java.util.Optional;
 public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
     public Optional<State> getCookieState() {
         var headers = getHeaders();
-        if (headers == null || headers.get("Cookie") == null) {
+        if (headers == null || headers.get("cookie") == null) {
             return Optional.empty();
         }
-        var cookies = HttpCookie.parse(headers.get("Cookie"));
+        var cookies = HttpCookie.parse(headers.get("cookie"));
         var stateCookie =
                 cookies.stream()
                         .filter(httpCookie -> httpCookie.getName().equals("State"))
