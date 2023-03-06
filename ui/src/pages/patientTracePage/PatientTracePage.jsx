@@ -102,10 +102,15 @@ export const PatientTracePage = ({ nextPage }) => {
             ) : (
                 <>
                     <h1>Verify patient details</h1>
-                    {patientDetails.superseded && (
+                    {(patientDetails.superseded || patientDetails.restricted) && (
                         <WarningCallout>
                             <WarningCallout.Label headingLevel="h2">Information</WarningCallout.Label>
-                            <p>The NHS number for this patient has changed.</p>
+                            {patientDetails.superseded && <p>The NHS number for this patient has changed.</p>}
+                            {patientDetails.restricted && (
+                                <p>
+                                    Certain details about this patient cannot be displayed without the necessary access.
+                                </p>
+                            )}
                         </WarningCallout>
                     )}
                     <PatientSummary patientDetails={patientDetails} />

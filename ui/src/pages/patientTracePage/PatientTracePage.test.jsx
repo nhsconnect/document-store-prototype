@@ -150,6 +150,26 @@ describe("<PatientTracePage/>", () => {
                 await screen.findByText("The NHS number provided is invalid. Please check the number you have entered.")
             ).toBeInTheDocument();
         });
+
+        it("displays a message when patient is sensitive", async () => {
+            const nhsNumber = "9124038456";
+            const restrictedPatientDetails = {
+                result: { patientDetails: buildPatientDetails({ nhsNumber, postalCode: null, restricted: true }) },
+            };
+
+            getPatientDetailsMock.mockResolvedValue(restrictedPatientDetails);
+
+            renderPatientTracePage();
+
+            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), nhsNumber);
+            userEvent.click(screen.getByRole("button", { name: "Search" }));
+
+            expect(
+                await screen.findByText(
+                    "Certain details about this patient cannot be displayed without the necessary access."
+                )
+            ).toBeInTheDocument();
+        });
     });
 
     describe("navigation", () => {

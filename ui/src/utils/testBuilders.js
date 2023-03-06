@@ -10,6 +10,7 @@ const buildPatientDetails = (patientDetailsOverride) => {
         nhsNumber: "0000000000",
         postalCode: "AA1 1AA",
         superseded: false,
+        restricted: false,
         ...patientDetailsOverride,
     };
 };
