@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.authoriser.models;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
+import java.time.Instant;
 import java.util.UUID;
 
 @DynamoDBTable(tableName = "ARFAuth")
@@ -10,7 +11,7 @@ public class Session {
     private String pk;
     private UUID id;
     private String sk;
-    private long timeToExist;
+    private Instant timeToExist;
     private String role;
     private String oidcSubject;
 
@@ -18,7 +19,8 @@ public class Session {
     public static final String PARTITION_KEY_PREFIX = "OIDCSUBJECT#";
     public static final String SORT_KEY_PREFIX = "SESSION#";
 
-    public static Session create(UUID id, Long timeToExist, Subject subject, SessionID sessionID) {
+    public static Session create(
+            UUID id, Instant timeToExist, Subject subject, SessionID sessionID) {
         var session = new Session();
         session.setId(id);
         session.setPK(PARTITION_KEY_PREFIX + subject.getValue());
@@ -59,11 +61,12 @@ public class Session {
     }
 
     @DynamoDBAttribute(attributeName = "TimeToExist")
-    public Long getTimeToExist() {
+    public Instant getTimeToExist() {
         return timeToExist;
     }
 
-    public void setTimeToExist(Long timeToExist) {
+    @DynamoDBTypeConverted(converter = timeToExistConverter.class)
+    public void setTimeToExist(Instant timeToExist) {
         this.timeToExist = timeToExist;
     }
 
@@ -107,6 +110,18 @@ public class Session {
         @Override
         public UUID unconvert(String uuid) {
             return UUID.fromString(uuid);
+        }
+    }
+
+    public static class timeToExistConverter implements DynamoDBTypeConverter<Long, Instant> {
+        @Override
+        public Long convert(Instant object) {
+            return object.getEpochSecond();
+        }
+
+        @Override
+        public Instant unconvert(Long seconds) {
+            return Instant.ofEpochSecond(seconds);
         }
     }
 }

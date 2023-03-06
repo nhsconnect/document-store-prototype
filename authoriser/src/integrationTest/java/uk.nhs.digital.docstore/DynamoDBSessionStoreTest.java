@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,7 +34,7 @@ public class DynamoDBSessionStoreTest {
     @Test
     public void shouldPersistSessionsToDynamoDB() {
         var uuid = UUID.randomUUID();
-        var timeToExist = 1L;
+        var timeToExist = Instant.ofEpochSecond(1L);
         var session = Session.create(uuid, timeToExist, new Subject("sub"), new SessionID("sid"));
 
         db.save(session);
@@ -45,7 +46,7 @@ public class DynamoDBSessionStoreTest {
     @Test
     public void shouldReadSessionsFromDynamoDB() {
         var uuid = UUID.randomUUID();
-        var timeToExist = 1L;
+        var timeToExist = Instant.ofEpochSecond(1L);
         Subject subject = new Subject("sub");
         var session = Session.create(uuid, timeToExist, subject, new SessionID("sid"));
 
@@ -59,7 +60,7 @@ public class DynamoDBSessionStoreTest {
     @Test
     public void shouldDeleteSessionFromDynamoDB() {
         var uuid = UUID.randomUUID();
-        var timeToExist = 1L;
+        var timeToExist = Instant.ofEpochSecond(1L);
         var session = Session.create(uuid, timeToExist, new Subject("sub"), new SessionID("sid"));
         dynamoDBMapper.save(session);
 
@@ -73,7 +74,7 @@ public class DynamoDBSessionStoreTest {
 
     @Test
     public void shouldLoadAllSessionsForASubjectFromDynamoDB() {
-        var timeToExist = 1L;
+        var timeToExist = Instant.ofEpochSecond(1L);
         var subject = new Subject(UUID.randomUUID().toString());
         var oidcSessionIDOne = new SessionID("one");
         var oidcSessionIDTwo = new SessionID("two");

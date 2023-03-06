@@ -8,6 +8,7 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.net.MalformedURLException;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -72,17 +73,16 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         headers.put("Location", input.getRedirectUri().orElseThrow());
 
         // new secure cookie class with samesite, secure and httponly pre-set. implements tostring.
+        var maxCookieAgeInSeconds =
+                Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
+
         var cookies =
                 List.of(
                         cookieBuilder("State", input.getCookieState().orElseThrow().getValue(), 0L),
                         cookieBuilder(
-                                "SubjectClaim",
-                                session.getOIDCSubject(),
-                                session.getTimeToExist() - Instant.now(clock).getEpochSecond()),
+                                "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds),
                         cookieBuilder(
-                                "SessionId",
-                                session.getId().toString(),
-                                session.getTimeToExist() - Instant.now(clock).getEpochSecond()));
+                                "SessionId", session.getId().toString(), maxCookieAgeInSeconds));
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
         var response = new APIGatewayProxyResponseEvent();

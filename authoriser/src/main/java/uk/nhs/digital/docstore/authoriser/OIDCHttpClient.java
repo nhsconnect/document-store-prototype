@@ -46,8 +46,7 @@ public class OIDCHttpClient implements OIDCClient {
         var session =
                 Session.create(
                         UUID.randomUUID(),
-                        Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime())
-                                .getEpochSecond(),
+                        Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()),
                         claimsSet.getSubject(),
                         claimsSet.getSessionID());
         sessionStore.save(session);

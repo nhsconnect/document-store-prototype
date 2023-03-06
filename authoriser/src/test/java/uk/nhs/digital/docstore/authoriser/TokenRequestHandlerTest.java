@@ -36,11 +36,13 @@ class TokenRequestHandlerTest {
 
         var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
         var fixedTime = Instant.now(clock);
-        var cookieTTL = 100L;
+        var maxCookieAgeInSeconds = 100L;
+        var cookieExpiryTime = fixedTime.plusSeconds(maxCookieAgeInSeconds);
+
         var session = new Session();
         session.setRole("Role");
         session.setOIDCSubject("subject");
-        session.setTimeToExist(fixedTime.getEpochSecond() + cookieTTL);
+        session.setTimeToExist(cookieExpiryTime);
         session.setId(UUID.randomUUID());
 
         var oidcClient = Mockito.mock(OIDCClient.class);
@@ -62,13 +64,13 @@ class TokenRequestHandlerTest {
                         "SubjectClaim="
                                 + session.getOIDCSubject()
                                 + "; SameSite=Strict; Secure; HttpOnly; Max-Age="
-                                + cookieTTL);
+                                + maxCookieAgeInSeconds);
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains(
                         "SessionId="
                                 + session.getId()
                                 + "; SameSite=Strict; Secure; HttpOnly; Max-Age="
-                                + cookieTTL);
+                                + maxCookieAgeInSeconds);
     }
 
     @Test

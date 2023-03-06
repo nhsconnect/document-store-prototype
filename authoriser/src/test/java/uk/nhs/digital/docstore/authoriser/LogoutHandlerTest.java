@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,8 @@ public class LogoutHandlerTest {
         var sessionStore = new InMemorySessionStore();
         var subject = new Subject("foo");
         var sessionID = UUID.randomUUID();
-        var session = Session.create(sessionID, 1L, subject, new SessionID("sid"));
+        var session =
+                Session.create(sessionID, Instant.ofEpochSecond(1L), subject, new SessionID("sid"));
         sessionStore.save(session);
 
         var handler = new LogoutHandler(sessionStore);
