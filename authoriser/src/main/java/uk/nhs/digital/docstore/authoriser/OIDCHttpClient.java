@@ -6,6 +6,7 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
+import java.time.Instant;
 import java.util.UUID;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
@@ -45,7 +46,8 @@ public class OIDCHttpClient implements OIDCClient {
         var session =
                 Session.create(
                         UUID.randomUUID(),
-                        claimsSet.getExpirationTime().getTime(),
+                        Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime())
+                                .getEpochSecond(),
                         claimsSet.getSubject(),
                         claimsSet.getSessionID());
         sessionStore.save(session);

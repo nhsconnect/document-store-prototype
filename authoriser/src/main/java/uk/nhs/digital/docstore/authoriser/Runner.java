@@ -28,7 +28,7 @@ public class Runner {
         var request = new TokenRequestEvent();
 
         String redirectUrl = "some-url";
-        var authCode = new AuthorizationCode("Qyx7qPcv3bC3xSSgE43MPeMlWoQ");
+        var authCode = new AuthorizationCode("aLpVorJSZHJUz19Q91ZIrjPpJ9Y");
         var state = new State();
         request.setQueryStringParameters(
                 Map.of(

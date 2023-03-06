@@ -6,6 +6,7 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
+import java.time.Instant;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,7 +46,9 @@ class OIDCHttpClientTest {
         var session = optionalSession.get();
 
         Assertions.assertThat(session.getTimeToExist())
-                .isEqualTo(claimsSet.getExpirationTime().getTime());
+                .isEqualTo(
+                        Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime())
+                                .getEpochSecond());
 
         Assertions.assertThat(session.getOIDCSubject())
                 .isEqualTo(claimsSet.getSubject().getValue());
