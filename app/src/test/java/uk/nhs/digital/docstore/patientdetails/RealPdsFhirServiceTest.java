@@ -71,6 +71,7 @@ class RealPdsFhirServiceTest {
                         new BirthDate("Test"),
                         new Postcode("EX1 2EX"),
                         nhsNumber,
+                        false,
                         false);
 
         when(httpClient.get(any(), any(), eq(accessToken)))
@@ -207,6 +208,7 @@ class RealPdsFhirServiceTest {
                         new BirthDate("Test"),
                         new Postcode("EX1 2EX"),
                         nhsNumber,
+                        false,
                         false);
 
         when(httpClient.get(any(), any(), eq(accessToken)))

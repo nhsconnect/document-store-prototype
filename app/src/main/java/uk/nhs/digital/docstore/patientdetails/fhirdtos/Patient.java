@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.hl7.fhir.r4.model.Meta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
@@ -23,18 +24,20 @@ public class Patient {
     private final String birthDate;
     private final List<Address> addresses;
     private final List<Name> names;
-
+    private final Meta meta;
     private static final Logger logger = LoggerFactory.getLogger(Patient.class);
 
     public Patient(
             @JsonProperty("id") String id,
             @JsonProperty("birthDate") String birthDate,
             @JsonProperty("address") List<Address> addresses,
-            @JsonProperty("name") List<Name> names) {
+            @JsonProperty("name") List<Name> names,
+            @JsonProperty("meta") Meta meta) {
         this.id = id;
         this.birthDate = birthDate;
         this.addresses = addresses;
         this.names = names;
+        this.meta = meta;
     }
 
     public String getId() {
@@ -51,6 +54,10 @@ public class Patient {
 
     private List<Name> getNames() {
         return names;
+    }
+
+    public Meta getMeta() {
+        return meta;
     }
 
     public Optional<Name> getCurrentUsualName() {
@@ -123,6 +130,7 @@ public class Patient {
                         .map(address -> new Postcode(address.getPostalCode()))
                         .orElse(null),
                 new NhsNumber(id),
-                !requestedNhsNumber.getValue().equals(id));
+                !requestedNhsNumber.getValue().equals(id),
+                meta != null && !Objects.equals(meta.getSecurityFirstRep().getCode(), "U"));
     }
 }
