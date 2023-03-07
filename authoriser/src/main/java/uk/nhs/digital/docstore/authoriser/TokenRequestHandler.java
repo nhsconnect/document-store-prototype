@@ -4,6 +4,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.net.MalformedURLException;
@@ -12,12 +14,15 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requests.TokenRequestEvent;
 
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
 
     private final OIDCClient OIDCClient;
     private Clock clock = Clock.systemUTC();
@@ -45,6 +50,13 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(TokenRequestEvent input, Context context) {
+        var objectMapper = new ObjectMapper();
+        try {
+            LOGGER.debug(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(input));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
         var authCode = input.getAuthCode();
         if (authCode.isEmpty()) {
             throw new RuntimeException("Auth code is empty");

@@ -3,21 +3,24 @@ package uk.nhs.digital.docstore.authoriser.requests;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.State;
-import java.net.HttpCookie;
-import java.util.Optional;
+import java.util.*;
 
 public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
+
     public Optional<State> getCookieState() {
         var headers = getHeaders();
         if (headers == null || headers.get("cookie") == null) {
             return Optional.empty();
         }
-        var cookies = HttpCookie.parse(headers.get("cookie"));
-        var stateCookie =
-                cookies.stream()
-                        .filter(httpCookie -> httpCookie.getName().equals("State"))
-                        .findFirst();
-        return stateCookie.map(HttpCookie::getValue).map(State::new);
+        var cookiesString = headers.get("cookie");
+        var cookies = new HashMap<String, String>();
+        Arrays.stream(cookiesString.split(";"))
+                .forEach(
+                        cookieString -> {
+                            var keyValueTuple = cookieString.split("=");
+                            cookies.put(keyValueTuple[0].trim(), keyValueTuple[1].trim());
+                        });
+        return Optional.ofNullable(cookies.get("State")).map(State::new);
     }
 
     public Optional<AuthorizationCode> getAuthCode() {
