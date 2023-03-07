@@ -13,5 +13,7 @@ public interface SessionStore {
 
     void delete(Session session);
 
+    void batchDelete(List<Session> sessions);
+
     List<Session> queryByOIDCSubject(Subject subject);
 }

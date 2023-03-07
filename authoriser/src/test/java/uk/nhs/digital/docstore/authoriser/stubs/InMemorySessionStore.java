@@ -38,6 +38,9 @@ public class InMemorySessionStore implements SessionStore {
     }
 
     @Override
+    public void batchDelete(List<Session> sessions) {}
+
+    @Override
     public List<Session> queryByOIDCSubject(Subject subject) {
         return sessions.values().stream()
                 .filter(session -> session.getOIDCSubject().equals(subject.getValue()))

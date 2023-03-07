@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -86,5 +87,27 @@ public class DynamoDBSessionStoreTest {
         var sessionIds = results.stream().map(Session::getId).collect(Collectors.toList());
 
         Assertions.assertThat(sessionIds).contains(sessionOne.getId(), sessionTwo.getId());
+    }
+
+    @Test
+    public void shouldBatchDeleteSessionsFromDynamoDB() {
+        var timeToExist = 1L;
+        var subject = new Subject(UUID.randomUUID().toString());
+        var oidcSessionIDOne = new SessionID("one");
+        var oidcSessionIDTwo = new SessionID("two");
+
+        var sessionOne = Session.create(UUID.randomUUID(), timeToExist, subject, oidcSessionIDOne);
+        var sessionTwo = Session.create(UUID.randomUUID(), timeToExist, subject, oidcSessionIDTwo);
+        dynamoDBMapper.save(sessionOne);
+        dynamoDBMapper.save(sessionTwo);
+
+        db.batchDelete(List.of(sessionOne, sessionTwo));
+
+        Assertions.assertThat(
+                        dynamoDBMapper.load(Session.class, sessionOne.getPK(), sessionOne.getSK()))
+                .isNull();
+        Assertions.assertThat(
+                        dynamoDBMapper.load(Session.class, sessionTwo.getPK(), sessionTwo.getSK()))
+                .isNull();
     }
 }

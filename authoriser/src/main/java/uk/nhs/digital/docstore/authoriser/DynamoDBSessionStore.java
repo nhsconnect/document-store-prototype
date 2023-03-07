@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import uk.nhs.digital.docstore.authoriser.models.Session;
@@ -35,6 +36,11 @@ public class DynamoDBSessionStore implements SessionStore {
     @Override
     public void delete(Session session) {
         dynamoDBMapper.delete(session);
+    }
+
+    @Override
+    public void batchDelete(List<Session> sessions) {
+        dynamoDBMapper.batchDelete(sessions);
     }
 
     @Override
