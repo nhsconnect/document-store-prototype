@@ -10,21 +10,31 @@ import { PatientTracePage } from "./pages/patientTracePage/PatientTracePage";
 import UploadDocumentsPage from "./pages/uploadDocumentsPage/UploadDocumentsPage";
 import SearchResultsPage from "./pages/searchResultsPage/SearchResultsPage";
 import StartPage from "./pages/startPage/StartPage";
-import CognitoAuthCallbackRouter from "./components/authenticator/CognitoAuthCallbackRouter";
+import OIDCAuthCallbackRouter from "./components/authenticator/OIDCAuthCallbackRouter";
 import AuthProvider from "./components/authenticator/AuthProvider";
 import DeleteDocumentsConfirmationPage from "./pages/deleteDocumentsConfirmationPage/DeleteDocumentsConfirmationPage";
-import ConfigurationProvider from "./providers/ConfigurationProvider";
+import ConfigurationProvider, { useFeatureToggle } from "./providers/ConfigurationProvider";
+import SessionAuthCallbackRouter from "./components/authenticator/SessionAuthCallbackRouter";
+import DocumentStoreProvider from "./providers/DocumentStoreProvider";
 
 const AppRoutes = () => {
+    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
     return (
         <Routes>
             <Route element={<StartPage />} path="/" />
-            <Route element={<CognitoAuthCallbackRouter />} path="cis2-auth-callback" />
+            <Route
+                element={isOIDCAuthActive ? <OIDCAuthCallbackRouter /> : <SessionAuthCallbackRouter />}
+                path="cis2-auth-callback"
+            />
             <Route
                 element={
-                    <Authenticator.Protected>
+                    isOIDCAuthActive ? (
+                        <Authenticator.Protected>
+                            <Outlet />
+                        </Authenticator.Protected>
+                    ) : (
                         <Outlet />
-                    </Authenticator.Protected>
+                    )
                 }
             >
                 <Route path="/home" element={<HomePage />} />
@@ -59,14 +69,21 @@ const AppRoutes = () => {
     );
 };
 
+const AuthenticatorErrors = () => {
+    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
+    return isOIDCAuthActive ? <Authenticator.Errors /> : null;
+};
+
 const App = () => {
     return (
         <ConfigurationProvider config={config}>
             <Router>
                 <AuthProvider>
                     <Layout>
-                        <Authenticator.Errors />
-                        <AppRoutes />
+                        <AuthenticatorErrors />
+                        <DocumentStoreProvider>
+                            <AppRoutes />
+                        </DocumentStoreProvider>
                     </Layout>
                 </AuthProvider>
             </Router>

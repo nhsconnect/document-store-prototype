@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import ServiceError from "../../components/serviceError/ServiceError";
 import SimpleProgressBar from "../../components/simpleProgressBar/SimpleProgressBar";
-import { useDocumentStore } from "../../apiClients/documentStore";
+import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
 
 const states = {
     IDLE: "idle",
@@ -16,7 +16,7 @@ const states = {
 };
 
 const DeleteDocumentsConfirmationPage = () => {
-    const documentStore = useDocumentStore();
+    const documentStore = useAuthorisedDocumentStore();
     const { register, handleSubmit } = useForm();
     const navigate = useNavigate();
     const [{ nhsNumber, givenName, familyName }] = usePatientDetailsProviderContext();
