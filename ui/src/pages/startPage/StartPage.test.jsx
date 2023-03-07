@@ -35,7 +35,7 @@ describe("<StartPage />", () => {
         expect(screen.getByText(/valid NHS smartcard/)).toBeInTheDocument();
     });
 
-    it("renders a button link with an href to /home when OIDC federation is enabled", () => {
+    it("renders a button link with an href to /home when Cognito federation is enabled", () => {
         useFeatureToggle.mockReturnValueOnce(true);
         useFeatureToggle.mockReturnValueOnce("https://api.url");
 
@@ -44,7 +44,7 @@ describe("<StartPage />", () => {
         expect(screen.getByRole("button", { name: "Start now" })).toHaveAttribute("href", "/home");
     });
 
-    it("renders a button link with an href to the auth login endpoint when OIDC federation is disabled", () => {
+    it("renders a button link with an href to the auth login endpoint when Cognito federation is disabled", () => {
         const baseAPIUrl = "https://api.url";
 
         useFeatureToggle.mockReturnValueOnce(false);

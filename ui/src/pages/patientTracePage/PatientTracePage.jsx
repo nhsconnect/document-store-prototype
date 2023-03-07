@@ -7,7 +7,7 @@ import BackButton from "../../components/backButton/BackButton";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
 import SimpleProgressBar from "../../components/simpleProgressBar/SimpleProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useDocumentStore } from "../../apiClients/documentStore";
 
 const states = {
     IDLE: "idle",
@@ -17,7 +17,7 @@ const states = {
 };
 
 export const PatientTracePage = ({ nextPage }) => {
-    const documentStore = useAuthorisedDocumentStore();
+    const documentStore = useDocumentStore();
     const { register, formState, handleSubmit } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
         required: "Please enter a 10 digit NHS number",

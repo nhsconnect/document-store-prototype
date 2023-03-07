@@ -22,7 +22,7 @@ const config = {
     },
      features: {
             local: {
-                OIDC_AUTHENTICATION: true,
+                COGNITO_FEDERATION: true,
             }
         },
 };

@@ -1,12 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { Navigate } from "react-router";
 import { useAuth } from "react-oidc-context";
-import OIDCAuthCallbackRouter from "./OIDCAuthCallbackRouter";
+import CognitoAuthCallbackRouter from "./CognitoAuthCallbackRouter";
 
 jest.mock("react-router");
 jest.mock("react-oidc-context");
 
-describe("<OIDCAuthCallbackRouter />", () => {
+describe("<CognitoAuthCallbackRouter />", () => {
     it("navigates to /home when auth is successful", () => {
         useAuth.mockImplementationOnce(() => ({
             isAuthenticated: true,
@@ -15,7 +15,7 @@ describe("<OIDCAuthCallbackRouter />", () => {
         }));
         Navigate.mockImplementation(() => null);
 
-        render(<OIDCAuthCallbackRouter />);
+        render(<CognitoAuthCallbackRouter />);
 
         expect(Navigate).toBeCalledWith(expect.objectContaining({ to: "/home", replace: true }), expect.anything());
     });
@@ -28,7 +28,7 @@ describe("<OIDCAuthCallbackRouter />", () => {
         }));
         Navigate.mockImplementation(() => null);
 
-        render(<OIDCAuthCallbackRouter />);
+        render(<CognitoAuthCallbackRouter />);
 
         expect(Navigate).toBeCalledWith(expect.objectContaining({ to: "/", replace: true }), expect.anything());
     });
@@ -41,7 +41,7 @@ describe("<OIDCAuthCallbackRouter />", () => {
         }));
         Navigate.mockImplementation(() => null);
 
-        render(<OIDCAuthCallbackRouter />);
+        render(<CognitoAuthCallbackRouter />);
 
         expect(screen.getByText("Loading...")).toBeInTheDocument();
     });

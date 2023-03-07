@@ -9,11 +9,11 @@ import DocumentsInput from "../../components/documentsInput/DocumentsInput";
 import { formatSize } from "../../utils/utils";
 import { documentUploadStates as stateNames, documentUploadSteps } from "../../enums/documentUploads";
 import UploadSummary from "../../components/uploadSummary/UploadSummary";
+import { useDocumentStore } from "../../apiClients/documentStore";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
 
 const UploadDocumentsPage = ({ nextPagePath }) => {
-    const documentStore = useAuthorisedDocumentStore();
+    const documentStore = useDocumentStore();
     const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
     const [patientDetails] = usePatientDetailsProviderContext();
     const navigate = useNavigate();

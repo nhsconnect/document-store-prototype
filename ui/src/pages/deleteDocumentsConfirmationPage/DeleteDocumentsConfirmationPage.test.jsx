@@ -1,13 +1,14 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import DeleteDocumentsConfirmationPage from "./DeleteDocumentsConfirmationPage";
 import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
+import "../../apiClients/documentStore";
 import userEvent from "@testing-library/user-event";
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useNavigate } from "react-router";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useDocumentStore } from "../../apiClients/documentStore";
 
 jest.mock("react-router");
-jest.mock("../../providers/DocumentStoreProvider");
+jest.mock("../../apiClients/documentStore");
 jest.mock("../../providers/PatientDetailsProvider");
 
 describe("<DeleteDocumentsConfirmationPage />", () => {
@@ -55,7 +56,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         const deleteAllDocumentsMock = jest.fn();
 
         useNavigate.mockReturnValue(navigateMock);
-        useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
+        useDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
 
         render(<DeleteDocumentsConfirmationPage />);
         userEvent.click(screen.getByRole("radio", { name: "No" }));
@@ -74,7 +75,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         const deleteAllDocumentsMock = jest.fn();
 
         useNavigate.mockReturnValue(navigateMock);
-        useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
+        useDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
         usePatientDetailsProviderContext.mockReturnValue([patientDetails]);
         deleteAllDocumentsMock.mockResolvedValue("successfully deleted");
 
@@ -91,7 +92,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
     it("displays progress bar and disabled continue button whilst deleting docs", async () => {
         const deleteAllDocumentsMock = jest.fn();
 
-        useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
+        useDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
         deleteAllDocumentsMock.mockResolvedValue("successfully deleted");
 
         render(<DeleteDocumentsConfirmationPage />);
@@ -111,7 +112,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         const deleteAllDocumentsMock = jest.fn();
         const navigateMock = jest.fn();
 
-        useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
+        useDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
         useNavigate.mockReturnValue(navigateMock);
         deleteAllDocumentsMock.mockRejectedValue(new Error("Failed to delete docs"));
 

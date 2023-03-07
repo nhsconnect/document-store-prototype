@@ -1,13 +1,14 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
+import "../../apiClients/documentStore";
 import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
 import { downloadFile } from "../../utils/utils";
 import { MemoryRouter, useNavigate } from "react-router";
 import { buildPatientDetails, searchResultFactory } from "../../utils/testBuilders";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useDocumentStore } from "../../apiClients/documentStore";
 
-jest.mock("../../providers/DocumentStoreProvider");
+jest.mock("../../apiClients/documentStore");
 jest.mock("../../providers/PatientDetailsProvider");
 jest.mock("react-router", () => ({
     ...jest.requireActual("react-router"),
@@ -20,7 +21,7 @@ describe("<SearchResultsPage />", () => {
     const getPresignedUrlForZipMock = jest.fn();
 
     beforeEach(() => {
-        useAuthorisedDocumentStore.mockReturnValue({
+        useDocumentStore.mockReturnValue({
             findByNhsNumber: findByNhsNumberMock,
             getPresignedUrlForZip: getPresignedUrlForZipMock,
         });

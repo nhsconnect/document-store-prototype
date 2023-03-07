@@ -1,14 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
+import "../../apiClients/documentStore";
 import { documentUploadStates } from "../../enums/documentUploads";
 import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
 import UploadDocumentsPage from "./UploadDocumentsPage";
 import { useNavigate } from "react-router";
 import { buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useDocumentStore } from "../../apiClients/documentStore";
 
-jest.mock("../../providers/DocumentStoreProvider");
+jest.mock("../../apiClients/documentStore");
 jest.mock("../../providers/PatientDetailsProvider");
 jest.mock("react-router");
 
@@ -54,7 +55,7 @@ describe("<UploadDocumentsPage />", () => {
 
             useNavigate.mockImplementation(() => navigateMock);
             usePatientDetailsProviderContext.mockReturnValue([patientDetails, jest.fn()]);
-            useAuthorisedDocumentStore.mockReturnValue({ uploadDocument: uploadDocumentMock });
+            useDocumentStore.mockReturnValue({ uploadDocument: uploadDocumentMock });
             uploadDocumentMock.mockImplementation(async (document, uploadNhsNumber, onUploadStateChange) => {
                 expect(uploadNhsNumber).toBe(nhsNumber);
                 uploadStateChangeTriggers[document.name] = onUploadStateChange;

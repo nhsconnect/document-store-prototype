@@ -1,7 +1,7 @@
 import { useAuth } from "react-oidc-context";
 import { Navigate } from "react-router";
 
-const OIDCAuthCallbackRouter = () => {
+const CognitoAuthCallbackRouter = () => {
     const { isLoading, isAuthenticated, error } = useAuth();
 
     if (isLoading) {
@@ -19,4 +19,4 @@ const OIDCAuthCallbackRouter = () => {
     throw new Error("This should never happen");
 };
 
-export default OIDCAuthCallbackRouter;
+export default CognitoAuthCallbackRouter;

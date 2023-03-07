@@ -1,4 +1,4 @@
-import AuthCallbackRouter from "./SessionAuthCallbackRouter";
+import AuthCallbackRouter from "./AuthCallbackRouter";
 import { render, screen } from "@testing-library/react";
 import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
 

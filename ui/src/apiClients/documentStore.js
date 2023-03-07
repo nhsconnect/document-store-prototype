@@ -4,8 +4,8 @@ import { useDocumentStoreClient } from "./useDocumentStoreClient";
 import { useStorageClient } from "./useStorageClient";
 import { documentUploadStates } from "../enums/documentUploads";
 
-export const useDocumentStore = (bearerToken, interceptor) => {
-    const request = useDocumentStoreClient(bearerToken, interceptor);
+export const useDocumentStore = () => {
+    const request = useDocumentStoreClient("doc-store-api");
     const storage = useStorageClient();
 
     return useMemo(

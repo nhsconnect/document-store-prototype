@@ -8,7 +8,7 @@ import { downloadFile } from "../../utils/utils";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
 import SimpleProgressBar from "../../components/simpleProgressBar/SimpleProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useDocumentStore } from "../../apiClients/documentStore";
 
 const states = {
     INITIAL: "initial",
@@ -18,7 +18,7 @@ const states = {
 };
 
 const SearchResultsPage = () => {
-    const documentStore = useAuthorisedDocumentStore();
+    const documentStore = useDocumentStore();
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
