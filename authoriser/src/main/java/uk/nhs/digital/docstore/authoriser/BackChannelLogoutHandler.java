@@ -16,9 +16,11 @@ import java.text.ParseException;
 @SuppressWarnings("unused")
 public class BackChannelLogoutHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    private final SessionStore sessionStore;
     private final LogoutTokenValidator validator;
 
-    public BackChannelLogoutHandler(LogoutTokenValidator validator) {
+    public BackChannelLogoutHandler(LogoutTokenValidator validator, SessionStore sessionStore) {
+        this.sessionStore = sessionStore;
         this.validator = validator;
     }
 
@@ -37,7 +39,7 @@ public class BackChannelLogoutHandler
 
         LogoutTokenClaimsSet claims;
         try {
-            validator.validate(token);
+            claims = validator.validate(token);
         } catch (BadJOSEException | JOSEException e) {
             var invalidTokenResponse = new APIGatewayProxyResponseEvent();
             invalidTokenResponse.setStatusCode(400);
@@ -45,6 +47,10 @@ public class BackChannelLogoutHandler
             invalidTokenResponse.setIsBase64Encoded(false);
             return invalidTokenResponse;
         }
+
+        var sessions = sessionStore.queryByOIDCSubject(claims.getSubject());
+        // TODO: Enable deletion of multiple sessions by providing a batch delete operation
+        sessionStore.delete(sessions.get(0));
 
         var response = new APIGatewayProxyResponseEvent();
         response.setStatusCode(200);
