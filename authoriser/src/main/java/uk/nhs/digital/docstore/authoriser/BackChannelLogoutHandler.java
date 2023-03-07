@@ -48,9 +48,9 @@ public class BackChannelLogoutHandler
             return invalidTokenResponse;
         }
 
+        // TODO: Enable filtering for single session of sessions query
         var sessions = sessionStore.queryByOIDCSubject(claims.getSubject());
-        // TODO: Enable deletion of multiple sessions by providing a batch delete operation
-        sessionStore.delete(sessions.get(0));
+        sessionStore.batchDelete(sessions);
 
         var response = new APIGatewayProxyResponseEvent();
         response.setStatusCode(200);

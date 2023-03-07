@@ -11,21 +11,21 @@ import uk.nhs.digital.docstore.authoriser.models.Session;
 
 public class InMemorySessionStore implements SessionStore {
 
-    private final HashMap<String, Session> sessions;
+    private final HashMap<String, Session> sessionHashMap;
 
     public InMemorySessionStore() {
-        this.sessions = new HashMap<>();
+        this.sessionHashMap = new HashMap<>();
     }
 
     @Override
     public void save(Session session) {
-        this.sessions.put(session.getPK() + session.getSK(), session);
+        this.sessionHashMap.put(session.getPK() + session.getSK(), session);
     }
 
     @Override
     public Optional<Session> load(Subject subject, UUID sessionID) {
         return Optional.ofNullable(
-                sessions.get(
+                sessionHashMap.get(
                         Session.PARTITION_KEY_PREFIX
                                 + subject.getValue()
                                 + Session.SORT_KEY_PREFIX
@@ -34,15 +34,20 @@ public class InMemorySessionStore implements SessionStore {
 
     @Override
     public void delete(Session session) {
-        this.sessions.remove(session.getPK() + session.getSK());
+        sessionHashMap.remove(session.getPK() + session.getSK());
     }
 
     @Override
-    public void batchDelete(List<Session> sessions) {}
+    public void batchDelete(List<Session> sessions) {
+        sessions.forEach(
+                session -> {
+                    sessionHashMap.remove(session.getPK() + session.getSK());
+                });
+    }
 
     @Override
     public List<Session> queryByOIDCSubject(Subject subject) {
-        return sessions.values().stream()
+        return sessionHashMap.values().stream()
                 .filter(session -> session.getOIDCSubject().equals(subject.getValue()))
                 .collect(Collectors.toList());
     }

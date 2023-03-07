@@ -21,7 +21,7 @@ class BackChannelLogoutHandlerTest {
     private final SignedJWTFactory jwtFactory = new SignedJWTFactory();
 
     @Test
-    public void destroysTheSessionWhenTheSessionIdIsValid() throws Exception {
+    public void destroysAllSessionsForASubjectWhenTheLogoutTokenIsValid() throws Exception {
         var jwtClaims = LogoutTokenClaimsSetBuilder.build();
         var validator =
                 new LogoutTokenValidator(
@@ -33,11 +33,16 @@ class BackChannelLogoutHandlerTest {
         var request = new APIGatewayProxyRequestEvent();
         request.setBody("logout_token=" + logoutToken.serialize());
 
-        var session =
+        var sessionOne =
                 Session.create(
                         UUID.randomUUID(), 10L, jwtClaims.getSubject(), jwtClaims.getSessionID());
+        var sessionTwo =
+                Session.create(
+                        UUID.randomUUID(), 10L, jwtClaims.getSubject(), jwtClaims.getSessionID());
+
         var sessionStore = new InMemorySessionStore();
-        sessionStore.save(session);
+        sessionStore.save(sessionOne);
+        sessionStore.save(sessionTwo);
 
         var handler = new BackChannelLogoutHandler(validator, sessionStore);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
@@ -46,7 +51,10 @@ class BackChannelLogoutHandlerTest {
         Assertions.assertThat(response.getIsBase64Encoded()).isFalse();
         Assertions.assertThat(response.getBody()).isEqualTo("");
 
-        Assertions.assertThat(sessionStore.load(jwtClaims.getSubject(), session.getId())).isEmpty();
+        Assertions.assertThat(sessionStore.load(jwtClaims.getSubject(), sessionOne.getId()))
+                .isEmpty();
+        Assertions.assertThat(sessionStore.load(jwtClaims.getSubject(), sessionTwo.getId()))
+                .isEmpty();
     }
 
     @Test
