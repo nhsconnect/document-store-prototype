@@ -8,6 +8,13 @@ jest.mock("./useDocumentStoreClient");
 jest.mock("./useStorageClient");
 
 describe("The document store API client", () => {
+    it("passes a bearer token and error interceptor to the document store client", () => {
+        const bearerToken = "token";
+        const interceptor = "interceptor";
+        renderHook(() => useDocumentStore(bearerToken, interceptor));
+        expect(useDocumentStoreClient).toHaveBeenCalledWith(bearerToken, interceptor);
+    });
+
     it("returns a list of documents associated with an NHS number", async () => {
         const nhsNumber = 12345;
         const queryStringParameters = {

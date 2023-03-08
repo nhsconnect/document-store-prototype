@@ -22,16 +22,16 @@ const config = {
     },
     features: {
         local: {
-            COGNITO_FEDERATION: true,
+            OIDC_AUTHENTICATION: true,
         },
         dev: {
-            COGNITO_FEDERATION: true,
+            OIDC_AUTHENTICATION: true,
         },
         "pre-prod": {
-            COGNITO_FEDERATION: true,
+            OIDC_AUTHENTICATION: true,
         },
         prod: {
-            COGNITO_FEDERATION: true,
+            OIDC_AUTHENTICATION: true,
         }
     }
 };

@@ -2,19 +2,18 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PatientTracePage } from "./PatientTracePage";
 import { useNavigate } from "react-router";
-import "../../apiClients/documentStore";
 import { PatientDetailsProvider } from "../../providers/PatientDetailsProvider";
-import { useDocumentStore } from "../../apiClients/documentStore";
 import { buildPatientDetails } from "../../utils/testBuilders";
+import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
 
 jest.mock("react-router");
-jest.mock("../../apiClients/documentStore");
+jest.mock("../../providers/DocumentStoreProvider");
 
 describe("<PatientTracePage/>", () => {
     const getPatientDetailsMock = jest.fn();
 
     beforeEach(() => {
-        useDocumentStore.mockReturnValue({ getPatientDetails: getPatientDetailsMock });
+        useAuthorisedDocumentStore.mockReturnValue({ getPatientDetails: getPatientDetailsMock });
     });
 
     describe("initial rendering", () => {

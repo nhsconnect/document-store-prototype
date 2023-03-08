@@ -1,5 +1,6 @@
 import { AuthProvider as BaseProvider } from "react-oidc-context";
 import config from "../../config";
+import { useFeatureToggle } from "../../providers/ConfigurationProvider";
 
 const oidcConfig = {
     authority: config.Auth.oauth.domain,
@@ -26,7 +27,9 @@ const oidcConfig = {
 };
 
 const AuthProvider = ({ children }) => {
-    return <BaseProvider {...oidcConfig}>{children}</BaseProvider>;
+    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
+
+    return isOIDCAuthActive ? <BaseProvider {...oidcConfig}>{children}</BaseProvider> : children;
 };
 
 export default AuthProvider;
