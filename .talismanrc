@@ -94,7 +94,7 @@ fileignoreconfig:
 - filename: terraform/pre-prod.tfvars
   checksum: 5db57c15e7a0a9743ebd2548c0f87258a6b74477f5ebd96d60e894a80c3b79bc
 - filename: terraform/main.tf
-  checksum: adbbafca6b9a3d1e68b4c6d834c61858f5778e7983c4cd304c4bbaefbcf1059c
+  checksum: 517f62331d7dbcee3d159c573c2b628325cb89c95b0b42862d21c8ccc7955a7c
 - filename: docs/diagrams/flow/path-to-prod.md
   checksum: 011fb55fff5554a7e8e7b23a0c34f319bf43be047abda0527e75b1873801ba5b
 - filename: terraform/.terraform.lock.hcl

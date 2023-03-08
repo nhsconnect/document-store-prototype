@@ -145,11 +145,6 @@ data aws_iam_policy_document "dynamodb_table_access_policy_doc" {
   }
 }
 
-resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
-  name = "s3-virus-scanning"
-  template_url = "https://css-cft.s3.amazonaws.com/ConsoleCloudFormationTemplate.yaml"
-}
-
 output "api_gateway_rest_api_id" {
   value = aws_api_gateway_deployment.api_deploy.rest_api_id
 }
