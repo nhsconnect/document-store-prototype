@@ -309,6 +309,14 @@
         "sns:Unsubscribe"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "AllowCloudFormation",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateStack"
+      ],
+      "Resource": "*"
     }
   ]
 }
