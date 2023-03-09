@@ -145,7 +145,21 @@ data aws_iam_policy_document "dynamodb_table_access_policy_doc" {
   }
 }
 
+resource "aws_vpc_ipam" "virus_scanning_ipam" {
+  operating_regions {
+    region_name = var.region
+  }
+}
+
+resource "aws_vpc_ipam_pool" "virus_scanning_ipam_pool" {
+  address_family = "ipv4"
+  ipam_scope_id  = aws_vpc_ipam.virus_scanning_ipam.private_default_scope_id
+  locale = var.region
+}
+
 resource "aws_vpc" "virus_scanning_vpc" {
+  cidr_block = "10.0.0.0/16"
+  ipv4_ipam_pool_id = aws_vpc_ipam_pool.virus_scanning_ipam_pool.id
   tags = {
     Name = "Virus Scanning Default VPC"
   }
