@@ -1,6 +1,6 @@
 import React from "react";
 
-const SimpleProgressBar = ({ status }) => {
+const ProgressBar = ({ status }) => {
     return (
         <>
             <progress aria-label={status} role="progressbar" />
@@ -9,4 +9,4 @@ const SimpleProgressBar = ({ status }) => {
     );
 };
 
-export default SimpleProgressBar;
+export default ProgressBar;

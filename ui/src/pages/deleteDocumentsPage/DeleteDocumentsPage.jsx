@@ -5,7 +5,7 @@ import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import ServiceError from "../../components/serviceError/ServiceError";
-import SimpleProgressBar from "../../components/simpleProgressBar/SimpleProgressBar";
+import ProgressBar from "../../components/progressBar/ProgressBar";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
 
 const states = {
@@ -77,7 +77,7 @@ const DeleteDocumentsPage = () => {
                         </Radios.Radio>
                     </Radios>
                 </Fieldset>
-                {submissionState === states.DELETING && <SimpleProgressBar status="Deleting..."></SimpleProgressBar>}
+                {submissionState === states.DELETING && <ProgressBar status="Deleting..."></ProgressBar>}
                 <Button type="submit" disabled={submissionState === states.DELETING}>
                     Continue
                 </Button>

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import BackButton from "../../components/backButton/BackButton";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
-import SimpleProgressBar from "../../components/simpleProgressBar/SimpleProgressBar";
+import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
 
@@ -88,9 +88,7 @@ export const PatientTracePage = ({ nextPage }) => {
                             readOnly={submissionState === states.SUCCEEDED}
                         />
                     </Fieldset>
-                    {submissionState === states.SEARCHING && (
-                        <SimpleProgressBar status="Searching..."></SimpleProgressBar>
-                    )}
+                    {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
                     {submissionState === states.FAILED && statusCode === 404 && (
                         <WarningCallout>
                             <WarningCallout.Label headingLevel="h2">Patient Not Found</WarningCallout.Label>

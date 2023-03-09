@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import BackButton from "../../components/backButton/BackButton";
 import { downloadFile } from "../../utils/utils";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
-import SimpleProgressBar from "../../components/simpleProgressBar/SimpleProgressBar";
+import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
 
@@ -64,7 +64,7 @@ const SearchResultsPage = () => {
             <h1>Download electronic health records and attachments</h1>
             {(submissionState === states.FAILED || downloadState === states.FAILED) && <ServiceError />}
             <PatientSummary patientDetails={patientDetails} />
-            {submissionState === states.PENDING && <SimpleProgressBar status="Loading..."></SimpleProgressBar>}
+            {submissionState === states.PENDING && <ProgressBar status="Loading..."></ProgressBar>}
             {submissionState === states.SUCCEEDED && (
                 <>
                     {searchResults.length > 0 && (
@@ -86,7 +86,7 @@ const SearchResultsPage = () => {
                                 </Table.Body>
                             </Table>
                             {downloadState === states.PENDING && (
-                                <SimpleProgressBar status="Downloading documents..."></SimpleProgressBar>
+                                <ProgressBar status="Downloading documents..."></ProgressBar>
                             )}
                             <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING}>
                                 Download All Documents
