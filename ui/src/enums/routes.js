@@ -1,7 +1,6 @@
 export const routes = Object.freeze({
     ROOT: "/",
-    // TODO: Rename this to "auth-callback"
-    AUTH_CALLBACK: "cis2-auth-callback",
+    AUTH_CALLBACK: "auth-callback",
     HOME: "/home",
     UPLOAD: "/upload",
     UPLOAD_SEARCH_PATIENT: "/upload/search-patient",

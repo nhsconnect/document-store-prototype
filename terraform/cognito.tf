@@ -58,9 +58,9 @@ resource "aws_cognito_user_pool_client" "client" {
   allowed_oauth_scopes         = ["openid"]
   supported_identity_providers = var.cognito_oidc_providers
   callback_urls                = concat(var.cognito_cis2_client_callback_urls, [
-    "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
+    "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/auth-callback"
   ])
-  default_redirect_uri = "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
+  default_redirect_uri = "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/auth-callback"
   logout_urls          = concat([
     "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com"
   ], var.cognito_cis2_client_signout_urls)
