@@ -145,24 +145,24 @@ data aws_iam_policy_document "dynamodb_table_access_policy_doc" {
   }
 }
 
-resource "aws_vpc" "virus_scanning_default_vpc" {
+resource "aws_vpc" "virus_scanning_vpc" {
   tags = {
     Name = "Virus Scanning Default VPC"
   }
 }
 
-resource "aws_subnet" "virus_scanning_default_subnet1" {
+resource "aws_subnet" "virus_scanning_subnet1" {
   availability_zone = "eu-west-2a"
-  vpc_id = aws_vpc.virus_scanning_default_vpc.id
+  vpc_id = aws_vpc.virus_scanning_vpc.id
 
   tags = {
     Name = "Subnet for eu-west-2a"
   }
 }
 
-resource "aws_subnet" "virus_scanning_default_subnet2" {
+resource "aws_subnet" "virus_scanning_subnet2" {
   availability_zone = "eu-west-2b"
-  vpc_id = aws_vpc.virus_scanning_default_vpc.id
+  vpc_id = aws_vpc.virus_scanning_vpc.id
 
   tags = {
     Name = "Subnet for eu-west-2b"

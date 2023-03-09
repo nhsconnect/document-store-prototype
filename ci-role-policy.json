@@ -317,6 +317,15 @@
         "cloudformation:CreateStack"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "AllowEC2",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateVpc",
+        "ec2:CreateSubnet"
+      ],
+      "Resource": "*"
     }
   ]
 }
