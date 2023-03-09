@@ -335,7 +335,15 @@
         "ec2:DescribeVpcs",
         "ec2:DescribeVpcAttribute",
         "ec2:DeleteVpc",
-        "ec2:DeleteSubnet"
+        "ec2:DeleteSubnet",
+        "ec2:CreateDefaultSubnet",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeTags",
+        "ec2:ModifySubnetAttribute",
+        "ec2:AssociateVpcCidrBlock",
+        "ec2:DeleteTags",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeNetworkInterfaceAttribute"
       ],
       "Resource": "*"
     }
