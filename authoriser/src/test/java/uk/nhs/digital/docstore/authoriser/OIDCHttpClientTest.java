@@ -46,9 +46,7 @@ class OIDCHttpClientTest {
         var session = optionalSession.get();
 
         Assertions.assertThat(session.getTimeToExist())
-                .isEqualTo(
-                        Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime())
-                                .getEpochSecond());
+                .isEqualTo(Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()));
 
         Assertions.assertThat(session.getOIDCSubject())
                 .isEqualTo(claimsSet.getSubject().getValue());

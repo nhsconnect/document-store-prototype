@@ -92,7 +92,7 @@ public class DynamoDBSessionStoreTest {
 
     @Test
     public void shouldBatchDeleteSessionsFromDynamoDB() {
-        var timeToExist = 1L;
+        var timeToExist = Instant.ofEpochSecond(1L);
         var subject = new Subject(UUID.randomUUID().toString());
         var oidcSessionIDOne = new SessionID("one");
         var oidcSessionIDTwo = new SessionID("two");

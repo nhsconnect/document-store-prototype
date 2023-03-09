@@ -8,6 +8,7 @@ import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.openid.connect.sdk.validators.LogoutTokenValidator;
+import java.time.Instant;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,14 +32,21 @@ class BackChannelLogoutHandlerTest {
                         new JWKSet(jwtFactory.getJWK()));
         var logoutToken = jwtFactory.createJWT(jwtClaims.toJWTClaimsSet());
         var request = new APIGatewayProxyRequestEvent();
+        var timeToExist = Instant.ofEpochSecond(10L);
         request.setBody("logout_token=" + logoutToken.serialize());
 
         var sessionOne =
                 Session.create(
-                        UUID.randomUUID(), 10L, jwtClaims.getSubject(), jwtClaims.getSessionID());
+                        UUID.randomUUID(),
+                        timeToExist,
+                        jwtClaims.getSubject(),
+                        jwtClaims.getSessionID());
         var sessionTwo =
                 Session.create(
-                        UUID.randomUUID(), 10L, jwtClaims.getSubject(), jwtClaims.getSessionID());
+                        UUID.randomUUID(),
+                        timeToExist,
+                        jwtClaims.getSubject(),
+                        jwtClaims.getSessionID());
 
         var sessionStore = new InMemorySessionStore();
         sessionStore.save(sessionOne);

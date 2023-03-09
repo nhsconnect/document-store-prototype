@@ -60,12 +60,12 @@ public class Session {
         this.id = id;
     }
 
+    @DynamoDBTypeConverted(converter = timeToExistConverter.class)
     @DynamoDBAttribute(attributeName = "TimeToExist")
     public Instant getTimeToExist() {
         return timeToExist;
     }
 
-    @DynamoDBTypeConverted(converter = timeToExistConverter.class)
     public void setTimeToExist(Instant timeToExist) {
         this.timeToExist = timeToExist;
     }
