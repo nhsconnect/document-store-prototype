@@ -176,7 +176,7 @@ data "aws_ssm_parameter" "cloud_security_email" {
 
 resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
   name = "s3-virus-scanning"
-  template_body = jsondecode(file("../ConsoleCloudFormationTemplate.json"))
+  template_body = file("../ConsoleCloudFormationTemplate.json")
 }
 
 output "api_gateway_rest_api_id" {
