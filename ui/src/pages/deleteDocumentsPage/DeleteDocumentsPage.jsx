@@ -15,7 +15,7 @@ const states = {
     FAILED: "failed",
 };
 
-const DeleteDocumentsConfirmationPage = () => {
+const DeleteDocumentsPage = () => {
     const documentStore = useAuthorisedDocumentStore();
     const { register, handleSubmit } = useForm();
     const navigate = useNavigate();
@@ -86,4 +86,4 @@ const DeleteDocumentsConfirmationPage = () => {
     );
 };
 
-export default DeleteDocumentsConfirmationPage;
+export default DeleteDocumentsPage;

@@ -12,7 +12,7 @@ import SearchResultsPage from "./pages/searchResultsPage/SearchResultsPage";
 import StartPage from "./pages/startPage/StartPage";
 import OIDCAuthCallbackRouter from "./components/authenticator/OIDCAuthCallbackRouter";
 import AuthProvider from "./components/authenticator/AuthProvider";
-import DeleteDocumentsConfirmationPage from "./pages/deleteDocumentsConfirmationPage/DeleteDocumentsConfirmationPage";
+import DeleteDocumentsPage from "./pages/deleteDocumentsPage/DeleteDocumentsPage";
 import ConfigurationProvider, { useFeatureToggle } from "./providers/ConfigurationProvider";
 import SessionAuthCallbackRouter from "./components/authenticator/SessionAuthCallbackRouter";
 import DocumentStoreProvider from "./providers/DocumentStoreProvider";
@@ -53,10 +53,7 @@ const AppRoutes = () => {
                 >
                     <Route path="/search/patient-trace" element={<PatientTracePage nextPage="/search/results" />} />
                     <Route path="/search/results" element={<SearchResultsPage />} />
-                    <Route
-                        path="/search/results/delete-documents-confirmation"
-                        element={<DeleteDocumentsConfirmationPage />}
-                    />
+                    <Route path="/search/results/delete-documents-confirmation" element={<DeleteDocumentsPage />} />
                 </Route>
                 <Route
                     path="/upload"

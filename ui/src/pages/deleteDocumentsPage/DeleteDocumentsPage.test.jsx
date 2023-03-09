@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import DeleteDocumentsConfirmationPage from "./DeleteDocumentsConfirmationPage";
+import DeleteDocumentsPage from "./DeleteDocumentsPage";
 import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
 import userEvent from "@testing-library/user-event";
 import { buildPatientDetails } from "../../utils/testBuilders";
@@ -10,7 +10,7 @@ jest.mock("react-router");
 jest.mock("../../providers/DocumentStoreProvider");
 jest.mock("../../providers/PatientDetailsProvider");
 
-describe("<DeleteDocumentsConfirmationPage />", () => {
+describe("DeleteDocumentsPage", () => {
     beforeEach(() => {
         usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails()]);
     });
@@ -23,7 +23,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
 
         usePatientDetailsProviderContext.mockReturnValue([patientDetails]);
 
-        render(<DeleteDocumentsConfirmationPage />);
+        render(<DeleteDocumentsPage />);
 
         expect(
             screen.getByRole("heading", {
@@ -45,7 +45,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
     });
 
     it("selects the no option is selected by default", () => {
-        render(<DeleteDocumentsConfirmationPage />);
+        render(<DeleteDocumentsPage />);
 
         expect(screen.getByRole("radio", { name: "No" })).toBeChecked();
     });
@@ -57,7 +57,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         useNavigate.mockReturnValue(navigateMock);
         useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
 
-        render(<DeleteDocumentsConfirmationPage />);
+        render(<DeleteDocumentsPage />);
         userEvent.click(screen.getByRole("radio", { name: "No" }));
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
@@ -78,7 +78,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         usePatientDetailsProviderContext.mockReturnValue([patientDetails]);
         deleteAllDocumentsMock.mockResolvedValue("successfully deleted");
 
-        render(<DeleteDocumentsConfirmationPage />);
+        render(<DeleteDocumentsPage />);
         userEvent.click(screen.getByRole("radio", { name: "Yes" }));
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
@@ -94,7 +94,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
         deleteAllDocumentsMock.mockResolvedValue("successfully deleted");
 
-        render(<DeleteDocumentsConfirmationPage />);
+        render(<DeleteDocumentsPage />);
         userEvent.click(screen.getByRole("radio", { name: "Yes" }));
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
@@ -115,7 +115,7 @@ describe("<DeleteDocumentsConfirmationPage />", () => {
         useNavigate.mockReturnValue(navigateMock);
         deleteAllDocumentsMock.mockRejectedValue(new Error("Failed to delete docs"));
 
-        render(<DeleteDocumentsConfirmationPage />);
+        render(<DeleteDocumentsPage />);
         userEvent.click(screen.getByRole("radio", { name: "Yes" }));
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
