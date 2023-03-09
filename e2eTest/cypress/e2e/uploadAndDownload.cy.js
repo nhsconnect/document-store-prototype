@@ -2,10 +2,6 @@ import * as path from "path";
 import { logAccessibilityViolations } from "../support/utils";
 
 describe("uploads, downloads, and deletes docs", () => {
-    beforeEach(() => {
-        Cypress.session.clearCurrentSessionData();
-    });
-
     it("searches for a patient, uploads, downloads, and then deletes docs", () => {
         const baseUrl = Cypress.config("baseUrl");
         const nhsNumber = Cypress.env("REACT_APP_ENV") === "local" ? "9000000009" : "9449305552";
@@ -17,8 +13,6 @@ describe("uploads, downloads, and deletes docs", () => {
             "cypress/fixtures/test_patient_record_two.pdf",
         ];
         const downloadedDocumentPath = path.join(Cypress.config("downloadsFolder"), `patient-record-${nhsNumber}.zip`);
-
-        cy.disableSameSiteCookieRestrictions();
 
         cy.visit("/");
         cy.title().should("eq", "Inactive Patient Record Administration");
