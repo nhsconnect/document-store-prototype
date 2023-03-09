@@ -177,11 +177,6 @@ data "aws_ssm_parameter" "cloud_security_email" {
   count = var.cloud_only_service_instances
 }
 
-resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
-  name = "s3-virus-scanning"
-  template_body = file("../ConsoleCloudFormationTemplate.json")
-}
-
 output "api_gateway_rest_api_id" {
   value = aws_api_gateway_deployment.api_deploy.rest_api_id
 }
