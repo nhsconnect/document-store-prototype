@@ -324,7 +324,18 @@
       "Action": [
         "ec2:CreateVpc",
         "ec2:CreateSubnet",
-        "ec2:CreateTags"
+        "ec2:CreateTags",
+        "ec2:AssociateSubnetCidrBlock",
+        "ec2:DescribeAvailabilityZones",
+        "ec2:CreateRouteTable",
+        "ec2:CreateRoute",
+        "ec2:CreateInternetGateway",
+        "ec2:AssociateRouteTable",
+        "ec2:ModifyVpcAttribute",
+        "ec2:DescribeVpcs",
+        "ec2:DescribeVpcAttribute",
+        "ec2:DeleteVpc",
+        "ec2:DeleteSubnet"
       ],
       "Resource": "*"
     }
