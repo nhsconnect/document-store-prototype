@@ -1,6 +1,6 @@
 import { AuthProvider as BaseProvider } from "react-oidc-context";
-import config from "../../config";
-import { useFeatureToggle } from "../../providers/ConfigurationProvider";
+import config from "../config";
+import { useFeatureToggle } from "./ConfigurationProvider";
 
 const oidcConfig = {
     authority: config.Auth.oauth.domain,

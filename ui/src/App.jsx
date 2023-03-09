@@ -11,7 +11,7 @@ import UploadDocumentsPage from "./pages/uploadDocumentsPage/UploadDocumentsPage
 import SearchResultsPage from "./pages/searchResultsPage/SearchResultsPage";
 import StartPage from "./pages/startPage/StartPage";
 import OIDCAuthCallbackRouter from "./components/authenticator/OIDCAuthCallbackRouter";
-import AuthProvider from "./components/authenticator/AuthProvider";
+import AuthProvider from "./providers/AuthProvider";
 import DeleteDocumentsPage from "./pages/deleteDocumentsPage/DeleteDocumentsPage";
 import ConfigurationProvider, { useFeatureToggle } from "./providers/ConfigurationProvider";
 import SessionAuthCallbackRouter from "./components/authenticator/SessionAuthCallbackRouter";
