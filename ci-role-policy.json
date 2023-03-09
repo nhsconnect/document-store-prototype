@@ -323,7 +323,8 @@
       "Effect": "Allow",
       "Action": [
         "ec2:CreateVpc",
-        "ec2:CreateSubnet"
+        "ec2:CreateSubnet",
+        "ec2:CreateTags"
       ],
       "Resource": "*"
     }
