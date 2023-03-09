@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Outlet, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import "./App.scss";
 import config from "./config";
 import Authenticator from "./components/authenticator/Authenticator";
@@ -79,14 +79,14 @@ const AuthenticatorErrors = () => {
 const App = () => {
     return (
         <ConfigurationProvider config={config}>
-            <Router>
+            <BrowserRouter>
                 <AuthProvider>
                     <Layout>
                         <AuthenticatorErrors />
                         <AppRoutes />
                     </Layout>
                 </AuthProvider>
-            </Router>
+            </BrowserRouter>
         </ConfigurationProvider>
     );
 };
