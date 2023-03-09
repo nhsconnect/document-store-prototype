@@ -3,6 +3,7 @@ import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import BackButton from "../../components/backButton/BackButton";
+import routes from "../../enums/routes";
 
 const HomePage = () => {
     const { register, handleSubmit, formState, getFieldState } = useForm();
@@ -12,8 +13,10 @@ const HomePage = () => {
     const { isDirty: isDownloadOrUploadDirty } = getFieldState("isDownloadOrUpload", formState);
 
     const submit = ({ isDownloadOrUpload }) => {
-        const path = isDownloadOrUpload === "download" ? "search" : "upload";
-        navigate(`/${path}/patient-trace`, { replace: false });
+        const { SEARCH_PATIENT, UPLOAD_SEARCH_PATIENT } = routes;
+        const path = isDownloadOrUpload === "download" ? SEARCH_PATIENT : UPLOAD_SEARCH_PATIENT;
+
+        navigate(path, { replace: false });
     };
 
     return (

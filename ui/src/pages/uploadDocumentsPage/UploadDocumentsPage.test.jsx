@@ -7,6 +7,7 @@ import UploadDocumentsPage from "./UploadDocumentsPage";
 import { useNavigate } from "react-router";
 import { buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import routes from "../../enums/routes";
 
 jest.mock("../../providers/DocumentStoreProvider");
 jest.mock("../../providers/PatientDetailsProvider");
@@ -171,7 +172,7 @@ describe("<UploadDocumentsPage />", () => {
 
             renderUploadDocumentsPage();
 
-            expect(navigateMock).toHaveBeenCalledWith("/upload/patient-trace");
+            expect(navigateMock).toHaveBeenCalledWith(routes.UPLOAD_SEARCH_PATIENT);
         });
     });
 });

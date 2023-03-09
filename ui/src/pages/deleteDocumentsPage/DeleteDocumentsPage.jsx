@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 import ServiceError from "../../components/serviceError/ServiceError";
 import ProgressBar from "../../components/progressBar/ProgressBar";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import routes from "../../enums/routes";
 
 const states = {
     IDLE: "idle",
@@ -25,7 +26,7 @@ const DeleteDocumentsPage = () => {
     const { ref: shouldDeleteAllDocsRef, ...shouldDeleteAllDocsProps } = register("shouldDeleteAllDocs");
 
     const doSubmit = async ({ shouldDeleteAllDocs }) => {
-        const searchResultsPageUrl = "/search/results";
+        const searchResultsPageUrl = routes.SEARCH_RESULTS;
 
         if (shouldDeleteAllDocs === "yes") {
             setSubmissionState(states.DELETING);

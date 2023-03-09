@@ -44,7 +44,7 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Continue" }).click();
 
-        cy.url().should("eq", baseUrl + "/upload/patient-trace");
+        cy.url().should("eq", baseUrl + "/upload/search-patient");
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
@@ -65,7 +65,7 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.findByRole("radio", { name: /Download/ }).check();
         cy.findByRole("button", { name: "Continue" }).click();
 
-        cy.url().should("eq", baseUrl + "/search/patient-trace");
+        cy.url().should("eq", baseUrl + "/search/patient");
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
         cy.findByRole("button", { name: "Next" }).click();
@@ -77,14 +77,14 @@ describe("uploads, downloads, and deletes docs", () => {
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
 
         cy.findByRole("button", { name: "Delete All Documents" }).click();
-        cy.url().should("eq", baseUrl + "/search/results/delete-documents-confirmation");
+        cy.url().should("eq", baseUrl + "/search/results/delete");
         cy.findByRole("radio", { name: "No" }).should("be.checked").and("have.value", "no");
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Continue" }).click();
         cy.url().should("eq", baseUrl + "/search/results");
 
         cy.findByRole("button", { name: "Delete All Documents" }).click();
-        cy.url().should("eq", baseUrl + "/search/results/delete-documents-confirmation");
+        cy.url().should("eq", baseUrl + "/search/results/delete");
         cy.findByRole("radio", { name: "Yes" }).check();
         cy.findByRole("button", { name: "Continue" }).click();
         cy.url().should("eq", baseUrl + "/search/results");

@@ -9,6 +9,7 @@ import PatientSummary from "../../components/patientSummary/PatientSummary";
 import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import routes from "../../enums/routes";
 
 const states = {
     INITIAL: "initial",
@@ -27,7 +28,7 @@ const SearchResultsPage = () => {
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
-            navigate("/search/patient-trace");
+            navigate(routes.SEARCH_PATIENT);
             return;
         }
         const search = async () => {
@@ -101,11 +102,7 @@ const SearchResultsPage = () => {
                                 documents for this patient. For example, if the retention period of these documents has
                                 been reached.
                             </p>
-                            <Link
-                                role="button"
-                                className="nhsuk-button"
-                                to="/search/results/delete-documents-confirmation"
-                            >
+                            <Link role="button" className="nhsuk-button" to={routes.SEARCH_RESULTS_DELETE}>
                                 Delete All Documents
                             </Link>
                         </>

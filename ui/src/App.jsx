@@ -16,16 +16,30 @@ import DeleteDocumentsPage from "./pages/deleteDocumentsPage/DeleteDocumentsPage
 import ConfigurationProvider, { useFeatureToggle } from "./providers/ConfigurationProvider";
 import SessionAuthCallbackRouter from "./components/authenticator/SessionAuthCallbackRouter";
 import DocumentStoreProvider from "./providers/DocumentStoreProvider";
+import routes from "./enums/routes";
 
 const AppRoutes = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
 
+    const {
+        ROOT,
+        AUTH_CALLBACK,
+        HOME,
+        UPLOAD,
+        UPLOAD_SEARCH_PATIENT,
+        UPLOAD_SUBMIT,
+        SEARCH,
+        SEARCH_PATIENT,
+        SEARCH_RESULTS,
+        SEARCH_RESULTS_DELETE,
+    } = routes;
+
     return (
         <Routes>
-            <Route element={<StartPage />} path="/" />
+            <Route element={<StartPage />} path={ROOT} />
             <Route
                 element={isOIDCAuthActive ? <OIDCAuthCallbackRouter /> : <SessionAuthCallbackRouter />}
-                path="cis2-auth-callback"
+                path={AUTH_CALLBACK}
             />
             <Route
                 element={
@@ -42,29 +56,29 @@ const AppRoutes = () => {
                     )
                 }
             >
-                <Route path="/home" element={<HomePage />} />
+                <Route path={HOME} element={<HomePage />} />
                 <Route
-                    path="/search"
+                    path={SEARCH}
                     element={
                         <PatientDetailsProvider>
                             <Outlet />
                         </PatientDetailsProvider>
                     }
                 >
-                    <Route path="/search/patient-trace" element={<PatientTracePage nextPage="/search/results" />} />
-                    <Route path="/search/results" element={<SearchResultsPage />} />
-                    <Route path="/search/results/delete-documents-confirmation" element={<DeleteDocumentsPage />} />
+                    <Route path={SEARCH_PATIENT} element={<PatientTracePage nextPage={SEARCH_RESULTS} />} />
+                    <Route path={SEARCH_RESULTS} element={<SearchResultsPage />} />
+                    <Route path={SEARCH_RESULTS_DELETE} element={<DeleteDocumentsPage />} />
                 </Route>
                 <Route
-                    path="/upload"
+                    path={UPLOAD}
                     element={
                         <PatientDetailsProvider>
                             <Outlet />
                         </PatientDetailsProvider>
                     }
                 >
-                    <Route path="/upload/patient-trace" element={<PatientTracePage nextPage="/upload/submit" />} />
-                    <Route path="/upload/submit" element={<UploadDocumentsPage nextPagePath="/home" />} />
+                    <Route path={UPLOAD_SEARCH_PATIENT} element={<PatientTracePage nextPage={UPLOAD_SUBMIT} />} />
+                    <Route path={UPLOAD_SUBMIT} element={<UploadDocumentsPage nextPagePath={HOME} />} />
                 </Route>
             </Route>
         </Routes>

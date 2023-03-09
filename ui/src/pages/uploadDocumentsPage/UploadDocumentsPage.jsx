@@ -11,6 +11,7 @@ import { documentUploadStates as stateNames, documentUploadSteps } from "../../e
 import UploadSummary from "../../components/uploadSummary/UploadSummary";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import routes from "../../enums/routes";
 
 const UploadDocumentsPage = ({ nextPagePath }) => {
     const documentStore = useAuthorisedDocumentStore();
@@ -28,7 +29,7 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
-            navigate("/upload/patient-trace");
+            navigate(routes.UPLOAD_SEARCH_PATIENT);
         }
     }, [patientDetails, navigate]);
 

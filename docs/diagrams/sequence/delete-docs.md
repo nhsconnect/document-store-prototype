@@ -29,7 +29,7 @@ sequenceDiagram
     deactivate API Gateway
     React Web App ->> GP Practice/PCSE User: Displays docs found
     GP Practice/PCSE User ->> React Web App: Clicks delete button
-    React Web App ->> GP Practice/PCSE User: Navigates to /search/results/delete-documents-confirmation
+    React Web App ->> GP Practice/PCSE User: Navigates to /search/results/delete
     GP Practice/PCSE User ->> React Web App: Clicks delete confirmation button
     React Web App ->> GP Practice/PCSE User: Displays deletion progress
     React Web App ->> API Gateway: DELETE /DocumentReference

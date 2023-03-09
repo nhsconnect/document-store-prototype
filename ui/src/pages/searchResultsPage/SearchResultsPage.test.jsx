@@ -6,6 +6,7 @@ import { downloadFile } from "../../utils/utils";
 import { MemoryRouter, useNavigate } from "react-router";
 import { buildPatientDetails, searchResultFactory } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import routes from "../../enums/routes";
 
 jest.mock("../../providers/DocumentStoreProvider");
 jest.mock("../../providers/PatientDetailsProvider");
@@ -204,7 +205,7 @@ describe("<SearchResultsPage />", () => {
 
             renderSearchResultsPage();
 
-            expect(navigateMock).toHaveBeenCalledWith("/search/patient-trace");
+            expect(navigateMock).toHaveBeenCalledWith(routes.SEARCH_PATIENT);
         });
     });
 });

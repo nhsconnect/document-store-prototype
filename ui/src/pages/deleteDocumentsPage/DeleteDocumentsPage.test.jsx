@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useNavigate } from "react-router";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import routes from "../../enums/routes";
 
 jest.mock("react-router");
 jest.mock("../../providers/DocumentStoreProvider");
@@ -62,7 +63,7 @@ describe("DeleteDocumentsPage", () => {
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
         await waitFor(() => {
-            expect(navigateMock).toHaveBeenCalledWith("/search/results");
+            expect(navigateMock).toHaveBeenCalledWith(routes.SEARCH_RESULTS);
         });
         expect(deleteAllDocumentsMock).not.toHaveBeenCalled();
     });
@@ -83,7 +84,7 @@ describe("DeleteDocumentsPage", () => {
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
         await waitFor(() => {
-            expect(navigateMock).toHaveBeenCalledWith("/search/results");
+            expect(navigateMock).toHaveBeenCalledWith(routes.SEARCH_RESULTS);
         });
         expect(deleteAllDocumentsMock).toHaveBeenCalledWith(nhsNumber);
     });

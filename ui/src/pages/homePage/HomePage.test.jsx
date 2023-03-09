@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import HomePage from "./HomePage";
 import userEvent from "@testing-library/user-event";
 import { useNavigate } from "react-router";
+import routes from "../../enums/routes";
 
 jest.mock("react-router");
 
@@ -26,8 +27,8 @@ describe("<HomePage />", () => {
     });
 
     it.each([
-        ["upload", "Upload documents"],
-        ["search", "Download and/or delete documents"],
+        [routes.UPLOAD_SEARCH_PATIENT, "Upload documents"],
+        [routes.SEARCH_PATIENT, "Download and/or delete documents"],
     ])("navigates to %s path when '%s' selected", async (path, radioButtonName) => {
         const navigateMock = jest.fn();
 
@@ -38,7 +39,7 @@ describe("<HomePage />", () => {
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
         await waitFor(() => {
-            expect(navigateMock).toHaveBeenCalledWith(`/${path}/patient-trace`, { replace: false });
+            expect(navigateMock).toHaveBeenCalledWith(path, { replace: false });
         });
     });
 
