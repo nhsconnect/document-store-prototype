@@ -4,7 +4,7 @@
     "Parameters": {
         "VPC": {
             "Type": "AWS::EC2::VPC::Id",
-            "Default": "${aws_default_vpc.virus_scanning_default_vpc.id}",
+            "Default": "${aws_vpc.virus_scanning_default_vpc.id}",
             "Description": "The VPC in which to place the public facing Console",
             "MinLength": 1,
             "ConstraintDescription": "VPC is a mandatory input parameter. Select an existing VPC ID."
