@@ -94,7 +94,7 @@ fileignoreconfig:
 - filename: terraform/pre-prod.tfvars
   checksum: 5db57c15e7a0a9743ebd2548c0f87258a6b74477f5ebd96d60e894a80c3b79bc
 - filename: terraform/main.tf
-  checksum: 517f62331d7dbcee3d159c573c2b628325cb89c95b0b42862d21c8ccc7955a7c
+  checksum: 333f4c4c2c568ea0061b7e25a910335bb05f7b16eb933ed933782643b4b51b68
 - filename: docs/diagrams/flow/path-to-prod.md
   checksum: 011fb55fff5554a7e8e7b23a0c34f319bf43be047abda0527e75b1873801ba5b
 - filename: terraform/.terraform.lock.hcl
@@ -157,6 +157,8 @@ fileignoreconfig:
   checksum: c95aa502d8f1d8c459547c043e430c90f80a11e406ca44079a3b3a58333d23c3
 - filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/DynamoDBSessionStore.java
   checksum: 3df6627c7979bcf16911cddcbf0ebf492bed6c380b67dc7003e5b3c371d4b908
+- filename: ConsoleCloudFormationTemplate.json
+  checksum: e635efebc09f3ed4411363973bb0e9076f21019e20d7556ecaae7227b1ffef42
 version: ""
 scopeconfig:
   - scope: node

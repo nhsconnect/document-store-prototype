@@ -145,6 +145,40 @@ data aws_iam_policy_document "dynamodb_table_access_policy_doc" {
   }
 }
 
+resource "aws_default_vpc" "virus_scanning_default_vpc" {
+  tags = {
+    Name = "Virus Scanning Default VPC"
+  }
+}
+
+resource "aws_subnet" "virus_scanning_default_subnet1" {
+  availability_zone = "eu-west-2a"
+  vpc_id = aws_default_vpc.virus_scanning_default_vpc.id
+
+  tags = {
+    Name = "Subnet for eu-west-2a"
+  }
+}
+
+resource "aws_subnet" "virus_scanning_default_subnet2" {
+  availability_zone = "eu-west-2b"
+  vpc_id = aws_default_vpc.virus_scanning_default_vpc.id
+
+  tags = {
+    Name = "Subnet for eu-west-2b"
+  }
+}
+
+data "aws_ssm_parameter" "cloud_security_email" {
+  name = "/prs/${env}/user-input/cloud-security-email"
+  count = var.cloud_only_service_instances
+}
+
+resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
+  name = "s3-virus-scanning"
+  template_body = jsondecode(file("../ConsoleCloudFormationTemplate.json"))
+}
+
 output "api_gateway_rest_api_id" {
   value = aws_api_gateway_deployment.api_deploy.rest_api_id
 }
