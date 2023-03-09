@@ -5,7 +5,7 @@ import config from "./config";
 import Authenticator from "./components/authenticator/Authenticator";
 import HomePage from "./pages/homePage/HomePage";
 import Layout from "./components/layout/Layout";
-import { PatientDetailsProvider } from "./providers/PatientDetailsProvider";
+import PatientDetailsProvider from "./providers/PatientDetailsProvider";
 import { PatientTracePage } from "./pages/patientTracePage/PatientTracePage";
 import UploadDocumentsPage from "./pages/uploadDocumentsPage/UploadDocumentsPage";
 import SearchResultsPage from "./pages/searchResultsPage/SearchResultsPage";

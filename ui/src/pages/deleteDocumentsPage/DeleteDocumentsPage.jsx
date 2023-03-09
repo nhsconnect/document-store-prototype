@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import BackButton from "../../components/backButton/BackButton";
-import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import ServiceError from "../../components/serviceError/ServiceError";
@@ -19,7 +19,7 @@ const DeleteDocumentsPage = () => {
     const documentStore = useAuthorisedDocumentStore();
     const { register, handleSubmit } = useForm();
     const navigate = useNavigate();
-    const [{ nhsNumber, givenName, familyName }] = usePatientDetailsProviderContext();
+    const [{ nhsNumber, givenName, familyName }] = usePatientDetailsContext();
     const [submissionState, setSubmissionState] = useState(states.IDLE);
 
     const { ref: shouldDeleteAllDocsRef, ...shouldDeleteAllDocsProps } = register("shouldDeleteAllDocs");

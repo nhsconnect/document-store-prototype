@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PatientTracePage } from "./PatientTracePage";
 import { useNavigate } from "react-router";
-import { PatientDetailsProvider } from "../../providers/PatientDetailsProvider";
+import PatientDetailsProvider from "../../providers/PatientDetailsProvider";
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
 

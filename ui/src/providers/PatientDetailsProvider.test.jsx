@@ -1,13 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { PatientDetailsProvider, usePatientDetailsProviderContext } from "./PatientDetailsProvider";
+import PatientDetailsProvider, { usePatientDetailsContext } from "./PatientDetailsProvider";
+import { buildPatientDetails } from "../utils/testBuilders";
 
-describe("<PatientDetailsProvider />", () => {
+describe("PatientDetailsProvider", () => {
     it("provides NHS number and family name", () => {
-        const patientDetails = {
+        const patientDetails = buildPatientDetails({
             nhsNumber: 23456,
             familyName: "Smith",
-        };
+        });
 
         render(
             <PatientDetailsProvider>
@@ -26,7 +27,7 @@ describe("<PatientDetailsProvider />", () => {
 });
 
 const TestComponent = (props) => {
-    const [patientDetails, setPatientDetails] = usePatientDetailsProviderContext();
+    const [patientDetails, setPatientDetails] = usePatientDetailsContext();
 
     return (
         <>

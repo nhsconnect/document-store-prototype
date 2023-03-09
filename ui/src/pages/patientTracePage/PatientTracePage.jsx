@@ -2,7 +2,7 @@ import { Button, ErrorSummary, Fieldset, Input, WarningCallout } from "nhsuk-rea
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import BackButton from "../../components/backButton/BackButton";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
 import SimpleProgressBar from "../../components/simpleProgressBar/SimpleProgressBar";
@@ -28,7 +28,7 @@ export const PatientTracePage = ({ nextPage }) => {
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [statusCode, setStatusCode] = useState(null);
-    const [patientDetails, setPatientDetails] = usePatientDetailsProviderContext();
+    const [patientDetails, setPatientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import produce from "immer";
-import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import BackButton from "../../components/backButton/BackButton";
 import DocumentsInput from "../../components/documentsInput/DocumentsInput";
 import { formatSize } from "../../utils/utils";
@@ -15,7 +15,7 @@ import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvide
 const UploadDocumentsPage = ({ nextPagePath }) => {
     const documentStore = useAuthorisedDocumentStore();
     const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
-    const [patientDetails] = usePatientDetailsProviderContext();
+    const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
 
     const documents = watch("documents");

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table } from "nhsuk-react-components";
-import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import BackButton from "../../components/backButton/BackButton";
@@ -22,7 +22,7 @@ const SearchResultsPage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [submissionState, setSubmissionState] = useState(states.INITIAL);
     const [downloadState, setDownloadState] = useState(states.INITIAL);
-    const [patientDetails] = usePatientDetailsProviderContext();
+    const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
 
     useEffect(() => {

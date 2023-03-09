@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 import { documentUploadStates } from "../../enums/documentUploads";
-import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import UploadDocumentsPage from "./UploadDocumentsPage";
 import { useNavigate } from "react-router";
 import { buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
@@ -20,7 +20,7 @@ describe("<UploadDocumentsPage />", () => {
             const patientDetails = buildPatientDetails({ nhsNumber });
 
             useNavigate.mockImplementation(() => navigateMock);
-            usePatientDetailsProviderContext.mockReturnValue([patientDetails, jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
 
             renderUploadDocumentsPage();
 
@@ -53,7 +53,7 @@ describe("<UploadDocumentsPage />", () => {
             };
 
             useNavigate.mockImplementation(() => navigateMock);
-            usePatientDetailsProviderContext.mockReturnValue([patientDetails, jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
             useAuthorisedDocumentStore.mockReturnValue({ uploadDocument: uploadDocumentMock });
             uploadDocumentMock.mockImplementation(async (document, uploadNhsNumber, onUploadStateChange) => {
                 expect(uploadNhsNumber).toBe(nhsNumber);
@@ -166,7 +166,7 @@ describe("<UploadDocumentsPage />", () => {
             const navigateMock = jest.fn();
             const unavailableNhsNumber = undefined;
 
-            usePatientDetailsProviderContext.mockReturnValue([unavailableNhsNumber, jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([unavailableNhsNumber, jest.fn()]);
             useNavigate.mockImplementation(() => navigateMock);
 
             renderUploadDocumentsPage();

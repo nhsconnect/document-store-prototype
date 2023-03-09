@@ -1,5 +1,5 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
-import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
 import { downloadFile } from "../../utils/utils";
@@ -33,7 +33,7 @@ describe("<SearchResultsPage />", () => {
             const familyName = "Smith";
             const patientDetails = buildPatientDetails({ nhsNumber, familyName });
 
-            usePatientDetailsProviderContext.mockReturnValue([patientDetails, jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
             useNavigate.mockReturnValue(navigateMock);
 
             renderSearchResultsPage();
@@ -51,7 +51,7 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("goes to home page when user clicks on start again button", async () => {
-            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
 
             renderSearchResultsPage();
 
@@ -60,7 +60,7 @@ describe("<SearchResultsPage />", () => {
 
         it("displays a loading spinner when a document search is in progress", async () => {
             findByNhsNumberMock.mockResolvedValue([]);
-            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
 
             renderSearchResultsPage();
 
@@ -74,7 +74,7 @@ describe("<SearchResultsPage />", () => {
             const searchResult = searchResultFactory.build({ description, indexed });
 
             findByNhsNumberMock.mockResolvedValue([searchResult]);
-            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
 
             renderSearchResultsPage();
 
@@ -97,7 +97,7 @@ describe("<SearchResultsPage />", () => {
                 searchResultFactory.build({ indexed: newestDate }),
             ];
 
-            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             findByNhsNumberMock.mockResolvedValue(searchResults);
 
             renderSearchResultsPage();
@@ -110,7 +110,7 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("displays a message when a document search returns no results", async () => {
-            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             findByNhsNumberMock.mockResolvedValue([]);
 
             renderSearchResultsPage();
@@ -121,7 +121,7 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("displays a message when a document search fails", async () => {
-            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             findByNhsNumberMock.mockRejectedValue(new Error("Failed to search for docs!"));
 
             renderSearchResultsPage();
@@ -130,7 +130,7 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("calls API client and should download the ZIP file when user clicks on download all button", async () => {
-            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
 
             renderSearchResultsPage();
@@ -153,7 +153,7 @@ describe("<SearchResultsPage />", () => {
             const nhsNumber = "9000000009";
             const patientDetails = buildPatientDetails({ nhsNumber });
 
-            usePatientDetailsProviderContext.mockReturnValue([patientDetails, jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
             getPresignedUrlForZipMock.mockResolvedValue(preSignedUrl);
             findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
 
@@ -170,7 +170,7 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("disables the download all button while waiting to download the zip file", async () => {
-            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
 
             renderSearchResultsPage();
@@ -183,7 +183,7 @@ describe("<SearchResultsPage />", () => {
         });
 
         it("displays error message when download fails after clicking download all button", async () => {
-            usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
             getPresignedUrlForZipMock.mockRejectedValue(new Error("Failed to download docs!"));
 
@@ -199,7 +199,7 @@ describe("<SearchResultsPage />", () => {
             const navigateMock = jest.fn();
             const patientDetails = buildPatientDetails({ nhsNumber: undefined });
 
-            usePatientDetailsProviderContext.mockReturnValue([patientDetails, jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
             useNavigate.mockReturnValue(navigateMock);
 
             renderSearchResultsPage();

@@ -1,14 +1,12 @@
 import { createContext, useContext, useState } from "react";
 
-const PatientDetailsProviderContext = createContext(undefined);
+const PatientDetailsContext = createContext(undefined);
 
-export const PatientDetailsProvider = ({ children }) => {
-    const patientDetailsState = useState();
-    return (
-        <PatientDetailsProviderContext.Provider value={patientDetailsState}>
-            {children}
-        </PatientDetailsProviderContext.Provider>
-    );
+const PatientDetailsProvider = ({ children }) => {
+    const patientDetails = useState();
+
+    return <PatientDetailsContext.Provider value={patientDetails}>{children}</PatientDetailsContext.Provider>;
 };
 
-export const usePatientDetailsProviderContext = () => useContext(PatientDetailsProviderContext);
+export default PatientDetailsProvider;
+export const usePatientDetailsContext = () => useContext(PatientDetailsContext);

@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import DeleteDocumentsPage from "./DeleteDocumentsPage";
-import { usePatientDetailsProviderContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import userEvent from "@testing-library/user-event";
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useNavigate } from "react-router";
@@ -12,7 +12,7 @@ jest.mock("../../providers/PatientDetailsProvider");
 
 describe("DeleteDocumentsPage", () => {
     beforeEach(() => {
-        usePatientDetailsProviderContext.mockReturnValue([buildPatientDetails()]);
+        usePatientDetailsContext.mockReturnValue([buildPatientDetails()]);
     });
 
     it("renders the page", () => {
@@ -21,7 +21,7 @@ describe("DeleteDocumentsPage", () => {
         const familyName = "Jobs";
         const patientDetails = buildPatientDetails({ nhsNumber, givenName, familyName });
 
-        usePatientDetailsProviderContext.mockReturnValue([patientDetails]);
+        usePatientDetailsContext.mockReturnValue([patientDetails]);
 
         render(<DeleteDocumentsPage />);
 
@@ -75,7 +75,7 @@ describe("DeleteDocumentsPage", () => {
 
         useNavigate.mockReturnValue(navigateMock);
         useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
-        usePatientDetailsProviderContext.mockReturnValue([patientDetails]);
+        usePatientDetailsContext.mockReturnValue([patientDetails]);
         deleteAllDocumentsMock.mockResolvedValue("successfully deleted");
 
         render(<DeleteDocumentsPage />);
