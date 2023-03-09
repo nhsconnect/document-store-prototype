@@ -170,7 +170,7 @@ resource "aws_subnet" "virus_scanning_default_subnet2" {
 }
 
 data "aws_ssm_parameter" "cloud_security_email" {
-  name = "/prs/${env}/user-input/cloud-security-email"
+  name = "/prs/${var.environment}/user-input/cloud-security-email"
   count = var.cloud_only_service_instances
 }
 
