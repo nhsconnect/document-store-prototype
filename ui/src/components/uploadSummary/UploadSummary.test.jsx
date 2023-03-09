@@ -5,7 +5,7 @@ import { documentUploadStates } from "../../enums/documentUploads";
 import { formatSize, getFormattedDate } from "../../utils/utils";
 import { buildDocument, buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
 
-describe("<UploadSummary />", () => {
+describe("UploadSummary", () => {
     it("renders the page", () => {
         const nhsNumber = "9000000009";
         const patientDetails = buildPatientDetails({ nhsNumber });
@@ -116,7 +116,21 @@ describe("<UploadSummary />", () => {
         expect(
             screen.getByText(/Please check your internet connection. If the issue persists please contact the/)
         ).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "NHS Digital National Service Desk" })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "NHS Digital National Service Desk" })).toHaveAttribute(
+            "href",
+            "https://digital.nhs.uk/about-nhs-digital/contact-us"
+        );
+    });
+
+    it("opens NHS Digital National Service Desk link in a new tab", () => {
+        const documents = [buildDocument(buildTextFile(), documentUploadStates.FAILED)];
+
+        renderUploadSummary({ documents });
+
+        expect(screen.getByRole("link", { name: "NHS Digital National Service Desk" })).toHaveAttribute(
+            "target",
+            "_blank"
+        );
     });
 
     it("displays each doc that failed to upload in a table", () => {

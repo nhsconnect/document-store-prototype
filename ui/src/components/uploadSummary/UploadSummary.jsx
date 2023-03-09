@@ -29,7 +29,11 @@ const UploadSummary = ({ patientDetails, documents }) => {
                             </p>
                             <p>
                                 Please check your internet connection. If the issue persists please contact the{" "}
-                                <a href="https://digital.nhs.uk/about-nhs-digital/contact-us">
+                                <a
+                                    href="https://digital.nhs.uk/about-nhs-digital/contact-us"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
                                     NHS Digital National Service Desk
                                 </a>
                                 .

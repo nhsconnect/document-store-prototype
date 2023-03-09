@@ -12,7 +12,10 @@ const ServiceError = ({ message }) => {
                 <p>{message || "Please try again later."}</p>
                 <p>
                     Please check your internet connection. If the issue persists please contact the{" "}
-                    <a href="https://digital.nhs.uk/about-nhs-digital/contact-us">NHS Digital National Service Desk</a>.
+                    <a href="https://digital.nhs.uk/about-nhs-digital/contact-us" target="_blank" rel="noreferrer">
+                        NHS Digital National Service Desk
+                    </a>
+                    .
                 </p>
             </ErrorSummary.Body>
         </ErrorSummary>

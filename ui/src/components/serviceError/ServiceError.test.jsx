@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import ServiceError from "./ServiceError";
 
-describe("<ServiceError />", () => {
+describe("ServiceError", () => {
     it("renders the service error", () => {
         render(<ServiceError />);
 
@@ -16,13 +16,12 @@ describe("<ServiceError />", () => {
         expect(screen.getByRole("link", { name: "NHS Digital National Service Desk" })).toBeInTheDocument();
     });
 
-    it("renders a link to the NHS Digital National Service Desk", () => {
+    it("renders a link to the NHS Digital National Service Desk that opens in a new tab", () => {
         render(<ServiceError />);
 
-        expect(screen.getByRole("link", { name: "NHS Digital National Service Desk" })).toHaveAttribute(
-            "href",
-            "https://digital.nhs.uk/about-nhs-digital/contact-us"
-        );
+        const serviceDeskLink = screen.getByRole("link", { name: "NHS Digital National Service Desk" });
+        expect(serviceDeskLink).toHaveAttribute("href", "https://digital.nhs.uk/about-nhs-digital/contact-us");
+        expect(serviceDeskLink).toHaveAttribute("target", "_blank");
     });
 
     it("displays the error message if there is one", () => {
