@@ -134,6 +134,14 @@ function tf_init {
     -backend-config ${ENVIRONMENT}.s3.tfbackend
 }
 
+function tf_init_virus_scanner {
+  check_env
+  cd virusScanner/terraform
+
+  terraform init \
+    -backend-config ${ENVIRONMENT}.s3.tfbackend
+}
+
 function confirm_current_role {
   sts=$(aws sts get-caller-identity)
   if [[ $? -eq 254 ]]; then
@@ -327,6 +335,15 @@ _javascript-dependency-scan)
   ;;
 javascript-dependency-scan)
   dojo -c Dojofile-node "./tasks _javascript-dependency-scan"
+  ;;
+virus-scanner-tf-plan)
+  tf_init_virus_scanner
+  terraform plan -var-file="${ENVIRONMENT}.tfvars"\
+  -out=virus-scanner-tfplan
+  ;;
+virus-scanner-tf-apply)
+  cd virusScanner/terraform
+  terraform apply virus-scanner-tfplan
   ;;
 *)
   echo "make $@"

@@ -16,6 +16,7 @@ example: *tfplan*
 terraform.rc
 /terraform/tfplan
 /terraform/.cache
+/virusScanner/terraform/virus-scanner-tfplan
 
 ### Dependencies
 node_modules
@@ -127,3 +128,5 @@ PDS_FHIR_AUTH_KEY.*
 
 # Misc
 .DS_Store
+
+
