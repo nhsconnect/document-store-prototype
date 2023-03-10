@@ -150,26 +150,29 @@ resource "aws_vpc" "virus_scanning_vpc" {
   tags = {
     Name = "Virus Scanning Default VPC"
   }
+  count = var.cloud_only_service_instances
 }
 
 resource "aws_subnet" "virus_scanning_subnet1" {
   availability_zone = "eu-west-2a"
-  vpc_id = aws_vpc.virus_scanning_vpc.id
+  vpc_id = aws_vpc.virus_scanning_vpc[0].id
   cidr_block = "10.0.1.0/24"
 
   tags = {
     Name = "Subnet for eu-west-2a"
   }
+  count = var.cloud_only_service_instances
 }
 
 resource "aws_subnet" "virus_scanning_subnet2" {
   availability_zone = "eu-west-2b"
-  vpc_id = aws_vpc.virus_scanning_vpc.id
+  vpc_id = aws_vpc.virus_scanning_vpc[0].id
   cidr_block = "10.0.2.0/24"
 
   tags = {
     Name = "Subnet for eu-west-2b"
   }
+  count = var.cloud_only_service_instances
 }
 
 data "aws_ssm_parameter" "cloud_security_email" {

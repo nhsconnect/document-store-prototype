@@ -4,21 +4,21 @@
     "Parameters": {
         "VPC": {
             "Type": "AWS::EC2::VPC::Id",
-            "Default": "${aws_vpc.virus_scanning_vpc.id}",
+            "Default": "${aws_vpc.virus_scanning_vpc[0].id}",
             "Description": "The VPC in which to place the public facing Console",
             "MinLength": 1,
             "ConstraintDescription": "VPC is a mandatory input parameter. Select an existing VPC ID."
         },
         "SubnetA": {
             "Type": "AWS::EC2::Subnet::Id",
-            "Default": "${aws_subnet.virus_scanning_subnet1.id}",
+            "Default": "${aws_subnet.virus_scanning_subnet1[0].id}",
             "Description": "A subnet in your VPC in which the public facing Console can be placed. Ensure this subnet allows outbound internet traffic.",
             "MinLength": 1,
             "ConstraintDescription": "SubnetA is a mandatory input parameter. Select existing subnet from the selected VPC."
         },
         "SubnetB": {
             "Type": "AWS::EC2::Subnet::Id",
-            "Default": "${aws_subnet.virus_scanning_subnet2.id}",
+            "Default": "${aws_subnet.virus_scanning_subnet2[0].id}",
             "Description": "A subnet in your VPC in which the public facing Console can be placed. Ensure this subnet allows outbound internet traffic. **Subnet B must be different from Subnet A and should be in a different Availability Zones**",
             "MinLength": 1,
             "ConstraintDescription": "SubnetB is a mandatory input parameter. Select existing subnet from the selected VPC."
