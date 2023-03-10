@@ -5,6 +5,7 @@ import { useFeatureToggle } from "../../providers/ConfigurationProvider";
 
 export const HeaderContainer = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
+
     return (
         <Header transactional>
             <Header.Container>
