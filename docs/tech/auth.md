@@ -42,7 +42,7 @@ AWS Console.
 4. If they do, the user is able to access all protected pages in the ARF service. If they do not, the user is
    redirected off-site to the CIS2 login page.
 5. Once the user is successfully logged in to CIS2, they are redirected back to the configured
-   url (`/auth-callback`)
+   url (`/cis2-auth-callback`)
    . If there are any errors present (e.g. Cognito misconfiguration), the user will be redirected back to the landing
    page with an error message. In the absence of any errors, the user will be redirected to the home page, and will be
    able to access all protected pages in the ARF service.

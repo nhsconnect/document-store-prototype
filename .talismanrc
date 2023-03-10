@@ -69,6 +69,8 @@ fileignoreconfig:
   checksum: 532dac271245e70175b6f3554f102f3b7b5342b727b56dfa69fe52e27863500c
 - filename: authoriser/src/test/java/uk/nhs/digital/docstore/authoriser/OIDCTokenFetcherTest.java
   checksum: 805b97b3413161898d6c2d782e3d2cf9b169502ae1cf1d6520112dae420d8bca
+- filename: .env.example
+  checksum: 7885569c7da26aee8f525b1f383c6433c8f5ee471c3621eb1b37e308861f4551
 - filename: docs/images/local-dev-env-16022023.png
   checksum: e140d5428b4aa9336c0d463f92e174089980e442aa91770fdddec6f9f6cbcba2
 - filename: docs/tech/local-dev-env.md
@@ -92,7 +94,7 @@ fileignoreconfig:
 - filename: terraform/pre-prod.tfvars
   checksum: 5db57c15e7a0a9743ebd2548c0f87258a6b74477f5ebd96d60e894a80c3b79bc
 - filename: terraform/main.tf
-  checksum: 517f62331d7dbcee3d159c573c2b628325cb89c95b0b42862d21c8ccc7955a7c
+  checksum: abc0c5adbf59e1cfbaf893618de1d1d14de40c4cd8a02bff988828c9859156ff
 - filename: docs/diagrams/flow/path-to-prod.md
   checksum: 011fb55fff5554a7e8e7b23a0c34f319bf43be047abda0527e75b1873801ba5b
 - filename: terraform/.terraform.lock.hcl
@@ -155,8 +157,8 @@ fileignoreconfig:
   checksum: c95aa502d8f1d8c459547c043e430c90f80a11e406ca44079a3b3a58333d23c3
 - filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/DynamoDBSessionStore.java
   checksum: 3df6627c7979bcf16911cddcbf0ebf492bed6c380b67dc7003e5b3c371d4b908
-- filename: .env.example
-  checksum: eceb0d9cdda5d0faf5b2b36fa0ee6f2f483e7badc84b4f9835e1e8be0bd156f4
+- filename: ConsoleCloudFormationTemplate.json
+  checksum: e635efebc09f3ed4411363973bb0e9076f21019e20d7556ecaae7227b1ffef42
 version: ""
 scopeconfig:
   - scope: node

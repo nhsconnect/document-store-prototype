@@ -206,7 +206,7 @@ locals {
     OIDC_ISSUER_URL    = var.cognito_cis2_provider_oidc_issuer
     OIDC_AUTHORIZE_URL = var.cognito_cis2_provider_authorize_url
     OIDC_JWKS_URL      = var.cognito_cis2_provider_jwks_uri
-    OIDC_CALLBACK_URL  = var.cloud_only_service_instances > 0 ? "${local.amplify_base_url}/auth-callback" : var.cognito_cis2_client_callback_urls[0]
+    OIDC_CALLBACK_URL  = var.cloud_only_service_instances > 0 ? "${local.amplify_base_url}/cis2-auth-callback" : var.cognito_cis2_client_callback_urls[0]
     OIDC_CLIENT_ID     = var.cognito_cis2_provider_client_id
     OIDC_CLIENT_SECRET = var.cognito_cis2_provider_client_secret
     OIDC_TOKEN_URL     = var.cognito_cis2_provider_token_url
