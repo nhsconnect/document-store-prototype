@@ -1,6 +1,7 @@
 import React from "react";
 import { Header } from "nhsuk-react-components";
 import Authenticator from "../authenticator/Authenticator";
+import LogOutLink from "../authenticator/logOutLink/LogOutLink";
 import { useFeatureToggle } from "../../providers/ConfigurationProvider";
 
 export const HeaderContainer = () => {
@@ -11,7 +12,7 @@ export const HeaderContainer = () => {
             <Header.Container>
                 <Header.Logo href="/" />
                 <Header.ServiceName href="/">Inactive Patient Record Administration</Header.ServiceName>
-                <Header.Content>{isOIDCAuthActive ? <Authenticator.LogOut /> : <a href="/">Log Out</a>}</Header.Content>
+                <Header.Content>{isOIDCAuthActive ? <Authenticator.LogOut /> : <LogOutLink />}</Header.Content>
             </Header.Container>
         </Header>
     );
