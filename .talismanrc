@@ -158,7 +158,7 @@ fileignoreconfig:
 - filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/DynamoDBSessionStore.java
   checksum: 3df6627c7979bcf16911cddcbf0ebf492bed6c380b67dc7003e5b3c371d4b908
 - filename: virusScanner/terraform/.terraform.lock.hcl
-  checksum: e3be2f12b2eb41470542665f61b0b90bc846a31762bf6f9e2183cbdae2813400
+  checksum: 81bfabf6b1b48e5fc83c68e21e92058374ca2a993ad66dd189d3ae40516878b8
 - filename: virusScanner/terraform/dev.s3.tfbackend
   checksum: 32eca26937b39e31a7893af664d243dc89e3889d97752b0706cac8aa2126770b
 - filename: ConsoleCloudFormationTemplate.json
