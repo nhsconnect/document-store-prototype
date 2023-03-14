@@ -13,16 +13,12 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requests.TokenRequestEvent;
 
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
-
     private final OIDCClient OIDCClient;
 
     private Clock clock = Clock.systemUTC();
@@ -116,7 +112,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         return fieldName
                 + "="
                 + fieldContents
-                + "; SameSite=Strict; Secure; HttpOnly; Max-Age="
+                + "; SameSite=Strict; Secure; HttpOnly; Path=/; Max-Age="
                 + maxAge;
     }
 }
