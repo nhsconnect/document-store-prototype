@@ -1,12 +1,12 @@
 import React from "react";
-import HeaderContainer from "../headerContainer/HeaderContainer";
+import Header from "../header/Header";
 import "./layout.scss";
 import { Footer } from "nhsuk-react-components";
 
 const Layout = ({ children }) => {
     return (
         <>
-            <HeaderContainer />
+            <Header />
             <div
                 style={{
                     margin: `0 auto`,

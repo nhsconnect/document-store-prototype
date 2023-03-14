@@ -10,10 +10,9 @@ const AuthCallbackRouter = () => {
         const code = urlSearchParams.get("code");
         const state = urlSearchParams.get("state");
         const redirectUri = new URL(routes.HOME, window.location.href);
+        const tokenRequestUrl = `${baseAPIUrl}/Auth/TokenRequest?code=${code}&state=${state}&redirect_uri=${redirectUri}`;
 
-        window.location.replace(
-            `${baseAPIUrl}/Auth/TokenRequest?code=${code}&state=${state}&redirect_uri=${redirectUri}`
-        );
+        window.location.replace(tokenRequestUrl);
     }, [baseAPIUrl]);
 
     // TODO: [PRMT-2779] Improve the UX of the loading status
