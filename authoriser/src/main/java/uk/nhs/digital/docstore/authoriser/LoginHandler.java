@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 public class LoginHandler extends BaseAuthRequestHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(LoginHandler.class);
+
     private final AuthenticationRequestFactory authenticationRequestFactory;
 
     @SuppressWarnings("unused")
@@ -24,26 +25,20 @@ public class LoginHandler extends BaseAuthRequestHandler
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
-            APIGatewayProxyRequestEvent input, Context context) {
-
+            APIGatewayProxyRequestEvent requestEvent, Context context) {
         var authRequest = authenticationRequestFactory.build();
-        LOGGER.debug("Redirecting user to " + authRequest.toURI().toString());
+        var authRequestUri = authRequest.toURI().toString();
+        var authRequestState = authRequest.getState().getValue();
+        var cookieState = "State=" + authRequestState + "; SameSite=Strict; Secure; HttpOnly";
 
-        var headers =
-                Map.of(
-                        "Location",
-                        authRequest.toURI().toString(),
-                        "Set-Cookie",
-                        "State="
-                                + authRequest.getState().getValue()
-                                + "; SameSite=Strict; Secure; HttpOnly");
+        LOGGER.debug("Redirecting user to " + authRequestUri);
 
-        var response = new APIGatewayProxyResponseEvent();
-        response.setStatusCode(SEE_OTHER_STATUS_CODE);
-        response.setHeaders(headers);
-        response.setIsBase64Encoded(false);
-        response.setBody("");
+        var headers = Map.of("Location", authRequestUri, "Set-Cookie", cookieState);
 
-        return response;
+        return new APIGatewayProxyResponseEvent()
+                .withStatusCode(SEE_OTHER_STATUS_CODE)
+                .withHeaders(headers)
+                .withIsBase64Encoded(false)
+                .withBody("");
     }
 }

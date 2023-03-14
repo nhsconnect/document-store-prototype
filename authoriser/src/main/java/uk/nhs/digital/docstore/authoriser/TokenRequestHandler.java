@@ -21,9 +21,11 @@ import uk.nhs.digital.docstore.authoriser.requests.TokenRequestEvent;
 
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
+    // TODO: [PRMT-2779] Add logging
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
 
     private final OIDCClient OIDCClient;
+
     private Clock clock = Clock.systemUTC();
 
     @SuppressWarnings("unused")
@@ -48,64 +50,66 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
     }
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(TokenRequestEvent input, Context context) {
-        var authCode = input.getAuthCode();
+    public APIGatewayProxyResponseEvent handleRequest(
+            TokenRequestEvent requestEvent, Context context) {
+        var authCode = requestEvent.getAuthCode();
+
         if (authCode.isEmpty()) {
             throw new RuntimeException("Auth code is empty");
         }
 
-        // possibly move to request event class
-        if (!input.hasMatchingStateValues()) {
-            var invalidStateResponse = new APIGatewayProxyResponseEvent();
-            invalidStateResponse.setStatusCode(400);
-            invalidStateResponse.setIsBase64Encoded(false);
-            invalidStateResponse.setBody("");
-            return invalidStateResponse;
+        if (!requestEvent.hasMatchingStateValues()) {
+            return new APIGatewayProxyResponseEvent()
+                    .withStatusCode(400)
+                    .withIsBase64Encoded(false)
+                    .withBody("");
         }
+
         Session session;
+
         try {
             session = OIDCClient.authoriseSession(authCode.get());
-        } catch (AuthorisationException e) {
-            throw new RuntimeException(e);
+        } catch (AuthorisationException exception) {
+            throw new RuntimeException(exception);
         }
 
         var headers = new HashMap<String, String>();
-        headers.put("Location", input.getRedirectUri().orElseThrow());
+        headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
 
-        // new secure cookie class with samesite, secure and httponly pre-set. implements tostring.
+        // New secure cookie class with samesite, secure and httponly pre-set. Implements tostring
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
 
-        var cookies =
-                List.of(
-                        cookieBuilder("State", input.getCookieState().orElseThrow().getValue(), 0L),
-                        cookieBuilder(
-                                "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds),
-                        cookieBuilder(
-                                "SessionId", session.getId().toString(), maxCookieAgeInSeconds));
+        var stateCookie =
+                cookieBuilder("State", requestEvent.getCookieState().orElseThrow().getValue(), 0L);
+        var subjectClaimCookie =
+                cookieBuilder("SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
+        var sessionIdCookie =
+                cookieBuilder("SessionId", session.getId().toString(), maxCookieAgeInSeconds);
+
+        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
-        var response = new APIGatewayProxyResponseEvent();
-        response.setIsBase64Encoded(false);
-        response.setStatusCode(SEE_OTHER_STATUS_CODE);
-        response.setHeaders(headers);
-        response.setBody("");
-        response.setMultiValueHeaders(multiValueHeaders);
-
-        return response;
+        return new APIGatewayProxyResponseEvent()
+                .withIsBase64Encoded(false)
+                .withStatusCode(SEE_OTHER_STATUS_CODE)
+                .withHeaders(headers)
+                .withBody("")
+                .withMultiValueHeaders(multiValueHeaders);
     }
 
     private static IDTokenValidator makeIDTokenValidator() {
         var clientInfo = getClientInformation();
         var providerMetadata = getProviderMetadata();
+
         try {
             return new IDTokenValidator(
                     providerMetadata.getIssuer(),
                     clientInfo.getID(),
                     JWSAlgorithm.RS256,
                     providerMetadata.getJWKSetURI().toURL());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+        } catch (MalformedURLException exception) {
+            throw new RuntimeException(exception);
         }
     }
 

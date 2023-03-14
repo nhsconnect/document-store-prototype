@@ -26,10 +26,10 @@ public class LogoutHandler extends BaseAuthRequestHandler
     }
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(LogoutRequestEvent input, Context context) {
-        var sessionId = input.getSessionId();
-        var subject = input.getSubject();
-
+    public APIGatewayProxyResponseEvent handleRequest(
+            LogoutRequestEvent requestEvent, Context context) {
+        var sessionId = requestEvent.getSessionId();
+        var subject = requestEvent.getSubject();
         var multiValueHeaders = new HashMap<String, List<String>>();
 
         if (sessionId.isPresent() && subject.isPresent()) {
@@ -37,29 +37,28 @@ public class LogoutHandler extends BaseAuthRequestHandler
 
             if (session.isPresent()) {
                 LOGGER.debug("Deleting session " + sessionId);
+
                 sessionStore.delete(session.get());
+
                 LOGGER.debug("Successfully deleted session " + sessionId);
             }
 
-            multiValueHeaders.put(
-                    "Set-Cookie",
-                    List.of(
-                            "SessionId=" + sessionId.get() + "; Path=/; Max-Age=0",
-                            "Subject=" + subject.get().getValue() + "; Path=/; Max-Age=0"));
+            var sessionIdCookie = "SessionId=" + sessionId.get() + "; Path=/; Max-Age=0";
+            var subjectCookie = "Subject=" + subject.get().getValue() + "; Path=/; Max-Age=0";
+
+            multiValueHeaders.put("Set-Cookie", List.of(sessionIdCookie, subjectCookie));
         }
 
         var headers = new HashMap<String, String>();
-        headers.put("Location", input.getRedirectUri().orElseThrow());
+        headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
 
         LOGGER.debug("Redirecting to " + headers.get("Location"));
 
-        var response = new APIGatewayProxyResponseEvent();
-        response.setIsBase64Encoded(false);
-        response.setStatusCode(SEE_OTHER_STATUS_CODE);
-        response.setHeaders(headers);
-        response.setMultiValueHeaders(multiValueHeaders);
-        response.setBody("");
-
-        return response;
+        return new APIGatewayProxyResponseEvent()
+                .withIsBase64Encoded(false)
+                .withStatusCode(SEE_OTHER_STATUS_CODE)
+                .withHeaders(headers)
+                .withMultiValueHeaders(multiValueHeaders)
+                .withBody("");
     }
 }

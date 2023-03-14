@@ -9,17 +9,21 @@ public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
 
     public Optional<State> getCookieState() {
         var headers = getHeaders();
+
         if (headers == null || headers.get("cookie") == null) {
             return Optional.empty();
         }
+
         var cookiesString = headers.get("cookie");
         var cookies = new HashMap<String, String>();
+
         Arrays.stream(cookiesString.split(";"))
                 .forEach(
                         cookieString -> {
                             var keyValueTuple = cookieString.split("=");
                             cookies.put(keyValueTuple[0].trim(), keyValueTuple[1].trim());
                         });
+
         return Optional.ofNullable(cookies.get("State")).map(State::new);
     }
 
@@ -43,6 +47,7 @@ public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
     public boolean hasMatchingStateValues() {
         var queryParameterState = getQueryParameterState();
         var cookieState = getCookieState();
+
         return queryParameterState.isPresent()
                 && cookieState.isPresent()
                 && queryParameterState.get().equals(cookieState.get());
