@@ -8,11 +8,11 @@ public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
     private Optional<String> getCookie(String cookieName) {
         var headers = getHeaders();
 
-        if (headers == null || headers.get("Cookie") == null || headers.get("Cookie").isEmpty()) {
+        if (headers == null || headers.get("cookie") == null || headers.get("cookie").isEmpty()) {
             return Optional.empty();
         }
 
-        String[] cookiesArr = headers.get("Cookie").split(";");
+        String[] cookiesArr = headers.get("cookie").split(";");
 
         Map<String, String> cookiesMap = new HashMap<>();
         String[] cookieSplits;
@@ -30,7 +30,7 @@ public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
     }
 
     public Optional<Subject> getSubject() {
-        return getCookie("Subject").map(Subject::new);
+        return getCookie("SubjectClaim").map(Subject::new);
     }
 
     public Optional<String> getRedirectUri() {

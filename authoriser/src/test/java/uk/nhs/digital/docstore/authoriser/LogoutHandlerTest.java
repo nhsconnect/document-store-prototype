@@ -28,7 +28,7 @@ public class LogoutHandlerTest {
 
         var request = new LogoutRequestEvent();
         request.setHeaders(
-                Map.of("Cookie", "SessionId=" + sessionID + ";Subject=" + subject.getValue()));
+                Map.of("cookie", "SessionId=" + sessionID + ";SubjectClaim=" + subject.getValue()));
 
         String redirectUrl = "some-url";
         request.setQueryStringParameters(Map.of("redirect_uri", redirectUrl));
@@ -59,7 +59,7 @@ public class LogoutHandlerTest {
 
         var request = new LogoutRequestEvent();
         request.setHeaders(
-                Map.of("Cookie", "SessionId=" + sessionID + ";Subject=" + subject.getValue()));
+                Map.of("cookie", "SessionId=" + sessionID + ";SubjectClaim=" + subject.getValue()));
 
         String redirectUrl = "some-url";
         request.setQueryStringParameters(Map.of("redirect_uri", redirectUrl));
