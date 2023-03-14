@@ -6,3 +6,9 @@ variable "region" {
 variable "environment" {
   type = string
 }
+
+variable "black_hole_address" {
+  type = string
+  default = "198.51.100.0/24"
+  description = "using reserved address that does not lead anywhere to make sure CloudStorageSecurity console is not available"
+}
