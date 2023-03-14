@@ -15,7 +15,6 @@ const AuthCallbackRouter = () => {
         window.location.replace(tokenRequestUrl);
     }, [baseAPIUrl]);
 
-    // TODO: [PRMT-2779] Improve the UX of the loading status
     return "Loading...";
 };
 

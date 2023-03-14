@@ -21,7 +21,6 @@ import uk.nhs.digital.docstore.authoriser.requests.TokenRequestEvent;
 
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
-    // TODO: [PRMT-2779] Add logging
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
 
     private final OIDCClient OIDCClient;
