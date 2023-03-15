@@ -21,16 +21,22 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
       "kms:Decrypt"
     ]
     principals {
-      identifiers = ["arn:aws:iam::${var.account_id}:role/CloudStorageSecAgentRole-a6ldvyb"]
-      type        = "aws"
+      identifiers = [var.cloud_storage_security_agent_role_arn]
+      type        = "AWS"
     }
+    resources = [aws_kms_key.document_store_encryption_key.arn]
   }
+}
+
+resource "aws_kms_alias" "document_store_encryption_key_alias" {
+  name = "document-store-bucket-encryption-key"
+  target_key_id = aws_kms_key.document_store_encryption_key.id
 }
 
 resource "aws_kms_key" "document_store_encryption_key" {
   description         = "Encryption key for document store so the virus scanner can read files inside"
   enable_key_rotation = true
-  policy              = ""
+  policy              = data.aws_iam_policy_document.document_encryption_key_policy.json
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "document_store_encryption" {
