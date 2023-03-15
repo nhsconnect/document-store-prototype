@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
 }
 
 resource "aws_kms_alias" "document_store_encryption_key_alias" {
-  name = "document-store-bucket-encryption-key"
+  name = "alias/document-store-bucket-encryption-key"
   target_key_id = aws_kms_key.document_store_encryption_key.id
 }
 
