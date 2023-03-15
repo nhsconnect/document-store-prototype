@@ -2,8 +2,9 @@ import React from "react";
 import { Header as HeaderComponent } from "nhsuk-react-components";
 import { useFeatureToggle } from "../../providers/ConfigurationProvider";
 import { CookiesProvider } from "react-cookie";
-import LogoutLink from "../authenticator/logoutLink/LogoutLink";
+import NavLinks from "../authenticator/navLinks/NavLinks";
 import Authenticator from "../authenticator/Authenticator";
+import routes from "../../enums/routes";
 
 const Header = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
@@ -11,17 +12,17 @@ const Header = () => {
     return (
         <HeaderComponent transactional>
             <HeaderComponent.Container>
-                <HeaderComponent.Logo href="/" />
-                <HeaderComponent.ServiceName href="/">
+                <HeaderComponent.Logo href={routes.ROOT} />
+                <HeaderComponent.ServiceName href={routes.ROOT}>
                     Inactive Patient Record Administration
                 </HeaderComponent.ServiceName>
             </HeaderComponent.Container>
             <HeaderComponent.Nav>
                 {isOIDCAuthActive ? (
-                    <Authenticator.LogOut />
+                    <Authenticator.NavLinks />
                 ) : (
                     <CookiesProvider>
-                        <LogoutLink />
+                        <NavLinks />
                     </CookiesProvider>
                 )}
             </HeaderComponent.Nav>

@@ -23,7 +23,7 @@ const Protected = ({ children }) => {
     return <>{isAuthenticated && children}</>;
 };
 
-const LogOut = () => {
+const NavLinks = () => {
     const { isAuthenticated, removeUser } = useAuth();
     const navigate = useNavigate();
 
@@ -35,12 +35,15 @@ const LogOut = () => {
     };
 
     return isAuthenticated ? (
-        <Header.NavItem href={routes.ROOT} onClick={logout}>
-            Log Out
-        </Header.NavItem>
+        <>
+            <Header.NavItem href={routes.HOME}>Home</Header.NavItem>
+            <Header.NavItem href={routes.ROOT} onClick={logout}>
+                Log Out
+            </Header.NavItem>
+        </>
     ) : null;
 };
 
-const Authenticator = { Errors, Protected, LogOut };
+const Authenticator = { Errors, Protected, NavLinks };
 
 export default Authenticator;

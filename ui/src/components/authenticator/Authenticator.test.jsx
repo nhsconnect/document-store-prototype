@@ -168,26 +168,43 @@ describe("Authenticator", () => {
         });
     });
 
-    it("removes the user from storage and redirects to the homepage when the logout button is clicked", () => {
-        const removeUserFunction = jest.fn();
+    describe("NavLinks", () => {
+        it("renders home and logout link when authenticated", () => {
+            useAuth.mockReturnValue({ isAuthenticated: true });
 
-        useAuth.mockReturnValue({ isAuthenticated: true, removeUser: removeUserFunction });
+            renderWithRouter(<Authenticator.NavLinks />);
 
-        render(
-            <MemoryRouter>
-                <Authenticator.LogOut />
-            </MemoryRouter>
-        );
+            expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", routes.HOME);
+            expect(screen.getByRole("link", { name: "Log Out" })).toHaveAttribute("href", routes.ROOT);
+        });
 
-        const logOutLink = screen.getByRole("link", { name: "Log Out" });
-        expect(logOutLink).toHaveAttribute("href", routes.ROOT);
+        it("does not render home and logout link when unauthenticated", () => {
+            useAuth.mockReturnValue({ isAuthenticated: false });
 
-        userEvent.click(logOutLink);
+            renderWithRouter(<Authenticator.NavLinks />);
 
-        expect(removeUserFunction).toHaveBeenCalled();
+            expect(screen.queryByRole("link", { name: "Home" })).not.toBeInTheDocument();
+            expect(screen.queryByRole("link", { name: "Log Out" })).not.toBeInTheDocument();
+        });
+
+        it("removes user when logout link is clicked", () => {
+            const removeUserMock = jest.fn();
+
+            useAuth.mockReturnValue({ isAuthenticated: true, removeUser: removeUserMock });
+
+            renderWithRouter(<Authenticator.NavLinks />);
+
+            userEvent.click(screen.getByRole("link", { name: "Log Out" }));
+
+            expect(removeUserMock).toHaveBeenCalled();
+        });
     });
 });
 
-async function expectNever(callable) {
+const expectNever = async (callable) => {
     await expect(() => waitFor(callable)).rejects.toEqual(expect.anything());
-}
+};
+
+const renderWithRouter = (component) => {
+    render(<MemoryRouter>{component}</MemoryRouter>);
+};
