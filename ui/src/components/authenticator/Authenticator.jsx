@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Header } from "nhsuk-react-components";
 import { useAuth } from "react-oidc-context";
 import ServiceError from "../serviceError/ServiceError";
+import routes from "../../enums/routes";
+import { useNavigate } from "react-router";
 
 const Errors = () => {
     const { error } = useAuth();
@@ -23,13 +25,19 @@ const Protected = ({ children }) => {
 
 const LogOut = () => {
     const { isAuthenticated, removeUser } = useAuth();
+    const navigate = useNavigate();
 
-    const linkStyle = { color: "#FFFFFF", position: "absolute", right: 0, top: 0, minWidth: 150 };
+    const logout = async (event) => {
+        event.preventDefault();
+
+        navigate(routes.ROOT);
+        await removeUser();
+    };
 
     return isAuthenticated ? (
-        <Link to="/" onClick={() => removeUser()} style={linkStyle}>
+        <Header.NavItem href={routes.ROOT} onClick={logout}>
             Log Out
-        </Link>
+        </Header.NavItem>
     ) : null;
 };
 
