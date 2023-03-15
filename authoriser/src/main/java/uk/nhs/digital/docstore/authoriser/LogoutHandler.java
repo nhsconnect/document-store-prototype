@@ -43,10 +43,14 @@ public class LogoutHandler extends BaseAuthRequestHandler
                 LOGGER.debug("Successfully deleted session " + sessionId);
             }
 
-            var sessionIdCookie = "SessionId=" + sessionId.get() + "; Path=/; Max-Age=0";
-            var subjectCookie = "Subject=" + subject.get().getValue() + "; Path=/; Max-Age=0";
+            var subjectClaimCookie =
+                    httpOnlyCookieBuilder("SubjectClaim", subject.get().getValue(), 0L);
+            var sessionIdCookie =
+                    httpOnlyCookieBuilder("SessionId", sessionId.get().toString(), 0L);
+            var loggedInCookie = cookieBuilder("LoggedIn", "", 0L);
 
-            multiValueHeaders.put("Set-Cookie", List.of(sessionIdCookie, subjectCookie));
+            multiValueHeaders.put(
+                    "Set-Cookie", List.of(sessionIdCookie, subjectClaimCookie, loggedInCookie));
         }
 
         var headers = new HashMap<String, String>();

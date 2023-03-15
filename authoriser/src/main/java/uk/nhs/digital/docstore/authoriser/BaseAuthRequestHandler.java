@@ -65,4 +65,18 @@ public class BaseAuthRequestHandler {
         }
         return providerMetadata;
     }
+
+    protected static String httpOnlyCookieBuilder(
+            String fieldName, String fieldContents, Long maxAgeInSeconds) {
+        return cookieBuilder(fieldName, fieldContents, maxAgeInSeconds) + "; HttpOnly";
+    }
+
+    protected static String cookieBuilder(
+            String fieldName, String fieldContents, Long maxAgeInSeconds) {
+        return fieldName
+                + "="
+                + fieldContents
+                + "; SameSite=Strict; Secure; Path=/; Max-Age="
+                + maxAgeInSeconds;
+    }
 }

@@ -76,13 +76,17 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
 
         var stateCookie =
-                cookieBuilder("State", requestEvent.getCookieState().orElseThrow().getValue(), 0L);
+                httpOnlyCookieBuilder(
+                        "State", requestEvent.getCookieState().orElseThrow().getValue(), 0L);
         var subjectClaimCookie =
-                cookieBuilder("SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
+                httpOnlyCookieBuilder(
+                        "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
         var sessionIdCookie =
-                cookieBuilder("SessionId", session.getId().toString(), maxCookieAgeInSeconds);
+                httpOnlyCookieBuilder(
+                        "SessionId", session.getId().toString(), maxCookieAgeInSeconds);
+        var loggedInCookie = cookieBuilder("LoggedIn", "True", maxCookieAgeInSeconds);
 
-        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie);
+        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie, loggedInCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
         return new APIGatewayProxyResponseEvent()
@@ -106,13 +110,5 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         } catch (MalformedURLException exception) {
             throw new RuntimeException(exception);
         }
-    }
-
-    private static String cookieBuilder(String fieldName, String fieldContents, Long maxAge) {
-        return fieldName
-                + "="
-                + fieldContents
-                + "; SameSite=Strict; Secure; HttpOnly; Path=/; Max-Age="
-                + maxAge;
     }
 }

@@ -29,8 +29,7 @@ public class LoginHandler extends BaseAuthRequestHandler
         var authRequest = authenticationRequestFactory.build();
         var authRequestUri = authRequest.toURI().toString();
         var authRequestState = authRequest.getState().getValue();
-        var cookieState =
-                "State=" + authRequestState + "; SameSite=Strict; Secure; Path=/; HttpOnly";
+        var cookieState = httpOnlyCookieBuilder("State", authRequestState, 300L);
 
         LOGGER.debug("Redirecting user to " + authRequestUri);
 

@@ -56,18 +56,24 @@ class TokenRequestHandlerTest {
                 .contains(
                         "State="
                                 + state
-                                + "; SameSite=Strict; Secure; HttpOnly; Path=/; Max-Age=0");
+                                + "; SameSite=Strict; Secure; Path=/; Max-Age=0; HttpOnly");
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains(
                         "SubjectClaim="
                                 + session.getOIDCSubject()
-                                + "; SameSite=Strict; Secure; HttpOnly; Path=/; Max-Age="
-                                + maxCookieAgeInSeconds);
+                                + "; SameSite=Strict; Secure; Path=/; Max-Age="
+                                + maxCookieAgeInSeconds
+                                + "; HttpOnly");
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains(
                         "SessionId="
                                 + session.getId()
-                                + "; SameSite=Strict; Secure; HttpOnly; Path=/; Max-Age="
+                                + "; SameSite=Strict; Secure; Path=/; Max-Age="
+                                + maxCookieAgeInSeconds
+                                + "; HttpOnly");
+        assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
+                .contains(
+                        "LoggedIn=True; SameSite=Strict; Secure; Path=/; Max-Age="
                                 + maxCookieAgeInSeconds);
     }
 

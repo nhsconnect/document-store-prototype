@@ -41,6 +41,6 @@ public class LoginHandlerTest {
                 .isEqualTo(
                         "State="
                                 + state.getValue()
-                                + "; SameSite=Strict; Secure; Path=/; HttpOnly");
+                                + "; SameSite=Strict; Secure; Path=/; Max-Age=300; HttpOnly");
     }
 }
