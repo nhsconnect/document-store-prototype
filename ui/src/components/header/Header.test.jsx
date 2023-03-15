@@ -4,6 +4,7 @@ import routes from "../../enums/routes";
 import { useFeatureToggle } from "../../providers/ConfigurationProvider";
 import { useAuth } from "react-oidc-context";
 import { MemoryRouter } from "react-router";
+import { Cookies } from "react-cookie";
 
 jest.mock("../../providers/ConfigurationProvider");
 jest.mock("react-oidc-context");
@@ -50,6 +51,9 @@ describe("Header", () => {
     });
 
     it("renders the session log out link when OIDC_AUTHENTICATION is toggled off", () => {
+        const cookies = new Cookies();
+        cookies.set("LoggedIn", "some-cookie;");
+
         useFeatureToggle.mockReturnValue(false);
 
         render(<Header />);
