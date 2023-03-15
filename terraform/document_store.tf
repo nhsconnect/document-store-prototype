@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
       identifiers = [var.cloud_storage_security_agent_role_arn]
       type        = "AWS"
     }
-    resources = [aws_kms_key.document_store_encryption_key.arn]
+    resources = ["*"]
   }
 }
 
