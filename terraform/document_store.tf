@@ -18,7 +18,9 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
   statement {
     effect  = "Allow"
     actions = [
-      "kms:Decrypt"
+      "kms:Decrypt",
+      "kms:Encrypt",
+      "kms:GenerateDataKey"
     ]
     principals {
       identifiers = [var.cloud_storage_security_agent_role_arn]
