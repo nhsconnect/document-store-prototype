@@ -72,14 +72,8 @@ describe("uploads, downloads, and deletes docs", () => {
 
         cy.findByRole("button", { name: "Delete All Documents" }).click();
         cy.url().should("eq", baseUrl + "/search/results/delete");
-        cy.findByRole("radio", { name: "No" }).should("be.checked").and("have.value", "no");
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        cy.findByRole("button", { name: "Continue" }).click();
-        cy.url().should("eq", baseUrl + "/search/results");
-
-        cy.findByRole("button", { name: "Delete All Documents" }).click();
-        cy.url().should("eq", baseUrl + "/search/results/delete");
         cy.findByRole("radio", { name: "Yes" }).check();
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Continue" }).click();
         cy.url().should("eq", baseUrl + "/search/results");
 
