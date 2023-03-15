@@ -14,12 +14,31 @@ resource "aws_s3_bucket_acl" "document_store_acl" {
   acl    = "private"
 }
 
+data "aws_iam_policy_document" "document_encryption_key_policy" {
+  statement {
+    effect  = "Allow"
+    actions = [
+      "kms:Decrypt"
+    ]
+    principals {
+      identifiers = ["arn:aws:iam::${var.account_id}:role/CloudStorageSecAgentRole-a6ldvyb"]
+      type        = "aws"
+    }
+  }
+}
+
+resource "aws_kms_key" "document_store_encryption_key" {
+  description         = "Encryption key for document store so the virus scanner can read files inside"
+  enable_key_rotation = true
+  policy              = ""
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "document_store_encryption" {
   bucket = aws_s3_bucket.document_store.id
   rule {
     bucket_key_enabled = true
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm = "aws:kms"
     }
   }
 }
@@ -84,14 +103,18 @@ resource "aws_s3_bucket_cors_configuration" "document_store_bucket_cors_config" 
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["PUT", "DELETE"]
-    allowed_origins = [var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : "*"]
+    allowed_origins = [
+      var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : "*"
+    ]
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
   }
 
   cors_rule {
     allowed_methods = ["GET"]
-    allowed_origins = [var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : "*"]
+    allowed_origins = [
+      var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : "*"
+    ]
   }
 }
 

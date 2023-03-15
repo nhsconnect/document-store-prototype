@@ -85,6 +85,7 @@ resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
     OnlyScanWhenQueueThresholdExceeded = "Yes"
     MinRunningAgents = 0
     NumMessagesInQueueScalingThreshold = 1
+    AllowAccessToAllKmsKeys = "No"
   }
   template_url = "https://css-cft.s3.amazonaws.com/ConsoleCloudFormationTemplate.yaml"
   capabilities = ["CAPABILITY_NAMED_IAM"]
