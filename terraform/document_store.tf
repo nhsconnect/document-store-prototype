@@ -17,15 +17,39 @@ resource "aws_s3_bucket_acl" "document_store_acl" {
 data "aws_iam_policy_document" "document_encryption_key_policy" {
   statement {
     effect  = "Allow"
+    principals {
+      identifiers = [var.cloud_storage_security_agent_role_arn]
+      type        = "AWS"
+    }
     actions = [
       "kms:Decrypt",
       "kms:Encrypt",
       "kms:GenerateDataKey"
     ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "Allow administration of the key"
+    effect = "Allow"
     principals {
-      identifiers = [var.cloud_storage_security_agent_role_arn]
+      identifiers = [var.account_id]
       type        = "AWS"
     }
+    actions = [
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion"
+    ]
     resources = ["*"]
   }
 }
