@@ -55,7 +55,7 @@ pipelines:
           id: git-path
         options:
           url: https://github.com/nhsconnect/document-store-prototype.git
-          path: virusScanner
+          path: virusScanner, gocd/virus.scanner.build.gocd.yaml
           branch: main
         blacklist:
           - .git*
