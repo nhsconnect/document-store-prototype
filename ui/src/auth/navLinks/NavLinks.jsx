@@ -1,5 +1,5 @@
-import { useBaseAPIUrl } from "../../../providers/ConfigurationProvider";
-import routes from "../../../enums/routes";
+import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
+import routes from "../../enums/routes";
 import { useCookies } from "react-cookie";
 import { Header } from "nhsuk-react-components";
 

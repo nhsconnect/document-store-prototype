@@ -2,8 +2,8 @@ import React from "react";
 import { Header as HeaderComponent } from "nhsuk-react-components";
 import { useFeatureToggle } from "../../providers/ConfigurationProvider";
 import { CookiesProvider } from "react-cookie";
-import NavLinks from "../authenticator/navLinks/NavLinks";
-import Authenticator from "../authenticator/Authenticator";
+import NavLinks from "../../auth/navLinks/NavLinks";
+import Authenticator from "../../auth/authenticator/Authenticator";
 import routes from "../../enums/routes";
 
 const Header = () => {

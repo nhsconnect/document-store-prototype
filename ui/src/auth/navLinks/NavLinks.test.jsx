@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import NavLinks from "./NavLinks";
-import { useBaseAPIUrl } from "../../../providers/ConfigurationProvider";
-import routes from "../../../enums/routes";
+import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
+import routes from "../../enums/routes";
 import { useCookies } from "react-cookie";
 
-jest.mock("../../../providers/ConfigurationProvider");
+jest.mock("../../providers/ConfigurationProvider");
 jest.mock("react-cookie");
 
 describe("NavLinks", () => {

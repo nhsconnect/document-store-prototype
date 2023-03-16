@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Header } from "nhsuk-react-components";
 import { useAuth } from "react-oidc-context";
-import ServiceError from "../serviceError/ServiceError";
+import ServiceError from "../../components/serviceError/ServiceError";
 import routes from "../../enums/routes";
 import { useNavigate } from "react-router";
 
