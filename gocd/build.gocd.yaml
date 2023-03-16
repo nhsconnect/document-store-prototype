@@ -119,6 +119,7 @@ pipelines:
           - .idea/**/*.*
           - docs/**/*.*
           - gradle/**/*.*
+          - virusScanner/**/*.*
     stages:
       - build:
           environment_variables:
@@ -185,6 +186,7 @@ pipelines:
           - .idea/**/*.*
           - docs/**/*.*
           - gradle/**/*.*
+          - virusScanner/**/*.*
       dev_env:
         pipeline: access-request-fulfilment.dev
         stage: e2e_tests
@@ -241,6 +243,7 @@ pipelines:
           - .idea/**/*.*
           - docs/**/*.*
           - gradle/**/*.*
+          - virusScanner/**/*.*
       pre_prod_env:
         pipeline: access-request-fulfilment.pre-prod
         stage: e2e_tests
