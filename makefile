@@ -14,6 +14,10 @@ format-ui: ## Format /ui files
 format-app: ## Format /app files
 	./gradlew :app:spotlessApply
 
+.PHONY: format-virus-scanner
+format-virus-scanner: ## Format /virus scanner files
+	./gradlew :virusScanner:spotlessApply
+
 .PHONY: format-auth
 format-auth: ## Format /authoriser files
 	./gradlew :authoriser:spotlessApply
