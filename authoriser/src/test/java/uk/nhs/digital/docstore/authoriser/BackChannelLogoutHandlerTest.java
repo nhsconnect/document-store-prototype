@@ -1,5 +1,8 @@
 package uk.nhs.digital.docstore.authoriser;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -10,31 +13,25 @@ import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.openid.connect.sdk.validators.LogoutTokenValidator;
 import java.time.Instant;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.builders.LogoutTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 
 class BackChannelLogoutHandlerTest {
-
     private final SignedJWTFactory jwtFactory = new SignedJWTFactory();
 
     @Test
     public void destroysAllSessionsForASubjectWhenTheLogoutTokenIsValid() throws Exception {
         var jwtClaims = LogoutTokenClaimsSetBuilder.build();
-        var validator =
+        var tokenValidator =
                 new LogoutTokenValidator(
                         new Issuer(jwtClaims.getIssuer()),
                         new ClientID(jwtClaims.getAudience().get(0)),
                         JWSAlgorithm.RS256,
                         new JWKSet(jwtFactory.getJWK()));
         var logoutToken = jwtFactory.createJWT(jwtClaims.toJWTClaimsSet());
-        var request = new APIGatewayProxyRequestEvent();
         var timeToExist = Instant.ofEpochSecond(10L);
-        request.setBody("logout_token=" + logoutToken.serialize());
-
         var sessionOne =
                 Session.create(
                         UUID.randomUUID(),
@@ -47,22 +44,21 @@ class BackChannelLogoutHandlerTest {
                         timeToExist,
                         jwtClaims.getSubject(),
                         jwtClaims.getSessionID());
-
         var sessionStore = new InMemorySessionStore();
+        var request =
+                new APIGatewayProxyRequestEvent()
+                        .withBody("logout_token=" + logoutToken.serialize());
+        var handler = new BackChannelLogoutHandler(tokenValidator, sessionStore);
+
         sessionStore.save(sessionOne);
         sessionStore.save(sessionTwo);
+        var response = handler.handleRequest(request, mock(Context.class));
 
-        var handler = new BackChannelLogoutHandler(validator, sessionStore);
-        var response = handler.handleRequest(request, Mockito.mock(Context.class));
-
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(200);
-        Assertions.assertThat(response.getIsBase64Encoded()).isFalse();
-        Assertions.assertThat(response.getBody()).isEqualTo("");
-
-        Assertions.assertThat(sessionStore.load(jwtClaims.getSubject(), sessionOne.getId()))
-                .isEmpty();
-        Assertions.assertThat(sessionStore.load(jwtClaims.getSubject(), sessionTwo.getId()))
-                .isEmpty();
+        assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getIsBase64Encoded()).isFalse();
+        assertThat(response.getBody()).isEqualTo("");
+        assertThat(sessionStore.load(jwtClaims.getSubject(), sessionOne.getId())).isEmpty();
+        assertThat(sessionStore.load(jwtClaims.getSubject(), sessionTwo.getId())).isEmpty();
     }
 
     @Test
@@ -73,14 +69,13 @@ class BackChannelLogoutHandlerTest {
                 new LogoutTokenValidator(
                         issuer, clientID, JWSAlgorithm.parse("NONE"), new JWKSet());
         var handler = new BackChannelLogoutHandler(validator, new InMemorySessionStore());
-
         var logoutToken = new PlainJWT(LogoutTokenClaimsSetBuilder.build().toJWTClaimsSet());
+        var request =
+                new APIGatewayProxyRequestEvent()
+                        .withBody("logout_token=" + logoutToken.serialize());
 
-        var request = new APIGatewayProxyRequestEvent();
-        request.setBody("logout_token=" + logoutToken.serialize());
+        var response = handler.handleRequest(request, mock(Context.class));
 
-        var response = handler.handleRequest(request, Mockito.mock(Context.class));
-
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(400);
+        assertThat(response.getStatusCode()).isEqualTo(400);
     }
 }

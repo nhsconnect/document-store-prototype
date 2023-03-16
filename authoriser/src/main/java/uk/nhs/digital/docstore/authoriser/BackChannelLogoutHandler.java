@@ -17,45 +17,46 @@ import java.text.ParseException;
 public class BackChannelLogoutHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final SessionStore sessionStore;
-    private final LogoutTokenValidator validator;
+    private final LogoutTokenValidator tokenValidator;
 
-    public BackChannelLogoutHandler(LogoutTokenValidator validator, SessionStore sessionStore) {
+    public BackChannelLogoutHandler(
+            LogoutTokenValidator tokenValidator, SessionStore sessionStore) {
         this.sessionStore = sessionStore;
-        this.validator = validator;
+        this.tokenValidator = tokenValidator;
     }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
-            APIGatewayProxyRequestEvent input, Context context) {
-        var parameters = URLUtils.parseParameters(input.getBody());
-        var rawToken = parameters.get("logout_token").get(0);
+            APIGatewayProxyRequestEvent requestEvent, Context context) {
+        var parameters = URLUtils.parseParameters(requestEvent.getBody());
+        var rawLogoutToken = parameters.get("logout_token").get(0);
 
-        JWT token;
+        JWT logoutToken;
+
         try {
-            token = JWTParser.parse(rawToken);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+            logoutToken = JWTParser.parse(rawLogoutToken);
+        } catch (ParseException exception) {
+            throw new RuntimeException(exception);
         }
 
         LogoutTokenClaimsSet claims;
+
         try {
-            claims = validator.validate(token);
-        } catch (BadJOSEException | JOSEException e) {
-            var invalidTokenResponse = new APIGatewayProxyResponseEvent();
-            invalidTokenResponse.setStatusCode(400);
-            invalidTokenResponse.setBody("");
-            invalidTokenResponse.setIsBase64Encoded(false);
-            return invalidTokenResponse;
+            claims = tokenValidator.validate(logoutToken);
+        } catch (BadJOSEException | JOSEException exception) {
+            return new APIGatewayProxyResponseEvent()
+                    .withStatusCode(400)
+                    .withBody("")
+                    .withIsBase64Encoded(false);
         }
 
-        // TODO: Enable filtering for single session of sessions query
         var sessions = sessionStore.queryByOIDCSubject(claims.getSubject());
+
         sessionStore.batchDelete(sessions);
 
-        var response = new APIGatewayProxyResponseEvent();
-        response.setStatusCode(200);
-        response.setIsBase64Encoded(false);
-        response.setBody("");
-        return response;
+        return new APIGatewayProxyResponseEvent()
+                .withStatusCode(200)
+                .withIsBase64Encoded(false)
+                .withBody("");
     }
 }
