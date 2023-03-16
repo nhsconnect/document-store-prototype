@@ -1,0 +1,149 @@
+format_version: 4
+common:
+  backend: &build_backend
+    artifacts:
+      - build:
+          source: virusScanner/build/libs
+          destination: jars
+      - test:
+          source: virusScanner/build/test-results
+          destination: test-reports
+    tasks:
+      - exec:
+          command: dojo
+          arguments:
+            - "./gradlew virusScanner:build"
+  plan_terraform: &plan_terraform
+    artifacts:
+      - build:
+          source: virusScanner/terraform/virus-scanner-tfplan
+          destination: virusScanner/terraform/
+    tasks:
+      - fetch:
+          stage: build
+          job: backend
+          source: jars
+      - exec:
+          command: dojo
+          arguments:
+            - ./tasks virus-scanner-tf-plan
+  deploy_terraform: &deploy_terraform
+    tasks:
+      - fetch:
+          stage: plan_terraform
+          job: plan
+          source: virusScanner/terraform/virus-scanner-tfplan
+          destination: virusScanner/terraform/
+          is_file: yes
+      - fetch:
+          stage: build
+          job: backend
+          source: jars
+      - exec:
+          command: dojo
+          arguments:
+            - ./tasks virus-scanner-tf-apply
+pipelines:
+  "virus-scanner.dev":
+    group: access-request-fulfilment
+    label_template: "${git[:8]}"
+    lock_behavior: "unlockWhenFinished"
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - .git*
+          - .idea/**/*.*
+          - docs/**/*.*
+          - gradle/**/*.*
+    stages:
+      - build:
+          environment_variables:
+            ENVIRONMENT: dev
+          clean_workspace: true
+          jobs:
+            backend: *build_backend
+      - plan_terraform:
+          environment_variables:
+            ENVIRONMENT: dev
+          clean_workspace: true
+          jobs:
+            plan: *plan_terraform
+      - deploy_terraform:
+          environment_variables:
+            ENVIRONMENT: dev
+          clean_workspace: true
+          jobs:
+            apply: *deploy_terraform
+  "virus-scanner.pre-prod":
+    group: access-request-fulfilment
+    label_template: "${git[:8]}"
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - .git*
+          - .idea/**/*.*
+          - docs/**/*.*
+          - gradle/**/*.*
+      dev_env:
+        pipeline: virus-scanner.dev
+        stage: deploy_terraform
+    stages:
+      - build:
+          environment_variables:
+            ENVIRONMENT: pre-prod
+          clean_workspace: true
+          jobs:
+            backend: *build_backend
+      - plan_terraform:
+          environment_variables:
+            ENVIRONMENT: pre-prod
+          clean_workspace: true
+          jobs:
+            plan: *plan_terraform
+      - deploy_terraform:
+          approval:
+            type: manual
+            allow_only_on_success: true
+          environment_variables:
+            ENVIRONMENT: pre-prod
+          clean_workspace: true
+          jobs:
+            apply: *deploy_terraform
+  "virus-scanner.prod":
+    group: access-request-fulfilment
+    label_template: "${git[:8]}"
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - .git*
+          - .idea/**/*.*
+          - docs/**/*.*
+          - gradle/**/*.*
+      pre_prod_env:
+        pipeline: virus-scanner.pre-prod
+        stage: deploy_terraform
+    stages:
+      - build:
+          environment_variables:
+            ENVIRONMENT: prod
+          clean_workspace: true
+          jobs:
+            backend: *build_backend
+      - plan_terraform:
+          environment_variables:
+            ENVIRONMENT: prod
+          clean_workspace: true
+          jobs:
+            plan: *plan_terraform
+      - deploy_terraform:
+          approval:
+            type: manual
+            allow_only_on_success: true
+          environment_variables:
+            ENVIRONMENT: prod
+          clean_workspace: true
+          jobs:
+            apply: *deploy_terraform
