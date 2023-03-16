@@ -50,7 +50,6 @@ pipelines:
     lock_behavior: "unlockWhenFinished"
     materials:
       virus_scanner:
-        type: configrepo
         plugin_configuration:
           id: git-path
         options:
@@ -85,7 +84,6 @@ pipelines:
     label_template: "${git[:8]}"
     materials:
       git:
-        type: configrepo
         blacklist:
           - .git*
           - .idea/**/*.*
@@ -121,7 +119,6 @@ pipelines:
     label_template: "${git[:8]}"
     materials:
       git:
-        type: configrepo
         blacklist:
           - .git*
           - .idea/**/*.*
