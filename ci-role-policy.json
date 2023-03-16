@@ -314,7 +314,8 @@
       "Sid": "AllowCloudFormation",
       "Effect": "Allow",
       "Action": [
-        "cloudformation:CreateStack"
+        "cloudformation:CreateStack",
+        "cloudformation:DescribeStacks"
       ],
       "Resource": "*"
     },
@@ -343,7 +344,8 @@
         "ec2:AssociateVpcCidrBlock",
         "ec2:DeleteTags",
         "ec2:DescribeNetworkInterfaces",
-        "ec2:DescribeNetworkInterfaceAttribute"
+        "ec2:DescribeNetworkInterfaceAttribute",
+        "ec2:DescribeInternetGateways"
       ],
       "Resource": "*"
     }
