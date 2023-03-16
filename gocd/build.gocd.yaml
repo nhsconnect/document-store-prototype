@@ -120,6 +120,7 @@ pipelines:
           - docs/**/*.*
           - gradle/**/*.*
           - virusScanner/**/*.*
+          - gocd/virus.scanner.build.gocd.yaml
     stages:
       - build:
           environment_variables:
@@ -187,6 +188,7 @@ pipelines:
           - docs/**/*.*
           - gradle/**/*.*
           - virusScanner/**/*.*
+          - gocd/virus.scanner.build.gocd.yaml
       dev_env:
         pipeline: access-request-fulfilment.dev
         stage: e2e_tests
@@ -244,6 +246,7 @@ pipelines:
           - docs/**/*.*
           - gradle/**/*.*
           - virusScanner/**/*.*
+          - gocd/virus.scanner.build.gocd.yaml
       pre_prod_env:
         pipeline: access-request-fulfilment.pre-prod
         stage: e2e_tests
