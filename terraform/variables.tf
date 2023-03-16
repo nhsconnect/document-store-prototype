@@ -150,4 +150,5 @@ variable "cognito_key_id" {
 
 variable "cloud_storage_security_agent_role_arn" {
   type = string
+  default = ""
 }
