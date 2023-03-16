@@ -337,13 +337,17 @@ javascript-dependency-scan)
   dojo -c Dojofile-node "./tasks _javascript-dependency-scan"
   ;;
 virus-scanner-tf-plan)
+  assume_ci_role
   tf_init_virus_scanner
   terraform plan -var-file="${ENVIRONMENT}.tfvars"\
   -out=virus-scanner-tfplan
+  clear_assumed_iam_role
   ;;
 virus-scanner-tf-apply)
+  assume_ci_role
   cd virusScanner/terraform
   terraform apply virus-scanner-tfplan
+  clear_assumed_iam_role
   ;;
 *)
   echo "make $@"
