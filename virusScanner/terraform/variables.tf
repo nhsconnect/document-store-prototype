@@ -15,5 +15,5 @@ variable "black_hole_address" {
 
 variable "lambda_jar_filename" {
   type    = string
-  default = "../virusScanner/build/libs/virusScanner.jar"
+  default = "../build/libs/virusScanner.jar"
 }
