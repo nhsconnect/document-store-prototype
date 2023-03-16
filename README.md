@@ -1,6 +1,9 @@
-# Document Store Prototype
+# Access Request Fulfilment (ARF) Service
 
-Proof of concept implementation for an interoperable service capable of storing patient and clinical documents.
+Enables the NHS to fulfil their role as data controller and enable access requests. This is an interoperable service
+that is capable of uploading, downloading, and deleting patient documents.
+
+[//]: # (TODO: Should we seperate the READMEs into one for the UI, one for the auth, and one for the backend service?)
 
 ## Prerequisites
 
@@ -10,56 +13,58 @@ Proof of concept implementation for an interoperable service capable of storing 
 - [colima](https://formulae.brew.sh/formula/colima)
 - [docker](https://formulae.brew.sh/formula/docker)
 - [docker-compose](https://formulae.brew.sh/formula/docker-compose)
-- [git-mob](https://www.npmjs.com/package/git-mob)
 - [AWS CLI](https://aws.amazon.com/cli/)
 - [nvm](https://formulae.brew.sh/formula/nvm)
 
 _Note: It is recommended to use [Homebrew](https://brew.sh/) to install most of these._
-Please refer to the troubleshooting section for known problems
 
 ## Running Locally
 
-It is possible to run the Document Store backend locally (excl. Cognito and CIS2). Auth through the UI will
-still require either Cognito to be set up in AWS, or CIS2 to be configured.
+[//]: # (TODO: Add details on how to configure auth)
+The ARF service can be run locally (excl. some AWS services and CIS2). The UI is run separately to the backend, see
+the [UI README](ui/README.md) for more details. Auth will require configuration too.
 
-### Running The Document Store
+### Running The Backend
 
-#### 1. Start colima (or any Docker provider)
+#### 1. Start Colima (Or Another Docker Provider)
 
-To start colima, run:
+To start Colima, run:
 
 ```bash
 colima start
 ```
 
-#### 2. Set Environment variables
+#### 2. Set Env Variables
 
-Create a .env file by copying the .env.example file and adding any missing values. This file is sourced to your shell environment so make sure it doesn't have
-any extra whitespace, comments etc. Secrets can be obtained from AWS Parameter Store.
+Create a `.env` file by duplicating [.env.example](.env.example) and adding any missing values. This file is sourced to
+your shell env so make sure it doesn't have any extra whitespace, comments etc. Secrets can be obtained from AWS
+Parameter Store.
 
 #### 3. Start LocalStack
 
 To start LocalStack run:
 
 ```bash
-./tasks start-localstack
+make start-localstack
 ```
 
-After this you should have a shell session open inside the default Dojo container, which has the AWS CLI, terraform CLI, and gradle installed on it.
+After this, you should have a shell session open inside the default Dojo container. This has the AWS CLI, Terraform CLI,
+and Gradle installed on it.
 
-**Warning: Do not close this window! That will stop LocalStack.**
+_Note: Do not close this window! That will stop LocalStack._
 
-#### 4 Build the app and deploy it to LocalStack.
+#### 4. Build The App & Deploy It To LocalStack
 
-First, you will need to copy `terraform/local._override.tf.example` to `terraform/local._override.tf`. Then:
+First, you will need to create a `terraform/local._override.tf` by
+duplicating [terraform/local._override.tf.example](terraform/local._override.tf.example). Then, within the Dojo
+container shell session, run:
 
 ```bash
-./tasks _deploy-to-localstack
+make build-and-deploy-to-localstack
 ```
 
-### Running The UI
-
-For info on the UI, visit the [UI README](ui/README.md).
+_Note: You do not need to create another `terraform/local._override.tf` after initial creation. However, you will need
+to run the command above whenever any backend or Terraform changes are made._
 
 ## Running Services On AWS
 
@@ -147,8 +152,10 @@ One may also follow log output as it happens by applying the `follow` flag to th
 
 ## Monitoring
 
-We have configured AWS CloudWatch to provide alarm notifications whenever one of a number of metrics exceeds its normal state.
-Currently, the only way to receive these notifications is by subscribing to an SNS topic using an email. You can subscribe
+We have configured AWS CloudWatch to provide alarm notifications whenever one of a number of metrics exceeds its normal
+state.
+Currently, the only way to receive these notifications is by subscribing to an SNS topic using an email. You can
+subscribe
 to the SNS topic once you have assumed an appropriate role using the AWS CLI. This is the command:
 
 ```bash
@@ -182,7 +189,10 @@ increasing the number of CPUs allocated to 4 and memory usage to 8GB.
 
 Make sure to check these during QA:
 
-- Use [WAVE Chrome extension](https://chrome.google.com/webstore/detail/wave-evaluation-tool/jbbplnpkjmmeebjpijfedlgcdilocofh)
-- Need to use a screen reader 
-- Check keyboard navigation 
+-
+
+Use [WAVE Chrome extension](https://chrome.google.com/webstore/detail/wave-evaluation-tool/jbbplnpkjmmeebjpijfedlgcdilocofh)
+
+- Need to use a screen reader
+- Check keyboard navigation
 - Try to use NHS components rather than our own styling
