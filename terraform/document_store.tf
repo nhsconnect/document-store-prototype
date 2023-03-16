@@ -30,26 +30,12 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
   }
 
   statement {
-    sid = "Allow administration of the key"
     effect = "Allow"
     principals {
       identifiers = [var.account_id]
       type        = "AWS"
     }
-    actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion"
-    ]
+    actions   = ["kms:*"]
     resources = ["*"]
   }
 }
