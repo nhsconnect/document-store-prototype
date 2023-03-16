@@ -17,6 +17,7 @@ import ConfigurationProvider, { useFeatureToggle } from "./providers/Configurati
 import SessionAuthCallbackRouter from "./auth/authCallbackRouters/SessionAuthCallbackRouter";
 import DocumentStoreProvider from "./providers/DocumentStoreProvider";
 import routes from "./enums/routes";
+import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
 
 const AppRoutes = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
@@ -34,6 +35,14 @@ const AppRoutes = () => {
         SEARCH_RESULTS_DELETE,
     } = routes;
 
+    const ProtectedAuthRoutes = ({ children }) => {
+        return isOIDCAuthActive ? (
+            <OidcAuthenticator.Protected>{children}</OidcAuthenticator.Protected>
+        ) : (
+            <ProtectedRoutes>{children}</ProtectedRoutes>
+        );
+    };
+
     return (
         <Routes>
             <Route element={<StartPage />} path={ROOT} />
@@ -43,17 +52,11 @@ const AppRoutes = () => {
             />
             <Route
                 element={
-                    isOIDCAuthActive ? (
-                        <OidcAuthenticator.Protected>
-                            <DocumentStoreProvider>
-                                <Outlet />
-                            </DocumentStoreProvider>
-                        </OidcAuthenticator.Protected>
-                    ) : (
+                    <ProtectedAuthRoutes>
                         <DocumentStoreProvider>
                             <Outlet />
                         </DocumentStoreProvider>
-                    )
+                    </ProtectedAuthRoutes>
                 }
             >
                 <Route path={HOME} element={<HomePage />} />

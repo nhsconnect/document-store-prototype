@@ -1,7 +1,6 @@
 import React from "react";
 import { Header as HeaderComponent } from "nhsuk-react-components";
 import { useFeatureToggle } from "../../providers/ConfigurationProvider";
-import { CookiesProvider } from "react-cookie";
 import NavLinks from "../../auth/navLinks/NavLinks";
 import OidcAuthenticator from "../../auth/oidcAuthenticator/OidcAuthenticator";
 import routes from "../../enums/routes";
@@ -18,13 +17,7 @@ const Header = () => {
                 </HeaderComponent.ServiceName>
             </HeaderComponent.Container>
             <HeaderComponent.Nav>
-                {isOIDCAuthActive ? (
-                    <OidcAuthenticator.NavLinks />
-                ) : (
-                    <CookiesProvider>
-                        <NavLinks />
-                    </CookiesProvider>
-                )}
+                {isOIDCAuthActive ? <OidcAuthenticator.NavLinks /> : <NavLinks />}
             </HeaderComponent.Nav>
         </HeaderComponent>
     );
