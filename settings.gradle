@@ -1,3 +1,4 @@
 rootProject.name = 'document-store-prototype'
 include('app')
 include('authoriser')
+include('virusScanner')

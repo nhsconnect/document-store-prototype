@@ -12,3 +12,8 @@ variable "black_hole_address" {
   default = "198.51.100.0/24"
   description = "using reserved address that does not lead anywhere to make sure CloudStorageSecurity console is not available"
 }
+
+variable "lambda_jar_filename" {
+  type    = string
+  default = "../virusScanner/build/libs/virusScanner.jar"
+}

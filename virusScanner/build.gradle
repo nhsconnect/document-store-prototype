@@ -1,0 +1,89 @@
+plugins {
+	id 'java'
+	id "com.diffplug.spotless" version "6.14.0"
+}
+
+repositories {
+	mavenCentral()
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs 'src/main'
+		}
+	}
+	integrationTest {
+		compileClasspath += sourceSets.main.output
+		compileClasspath += sourceSets.test.output
+		runtimeClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.test.output
+		java {
+			srcDirs 'src/integrationTest'
+		}
+	}
+}
+
+configurations {
+	integrationTestImplementation.extendsFrom testImplementation
+	integrationTestRuntime.extendsFrom testRuntime
+}
+
+dependencies {
+	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+	implementation 'com.amazonaws:aws-lambda-java-events:3.9.0'
+	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
+	implementation 'ch.qos.logback:logback-classic:1.2.6'
+
+	testImplementation 'org.json:json:20211205'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+	testImplementation 'org.assertj:assertj-core:3.21.0'
+	testImplementation 'org.mockito:mockito-core:5.1.1'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(11)
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
+tasks.withType(Test) {
+	useJUnitPlatform()
+}
+
+jar {
+	from compileJava
+	from processResources
+	into('lib') {
+		from configurations.runtimeClasspath
+	}
+}
+
+spotless {
+	format 'misc', {
+		target '*.gradle'
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
+	java {
+		googleJavaFormat('1.15.0').aosp().reflowLongStrings()
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+task integrationTest(type: Test) {
+	group 'verification'
+	description 'Run all end-to-end tests against LocalStack.'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+}
