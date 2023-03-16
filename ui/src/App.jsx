@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import "./App.scss";
 import config from "./config";
-import Authenticator from "./auth/authenticator/Authenticator";
+import OidcAuthenticator from "./auth/oidcAuthenticator/OidcAuthenticator";
 import HomePage from "./pages/homePage/HomePage";
 import Layout from "./components/layout/Layout";
 import PatientDetailsProvider from "./providers/PatientDetailsProvider";
@@ -44,11 +44,11 @@ const AppRoutes = () => {
             <Route
                 element={
                     isOIDCAuthActive ? (
-                        <Authenticator.Protected>
+                        <OidcAuthenticator.Protected>
                             <DocumentStoreProvider>
                                 <Outlet />
                             </DocumentStoreProvider>
-                        </Authenticator.Protected>
+                        </OidcAuthenticator.Protected>
                     ) : (
                         <DocumentStoreProvider>
                             <Outlet />
@@ -87,7 +87,7 @@ const AppRoutes = () => {
 
 const AuthenticatorErrors = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
-    return isOIDCAuthActive ? <Authenticator.Errors /> : null;
+    return isOIDCAuthActive ? <OidcAuthenticator.Errors /> : null;
 };
 
 const App = () => {

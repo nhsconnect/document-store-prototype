@@ -44,6 +44,6 @@ const NavLinks = () => {
     ) : null;
 };
 
-const Authenticator = { Errors, Protected, NavLinks };
+const OidcAuthenticator = { Errors, Protected, NavLinks };
 
-export default Authenticator;
+export default OidcAuthenticator;

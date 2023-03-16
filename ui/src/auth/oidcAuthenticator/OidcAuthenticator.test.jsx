@@ -2,13 +2,13 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { useAuth } from "react-oidc-context";
-import Authenticator from "./Authenticator";
+import OidcAuthenticator from "./OidcAuthenticator";
 import routes from "../../enums/routes";
 import { MemoryRouter } from "react-router";
 
 jest.mock("react-oidc-context");
 
-describe("Authenticator", () => {
+describe("OidcAuthenticator", () => {
     it("does not render children when user IS NOT authenticated", async () => {
         useAuth.mockImplementationOnce(() => ({
             isAuthenticated: false,
@@ -18,9 +18,9 @@ describe("Authenticator", () => {
         }));
 
         render(
-            <Authenticator.Protected>
+            <OidcAuthenticator.Protected>
                 <div>this-should-NOT-be-rendered</div>
-            </Authenticator.Protected>
+            </OidcAuthenticator.Protected>
         );
 
         await expectNever(() => {
@@ -37,9 +37,9 @@ describe("Authenticator", () => {
         }));
 
         render(
-            <Authenticator.Protected>
+            <OidcAuthenticator.Protected>
                 <div>this-should-be-rendered</div>
-            </Authenticator.Protected>
+            </OidcAuthenticator.Protected>
         );
 
         await waitFor(() => {
@@ -56,9 +56,9 @@ describe("Authenticator", () => {
         }));
 
         render(
-            <Authenticator.Protected>
+            <OidcAuthenticator.Protected>
                 <div>this-should-NOT-be-rendered</div>
-            </Authenticator.Protected>
+            </OidcAuthenticator.Protected>
         );
 
         await expectNever(() => {
@@ -74,7 +74,7 @@ describe("Authenticator", () => {
             signinRedirect: jest.fn(),
         }));
 
-        render(<Authenticator.Errors />);
+        render(<OidcAuthenticator.Errors />);
 
         await waitFor(() => {
             expect(
@@ -94,9 +94,9 @@ describe("Authenticator", () => {
         }));
 
         render(
-            <Authenticator.Protected>
+            <OidcAuthenticator.Protected>
                 <div>this-should-be-rendered</div>
-            </Authenticator.Protected>
+            </OidcAuthenticator.Protected>
         );
 
         await waitFor(() => {
@@ -116,9 +116,9 @@ describe("Authenticator", () => {
         }));
 
         render(
-            <Authenticator.Protected>
+            <OidcAuthenticator.Protected>
                 <div>this-should-NOT-be-rendered</div>
-            </Authenticator.Protected>
+            </OidcAuthenticator.Protected>
         );
 
         await waitFor(() => {
@@ -137,9 +137,9 @@ describe("Authenticator", () => {
         }));
 
         render(
-            <Authenticator.Protected>
+            <OidcAuthenticator.Protected>
                 <div>this-should-NOT-be-rendered</div>
-            </Authenticator.Protected>
+            </OidcAuthenticator.Protected>
         );
 
         await expectNever(() => {
@@ -158,9 +158,9 @@ describe("Authenticator", () => {
         }));
 
         render(
-            <Authenticator.Protected>
+            <OidcAuthenticator.Protected>
                 <div>this-should-NOT-be-rendered</div>
-            </Authenticator.Protected>
+            </OidcAuthenticator.Protected>
         );
 
         await expectNever(() => {
@@ -172,7 +172,7 @@ describe("Authenticator", () => {
         it("renders home and logout link when authenticated", () => {
             useAuth.mockReturnValue({ isAuthenticated: true });
 
-            renderWithRouter(<Authenticator.NavLinks />);
+            renderWithRouter(<OidcAuthenticator.NavLinks />);
 
             expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", routes.HOME);
             expect(screen.getByRole("link", { name: "Log Out" })).toHaveAttribute("href", routes.ROOT);
@@ -181,7 +181,7 @@ describe("Authenticator", () => {
         it("does not render home and logout link when unauthenticated", () => {
             useAuth.mockReturnValue({ isAuthenticated: false });
 
-            renderWithRouter(<Authenticator.NavLinks />);
+            renderWithRouter(<OidcAuthenticator.NavLinks />);
 
             expect(screen.queryByRole("link", { name: "Home" })).not.toBeInTheDocument();
             expect(screen.queryByRole("link", { name: "Log Out" })).not.toBeInTheDocument();
@@ -192,7 +192,7 @@ describe("Authenticator", () => {
 
             useAuth.mockReturnValue({ isAuthenticated: true, removeUser: removeUserMock });
 
-            renderWithRouter(<Authenticator.NavLinks />);
+            renderWithRouter(<OidcAuthenticator.NavLinks />);
 
             userEvent.click(screen.getByRole("link", { name: "Log Out" }));
 
