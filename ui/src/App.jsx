@@ -14,7 +14,7 @@ import OIDCAuthCallbackRouter from "./auth/authCallbackRouters/OIDCAuthCallbackR
 import AuthProvider from "./providers/AuthProvider";
 import DeleteDocumentsPage from "./pages/deleteDocumentsPage/DeleteDocumentsPage";
 import ConfigurationProvider, { useFeatureToggle } from "./providers/ConfigurationProvider";
-import SessionAuthCallbackRouter from "./auth/authCallbackRouters/SessionAuthCallbackRouter";
+import AuthCallbackRouter from "./auth/authCallbackRouters/AuthCallbackRouter";
 import DocumentStoreProvider from "./providers/DocumentStoreProvider";
 import routes from "./enums/routes";
 import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
@@ -47,7 +47,7 @@ const AppRoutes = () => {
         <Routes>
             <Route element={<StartPage />} path={ROOT} />
             <Route
-                element={isOIDCAuthActive ? <OIDCAuthCallbackRouter /> : <SessionAuthCallbackRouter />}
+                element={isOIDCAuthActive ? <OIDCAuthCallbackRouter /> : <AuthCallbackRouter />}
                 path={AUTH_CALLBACK}
             />
             <Route

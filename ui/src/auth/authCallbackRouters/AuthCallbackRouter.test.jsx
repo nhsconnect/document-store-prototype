@@ -1,10 +1,10 @@
-import AuthCallbackRouter from "./SessionAuthCallbackRouter";
+import AuthCallbackRouter from "./AuthCallbackRouter";
 import { render, screen } from "@testing-library/react";
 import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
 
 jest.mock("../../providers/ConfigurationProvider");
 
-describe("<AuthCallbackRouter />", () => {
+describe("AuthCallbackRouter", () => {
     const oldWindowLocation = window.location;
 
     afterAll(() => {
@@ -36,6 +36,6 @@ describe("<AuthCallbackRouter />", () => {
     it("returns a loading state until redirection to token request handler", () => {
         render(<AuthCallbackRouter />);
 
-        expect(screen.getByText("Loading...")).toBeInTheDocument();
+        expect(screen.getByRole("progressbar", { name: "Logging in..." })).toBeInTheDocument();
     });
 });
