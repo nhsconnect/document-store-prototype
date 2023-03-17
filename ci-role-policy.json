@@ -315,7 +315,9 @@
       "Effect": "Allow",
       "Action": [
         "cloudformation:CreateStack",
-        "cloudformation:DescribeStacks"
+        "cloudformation:DescribeStacks",
+        "cloudformation:GetTemplate",
+        "cloudformation:ListExports"
       ],
       "Resource": "*"
     },
@@ -345,7 +347,8 @@
         "ec2:DeleteTags",
         "ec2:DescribeNetworkInterfaces",
         "ec2:DescribeNetworkInterfaceAttribute",
-        "ec2:DescribeInternetGateways"
+        "ec2:DescribeInternetGateways",
+        "ec2:DescribeRouteTables"
       ],
       "Resource": "*"
     }
