@@ -16,6 +16,7 @@ import uk.nhs.digital.docstore.authoriser.models.Organisation;
 
 class AccessTokenClaimMapperTest {
 
+    public static final String ASSOCIATED_ORG = "custom:nhsid_user_orgs";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
@@ -25,14 +26,12 @@ class AccessTokenClaimMapperTest {
                 new AssociatedOrganisations(List.of(new Organisation("test", "test")));
 
         var claim = objectMapper.writeValueAsString(associatedOrganisations);
-        var token = JWT.create().withClaim(Authoriser.ASSOCIATED_ORG, claim).sign(Algorithm.none());
+        var token = JWT.create().withClaim(ASSOCIATED_ORG, claim).sign(Algorithm.none());
         var decodedToken = JWT.decode(token);
 
         var mapper = new AccessTokenClaimMapper(decodedToken);
 
-        assertThatJson(
-                        mapper.deserialiseClaim(
-                                Authoriser.ASSOCIATED_ORG, AssociatedOrganisations.class))
+        assertThatJson(mapper.deserialiseClaim(ASSOCIATED_ORG, AssociatedOrganisations.class))
                 .isEqualTo(claim);
     }
 
@@ -46,17 +45,13 @@ class AccessTokenClaimMapperTest {
         assertThrows(
                 InvalidAccessTokenException.class,
                 () -> {
-                    mapper.deserialiseClaim(
-                            Authoriser.ASSOCIATED_ORG, AssociatedOrganisations.class);
+                    mapper.deserialiseClaim(ASSOCIATED_ORG, AssociatedOrganisations.class);
                 });
     }
 
     @Test
     void shouldThrowInvalidAccessTokenExceptionWhenAssociatedOrganisationsClaimIsInvalid() {
-        var token =
-                JWT.create()
-                        .withClaim(Authoriser.ASSOCIATED_ORG, "invalid[json")
-                        .sign(Algorithm.none());
+        var token = JWT.create().withClaim(ASSOCIATED_ORG, "invalid[json").sign(Algorithm.none());
         var decodedToken = JWT.decode(token);
 
         var mapper = new AccessTokenClaimMapper(decodedToken);
@@ -64,8 +59,7 @@ class AccessTokenClaimMapperTest {
         assertThrows(
                 InvalidAccessTokenException.class,
                 () -> {
-                    mapper.deserialiseClaim(
-                            Authoriser.ASSOCIATED_ORG, AssociatedOrganisations.class);
+                    mapper.deserialiseClaim(ASSOCIATED_ORG, AssociatedOrganisations.class);
                 });
     }
 
