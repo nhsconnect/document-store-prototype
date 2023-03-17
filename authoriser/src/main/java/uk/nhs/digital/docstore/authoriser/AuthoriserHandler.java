@@ -12,21 +12,21 @@ public class AuthoriserHandler
 
     @Override
     public IamPolicyResponse handleRequest(
-            AuthoriserRequestEvent request, Context context) {
+            AuthoriserRequestEvent requestEvent, Context context) {
         IamPolicyResponse.Statement statement;
 
-        if(request.getSessionId().isPresent()) {
+        if (requestEvent.getSessionId().isPresent()) {
             statement = IamPolicyResponse.allowStatement("*");
         } else {
             statement = IamPolicyResponse.denyStatement("*");
         }
 
         var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
-        policyDocumentBuilder.withStatement(List.of(statement));
-        var policyDocument = policyDocumentBuilder.build();
-        var response = new IamPolicyResponse();
-        response.setPolicyDocument(policyDocument);
+        var policyDocument = policyDocumentBuilder.withStatement(List.of(statement)).build();
 
-        return response;
+        var iamPolicyResponse = new IamPolicyResponse();
+        iamPolicyResponse.setPolicyDocument(policyDocument);
+
+        return iamPolicyResponse;
     }
 }

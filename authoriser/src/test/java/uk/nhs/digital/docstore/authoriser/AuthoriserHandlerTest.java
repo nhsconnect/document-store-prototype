@@ -1,44 +1,43 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import java.util.*;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.requests.AuthoriserRequestEvent;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
 
 class AuthoriserHandlerTest {
     @Test
     void respondsWithIamDenyPolicy() {
         var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
-        policyDocumentBuilder.withStatement(List.of(IamPolicyResponse.denyStatement("*")));
-        var policyDocument = policyDocumentBuilder.build();
-        var expectedResponse = new IamPolicyResponse();
-        expectedResponse.setPolicyDocument(policyDocument);
+        var policyDocument = policyDocumentBuilder.withStatement(List.of(IamPolicyResponse.denyStatement("*"))).build();
+        var expectedIamPolicyResponse = new IamPolicyResponse();
+        expectedIamPolicyResponse.setPolicyDocument(policyDocument);
+        var authoriserHandler = new AuthoriserHandler();
 
-        var handler =  new AuthoriserHandler();
-        var actual = handler.handleRequest(new AuthoriserRequestEvent(), Mockito.mock(Context.class));
+        var actualIamPolicyResponse = authoriserHandler.handleRequest(new AuthoriserRequestEvent(), mock(Context.class));
 
-        assertThat(actual.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
+        assertThat(actualIamPolicyResponse.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedIamPolicyResponse.getPolicyDocument());
     }
 
     @Test
-    void respondsWithIamAllowPolicyWhenSessionIsPresent() {
+    void respondsWithIamAllowPolicyWhenSessionIdAndSubjectCookieIsPresent() {
         var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
-        policyDocumentBuilder.withStatement(List.of(IamPolicyResponse.allowStatement("*")));
-        var policyDocument = policyDocumentBuilder.build();
-        var expectedResponse = new IamPolicyResponse();
-        expectedResponse.setPolicyDocument(policyDocument);
-        var request = new AuthoriserRequestEvent();
-        var sessionId = UUID.randomUUID();
-        request.setHeaders(Map.of("cookie", "SessionId=" + sessionId + ";"));
+        var policyDocument = policyDocumentBuilder.withStatement(List.of(IamPolicyResponse.allowStatement("*"))).build();
+        var expectedIamPolicyResponse = new IamPolicyResponse();
+        expectedIamPolicyResponse.setPolicyDocument(policyDocument);
+        var requestEvent = new AuthoriserRequestEvent();
+        requestEvent.setHeaders(Map.of("cookie", "SessionId=" + UUID.randomUUID() + "; Subject=some-subject;"));
+        var authoriserHandler = new AuthoriserHandler();
 
-        var handler =  new AuthoriserHandler();
-        var actual = handler.handleRequest(request, Mockito.mock(Context.class));
+        var actualIamPolicyResponse = authoriserHandler.handleRequest(requestEvent, mock(Context.class));
 
-        assertThat(actual.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedResponse.getPolicyDocument());
+        assertThat(actualIamPolicyResponse.getPolicyDocument()).usingRecursiveComparison().isEqualTo(expectedIamPolicyResponse.getPolicyDocument());
     }
 }
