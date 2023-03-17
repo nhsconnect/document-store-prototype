@@ -7,10 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.model.Document;
-import uk.nhs.digital.docstore.model.DocumentLocation;
-import uk.nhs.digital.docstore.model.FileName;
-import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.*;
 
 class DocumentMetadataSerialiserTest {
     @Test
@@ -64,7 +61,8 @@ class DocumentMetadataSerialiserTest {
                         null,
                         null,
                         List.of(type),
-                        new DocumentLocation(location));
+                        new DocumentLocation(location),
+                        ScanResult.NOT_SCANNED);
 
         var metadata = new DocumentMetadataSerialiser().fromDocumentModel(document);
 

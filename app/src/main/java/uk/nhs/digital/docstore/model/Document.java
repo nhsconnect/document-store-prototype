@@ -17,6 +17,7 @@ public class Document {
     private final Instant indexed;
     private final List<String> type;
     private DocumentLocation location;
+    private ScanResult scanResult;
 
     public Document(
             String referenceId,
@@ -28,7 +29,8 @@ public class Document {
             Instant deleted,
             Instant indexed,
             List<String> type,
-            DocumentLocation location) {
+            DocumentLocation location,
+            ScanResult scanResult) {
         this.referenceId = referenceId;
         this.nhsNumber = nhsNumber;
         this.contentType = contentType;
@@ -39,6 +41,7 @@ public class Document {
         this.indexed = indexed;
         this.type = type;
         this.location = location;
+        this.scanResult = scanResult;
     }
 
     public String getReferenceId() {
@@ -93,6 +96,14 @@ public class Document {
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    public ScanResult getScanResult() {
+        return scanResult;
+    }
+
+    public void setScanResult(ScanResult scanResult) {
+        this.scanResult = scanResult;
     }
 
     @Override

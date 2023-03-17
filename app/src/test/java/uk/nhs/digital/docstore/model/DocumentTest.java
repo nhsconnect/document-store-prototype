@@ -44,7 +44,8 @@ public class DocumentTest {
                         indexed,
                         null,
                         type,
-                        documentLocation1);
+                        documentLocation1,
+                        ScanResult.NOT_SCANNED);
         var document2 =
                 new Document(
                         referenceId,
@@ -56,7 +57,8 @@ public class DocumentTest {
                         indexed,
                         null,
                         type,
-                        documentLocation2);
+                        documentLocation2,
+                        ScanResult.NOT_SCANNED);
 
         assertNotEquals(document1, document2);
     }
@@ -113,7 +115,8 @@ public class DocumentTest {
                         null,
                         indexed,
                         type,
-                        location);
+                        location,
+                        ScanResult.NOT_SCANNED);
 
         assertThat(document.toString()).isEqualTo(expectedDocumentString);
     }

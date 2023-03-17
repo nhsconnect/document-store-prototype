@@ -27,6 +27,7 @@ class FileMetadataTest {
                         null,
                         null,
                         null,
+                        null,
                         null);
 
         var fileMetadata = FileMetadata.fromDocument(document);

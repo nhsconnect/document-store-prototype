@@ -3,10 +3,7 @@ package uk.nhs.digital.docstore.helpers;
 import java.time.Instant;
 import java.util.List;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.model.Document;
-import uk.nhs.digital.docstore.model.DocumentLocation;
-import uk.nhs.digital.docstore.model.FileName;
-import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.*;
 
 public class DocumentBuilder {
     private final String referenceId;
@@ -100,6 +97,7 @@ public class DocumentBuilder {
                 deleted,
                 indexed,
                 type,
-                location);
+                location,
+                ScanResult.NOT_SCANNED);
     }
 }

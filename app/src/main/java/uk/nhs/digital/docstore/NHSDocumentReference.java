@@ -15,6 +15,7 @@ import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.ScanResult;
 
 @ResourceDef(
         name = "DocumentReference",
@@ -23,6 +24,10 @@ import uk.nhs.digital.docstore.model.NhsNumber;
 public class NHSDocumentReference extends DocumentReference {
 
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
+
+
+    @Child(name = "scanResult")
+    private ScanResult scanResult;
 
     @Child(name = "created")
     @Description(
@@ -114,6 +119,7 @@ public class NHSDocumentReference extends DocumentReference {
                         .filter(coding -> coding.getSystem().equals(DOCUMENT_TYPE_CODING_SYSTEM))
                         .map(Coding::getCode)
                         .collect(Collectors.toList()),
-                null);
+                null,
+                ScanResult.NOT_SCANNED);
     }
 }

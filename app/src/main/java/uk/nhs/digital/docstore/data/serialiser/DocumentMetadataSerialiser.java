@@ -36,6 +36,7 @@ public class DocumentMetadataSerialiser {
                 metadata.getDeleted() == null ? null : Instant.parse(metadata.getDeleted()),
                 metadata.getIndexed() == null ? null : Instant.parse(metadata.getIndexed()),
                 metadata.getType(),
-                new DocumentLocation(metadata.getLocation()));
+                new DocumentLocation(metadata.getLocation()),
+                metadata.getVirusScanResult());
     }
 }
