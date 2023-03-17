@@ -340,7 +340,7 @@ virus-scanner-tf-plan)
   assume_ci_role
   tf_init_virus_scanner
   terraform plan -var-file="${ENVIRONMENT}.tfvars"\
-  -var lambda_jar_filename=../jars/libs/virusScanner.jar \
+  -var lambda_jar_filename=../../jars/libs/virusScanner.jar \
   -out=virus-scanner-tfplan
   clear_assumed_iam_role
   ;;
