@@ -18,7 +18,7 @@ resource "aws_iam_role" "virus_scan_lambda_role" {
 resource "aws_lambda_function" "virus_scanned_event_lambda" {
   function_name    = "VirusScannedEventHandler"
   role             = aws_iam_role.virus_scan_lambda_role.arn
-  handler          = "uk.nhs.digital.virusScanner.VirusScannedEventHandler::handleRequest"
+  handler          = "uk.nhs.digital.virusScanner.handler.VirusScannedEventHandler::handleRequest"
   runtime          = "java11"
   filename         = var.lambda_jar_filename
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
