@@ -346,7 +346,7 @@ virus-scanner-tf-plan)
   ;;
 virus-scanner-tf-apply)
   assume_ci_role
-  cd virusScanner/terraform
+  tf_init_virus_scanner
   terraform apply virus-scanner-tfplan
   clear_assumed_iam_role
   ;;
