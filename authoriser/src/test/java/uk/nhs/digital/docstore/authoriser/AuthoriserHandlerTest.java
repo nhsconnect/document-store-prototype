@@ -17,9 +17,10 @@ import uk.nhs.digital.docstore.authoriser.requests.AuthoriserRequestEvent;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 
 class AuthoriserHandlerTest {
+    private final IamPolicyResponse.PolicyDocument.PolicyDocumentBuilder policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
+
     @Test
     void respondsWithIamDenyPolicyWhenSessionIdAndSubjectAreNotPresent() {
-        var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
         var policyDocument =
                 policyDocumentBuilder
                         .withStatement(List.of(IamPolicyResponse.denyStatement("*")))
@@ -38,7 +39,6 @@ class AuthoriserHandlerTest {
 
     @Test
     void respondsWithIamDenyPolicyWhenSessionIdIsNotPresent() {
-        var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
         var policyDocument =
                 policyDocumentBuilder
                         .withStatement(List.of(IamPolicyResponse.denyStatement("*")))
@@ -59,7 +59,6 @@ class AuthoriserHandlerTest {
 
     @Test
     void respondsWithIamDenyPolicyWhenSubjectIsNotPresent() {
-        var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
         var policyDocument =
                 policyDocumentBuilder
                         .withStatement(List.of(IamPolicyResponse.denyStatement("*")))
@@ -80,7 +79,6 @@ class AuthoriserHandlerTest {
 
     @Test
     void respondsWithIamAllowPolicyWhenSessionIsPresent() {
-        var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
         var policyDocument =
                 policyDocumentBuilder
                         .withStatement(List.of(IamPolicyResponse.allowStatement("*")))
@@ -112,7 +110,6 @@ class AuthoriserHandlerTest {
 
     @Test
     void respondsWithIamDenyPolicyWhenSessionIsNotPresent() {
-        var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
         var policyDocument =
                 policyDocumentBuilder
                         .withStatement(List.of(IamPolicyResponse.denyStatement("*")))
