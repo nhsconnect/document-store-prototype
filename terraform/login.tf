@@ -8,7 +8,7 @@ module login_redirect_alarms {
 }
 
 resource "aws_lambda_function" "login_redirect_lambda" {
-  handler          = "uk.nhs.digital.docstore.authoriser.LoginHandler::handleRequest"
+  handler          = "uk.nhs.digital.docstore.authoriser.handlers.LoginRedirectHandler::handleRequest"
   function_name    = "LoginRedirectHandler"
   runtime          = "java11"
   role             = aws_iam_role.authoriser_execution_role.arn

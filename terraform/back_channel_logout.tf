@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "back_channel_logout_lambda" {
-  handler          = "uk.nhs.digital.docstore.authoriser.BackChannelLogoutHandler::handleRequest"
+  handler          = "uk.nhs.digital.docstore.authoriser.handlers.BackChannelLogoutHandler::handleRequest"
   function_name    = "BackChannelLogoutHandler"
   runtime          = "java11"
   role             = aws_iam_role.authoriser_execution_role.arn

@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "token_request_lambda" {
-  handler          = "uk.nhs.digital.docstore.authoriser.TokenRequestHandler::handleRequest"
+  handler          = "uk.nhs.digital.docstore.authoriser.handlers.TokenRequestHandler::handleRequest"
   function_name    = "TokenRequestHandler"
   runtime          = "java11"
   role             = aws_iam_role.authoriser_execution_role.arn

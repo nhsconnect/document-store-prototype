@@ -33,8 +33,8 @@ data "aws_iam_policy_document" "authoriser_trust_policy" {
 
 module authoriser_alarms {
   source                     = "./modules/lambda_alarms"
-  lambda_function_name       = aws_lambda_function.authoriser.function_name
-  lambda_timeout             = aws_lambda_function.authoriser.timeout
+  lambda_function_name       = aws_lambda_function.authoriser_lambda.function_name
+  lambda_timeout             = aws_lambda_function.authoriser_lambda.timeout
   lambda_short_name          = "authoriser"
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
   environment                = var.environment
@@ -55,13 +55,13 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
 resource "aws_api_gateway_authorizer" "cis2_authoriser" {
   name                   = "cis2-authoriser"
   rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
-  authorizer_uri         = aws_lambda_function.authoriser.invoke_arn
+  authorizer_uri         = aws_lambda_function.authoriser_lambda.invoke_arn
   authorizer_credentials = aws_iam_role.authoriser_execution.arn
 }
 
-resource "aws_lambda_function" "authoriser" {
-  handler       = "uk.nhs.digital.docstore.authoriser.Authoriser::handleRequest"
-  function_name = "Authoriser"
+resource "aws_lambda_function" "authoriser_lambda" {
+  handler       = "uk.nhs.digital.docstore.authoriser.handlers.AuthoriserHandler::handleRequest"
+  function_name = "AuthoriserHandler"
   runtime       = "java11"
   role          = aws_iam_role.authoriser_execution_role.arn
 

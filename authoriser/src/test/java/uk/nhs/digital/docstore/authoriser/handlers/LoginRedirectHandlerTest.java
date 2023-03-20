@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.AuthenticationRequestFactory;
 
-public class LoginHandlerTest {
+public class LoginRedirectHandlerTest {
     @Test
     public void returnsAnHttpRedirectToTheOIDCAuthorizeEndpoint() throws URISyntaxException {
         var request = new APIGatewayProxyRequestEvent();
@@ -34,7 +34,7 @@ public class LoginHandlerTest {
 
         when(authenticationRequestFactory.build()).thenReturn(authRequest);
 
-        var handler = new LoginHandler(authenticationRequestFactory);
+        var handler = new LoginRedirectHandler(authenticationRequestFactory);
         var response = handler.handleRequest(request, mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(303);

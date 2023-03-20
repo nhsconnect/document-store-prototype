@@ -9,18 +9,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.AuthenticationRequestFactory;
 
-public class LoginHandler extends BaseAuthRequestHandler
+public class LoginRedirectHandler extends BaseAuthRequestHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    public static final Logger LOGGER = LoggerFactory.getLogger(LoginHandler.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(LoginRedirectHandler.class);
 
     private final AuthenticationRequestFactory authenticationRequestFactory;
 
     @SuppressWarnings("unused")
-    public LoginHandler() {
+    public LoginRedirectHandler() {
         this(new AuthenticationRequestFactory(getClientInformation(), getProviderMetadata()));
     }
 
-    public LoginHandler(AuthenticationRequestFactory authenticationRequestFactory) {
+    public LoginRedirectHandler(AuthenticationRequestFactory authenticationRequestFactory) {
         this.authenticationRequestFactory = authenticationRequestFactory;
     }
 
