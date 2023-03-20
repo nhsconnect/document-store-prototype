@@ -1,6 +1,4 @@
-package uk.nhs.digital.docstore.authoriser.requests;
-
-import static org.junit.jupiter.api.Assertions.*;
+package uk.nhs.digital.docstore.authoriser.requestEvents;
 
 import com.nimbusds.oauth2.sdk.id.State;
 import java.util.HashMap;

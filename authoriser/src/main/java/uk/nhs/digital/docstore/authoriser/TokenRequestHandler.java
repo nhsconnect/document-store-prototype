@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
-import uk.nhs.digital.docstore.authoriser.requests.TokenRequestEvent;
+import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {

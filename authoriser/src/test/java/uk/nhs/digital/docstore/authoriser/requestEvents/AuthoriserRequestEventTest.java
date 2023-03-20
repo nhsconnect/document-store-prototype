@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.authoriser.requests;
+package uk.nhs.digital.docstore.authoriser.requestEvents;
 
 import com.nimbusds.oauth2.sdk.id.Subject;
 import java.util.Map;

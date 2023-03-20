@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.authoriser.requests.LogoutRequestEvent;
+import uk.nhs.digital.docstore.authoriser.requestEvents.LogoutRequestEvent;
 
 public class LogoutHandler extends BaseAuthRequestHandler
         implements RequestHandler<LogoutRequestEvent, APIGatewayProxyResponseEvent> {

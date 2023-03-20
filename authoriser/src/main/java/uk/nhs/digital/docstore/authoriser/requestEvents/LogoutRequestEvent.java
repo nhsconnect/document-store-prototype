@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.authoriser.requests;
+package uk.nhs.digital.docstore.authoriser.requestEvents;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.nimbusds.oauth2.sdk.id.Subject;

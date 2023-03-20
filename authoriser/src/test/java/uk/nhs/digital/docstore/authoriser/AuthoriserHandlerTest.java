@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.authoriser.models.Session;
-import uk.nhs.digital.docstore.authoriser.requests.AuthoriserRequestEvent;
+import uk.nhs.digital.docstore.authoriser.requestEvents.AuthoriserRequestEvent;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 
 class AuthoriserHandlerTest {
