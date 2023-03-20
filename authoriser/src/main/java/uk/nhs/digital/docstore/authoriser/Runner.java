@@ -5,10 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.State;
+import java.util.Map;
 import uk.nhs.digital.docstore.authoriser.handlers.TokenRequestHandler;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
-
-import java.util.Map;
 
 public class Runner {
     public static void main(String[] args) throws JsonProcessingException {

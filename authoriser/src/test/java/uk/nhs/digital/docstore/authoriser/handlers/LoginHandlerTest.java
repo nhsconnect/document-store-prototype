@@ -1,5 +1,9 @@
 package uk.nhs.digital.docstore.authoriser.handlers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.nimbusds.oauth2.sdk.ResponseType;
@@ -7,16 +11,11 @@ import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.AuthenticationRequestFactory;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class LoginHandlerTest {
     @Test

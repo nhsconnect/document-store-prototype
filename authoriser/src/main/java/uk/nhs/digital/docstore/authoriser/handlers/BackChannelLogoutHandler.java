@@ -11,9 +11,8 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.util.URLUtils;
 import com.nimbusds.openid.connect.sdk.claims.LogoutTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.validators.LogoutTokenValidator;
-import uk.nhs.digital.docstore.authoriser.SessionStore;
-
 import java.text.ParseException;
+import uk.nhs.digital.docstore.authoriser.SessionStore;
 
 @SuppressWarnings("unused")
 public class BackChannelLogoutHandler

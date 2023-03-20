@@ -4,7 +4,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import java.util.List;
-
 import uk.nhs.digital.docstore.authoriser.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.AuthoriserRequestEvent;
 
