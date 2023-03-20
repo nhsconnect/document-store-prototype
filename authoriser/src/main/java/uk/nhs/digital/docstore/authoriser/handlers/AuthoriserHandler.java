@@ -11,8 +11,9 @@ import uk.nhs.digital.docstore.authoriser.requestEvents.AuthoriserRequestEvent;
 
 public class AuthoriserHandler
         implements RequestHandler<AuthoriserRequestEvent, IamPolicyResponse> {
-    private final SessionStore sessionStore;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthoriserHandler.class);
+
+    private final SessionStore sessionStore;
 
     public AuthoriserHandler(SessionStore sessionStore) {
         this.sessionStore = sessionStore;
@@ -20,27 +21,27 @@ public class AuthoriserHandler
 
     @Override
     public IamPolicyResponse handleRequest(AuthoriserRequestEvent requestEvent, Context context) {
-
         var sessionId = requestEvent.getSessionId();
         var subject = requestEvent.getSubject();
         var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
         var iamPolicyResponse = new IamPolicyResponse();
 
+        // TODO: [PRMT-2779] Add identifier such as a redacted session ID
+        LOGGER.debug("Handling authorisation request");
+
         if (sessionId.isPresent() && subject.isPresent()) {
-            // TODO redact session info
-            LOGGER.debug(
-                    "Auth lambda invoked for user with sessionID"
-                            + sessionId
-                            + " and subjectClaim "
-                            + subject);
+            // TODO: [PRMT-2779] Remove/improve this redaction if it is insufficient
+            var redactedSessionId =
+                    sessionId.get().toString().substring(sessionId.get().toString().length() - 4);
+            LOGGER.debug("Retrieving session for session ID ending in: " + redactedSessionId);
+
             var session = sessionStore.load(subject.get(), sessionId.get());
 
             if (session.isPresent()) {
                 LOGGER.debug(
-                        "Session found for user with sessionID"
-                                + sessionId
-                                + " and subjectClaim "
-                                + subject);
+                        "Attaching allow statement to IAM policy for session ID ending in: "
+                                + redactedSessionId);
+
                 var allowStatement = IamPolicyResponse.allowStatement("*");
                 var policyDocument =
                         policyDocumentBuilder.withStatement(List.of(allowStatement)).build();
@@ -50,13 +51,12 @@ public class AuthoriserHandler
                 return iamPolicyResponse;
             }
 
-            LOGGER.debug(
-                    "Session not found for user with sessionID"
-                            + sessionId
-                            + " and subjectClaim "
-                            + subject);
+            LOGGER.debug("Unable to find session for session ID ending in: " + redactedSessionId);
         }
-        LOGGER.debug("Auth lambda invoked for unknown requester");
+
+        // TODO: [PRMT-2779] Add identifier such as a redacted session ID
+        LOGGER.debug("Attaching deny statement to IAM policy");
+
         var denyStatement = IamPolicyResponse.denyStatement("*");
         var policyDocument = policyDocumentBuilder.withStatement(List.of(denyStatement)).build();
 

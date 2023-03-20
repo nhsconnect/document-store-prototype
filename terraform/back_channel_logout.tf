@@ -37,10 +37,9 @@ resource "aws_api_gateway_method" "back_channel_logout_proxy_method" {
 }
 
 resource "aws_api_gateway_integration" "back_channel_logout_lambda_integration" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  resource_id = aws_api_gateway_resource.back_channel_logout_resource.id
-  http_method = aws_api_gateway_method.back_channel_logout_proxy_method.http_method
-
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.back_channel_logout_resource.id
+  http_method             = aws_api_gateway_method.back_channel_logout_proxy_method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.back_channel_logout_lambda.invoke_arn
