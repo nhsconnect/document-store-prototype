@@ -17,7 +17,7 @@ public class Document {
     private final Instant indexed;
     private final List<String> type;
     private DocumentLocation location;
-    private ScanResult scanResult;
+    private final ScanResult virusScanResult;
 
     public Document(
             String referenceId,
@@ -30,7 +30,7 @@ public class Document {
             Instant indexed,
             List<String> type,
             DocumentLocation location,
-            ScanResult scanResult) {
+            ScanResult virusScanResult) {
         this.referenceId = referenceId;
         this.nhsNumber = nhsNumber;
         this.contentType = contentType;
@@ -41,7 +41,7 @@ public class Document {
         this.indexed = indexed;
         this.type = type;
         this.location = location;
-        this.scanResult = scanResult;
+        this.virusScanResult = virusScanResult;
     }
 
     public String getReferenceId() {
@@ -88,6 +88,10 @@ public class Document {
         this.location = s3Location;
     }
 
+    public ScanResult getVirusScanResult() {
+        return virusScanResult;
+    }
+
     @Override
     public boolean equals(Object other) {
         return EqualsBuilder.reflectionEquals(this, other);
@@ -96,14 +100,6 @@ public class Document {
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    public ScanResult getScanResult() {
-        return scanResult;
-    }
-
-    public void setScanResult(ScanResult scanResult) {
-        this.scanResult = scanResult;
     }
 
     @Override
@@ -137,6 +133,9 @@ public class Document {
                 + '\''
                 + ", location='"
                 + location
+                + '\''
+                + ", virusScanResult='"
+                + virusScanResult
                 + '}';
     }
 }

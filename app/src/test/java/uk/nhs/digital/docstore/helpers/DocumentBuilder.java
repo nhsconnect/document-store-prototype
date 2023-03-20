@@ -16,6 +16,7 @@ public class DocumentBuilder {
     private final Instant indexed;
     private final List<String> type;
     private final DocumentLocation location;
+    private final ScanResult virusScanResult;
 
     public static DocumentBuilder baseDocumentBuilder() {
         try {
@@ -29,7 +30,9 @@ public class DocumentBuilder {
                     null,
                     Instant.parse("2023-01-21T15:44:42.372042Z"),
                     List.of("snomed code"),
-                    new DocumentLocation("s3://test-bucket/test-path"));
+                    new DocumentLocation("s3://test-bucket/test-path"),
+                    ScanResult.NOT_SCANNED
+            );
         } catch (IllFormedPatientDetailsException e) {
             throw new RuntimeException(e);
         }
@@ -45,7 +48,8 @@ public class DocumentBuilder {
             Instant deleted,
             Instant indexed,
             List<String> type,
-            DocumentLocation location) {
+            DocumentLocation location,
+            ScanResult virusScanResult) {
         this.referenceId = referenceId;
         this.nhsNumber = nhsNumber;
         this.contentType = contentType;
@@ -56,6 +60,7 @@ public class DocumentBuilder {
         this.indexed = indexed;
         this.type = type;
         this.location = location;
+        this.virusScanResult = virusScanResult;
     }
 
     public DocumentBuilder withNhsNumber(NhsNumber nhsNumber) {
@@ -69,7 +74,8 @@ public class DocumentBuilder {
                 deleted,
                 indexed,
                 type,
-                location);
+                location,
+                virusScanResult);
     }
 
     public DocumentBuilder withFileName(FileName fileName) {
@@ -83,7 +89,8 @@ public class DocumentBuilder {
                 deleted,
                 indexed,
                 type,
-                location);
+                location,
+                virusScanResult);
     }
 
     public Document build() {
@@ -98,6 +105,6 @@ public class DocumentBuilder {
                 indexed,
                 type,
                 location,
-                ScanResult.NOT_SCANNED);
+                virusScanResult);
     }
 }

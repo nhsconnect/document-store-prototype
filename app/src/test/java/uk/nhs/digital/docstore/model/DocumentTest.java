@@ -73,6 +73,8 @@ public class DocumentTest {
         var indexed = Instant.now();
         var type = List.of("snomed-code");
         var location = new DocumentLocation("s3://test/location");
+        var virusScanResult = ScanResult.NOT_SCANNED;
+
         var expectedDocumentString =
                 "Document{"
                         + "referenceId='"
@@ -103,7 +105,11 @@ public class DocumentTest {
                         + '\''
                         + ", location='"
                         + location
+                        + '\''
+                        + ", virusScanResult='"
+                        + virusScanResult
                         + '}';
+
         var document =
                 new Document(
                         referenceId,
@@ -116,7 +122,7 @@ public class DocumentTest {
                         indexed,
                         type,
                         location,
-                        ScanResult.NOT_SCANNED);
+                        virusScanResult);
 
         assertThat(document.toString()).isEqualTo(expectedDocumentString);
     }

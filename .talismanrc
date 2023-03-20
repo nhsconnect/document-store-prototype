@@ -54,7 +54,7 @@ fileignoreconfig:
 - filename: app/src/main/java/uk/nhs/digital/docstore/handlers/CreateDocumentReferenceHandler.java
   checksum: f11dc74d87b94bfe6ae003465991136f4c548f85fdd16301c4cb359564c4143d
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/entity/DocumentMetadata.java
-  checksum: 8f8b83bf6d1da33d245661e2464205ad0acbc2b8d20ee76b62afdd93083acf9a
+  checksum: 7f882c7edc89fb482e5987b79e8ceb4b3fb391fda97edd92c4e86e4956ddcc8e
 - filename: app/src/e2eTest/java/uk/nhs/digital/docstore/helpers/AwsS3Helper.java
   checksum: 29d3c5cc1dc2643986d8d4abfd2c3fa9f978bf6ca33c7382217949cee2eda22e
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
