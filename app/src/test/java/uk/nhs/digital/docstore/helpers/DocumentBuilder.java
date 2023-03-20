@@ -31,8 +31,7 @@ public class DocumentBuilder {
                     Instant.parse("2023-01-21T15:44:42.372042Z"),
                     List.of("snomed code"),
                     new DocumentLocation("s3://test-bucket/test-path"),
-                    ScanResult.NOT_SCANNED
-            );
+                    ScanResult.NOT_SCANNED);
         } catch (IllFormedPatientDetailsException e) {
             throw new RuntimeException(e);
         }

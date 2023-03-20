@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.FileName;
 import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.ScanResult;
 
 class NHSDocumentReferenceTest {
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
@@ -68,5 +69,6 @@ class NHSDocumentReferenceTest {
         assertThat(documentModel.getCreated()).isEqualTo(created.getValue().toInstant());
         assertThat(documentModel.getIndexed()).isNull();
         assertThat(documentModel.getDeleted()).isNull();
+        assertThat(documentModel.getVirusScanResult()).isEqualTo(ScanResult.NOT_SCANNED);
     }
 }

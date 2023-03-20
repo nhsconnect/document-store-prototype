@@ -9,6 +9,7 @@ import java.util.List;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.ScanResult;
 
 @SuppressWarnings("unused")
 public class DocumentMetadataBuilder {
@@ -22,6 +23,8 @@ public class DocumentMetadataBuilder {
     private final String deleted;
     private final String fileName;
     private final String type = "SNOMED";
+
+    private final ScanResult virusScanResult;
 
     public static DocumentMetadataBuilder theMetadata() throws IllFormedPatientDetailsException {
         var nhsNumber = randomNumeric(10);
@@ -37,7 +40,8 @@ public class DocumentMetadataBuilder {
                 created.toString(),
                 null,
                 null,
-                "Document Title");
+                "Document Title",
+                ScanResult.NOT_SCANNED);
     }
 
     private DocumentMetadataBuilder(
@@ -49,7 +53,8 @@ public class DocumentMetadataBuilder {
             String created,
             String indexed,
             String deleted,
-            String fileName) {
+            String fileName,
+            ScanResult virusScanResult) {
         this.id = id;
         this.nhsNumber = nhsNumber;
         this.location = location;
@@ -59,6 +64,7 @@ public class DocumentMetadataBuilder {
         this.indexed = indexed;
         this.deleted = deleted;
         this.fileName = fileName;
+        this.virusScanResult = virusScanResult;
     }
 
     public DocumentMetadataBuilder withNhsNumber(NhsNumber nhsNumber) {
@@ -71,7 +77,8 @@ public class DocumentMetadataBuilder {
                 created,
                 indexed,
                 deleted,
-                fileName);
+                fileName,
+                virusScanResult);
     }
 
     public DocumentMetadataBuilder withLocation(String location) {
@@ -84,7 +91,8 @@ public class DocumentMetadataBuilder {
                 created,
                 indexed,
                 deleted,
-                fileName);
+                fileName,
+                virusScanResult);
     }
 
     public DocumentMetadataBuilder withContentType(String contentType) {
@@ -97,7 +105,8 @@ public class DocumentMetadataBuilder {
                 created,
                 indexed,
                 deleted,
-                fileName);
+                fileName,
+                virusScanResult);
     }
 
     public DocumentMetadataBuilder withDocumentUploaded(Boolean uploaded) {
@@ -111,7 +120,8 @@ public class DocumentMetadataBuilder {
                 created,
                 indexedAt,
                 deleted,
-                fileName);
+                fileName,
+                virusScanResult);
     }
 
     public DocumentMetadataBuilder withCreated(String created) {
@@ -124,7 +134,8 @@ public class DocumentMetadataBuilder {
                 created,
                 indexed,
                 deleted,
-                fileName);
+                fileName,
+                virusScanResult);
     }
 
     public DocumentMetadataBuilder withIndexed(String indexed) {
@@ -137,7 +148,8 @@ public class DocumentMetadataBuilder {
                 created,
                 indexed,
                 deleted,
-                fileName);
+                fileName,
+                virusScanResult);
     }
 
     public DocumentMetadataBuilder withDeleted(String deleted) {
@@ -150,7 +162,8 @@ public class DocumentMetadataBuilder {
                 created,
                 indexed,
                 deleted,
-                fileName);
+                fileName,
+                virusScanResult);
     }
 
     public DocumentMetadataBuilder withFileName(String fileName) {
@@ -163,7 +176,8 @@ public class DocumentMetadataBuilder {
                 created,
                 indexed,
                 deleted,
-                fileName);
+                fileName,
+                virusScanResult);
     }
 
     public DocumentMetadata build() {
