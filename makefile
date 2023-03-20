@@ -4,7 +4,7 @@ default: help
 pre-push: format lint test-ui test-app test-e2e ## Format, lint, & test
 
 .PHONY: format
-format: format-ui format-app format-auth format-e2e-test ## Format files
+format: format-ui format-app format-auth format-virus-scanner format-e2e-test ## Format files
 
 .PHONY: format-ui
 format-ui: ## Format /ui files
@@ -15,7 +15,7 @@ format-app: ## Format /app files
 	./gradlew :app:spotlessApply
 
 .PHONY: format-virus-scanner
-format-virus-scanner: ## Format /virus scanner files
+format-virus-scanner: ## Format /virusScanner files
 	./gradlew :virusScanner:spotlessApply
 
 .PHONY: format-auth
@@ -27,7 +27,7 @@ format-e2e-test: ## Format /e2eTest files
 	cd e2eTest && npm run format
 
 .PHONY: lint
-lint: lint-ui lint-e2e-test ## Lint /ui & /e2eTest files.  Todo: BE linting
+lint: lint-ui lint-e2e-test ## Lint /ui & /e2eTest files.  TODO: /app, /authoriser, & /virusScanner linting
 
 .PHONY: lint-ui
 lint-ui: ## Lint /ui files
