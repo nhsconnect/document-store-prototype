@@ -19,16 +19,7 @@ public class DocumentMetadata {
     private String indexed;
     private String deleted;
     private List<String> type;
-    private ScanResult virusScanResult;
-
-    @DynamoDBAttribute(attributeName = "VirusScanResult")
-    public ScanResult getVirusScanResult() {
-        return virusScanResult;
-    }
-
-    public void setVirusScanResult(ScanResult virusScanResult) {
-        this.virusScanResult = virusScanResult;
-    }
+    private String virusScanResult;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -118,6 +109,15 @@ public class DocumentMetadata {
 
     public void setType(List<String> type) {
         this.type = type;
+    }
+
+    @DynamoDBAttribute(attributeName = "VirusScanResult")
+    public String getVirusScanResult() {
+        return virusScanResult;
+    }
+
+    public void setVirusScanResult(String virusScanResult) {
+        this.virusScanResult = virusScanResult;
     }
 
     @Override

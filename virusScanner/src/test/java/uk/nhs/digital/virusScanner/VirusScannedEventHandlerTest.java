@@ -6,12 +6,8 @@ import org.mockito.Mock;
 
 public class VirusScannedEventHandlerTest {
 
-    @Mock
-    DynamoDB dynamoDb;
+    @Mock DynamoDB dynamoDb;
 
     @Test
-    public void testSavesVirusScanResultsInDynamoDb() {
-
-    }
-
+    public void testSavesVirusScanResultsInDynamoDb() {}
 }
