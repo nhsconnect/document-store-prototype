@@ -12,6 +12,8 @@ import com.nimbusds.oauth2.sdk.util.URLUtils;
 import com.nimbusds.openid.connect.sdk.claims.LogoutTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.validators.LogoutTokenValidator;
 import java.text.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.SessionStore;
 
 @SuppressWarnings("unused")
@@ -19,6 +21,7 @@ public class BackChannelLogoutHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final SessionStore sessionStore;
     private final LogoutTokenValidator tokenValidator;
+    public static final Logger LOGGER = LoggerFactory.getLogger(BackChannelLogoutHandler.class);
 
     public BackChannelLogoutHandler(
             LogoutTokenValidator tokenValidator, SessionStore sessionStore) {
@@ -45,6 +48,7 @@ public class BackChannelLogoutHandler
         try {
             claims = tokenValidator.validate(logoutToken);
         } catch (BadJOSEException | JOSEException exception) {
+            LOGGER.debug("Invalid token " + logoutToken);
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(400)
                     .withBody("")

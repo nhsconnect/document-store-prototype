@@ -31,10 +31,14 @@ public class LoginRedirectHandler extends BaseAuthRequestHandler
         var authRequestUri = authRequest.toURI().toString();
         var authRequestState = authRequest.getState().getValue();
         var cookieState = httpOnlyCookieBuilder("State", authRequestState, 300L);
-
-        LOGGER.debug("Redirecting user to " + authRequestUri);
-
         var headers = Map.of("Location", authRequestUri, "Set-Cookie", cookieState);
+
+        // TODO: [PRMT-2779] Add identifier such as redacted state
+        LOGGER.debug(
+                "Redirecting user with state "
+                        + authRequestState.substring(authRequestState.length() - 4)
+                        + " to "
+                        + authRequestUri);
 
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(SEE_OTHER_STATUS_CODE)

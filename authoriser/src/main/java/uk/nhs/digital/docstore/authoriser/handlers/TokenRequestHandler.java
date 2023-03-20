@@ -13,6 +13,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
@@ -45,9 +47,13 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         this.OIDCClient = OIDCClient;
     }
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
+
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             TokenRequestEvent requestEvent, Context context) {
+        LOGGER.debug("Handling new token request");
+
         var authCode = requestEvent.getAuthCode();
 
         if (authCode.isEmpty()) {
@@ -55,11 +61,23 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         }
 
         if (!requestEvent.hasMatchingStateValues()) {
+            // TODO: [PRMT-2779] Add redaction if it is required
+            LOGGER.debug(
+                    "Mismatching state values. Cookie state = "
+                            + requestEvent.getCookieState().orElse(null)
+                            + ", Query parameter state = "
+                            + requestEvent.getQueryParameterState().orElse(null));
+
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(400)
                     .withIsBase64Encoded(false)
                     .withBody("");
         }
+
+        // TODO: [PRMT-2779] Add redaction if it is required
+        LOGGER.debug(
+                "New auth token request for session with state "
+                        + requestEvent.getCookieState().orElse(null));
 
         Session session;
 
@@ -69,26 +87,36 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             throw new RuntimeException(exception);
         }
 
+        // TODO: [PRMT-2779] Add redaction if it is required
+        LOGGER.debug(
+                "Token retrieved from CIS2 for session with state "
+                        + requestEvent.getCookieState().orElse(null));
+
         var headers = new HashMap<String, String>();
         headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
 
         // New secure cookie class with samesite, secure and httponly pre-set. Implements tostring
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
-
+        var sessionId = session.getId().toString();
         var stateCookie =
                 httpOnlyCookieBuilder(
                         "State", requestEvent.getCookieState().orElseThrow().getValue(), 0L);
         var subjectClaimCookie =
                 httpOnlyCookieBuilder(
                         "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
-        var sessionIdCookie =
-                httpOnlyCookieBuilder(
-                        "SessionId", session.getId().toString(), maxCookieAgeInSeconds);
+        var sessionIdCookie = httpOnlyCookieBuilder("SessionId", sessionId, maxCookieAgeInSeconds);
         var loggedInCookie = cookieBuilder("LoggedIn", "True", maxCookieAgeInSeconds);
 
         var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie, loggedInCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
+
+        // TODO: [PRMT-2779] Add or improve redaction if it is required
+        LOGGER.debug(
+                "Session with state "
+                        + requestEvent.getCookieState().orElse(null)
+                        + " now has session ID ending with "
+                        + sessionId.substring(sessionId.length() - 4));
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)

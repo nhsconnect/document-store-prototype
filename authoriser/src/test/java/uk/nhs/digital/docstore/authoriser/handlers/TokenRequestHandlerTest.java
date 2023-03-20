@@ -101,4 +101,27 @@ class TokenRequestHandlerTest {
         assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
+
+    @Test
+    void handleRequestReturnsBadRequestResponseWhenTheStateCookieIsMissing() throws Exception {
+        var request = new TokenRequestEvent();
+        var authCode = new AuthorizationCode();
+        request.setQueryStringParameters(
+                Map.of(
+                        "redirect_uri", "https://redirect.uri",
+                        "code", authCode.getValue(),
+                        "state", new State().getValue()));
+        var session = new Session();
+        session.setRole("some-role");
+
+        var oidcClient = Mockito.mock(OIDCClient.class);
+        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
+
+        var handler = new TokenRequestHandler(oidcClient);
+        var response = handler.handleRequest(request, Mockito.mock(Context.class));
+
+        assertThat(response.getStatusCode()).isEqualTo(400);
+        assertThat(response.getBody()).isEqualTo("");
+        assertThat(response.getIsBase64Encoded()).isFalse();
+    }
 }

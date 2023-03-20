@@ -38,11 +38,21 @@ public class LogoutHandler extends BaseAuthRequestHandler
             var session = sessionStore.load(subject.get(), sessionId.get());
 
             if (session.isPresent()) {
-                LOGGER.debug("Deleting session " + sessionId);
+                // TODO: [PRMT-2779] Improve redaction if it is required
+                LOGGER.debug(
+                        "Deleting session with ID ending in "
+                                + sessionId
+                                        .toString()
+                                        .substring(sessionId.toString().length() - 4));
 
                 sessionStore.delete(session.get());
 
-                LOGGER.debug("Successfully deleted session " + sessionId);
+                // TODO: [PRMT-2779] Improve redaction if it is required
+                LOGGER.debug(
+                        "Successfully deleted session "
+                                + sessionId
+                                        .toString()
+                                        .substring(sessionId.toString().length() - 4));
             }
 
             var subjectClaimCookie =
