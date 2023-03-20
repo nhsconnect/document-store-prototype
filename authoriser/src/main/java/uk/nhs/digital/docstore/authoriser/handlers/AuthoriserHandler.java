@@ -26,9 +26,9 @@ public class AuthoriserHandler
             var session = sessionStore.load(subject.get(), sessionId.get());
 
             if (session.isPresent()) {
-                var statement = IamPolicyResponse.allowStatement("*");
+                var allowStatement = IamPolicyResponse.allowStatement("*");
                 var policyDocument =
-                        policyDocumentBuilder.withStatement(List.of(statement)).build();
+                        policyDocumentBuilder.withStatement(List.of(allowStatement)).build();
 
                 iamPolicyResponse.setPolicyDocument(policyDocument);
 
@@ -36,8 +36,8 @@ public class AuthoriserHandler
             }
         }
 
-        var statement = IamPolicyResponse.denyStatement("*");
-        var policyDocument = policyDocumentBuilder.withStatement(List.of(statement)).build();
+        var denyStatement = IamPolicyResponse.denyStatement("*");
+        var policyDocument = policyDocumentBuilder.withStatement(List.of(denyStatement)).build();
 
         iamPolicyResponse.setPolicyDocument(policyDocument);
 
