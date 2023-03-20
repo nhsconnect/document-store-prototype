@@ -1,7 +1,4 @@
-package uk.nhs.digital.docstore.authoriser;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
+package uk.nhs.digital.docstore.authoriser.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -11,12 +8,17 @@ import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.openid.connect.sdk.validators.LogoutTokenValidator;
-import java.time.Instant;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.authoriser.SignedJWTFactory;
 import uk.nhs.digital.docstore.authoriser.builders.LogoutTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
+
+import java.time.Instant;
+import java.util.UUID;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
 
 class BackChannelLogoutHandlerTest {
     private final SignedJWTFactory jwtFactory = new SignedJWTFactory();

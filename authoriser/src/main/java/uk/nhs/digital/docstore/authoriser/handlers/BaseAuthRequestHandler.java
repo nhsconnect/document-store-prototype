@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.authoriser;
+package uk.nhs.digital.docstore.authoriser.handlers;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;

@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.authoriser;
+package uk.nhs.digital.docstore.authoriser.handlers;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.authoriser.DynamoDBSessionStore;
+import uk.nhs.digital.docstore.authoriser.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.LogoutRequestEvent;
 
 public class LogoutHandler extends BaseAuthRequestHandler

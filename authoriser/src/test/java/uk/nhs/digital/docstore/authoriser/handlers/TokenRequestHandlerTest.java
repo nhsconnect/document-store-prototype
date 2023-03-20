@@ -1,19 +1,21 @@
-package uk.nhs.digital.docstore.authoriser;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package uk.nhs.digital.docstore.authoriser.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.State;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import uk.nhs.digital.docstore.authoriser.OIDCClient;
+import uk.nhs.digital.docstore.authoriser.models.Session;
+import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import uk.nhs.digital.docstore.authoriser.models.Session;
-import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TokenRequestHandlerTest {
 

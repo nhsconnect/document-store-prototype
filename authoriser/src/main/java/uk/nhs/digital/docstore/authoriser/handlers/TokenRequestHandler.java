@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.authoriser;
+package uk.nhs.digital.docstore.authoriser.handlers;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -13,13 +13,15 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
-    private final OIDCClient OIDCClient;
+    private final uk.nhs.digital.docstore.authoriser.OIDCClient OIDCClient;
 
     private Clock clock = Clock.systemUTC();
 

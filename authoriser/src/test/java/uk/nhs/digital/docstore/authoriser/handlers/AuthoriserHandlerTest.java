@@ -1,20 +1,21 @@
-package uk.nhs.digital.docstore.authoriser;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
+package uk.nhs.digital.docstore.authoriser.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.AuthoriserRequestEvent;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
 
 class AuthoriserHandlerTest {
     private final IamPolicyResponse.PolicyDocument.PolicyDocumentBuilder policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();

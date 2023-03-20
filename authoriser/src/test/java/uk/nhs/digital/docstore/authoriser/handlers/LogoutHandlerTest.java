@@ -1,18 +1,19 @@
-package uk.nhs.digital.docstore.authoriser;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package uk.nhs.digital.docstore.authoriser.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
-import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.LogoutRequestEvent;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
+
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LogoutHandlerTest {
     @Test

@@ -1,9 +1,11 @@
-package uk.nhs.digital.docstore.authoriser;
+package uk.nhs.digital.docstore.authoriser.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import java.util.List;
+
+import uk.nhs.digital.docstore.authoriser.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.AuthoriserRequestEvent;
 
 public class AuthoriserHandler
