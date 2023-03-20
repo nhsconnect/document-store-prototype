@@ -18,6 +18,7 @@ class DocumentMetadataSerialiserTest {
         var fileName = "doc-name";
         var created = Instant.now();
         var type = "some-type";
+        var virusScanResult = "NOT_SCANNED";
 
         var metadata = new DocumentMetadata();
         metadata.setNhsNumber(nhsNumber);
@@ -27,6 +28,7 @@ class DocumentMetadataSerialiserTest {
         metadata.setFileName(fileName);
         metadata.setCreated(created.toString());
         metadata.setType(List.of(type));
+        metadata.setVirusScanResult(virusScanResult);
 
         var document = new DocumentMetadataSerialiser().toDocumentModel(metadata);
 
@@ -39,6 +41,7 @@ class DocumentMetadataSerialiserTest {
         assertThat(document.getType().get(0)).isEqualTo(type);
         assertThat(document.getIndexed()).isNull();
         assertThat(document.getDeleted()).isNull();
+        assertThat(document.getVirusScanResult()).isEqualTo(ScanResult.valueOf(virusScanResult));
     }
 
     @Test
@@ -49,6 +52,7 @@ class DocumentMetadataSerialiserTest {
         var fileName = "doc-name";
         var created = Instant.now();
         var type = "some-type";
+        var virusScanResult = ScanResult.NOT_SCANNED;
 
         var document =
                 new Document(
@@ -62,7 +66,7 @@ class DocumentMetadataSerialiserTest {
                         null,
                         List.of(type),
                         new DocumentLocation(location),
-                        ScanResult.NOT_SCANNED);
+                        virusScanResult);
 
         var metadata = new DocumentMetadataSerialiser().fromDocumentModel(document);
 
@@ -75,5 +79,6 @@ class DocumentMetadataSerialiserTest {
         assertThat(metadata.getType().get(0)).isEqualTo(type);
         assertThat(metadata.getIndexed()).isNull();
         assertThat(metadata.getDeleted()).isNull();
+        assertThat(metadata.getVirusScanResult()).isEqualTo(virusScanResult.toString());
     }
 }

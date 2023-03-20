@@ -3,10 +3,7 @@ package uk.nhs.digital.docstore.data.serialiser;
 import java.time.Instant;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.model.Document;
-import uk.nhs.digital.docstore.model.DocumentLocation;
-import uk.nhs.digital.docstore.model.FileName;
-import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.nhs.digital.docstore.model.*;
 
 public class DocumentMetadataSerialiser {
 
@@ -21,6 +18,7 @@ public class DocumentMetadataSerialiser {
         documentMetadata.setFileName(document.getFileName().getValue());
         documentMetadata.setCreated(document.getCreated().toString());
         documentMetadata.setType(document.getType());
+        documentMetadata.setVirusScanResult(document.getVirusScanResult().toString());
         return documentMetadata;
     }
 
@@ -37,6 +35,6 @@ public class DocumentMetadataSerialiser {
                 metadata.getIndexed() == null ? null : Instant.parse(metadata.getIndexed()),
                 metadata.getType(),
                 new DocumentLocation(metadata.getLocation()),
-                metadata.getVirusScanResult());
+                ScanResult.valueOf(metadata.getVirusScanResult()));
     }
 }

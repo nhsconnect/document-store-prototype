@@ -5,7 +5,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import java.util.List;
-import uk.nhs.digital.docstore.model.ScanResult;
 
 @DynamoDBTable(tableName = "DocumentReferenceMetadata")
 @SuppressWarnings("unused")
@@ -20,7 +19,7 @@ public class DocumentMetadata {
     private String indexed;
     private String deleted;
     private List<String> type;
-    private ScanResult virusScanResult;
+    private String virusScanResult;
 
     @DynamoDBHashKey(attributeName = "ID")
     public String getId() {
@@ -113,11 +112,11 @@ public class DocumentMetadata {
     }
 
     @DynamoDBAttribute(attributeName = "VirusScanResult")
-    public ScanResult getVirusScanResult() {
+    public String getVirusScanResult() {
         return virusScanResult;
     }
 
-    public void setVirusScanResult(ScanResult virusScanResult) {
+    public void setVirusScanResult(String virusScanResult) {
         this.virusScanResult = virusScanResult;
     }
 
