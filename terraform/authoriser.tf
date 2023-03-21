@@ -57,6 +57,7 @@ resource "aws_api_gateway_authorizer" "cis2_authoriser" {
   rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
   authorizer_uri         = aws_lambda_function.authoriser_lambda.invoke_arn
   authorizer_credentials = aws_iam_role.authoriser_execution.arn
+  type                   = "REQUEST"
 }
 
 resource "aws_lambda_function" "authoriser_lambda" {
