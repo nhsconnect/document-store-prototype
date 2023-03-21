@@ -46,10 +46,10 @@ common:
 pipelines:
   "virus-scanner.dev":
     group: access-request-fulfilment
-    label_template: "${virus_scanner[:8]}"
+    label_template: "${virus_scanner_dev[:8]}"
     lock_behavior: "unlockWhenFinished"
     materials:
-      virus_scanner:
+      virus_scanner_dev:
         type: configrepo
         plugin_configuration:
           id: git-path
@@ -83,9 +83,9 @@ pipelines:
             apply: *deploy_terraform
   "virus-scanner.pre-prod":
     group: access-request-fulfilment
-    label_template: "${virus_scanner[:8]}"
+    label_template: "${virus_scanner_preprod[:8]}"
     materials:
-      virus_scanner:
+      virus_scanner_preprod:
         type: configrepo
         plugin_configuration:
           id: git-path
@@ -125,9 +125,9 @@ pipelines:
             apply: *deploy_terraform
   "virus-scanner.prod":
     group: access-request-fulfilment
-    label_template: "${virus_scanner[:8]}"
+    label_template: "${virus_scanner_prod[:8]}"
     materials:
-      virus_scanner:
+      virus_scanner_prod:
         type: configrepo
         plugin_configuration:
           id: git-path
