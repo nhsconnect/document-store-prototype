@@ -1,11 +1,10 @@
 package uk.nhs.digital.docstore.authoriser.requests;
 
 import com.nimbusds.oauth2.sdk.id.Subject;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.Map;
 import java.util.UUID;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class AuthoriserRequestEventTest {
     @Test
