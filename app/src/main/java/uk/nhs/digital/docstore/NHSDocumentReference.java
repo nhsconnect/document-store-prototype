@@ -25,9 +25,6 @@ public class NHSDocumentReference extends DocumentReference {
 
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
 
-    @Child(name = "scanResult")
-    private ScanResult scanResult;
-
     @Child(name = "created")
     @Description(
             shortDefinition =
