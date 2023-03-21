@@ -35,6 +35,7 @@ public class DocumentUploadedEventTest extends BaseDocumentStoreTest {
     private DocumentMetadataStore documentMetadataStore;
     private final Clock clock = Clock.fixed(Instant.now(), TimeZone.getDefault().toZoneId());
 
+
     @Mock private SplunkPublisher publisher;
 
     @BeforeEach

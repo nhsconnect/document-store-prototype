@@ -23,8 +23,7 @@ public class DocumentMetadataBuilder {
     private final String deleted;
     private final String fileName;
     private final String type = "SNOMED";
-
-    private final ScanResult virusScanResult;
+    private final String virusScanResult;
 
     public static DocumentMetadataBuilder theMetadata() throws IllFormedPatientDetailsException {
         var nhsNumber = randomNumeric(10);
@@ -41,7 +40,7 @@ public class DocumentMetadataBuilder {
                 null,
                 null,
                 "Document Title",
-                ScanResult.NOT_SCANNED);
+                "NOT_SCANNED");
     }
 
     private DocumentMetadataBuilder(
@@ -54,7 +53,7 @@ public class DocumentMetadataBuilder {
             String indexed,
             String deleted,
             String fileName,
-            ScanResult virusScanResult) {
+            String virusScanResult) {
         this.id = id;
         this.nhsNumber = nhsNumber;
         this.location = location;
@@ -192,6 +191,7 @@ public class DocumentMetadataBuilder {
         metadata.setDeleted(deleted);
         metadata.setFileName(fileName);
         metadata.setType(List.of(type));
+        metadata.setVirusScanResult(virusScanResult);
         return metadata;
     }
 }
