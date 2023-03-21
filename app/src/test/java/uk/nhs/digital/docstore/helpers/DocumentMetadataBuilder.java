@@ -9,7 +9,6 @@ import java.util.List;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.NhsNumber;
-import uk.nhs.digital.docstore.model.ScanResult;
 
 @SuppressWarnings("unused")
 public class DocumentMetadataBuilder {
