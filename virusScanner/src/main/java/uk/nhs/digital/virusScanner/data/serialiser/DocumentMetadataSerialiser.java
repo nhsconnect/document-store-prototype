@@ -1,17 +1,13 @@
 package uk.nhs.digital.virusScanner.data.serialiser;
 
-
-
+import java.time.Instant;
 import uk.nhs.digital.virusScanner.data.entity.DocumentMetadata;
 import uk.nhs.digital.virusScanner.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.virusScanner.model.*;
 
-import java.time.Instant;
-
 public class DocumentMetadataSerialiser {
 
-    public DocumentMetadata fromDocumentModel(Document document)
-    {
+    public DocumentMetadata fromDocumentModel(Document document) {
         var documentMetadata = new DocumentMetadata();
         documentMetadata.setId(document.getReferenceId());
         documentMetadata.setNhsNumber(document.getNhsNumber().getValue());
@@ -25,7 +21,8 @@ public class DocumentMetadataSerialiser {
         return documentMetadata;
     }
 
-    public Document toDocumentModel(DocumentMetadata metadata) throws IllFormedPatientDetailsException {
+    public Document toDocumentModel(DocumentMetadata metadata)
+            throws IllFormedPatientDetailsException {
         return new Document(
                 metadata.getId(),
                 new NhsNumber(metadata.getNhsNumber()),

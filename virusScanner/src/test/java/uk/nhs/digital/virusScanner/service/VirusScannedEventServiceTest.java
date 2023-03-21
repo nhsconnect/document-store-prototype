@@ -7,14 +7,10 @@ import uk.nhs.digital.virusScanner.data.serialiser.DocumentMetadataSerialiser;
 
 class VirusScannedEventServiceTest {
 
-    @Mock
-    DocumentMetadataStore metadataStore;
+    @Mock DocumentMetadataStore metadataStore;
 
-    @Mock
-    DocumentMetadataSerialiser metadataSerialiser;
+    @Mock DocumentMetadataSerialiser metadataSerialiser;
 
     @Test
-    public void testSavesVirusScanResultsInDynamoDb() {
-
-    }
+    public void testSavesVirusScanResultsInDynamoDb() {}
 }

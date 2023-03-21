@@ -1,10 +1,9 @@
 package uk.nhs.digital.virusScanner.model;
 
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.nhs.digital.virusScanner.exceptions.IllFormedPatientDetailsException;
-
-import java.util.regex.Pattern;
 
 public class NhsNumber {
     private static final Pattern PATTERN = Pattern.compile("^[0-9]{10}$");
