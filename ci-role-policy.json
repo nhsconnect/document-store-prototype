@@ -183,7 +183,8 @@
         "iam:GetPolicy",
         "iam:GetPolicyVersion",
         "iam:ListPolicyVersions",
-        "iam:DeletePolicy"
+        "iam:DeletePolicy",
+        "iam:UpdateAssumeRolePolicy"
       ],
       "Resource": "*"
     },
