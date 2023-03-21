@@ -77,10 +77,24 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       module.patient_details_collection_preflight,
       module.doc_ref_collection_preflight,
       module.document_manifest_preflight,
+      aws_api_gateway_authorizer.cognito_authorizer,
+      aws_api_gateway_authorizer.cis2_authoriser,
       aws_api_gateway_resource.doc_ref_collection_resource,
       aws_api_gateway_resource.patient_details_collection_resource,
       aws_api_gateway_resource.document_manifest_resource,
-      aws_api_gateway_authorizer.cognito_authorizer,
+      aws_api_gateway_resource.login_resource,
+      aws_api_gateway_resource.logout_resource,
+      aws_api_gateway_resource.back_channel_logout_resource,
+      aws_api_gateway_resource.auth_resource,
+      aws_api_gateway_resource.token_request_resource,
+      aws_api_gateway_integration.back_channel_logout_lambda_integration,
+      aws_api_gateway_integration.login_lambda_integration,
+      aws_api_gateway_integration.logout_lambda_integration,
+      aws_api_gateway_integration.token_request_lambda_integration,
+      aws_api_gateway_method.token_request_proxy_method,
+      aws_api_gateway_method.login_proxy_method,
+      aws_api_gateway_method.logout_proxy_method,
+      aws_api_gateway_method.back_channel_logout_proxy_method
     ]))
   }
 }
@@ -94,7 +108,7 @@ resource "aws_api_gateway_gateway_response" "doc_store_unauthorised_response" {
   }
 
   response_parameters = {
-    "gatewayresponse.header.Access-Control-Allow-Origin" = "'${local.amplify_base_url}'"
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'${local.amplify_base_url}'"
     "gatewayresponse.header.Access-Control-Allow-Methods" = "'*'"
     "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
   }
@@ -109,7 +123,7 @@ resource "aws_api_gateway_gateway_response" "doc_store_bad_gateway_response" {
   }
 
   response_parameters = {
-    "gatewayresponse.header.Access-Control-Allow-Origin" = "'${local.amplify_base_url}'"
+    "gatewayresponse.header.Access-Control-Allow-Origin"  = "'${local.amplify_base_url}'"
     "gatewayresponse.header.Access-Control-Allow-Methods" = "'*'"
     "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
   }
@@ -158,7 +172,7 @@ output "api_gateway_url" {
 }
 
 locals {
-  common_environment_variables             = {
+  common_environment_variables = {
     DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
     DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
     S3_ENDPOINT                = var.s3_endpoint
