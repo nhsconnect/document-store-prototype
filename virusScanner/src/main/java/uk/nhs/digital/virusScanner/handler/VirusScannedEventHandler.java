@@ -19,6 +19,7 @@ public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> 
 
     @Override
     public Void handleRequest(SNSEvent input, Context context) {
+        LOGGER.debug(input.getRecords().get(0).getSNS().getMessage());
         return null;
     }
 }
