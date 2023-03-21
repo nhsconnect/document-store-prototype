@@ -23,3 +23,12 @@ resource "aws_sns_topic_subscription" "virus_scanned_lambda_topic_subscription" 
   topic_arn = data.aws_ssm_parameter.virus_scan_notifications_sns_topic_arn[0].value
   count = var.cloud_only_service_instances
 }
+
+resource "aws_lambda_permission" "sns_permission_for_virus_scan_event" {
+  statement_id  = "AllowExecutionFromSNSTopic"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.virus_scanned_event_lambda.arn
+  principal     = "sns.amazonaws.com"
+  source_arn    = data.aws_ssm_parameter.virus_scan_notifications_sns_topic_arn[0].value
+  count         = var.cloud_only_service_instances
+}
