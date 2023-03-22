@@ -74,19 +74,19 @@ data "aws_ssm_parameter" "cloud_security_email" {
   name = "/prs/${var.environment}/user-input/cloud-security-email"
 }
 
-#resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
-#  name = "s3-virus-scanning-cloudformation-stack"
-#  parameters = {
-#    VPC = aws_vpc.virus_scanning_vpc.id
-#    SubnetA = aws_subnet.virus_scanning_subnet1.id
-#    SubnetB = aws_subnet.virus_scanning_subnet2.id
-#    ConsoleSecurityGroupCidrBlock = var.black_hole_address
-#    Email = data.aws_ssm_parameter.cloud_security_email.value
-#    OnlyScanWhenQueueThresholdExceeded = "Yes"
-#    MinRunningAgents = 0
-#    NumMessagesInQueueScalingThreshold = 1
-#    AllowAccessToAllKmsKeys = "No"
-#  }
-#  template_url = "https://css-cft.s3.amazonaws.com/ConsoleCloudFormationTemplate.yaml"
-#  capabilities = ["CAPABILITY_NAMED_IAM"]
-#}
+resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
+  name = "s3-virus-scanning-cloudformation-stack"
+  parameters = {
+    VPC = aws_vpc.virus_scanning_vpc.id
+    SubnetA = aws_subnet.virus_scanning_subnet1.id
+    SubnetB = aws_subnet.virus_scanning_subnet2.id
+    ConsoleSecurityGroupCidrBlock = var.black_hole_address
+    Email = data.aws_ssm_parameter.cloud_security_email.value
+    OnlyScanWhenQueueThresholdExceeded = "Yes"
+    MinRunningAgents = 0
+    NumMessagesInQueueScalingThreshold = 1
+    AllowAccessToAllKmsKeys = "No"
+  }
+  template_url = "https://css-cft.s3.amazonaws.com/ConsoleCloudFormationTemplate.yaml"
+  capabilities = ["CAPABILITY_NAMED_IAM"]
+}
