@@ -241,7 +241,9 @@
       "Effect": "Allow",
       "Action": [
         "ssm:GetParameters",
-        "ssm:GetParameter"
+        "ssm:GetParameter",
+        "ssm:DescribeParameters",
+        "ssm:ListTagsForResource"
       ],
       "Resource": "*"
     },
@@ -318,7 +320,9 @@
         "cloudformation:CreateStack",
         "cloudformation:DescribeStacks",
         "cloudformation:GetTemplate",
-        "cloudformation:ListExports"
+        "cloudformation:ListExports",
+        "cloudformation:UpdateStack",
+        "cloudformation:DescribeStackEvents"
       ],
       "Resource": "*"
     },
@@ -349,7 +353,9 @@
         "ec2:DescribeNetworkInterfaces",
         "ec2:DescribeNetworkInterfaceAttribute",
         "ec2:DescribeInternetGateways",
-        "ec2:DescribeRouteTables"
+        "ec2:DescribeRouteTables",
+        "ec2:RevokeSecurityGroupIngress",
+        "ec2:DescribeSecurityGroups"
       ],
       "Resource": "*"
     }
