@@ -5,20 +5,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 
 class VirusScannedEventServiceTest {
 
-
-
     @Test
     public void testSavesVirusScanResultsInDynamoDb() {
         DocumentMetadataStore metadataStore = mock(DocumentMetadataStore.class);
         DocumentMetadataSerialiser metadataSerialiser = mock(DocumentMetadataSerialiser.class);
-        var virusScannedEventService = new VirusScannedEventService(metadataStore, metadataSerialiser);
+        var virusScannedEventService =
+                new VirusScannedEventService(metadataStore, metadataSerialiser);
         DocumentLocation location = new DocumentLocation("s3://test/test");
         String scanResult = "Infected";
 
