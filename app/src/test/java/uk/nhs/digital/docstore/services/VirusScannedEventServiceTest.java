@@ -27,4 +27,19 @@ class VirusScannedEventServiceTest {
 
         verify(metadataStore).save(metadata);
     }
+
+    @Test
+    public void testDoesNotSaveToDynamoDbIfNoDocumentFoundByLocation() {
+        DocumentMetadataStore metadataStore = mock(DocumentMetadataStore.class);
+        DocumentMetadataSerialiser metadataSerialiser = mock(DocumentMetadataSerialiser.class);
+        var virusScannedEventService =
+                new VirusScannedEventService(metadataStore, metadataSerialiser, Clock.systemUTC());
+        DocumentLocation location = new DocumentLocation("s3://test/test");
+        String scanResult = "Infected";
+
+        when(metadataStore.getByLocation(location)).thenReturn(null);
+        virusScannedEventService.updateVirusScanResult(location, scanResult);
+
+        verify(metadataStore, times(0)).save(any());
+    }
 }
