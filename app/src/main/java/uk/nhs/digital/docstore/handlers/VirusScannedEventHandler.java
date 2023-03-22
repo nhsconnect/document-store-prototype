@@ -3,8 +3,10 @@ package uk.nhs.digital.docstore.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.events.VirusScannedEvent;
 
 public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> {
 
@@ -12,7 +14,16 @@ public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> 
 
     @Override
     public Void handleRequest(SNSEvent input, Context context) {
-        LOGGER.debug(input.getRecords().get(0).getSNS().getMessage());
+        input.getRecords()
+                .forEach(
+                        (record) -> {
+                            var message = record.getSNS().getMessage();
+                            try {
+                                var virusScannedEvent = VirusScannedEvent.parse(message);
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
         return null;
     }
 }
