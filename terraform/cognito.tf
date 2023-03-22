@@ -56,14 +56,14 @@ resource "aws_cognito_user_pool_client" "client" {
   ]
   allowed_oauth_flows          = ["code", "implicit"]
   allowed_oauth_scopes         = ["openid"]
-  supported_identity_providers = var.cognito_oidc_providers
-  callback_urls                = concat(var.cognito_cis2_client_callback_urls, [
+  supported_identity_providers = var.oidc_providers
+  callback_urls                = concat(var.cis2_client_callback_urls, [
     "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
   ])
   default_redirect_uri = "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com/cis2-auth-callback"
   logout_urls          = concat([
     "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com"
-  ], var.cognito_cis2_client_signout_urls)
+  ], var.cis2_client_signout_urls)
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
@@ -79,13 +79,13 @@ resource "aws_cognito_identity_provider" "cis2_identity_provider" {
 
   provider_details = {
     authorize_scopes          = "openid associatedorgs nationalrbacaccess"
-    client_id                 = var.cognito_cis2_provider_client_id
-    client_secret             = var.cognito_cis2_provider_client_secret
-    oidc_issuer               = var.cognito_cis2_provider_oidc_issuer
-    authorize_url             = var.cognito_cis2_provider_authorize_url
-    token_url                 = var.cognito_cis2_provider_token_url
-    attributes_url            = var.cognito_cis2_provider_attributes_url
-    jwks_uri                  = var.cognito_cis2_provider_jwks_uri
+    client_id                 = var.cis2_provider_client_id
+    client_secret             = var.cis2_provider_client_secret
+    oidc_issuer               = var.cis2_provider_oidc_issuer
+    authorize_url             = var.cis2_provider_authorize_url
+    token_url                 = var.cis2_provider_token_url
+    attributes_url            = var.cis2_provider_attributes_url
+    jwks_uri                  = var.cis2_provider_jwks_uri
     attributes_request_method = "GET"
   }
 
@@ -102,7 +102,9 @@ output "cognito_user_pool_ids" {
 }
 
 output "cognito_user_pool_domain" {
-  value = [for domain in aws_cognito_user_pool_domain.domain[*].domain : "${domain}.auth.${var.region}.amazoncognito.com"]
+  value = [
+    for domain in aws_cognito_user_pool_domain.domain[*].domain :"${domain}.auth.${var.region}.amazoncognito.com"
+  ]
 }
 
 output "cognito_client_ids" {

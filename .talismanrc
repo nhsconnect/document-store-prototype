@@ -57,8 +57,6 @@ fileignoreconfig:
   checksum: 29d3c5cc1dc2643986d8d4abfd2c3fa9f978bf6ca33c7382217949cee2eda22e
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentMetadataStore.java
   checksum: d2165ea4b4c798643ba5680f40b4db3842237c9f8d0fec5d4c3596397eb686ad
-- filename: deploy-to-localstack.sh
-  checksum: 31876ba47bca40ba8a4252f852437539840293f94354d728cf12e55ea5201828
 - filename: Dojofile
   checksum: 64416def7a6855167692f0b31de309c50ba15a68b92521e8222dc5d26219c6a1
 - filename: docs/diagrams/flow/path-to-prod.md
@@ -85,14 +83,6 @@ fileignoreconfig:
   checksum: 9a90e78883022e95256da925949570a27a2cbabc300d92113cea2b4d1a20d379
 - filename: e2eTest/cypress/fixtures/test_patient_record_two.pdf
   checksum: a5816cc7662ca44ca704fee0e51b94dacdc0f88885b83e8d9505c79e0320df50
-- filename: terraform/prod.tfvars
-  checksum: 15c8317229083a4053c14b3a139de1509098b02bef8f4d91f58e62da21e73a2e
-- filename: terraform/dev.tfvars
-  checksum: 33f008e82f08de65bb42d20fd92c3245400e88d0533431a70754d4b36ce38f8b
-- filename: terraform/pre-prod.tfvars
-  checksum: 5db57c15e7a0a9743ebd2548c0f87258a6b74477f5ebd96d60e894a80c3b79bc
-- filename: terraform/main.tf
-  checksum: abc0c5adbf59e1cfbaf893618de1d1d14de40c4cd8a02bff988828c9859156ff
 - filename: docs/diagrams/flow/path-to-prod.md
   checksum: 011fb55fff5554a7e8e7b23a0c34f319bf43be047abda0527e75b1873801ba5b
 - filename: terraform/.terraform.lock.hcl
@@ -105,8 +95,6 @@ fileignoreconfig:
   checksum: 70f29ae53e3c7ec268d645210571f3024be77e87ba4a21091bb3e2120478a814
 - filename: terraform/authoriser.tf
   checksum: 82777b8520f7385ee83dddfbda62401b5f00729f4b148a53f683eea9a1dad505
-- filename: terraform/cognito.tf
-  checksum: 5a5bd0b1b86027a0cba2405aa31da115ac3bca0fec0060bb2c5b53d3a5829c33
 - filename: ui/src/components/documentsInput/DocumentsInput.jsx
   checksum: 2e2f63b6b9169f88dd7a03c1cdced26b0ef84d7e4813de5719a149d25722b2e0
 - filename: terraform/pre-prod.s3.tfbackend
@@ -145,8 +133,6 @@ fileignoreconfig:
   checksum: 01acb34290060c451d9c3445e1de1ac82a4a7790dc7a23a60cdb70ace6449f6d
 - filename: terraform/alarms.tf
   checksum: 0c0221749e8d98ff6e4a92fb65d8040251b777b78e1c2963f4e098755dace29d
-- filename: tasks
-  checksum: 989b30902a084db6307244e80c3723adf2e1fcaab35b4967823809c10ee7b9e1
 - filename: app/src/main/java/uk/nhs/digital/docstore/handlers/CreateDocumentReferenceHandler.java
   checksum: f11dc74d87b94bfe6ae003465991136f4c548f85fdd16301c4cb359564c4143d
 - filename: docs/images/user-journey-architecture-diagram.png
@@ -163,6 +149,20 @@ fileignoreconfig:
   checksum: e635efebc09f3ed4411363973bb0e9076f21019e20d7556ecaae7227b1ffef42
 - filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/requests/AuthoriserRequestEvent.java
   checksum: d6d395e01cdf90969fa44eb44695d3a32cb7c98736118be944e2abca713eedec
+- filename: terraform/dev.tfvars
+  checksum: d3c8a4fedfc3eed75b7b8b1a2a8c242b4eb7998fc99179835157dbc4fa119ea2
+- filename: terraform/prod.tfvars
+  checksum: 30482c047b014e5af1bd3c346c3e699659ec2d0b6270b9a561f8e5dc7339b9aa
+- filename: terraform/pre-prod.tfvars
+  checksum: 2723c798d72fe9364cbdfac1ffae191ebe71ea0ea42ed891476857ba1fa53c3e
+- filename: deploy-to-localstack.sh
+  checksum: bd8545e9b73334a7226c1090ace3741749d7b1cae09e695b4cc0fc51b77027a2
+- filename: tasks
+  checksum: b0dfce157e6a87997b37b5ee60b96495abb9d002e750e41e598408c436dbe390
+- filename: terraform/cognito.tf
+  checksum: 66e15f7bc0431556f6524c5cced8369de7035bf911c4463dd7d31378c45e01b4
+- filename: terraform/main.tf
+  checksum: 47245a578b883ec283c56f62cd700df3b9581ea371d06d452281950a9526f8bc
 version: ""
 scopeconfig:
   - scope: node

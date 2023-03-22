@@ -83,52 +83,52 @@ variable "cognito_domain_prefix" {
   description = "This should be an empty string for the dev environment. If this changes it must be updated with CIS2"
 }
 
-variable "cognito_oidc_providers" {
+variable "oidc_providers" {
   type    = list(string)
   default = []
 }
 
-variable "cognito_cis2_provider_client_id" {
+variable "cis2_provider_client_id" {
   type    = string
   default = "0000"
 }
 
-variable "cognito_cis2_provider_client_secret" {
+variable "cis2_provider_client_secret" {
   type    = string
   default = "0000"
 }
 
-variable "cognito_cis2_provider_oidc_issuer" {
+variable "cis2_provider_oidc_issuer" {
   type    = string
   default = ""
 }
 
-variable "cognito_cis2_provider_authorize_url" {
+variable "cis2_provider_authorize_url" {
   type    = string
   default = ""
 }
 
-variable "cognito_cis2_provider_token_url" {
+variable "cis2_provider_token_url" {
   type    = string
   default = ""
 }
 
-variable "cognito_cis2_provider_attributes_url" {
+variable "cis2_provider_attributes_url" {
   type    = string
   default = ""
 }
 
-variable "cognito_cis2_provider_jwks_uri" {
+variable "cis2_provider_jwks_uri" {
   type    = string
   default = ""
 }
 
-variable "cognito_cis2_client_callback_urls" {
+variable "cis2_client_callback_urls" {
   type    = list(string)
   default = [""]
 }
 
-variable "cognito_cis2_client_signout_urls" {
+variable "cis2_client_signout_urls" {
   type    = list(string)
   default = [""]
 }
@@ -149,6 +149,6 @@ variable "cognito_key_id" {
 }
 
 variable "cloud_storage_security_agent_role_arn" {
-  type = string
+  type    = string
   default = ""
 }

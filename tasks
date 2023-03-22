@@ -238,8 +238,8 @@ tf_plan)
   assume_ci_role
   tf_init
   terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" \
-    -var cognito_cis2_provider_client_id=$(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id) \
-    -var cognito_cis2_provider_client_secret=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \
+    -var cis2_provider_client_id=$(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id) \
+    -var cis2_provider_client_secret=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \
     -var basic_auth_password="$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/basic-auth-password)" \
     -var lambda_jar_filename=../jars/libs/app.jar \
     -var authoriser_lambda_jar_filename=../jars/libs/authoriser.jar \
