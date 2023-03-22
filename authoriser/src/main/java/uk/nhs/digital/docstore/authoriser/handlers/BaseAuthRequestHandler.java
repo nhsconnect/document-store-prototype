@@ -15,7 +15,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-public class BaseAuthRequestHandler {
+public abstract class BaseAuthRequestHandler {
     public static final int SEE_OTHER_STATUS_CODE = 303;
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_ENDPOINT = "";
