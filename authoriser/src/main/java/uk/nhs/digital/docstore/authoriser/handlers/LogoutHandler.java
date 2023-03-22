@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.authoriser.DynamoDBSessionStore;
-import uk.nhs.digital.docstore.authoriser.SessionStore;
+import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
+import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.LogoutRequestEvent;
 
 public class LogoutHandler extends BaseAuthRequestHandler

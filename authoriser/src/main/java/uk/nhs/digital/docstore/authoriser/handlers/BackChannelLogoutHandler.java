@@ -16,8 +16,8 @@ import com.nimbusds.openid.connect.sdk.validators.LogoutTokenValidator;
 import java.text.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.authoriser.DynamoDBSessionStore;
-import uk.nhs.digital.docstore.authoriser.SessionStore;
+import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
+import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 
 @SuppressWarnings("unused")
 public class BackChannelLogoutHandler extends BaseAuthRequestHandler

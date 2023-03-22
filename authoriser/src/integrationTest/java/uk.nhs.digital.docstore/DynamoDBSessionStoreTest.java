@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.authoriser.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.models.Session;
+import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.helpers.AWSServiceContainer;
 import uk.nhs.digital.docstore.helpers.DynamoDBHelper;
 

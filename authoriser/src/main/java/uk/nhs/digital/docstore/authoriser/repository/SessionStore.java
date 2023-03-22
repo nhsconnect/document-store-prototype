@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.authoriser;
+package uk.nhs.digital.docstore.authoriser.repository;
 
 import com.nimbusds.oauth2.sdk.id.Subject;
 import java.util.List;

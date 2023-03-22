@@ -6,7 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.authoriser.SessionStore;
+import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.AuthoriserRequestEvent;
 
 public class AuthoriserHandler

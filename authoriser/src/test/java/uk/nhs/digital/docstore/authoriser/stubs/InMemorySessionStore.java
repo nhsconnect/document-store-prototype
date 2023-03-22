@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import uk.nhs.digital.docstore.authoriser.SessionStore;
 import uk.nhs.digital.docstore.authoriser.models.Session;
+import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 
 public class InMemorySessionStore implements SessionStore {
 
@@ -39,10 +39,7 @@ public class InMemorySessionStore implements SessionStore {
 
     @Override
     public void batchDelete(List<Session> sessions) {
-        sessions.forEach(
-                session -> {
-                    sessionHashMap.remove(session.getPK() + session.getSK());
-                });
+        sessions.forEach(session -> sessionHashMap.remove(session.getPK() + session.getSK()));
     }
 
     @Override

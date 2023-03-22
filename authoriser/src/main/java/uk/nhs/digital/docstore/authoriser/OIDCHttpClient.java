@@ -11,6 +11,7 @@ import java.util.UUID;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
+import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 
 public class OIDCHttpClient implements OIDCClient {
 
