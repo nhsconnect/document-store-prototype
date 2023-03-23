@@ -13,14 +13,17 @@ describe("ServiceError", () => {
         expect(
             screen.getByText(/Please check your internet connection. If the issue persists please contact the/)
         ).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "NHS Digital National Service Desk" })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "NHS National Service Desk" })).toBeInTheDocument();
     });
 
-    it("renders a link to the NHS Digital National Service Desk that opens in a new tab", () => {
+    it("renders a link to the NHS National Service Desk that opens in a new tab", () => {
         render(<ServiceError />);
 
-        const serviceDeskLink = screen.getByRole("link", { name: "NHS Digital National Service Desk" });
-        expect(serviceDeskLink).toHaveAttribute("href", "https://digital.nhs.uk/about-nhs-digital/contact-us");
+        const serviceDeskLink = screen.getByRole("link", { name: "NHS National Service Desk" });
+        expect(serviceDeskLink).toHaveAttribute(
+            "href",
+            "https://digital.nhs.uk/about-nhs-digital/contact-us#nhs-digital-service-desks"
+        );
         expect(serviceDeskLink).toHaveAttribute("target", "_blank");
     });
 

@@ -24,7 +24,10 @@ describe("<StartPage />", () => {
 
         expect(screen.getByText(/If there is an issue/)).toBeInTheDocument();
         const nationalServiceDeskLink = screen.getByRole("link", { name: /National Service Desk/ });
-        expect(nationalServiceDeskLink).toHaveAttribute("href", "https://digital.nhs.uk/about-nhs-digital/contact-us");
+        expect(nationalServiceDeskLink).toHaveAttribute(
+            "href",
+            "https://digital.nhs.uk/about-nhs-digital/contact-us#nhs-digital-service-desks"
+        );
         expect(nationalServiceDeskLink).toHaveAttribute("target", "_blank");
     });
 

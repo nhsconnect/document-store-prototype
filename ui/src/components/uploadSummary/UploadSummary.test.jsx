@@ -116,21 +116,18 @@ describe("UploadSummary", () => {
         expect(
             screen.getByText(/Please check your internet connection. If the issue persists please contact the/)
         ).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "NHS Digital National Service Desk" })).toHaveAttribute(
+        expect(screen.getByRole("link", { name: "NHS National Service Desk" })).toHaveAttribute(
             "href",
-            "https://digital.nhs.uk/about-nhs-digital/contact-us"
+            "https://digital.nhs.uk/about-nhs-digital/contact-us#nhs-digital-service-desks"
         );
     });
 
-    it("opens NHS Digital National Service Desk link in a new tab", () => {
+    it("opens NHS National Service Desk link in a new tab", () => {
         const documents = [buildDocument(buildTextFile(), documentUploadStates.FAILED)];
 
         renderUploadSummary({ documents });
 
-        expect(screen.getByRole("link", { name: "NHS Digital National Service Desk" })).toHaveAttribute(
-            "target",
-            "_blank"
-        );
+        expect(screen.getByRole("link", { name: "NHS National Service Desk" })).toHaveAttribute("target", "_blank");
     });
 
     it("displays each doc that failed to upload in a table", () => {
