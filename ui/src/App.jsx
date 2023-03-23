@@ -15,6 +15,7 @@ import AuthProvider from "./providers/AuthProvider";
 import DeleteDocumentsPage from "./pages/deleteDocumentsPage/DeleteDocumentsPage";
 import ConfigurationProvider, { useFeatureToggle } from "./providers/ConfigurationProvider";
 import AuthCallbackRouter from "./auth/authCallbackRouters/AuthCallbackRouter";
+import AuthErrorPage from "./pages/authErrorPage/AuthErrorPage";
 import DocumentStoreProvider from "./providers/DocumentStoreProvider";
 import routes from "./enums/routes";
 import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
@@ -25,6 +26,7 @@ const AppRoutes = () => {
     const {
         ROOT,
         AUTH_CALLBACK,
+        AUTH_ERROR,
         HOME,
         UPLOAD,
         UPLOAD_SEARCH_PATIENT,
@@ -50,6 +52,7 @@ const AppRoutes = () => {
                 element={isOIDCAuthActive ? <OIDCAuthCallbackRouter /> : <AuthCallbackRouter />}
                 path={AUTH_CALLBACK}
             />
+            <Route element={<AuthErrorPage />} path={AUTH_ERROR} />
             <Route
                 element={
                     <ProtectedAuthRoutes>
