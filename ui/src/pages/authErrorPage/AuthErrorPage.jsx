@@ -10,8 +10,8 @@ const AuthErrorPage = () => {
         <>
             <h1 role="heading">You have been logged out</h1>
             <p>
-                For security reasons, {"you're"} automatically logged out if you have not used the service for
-                {` ${timeoutString}`}.
+                For security reasons, you&apos;re automatically logged out if you have not used the service for{" "}
+                {timeoutString}.
             </p>
             <p>If you were entering information, it has not been saved and you will need to re-enter it.</p>
             <p>
@@ -26,7 +26,6 @@ const AuthErrorPage = () => {
                 </a>
                 .
             </p>
-
             <ButtonLink href={`${baseAPIUrl}/Auth/Login`}>Log In</ButtonLink>
         </>
     );

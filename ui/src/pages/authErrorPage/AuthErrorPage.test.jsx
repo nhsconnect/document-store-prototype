@@ -5,10 +5,11 @@ import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
 jest.mock("../../providers/ConfigurationProvider");
 
 describe("AuthErrorPage", () => {
-    it("renders the error page", () => {
+    it("renders the page", () => {
         const baseApiUrl = "https://api.url";
         const loginHandlerUrl = `${baseApiUrl}/Auth/Login`;
         const helpDeskUrl = "https://digital.nhs.uk/about-nhs-digital/contact-us#nhs-digital-service-desks";
+
         useBaseAPIUrl.mockReturnValue(baseApiUrl);
 
         render(<AuthErrorPage />);
