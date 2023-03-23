@@ -30,9 +30,13 @@ public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> 
                                 var virusScannedEvent = VirusScannedEvent.parse(message);
                                 String bucketName = virusScannedEvent.getBucketName();
                                 String key = virusScannedEvent.getKey();
-                                DocumentLocation documentLocation = new DocumentLocation(String.format("s3://%s/%s", bucketName, key));
-                                virusScanService.updateVirusScanResult(documentLocation, virusScannedEvent.getResult());
+                                DocumentLocation documentLocation =
+                                        new DocumentLocation(
+                                                String.format("s3://%s/%s", bucketName, key));
+                                virusScanService.updateVirusScanResult(
+                                        documentLocation, virusScannedEvent.getResult());
                             } catch (JsonProcessingException e) {
+                                LOGGER.error("Oh no!");
                                 throw new RuntimeException(e);
                             }
                         });
