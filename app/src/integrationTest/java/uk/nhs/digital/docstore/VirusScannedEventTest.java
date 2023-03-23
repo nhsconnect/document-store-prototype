@@ -2,12 +2,11 @@ package uk.nhs.digital.docstore;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
-
-import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,7 +81,6 @@ public class VirusScannedEventTest extends BaseDocumentStoreTest {
         DocumentMetadata docMetadata = metadataStore.getById(metadata.getId());
         assert docMetadata.getVirusScanResult().equalsIgnoreCase("infected");
         assert docMetadata.isDocumentUploaded();
-
     }
 
     @Test
@@ -93,6 +91,5 @@ public class VirusScannedEventTest extends BaseDocumentStoreTest {
         DocumentMetadata docMetadata = metadataStore.getById(metadata.getId());
         assert docMetadata.getVirusScanResult().equalsIgnoreCase("clean");
         assert docMetadata.isDocumentUploaded();
-
     }
 }

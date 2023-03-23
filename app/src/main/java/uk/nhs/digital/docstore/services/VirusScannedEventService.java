@@ -15,9 +15,7 @@ public class VirusScannedEventService {
 
     private final Clock clock;
 
-    public VirusScannedEventService(
-            DocumentMetadataStore metadataStore,
-            Clock clock) {
+    public VirusScannedEventService(DocumentMetadataStore metadataStore, Clock clock) {
         this.metadataStore = metadataStore;
         this.clock = clock;
     }
