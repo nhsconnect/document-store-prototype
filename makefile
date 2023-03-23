@@ -48,7 +48,7 @@ test-app-unit: ## Run /app unit tests (no logs)
 	./gradlew test --rerun-tasks
 
 .PHONY: test-app-unit-with-logs
-test-app-with-logs: ## Run /app unit tests (with logs)
+test-app-unit-with-logs: ## Run /app unit tests (with logs)
 	./gradlew test --rerun-tasks --info
 
 .PHONY: test-app-integration

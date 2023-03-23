@@ -18,9 +18,10 @@ _Note: It is recommended to use [Homebrew](https://brew.sh/) to install most of 
 
 ## Running Locally
 
-[//]: # (TODO: Add details on how to configure auth)
 The ARF service can be run locally (excl. some AWS services and CIS2). The UI is run separately to the backend, see
 the [UI README](ui/README.md) for more details. Auth will require configuration too.
+
+[//]: # (TODO: Add details on how to configure auth)
 
 ### Running The Backend
 
@@ -86,8 +87,42 @@ One may also follow log output as it happens by applying the `follow` flag to th
 
 ### Backend Tests
 
-The `test` source set contains unit tests. These don't have any dependencies on infra or external services.
-There is also a suite of API tests within the `integrationTest` source set which run against AWS resources.
+The backend (app) tests consist of unit and integration tests written in [JUnit](https://junit.org/junit5/). Unit and
+integration tests can both be run using the following command:
+
+```bash
+make test-app
+```
+
+_Note: This command requires the backend to be running locally._
+
+#### Unit Tests
+
+Unit tests can be run using the following commands:
+
+```bash
+make test-app-unit
+```
+
+To run the unit tests with logs, run:
+
+```bash
+make test-app-unit-with-logs
+```
+
+#### Integration Tests
+
+Integration tests will require the backend to be running locally and can be run using the following commands:
+
+```bash
+make test-app-integration
+```
+
+To run the integration tests with logs, run:
+
+```bash
+make test-app-integration-with-logs
+```
 
 ### UI Tests
 
@@ -96,6 +131,8 @@ Details on the UI tests can be found in the [/ui README](ui/README.md).
 ### E2E Tests
 
 Details on the E2E tests can be found in the [/e2eTest README](e2eTest/README.md).
+
+[//]: # (TODO: Add details on auth tests)
 
 ## Running Services On AWS
 
