@@ -5,6 +5,9 @@ import com.amazonaws.services.lambda.runtime.Context;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.List;
+
+import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,12 +27,13 @@ public class VirusScannedEventTest extends BaseDocumentStoreTest {
     @Mock Context context;
     VirusScannedEventHandler handler;
     DocumentMetadataStore metadataStore;
-
     VirusScannedEventService virusScanService;
-
     JSONObject json;
-
     DocumentMetadata metadata;
+    SNSEvent snsEvent;
+
+    final String INFECTED = "Infected";
+    final String CLEAN = "Clean";
 
     @BeforeEach
     void setUp() {
@@ -38,10 +42,11 @@ public class VirusScannedEventTest extends BaseDocumentStoreTest {
         this.metadataStore = new DocumentMetadataStore(dynamoMapper);
         this.virusScanService = new VirusScannedEventService(metadataStore, clock);
         this.handler = new VirusScannedEventHandler(this.virusScanService);
+    }
 
+    private void prepare(String result) {
         String bucketName = "cool-test-bucket";
         String key = "some-key";
-        String result = "Infected";
 
         this.json = new JSONObject();
         this.json.put("bucketName", bucketName);
@@ -59,11 +64,35 @@ public class VirusScannedEventTest extends BaseDocumentStoreTest {
         }
 
         metadataStore.save(metadata);
+
+        snsEvent = new SNSEvent();
+        SNSEvent.SNS sns = new SNSEvent.SNS();
+        sns.setMessage(json.toString());
+        SNSEvent.SNSRecord snsRecord = new SNSEvent.SNSRecord();
+        snsRecord.setSns(sns);
+        List<SNSEvent.SNSRecord> recordList = List.of(snsRecord);
+        snsEvent.setRecords(recordList);
     }
 
     @Test
-    public void testInfectedFileVirusScannedResultsAreSavedToMetadata() {}
+    public void testInfectedFileVirusScannedResultsAreSavedToMetadata() {
+
+        prepare(INFECTED);
+        handler.handleRequest(snsEvent, context);
+        DocumentMetadata docMetadata = metadataStore.getById(metadata.getId());
+        assert docMetadata.getVirusScanResult().equalsIgnoreCase("infected");
+        assert docMetadata.isDocumentUploaded();
+
+    }
 
     @Test
-    public void testCleanFileVirusScannedResultsAreSavedToMetadata() {}
+    public void testCleanFileVirusScannedResultsAreSavedToMetadata() {
+
+        prepare(CLEAN);
+        handler.handleRequest(snsEvent, context);
+        DocumentMetadata docMetadata = metadataStore.getById(metadata.getId());
+        assert docMetadata.getVirusScanResult().equalsIgnoreCase("clean");
+        assert docMetadata.isDocumentUploaded();
+
+    }
 }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.events.VirusScannedEvent;
+import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.VirusScannedEventService;
 
 public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> {
@@ -27,6 +28,10 @@ public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> 
                             var message = record.getSNS().getMessage();
                             try {
                                 var virusScannedEvent = VirusScannedEvent.parse(message);
+                                String bucketName = virusScannedEvent.getBucketName();
+                                String key = virusScannedEvent.getKey();
+                                DocumentLocation documentLocation = new DocumentLocation(String.format("s3://%s/%s", bucketName, key));
+                                virusScanService.updateVirusScanResult(documentLocation, virusScannedEvent.getResult());
                             } catch (JsonProcessingException e) {
                                 throw new RuntimeException(e);
                             }
