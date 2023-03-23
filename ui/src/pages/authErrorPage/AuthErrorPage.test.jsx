@@ -1,8 +1,10 @@
 import AuthErrorPage from "./AuthErrorPage";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
-describe("authErrorPage", () => {
+describe("AuthErrorPage", () => {
     it("renders the error page", () => {
         render(<AuthErrorPage />);
+
+        expect(screen.getByRole("heading", { name: "Authorisation Error" })).toBeInTheDocument();
     });
 });

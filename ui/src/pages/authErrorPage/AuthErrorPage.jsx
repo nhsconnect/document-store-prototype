@@ -1,4 +1,4 @@
 const AuthErrorPage = () => {
-    return null;
+    return <h1>Authorisation Error</h1>;
 };
 export default AuthErrorPage;
