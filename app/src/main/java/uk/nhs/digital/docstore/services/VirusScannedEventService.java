@@ -5,7 +5,6 @@ import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 
 public class VirusScannedEventService {
@@ -14,16 +13,12 @@ public class VirusScannedEventService {
 
     private final DocumentMetadataStore metadataStore;
 
-    private final DocumentMetadataSerialiser metadataSerialiser;
-
     private final Clock clock;
 
     public VirusScannedEventService(
             DocumentMetadataStore metadataStore,
-            DocumentMetadataSerialiser metadataSerialiser,
             Clock clock) {
         this.metadataStore = metadataStore;
-        this.metadataSerialiser = metadataSerialiser;
         this.clock = clock;
     }
 
