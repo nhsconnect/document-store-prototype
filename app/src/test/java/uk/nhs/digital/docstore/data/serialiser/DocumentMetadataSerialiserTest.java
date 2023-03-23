@@ -41,7 +41,8 @@ class DocumentMetadataSerialiserTest {
         assertThat(document.getType().get(0)).isEqualTo(type);
         assertThat(document.getIndexed()).isNull();
         assertThat(document.getDeleted()).isNull();
-        assertThat(document.getVirusScanResult()).isEqualTo(ScanResult.valueOf(virusScanResult));
+        assertThat(document.getVirusScanResult())
+                .isEqualTo(ScanResult.scanResultFromString(virusScanResult));
     }
 
     @Test

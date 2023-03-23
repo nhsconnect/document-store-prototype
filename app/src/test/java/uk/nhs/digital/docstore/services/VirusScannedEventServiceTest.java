@@ -2,7 +2,6 @@ package uk.nhs.digital.docstore.services;
 
 import static org.mockito.Mockito.*;
 
-import java.time.Clock;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
@@ -14,8 +13,7 @@ class VirusScannedEventServiceTest {
     @Test
     public void testSavesVirusScanResultsInDynamoDb() throws IllFormedPatientDetailsException {
         DocumentMetadataStore metadataStore = mock(DocumentMetadataStore.class);
-        var virusScannedEventService =
-                new VirusScannedEventService(metadataStore, Clock.systemUTC());
+        var virusScannedEventService = new VirusScannedEventService(metadataStore);
         DocumentLocation location = new DocumentLocation("s3://test/test");
         String scanResult = "Infected";
         var metadata = DocumentMetadataBuilder.theMetadata().build();
@@ -29,8 +27,7 @@ class VirusScannedEventServiceTest {
     @Test
     public void testDoesNotSaveToDynamoDbIfNoDocumentFoundByLocation() {
         DocumentMetadataStore metadataStore = mock(DocumentMetadataStore.class);
-        var virusScannedEventService =
-                new VirusScannedEventService(metadataStore, Clock.systemUTC());
+        var virusScannedEventService = new VirusScannedEventService(metadataStore);
         DocumentLocation location = new DocumentLocation("s3://test/test");
         String scanResult = "Infected";
 

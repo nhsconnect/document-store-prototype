@@ -10,6 +10,11 @@ resource "aws_lambda_function" "virus_scanned_event_lambda" {
   layers = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
+  environment {
+    variables = {
+      QUARANTINE_BUCKET_NAME = var.quarantine_bucket_name
+    }
+  }
 }
 
 data "aws_ssm_parameter" "virus_scan_notifications_sns_topic_arn" {

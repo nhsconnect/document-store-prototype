@@ -33,30 +33,33 @@ public class VirusScannedEventTest extends BaseDocumentStoreTest {
 
     final String INFECTED = "Infected";
     final String CLEAN = "Clean";
+    final String BUCKET_NAME = "cool-test-bucket";
+    final String KEY = "some-key";
+
+    final String QUARANTINE_BUCKET_NAME = "QuarantineBucket";
 
     @BeforeEach
     void setUp() {
         Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.of("Europe/London"));
         DynamoDBMapper dynamoMapper = new DynamoDBMapper(aws.getDynamoDBClient());
         this.metadataStore = new DocumentMetadataStore(dynamoMapper);
-        this.virusScanService = new VirusScannedEventService(metadataStore, clock);
+        this.virusScanService =
+                new VirusScannedEventService(metadataStore, clock, QUARANTINE_BUCKET_NAME);
         this.handler = new VirusScannedEventHandler(this.virusScanService);
     }
 
     private void prepare(String result) {
-        String bucketName = "cool-test-bucket";
-        String key = "some-key";
 
         this.json = new JSONObject();
-        this.json.put("bucketName", bucketName);
-        this.json.put("key", key);
+        this.json.put("bucketName", BUCKET_NAME);
+        this.json.put("key", KEY);
         this.json.put("result", result);
         this.json.put("dateScanned", "some-date");
 
         try {
             metadata =
                     DocumentMetadataBuilder.theMetadata()
-                            .withLocation(String.format("s3://%s/%s", bucketName, key))
+                            .withLocation(String.format("s3://%s/%s", BUCKET_NAME, KEY))
                             .build();
         } catch (IllFormedPatientDetailsException e) {
             metadata = new DocumentMetadata();
@@ -81,6 +84,9 @@ public class VirusScannedEventTest extends BaseDocumentStoreTest {
         DocumentMetadata docMetadata = metadataStore.getById(metadata.getId());
         assert docMetadata.getVirusScanResult().equalsIgnoreCase("infected");
         assert docMetadata.isDocumentUploaded();
+        assert docMetadata
+                .getLocation()
+                .equals(String.format("s3://%s/%s/%s", QUARANTINE_BUCKET_NAME, BUCKET_NAME, KEY));
     }
 
     @Test

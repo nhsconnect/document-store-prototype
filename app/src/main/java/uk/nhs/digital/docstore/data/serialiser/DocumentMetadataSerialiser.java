@@ -35,6 +35,6 @@ public class DocumentMetadataSerialiser {
                 metadata.getIndexed() == null ? null : Instant.parse(metadata.getIndexed()),
                 metadata.getType(),
                 new DocumentLocation(metadata.getLocation()),
-                ScanResult.valueOf(metadata.getVirusScanResult()));
+                ScanResult.scanResultFromString(metadata.getVirusScanResult()));
     }
 }

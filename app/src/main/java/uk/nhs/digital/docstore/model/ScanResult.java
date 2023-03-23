@@ -1,9 +1,14 @@
 package uk.nhs.digital.docstore.model;
 
+import java.util.Arrays;
+
 public enum ScanResult {
-    CLEAN("CLEAN"),
-    INFECTED("INFECTED"),
-    NOT_SCANNED("NOT_SCANNED");
+    CLEAN("Clean"),
+    INFECTED("Infected"),
+    NOT_SCANNED("Not Scanned"),
+    ERROR("Error"),
+    UNSCANNABLE("Unscannable"),
+    UNKNOWN("Unknown");
 
     private final String result;
 
@@ -14,5 +19,12 @@ public enum ScanResult {
     @Override
     public String toString() {
         return result;
+    }
+
+    public static ScanResult scanResultFromString(String result) {
+        return Arrays.stream(ScanResult.values())
+                .filter(scanResult -> scanResult.result.equals(result))
+                .findAny()
+                .orElse(UNKNOWN);
     }
 }

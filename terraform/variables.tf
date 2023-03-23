@@ -152,3 +152,8 @@ variable "cloud_storage_security_agent_role_arn" {
   type    = string
   default = ""
 }
+
+variable "quarantine_bucket_name" {
+  type    = string
+  default = ""
+}

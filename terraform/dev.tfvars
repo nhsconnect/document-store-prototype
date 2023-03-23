@@ -11,3 +11,4 @@ cis2_client_signout_urls              = ["http://localhost:3000"]
 cognito_key_id                        = "owPwCSHr3lp0iS3IYF8OkOGFS/47dU6YOdDlVQztB5E="
 pds_fhir_is_stubbed                   = "false"
 cloud_storage_security_agent_role_arn = "arn:aws:iam::533825906475:role/CloudStorageSecAgentRole-3k85qxs"
+quarantine_bucket_name                = "cloudstoragesecquarantine-3k85qxs-533825906475-eu-west-2"
