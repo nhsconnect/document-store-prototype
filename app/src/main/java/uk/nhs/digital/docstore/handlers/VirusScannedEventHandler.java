@@ -4,15 +4,11 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.events.VirusScannedEvent;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.VirusScannedEventService;
 
 public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(VirusScannedEventHandler.class);
 
     private final VirusScannedEventService virusScanService;
 
@@ -36,7 +32,6 @@ public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> 
                                 virusScanService.updateVirusScanResult(
                                         documentLocation, virusScannedEvent.getResult());
                             } catch (JsonProcessingException e) {
-                                LOGGER.error("Oh no!");
                                 throw new RuntimeException(e);
                             }
                         });
