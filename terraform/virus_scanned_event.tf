@@ -38,3 +38,12 @@ resource "aws_lambda_permission" "sns_permission_for_virus_scan_event" {
   source_arn    = data.aws_ssm_parameter.virus_scan_notifications_sns_topic_arn[0].value
   count         = var.environment == "dev" ? 1 : 0
 }
+
+module virus_scanner_alarms {
+  source                     = "./modules/lambda_alarms"
+  lambda_function_name       = aws_lambda_function.virus_scanned_event_lambda.function_name
+  lambda_timeout             = aws_lambda_function.virus_scanned_event_lambda.timeout
+  lambda_short_name          = "virus_scanned_event_handler"
+  notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
+  environment                = var.environment
+}
