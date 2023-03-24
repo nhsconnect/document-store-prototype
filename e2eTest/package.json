@@ -9,7 +9,7 @@
         "test:open": "cypress open --browser chrome"
     },
     "devDependencies": {
-        "@testing-library/cypress": "^8.0.7",
+        "@testing-library/cypress": "^9.0.0",
         "cypress": "^12.8.1",
         "cypress-axe": "^1.4.0",
         "eslint-config-prettier": "^8.6.0",
