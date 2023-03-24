@@ -104,17 +104,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "document_store_lifecycle" {
   }
 }
 
-resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = aws_s3_bucket.document_store.id
-
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.document_uploaded_lambda.arn
-    events              = ["s3:ObjectCreated:*"]
-  }
-
-  depends_on = [aws_lambda_permission.s3_permission_for_document_upload_event]
-}
-
 resource "aws_s3_bucket_cors_configuration" "document_store_bucket_cors_config" {
   bucket = aws_s3_bucket.document_store.id
 
