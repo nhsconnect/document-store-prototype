@@ -50,7 +50,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         this.OIDCClient = OIDCClient;
     }
 
-
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             TokenRequestEvent requestEvent, Context context) {
