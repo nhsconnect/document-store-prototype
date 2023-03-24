@@ -6,6 +6,7 @@ public enum ScanResult {
     CLEAN("Clean"),
     INFECTED("Infected"),
     NOT_SCANNED("Not Scanned"),
+    SUSPICIOUS("Suspicious"),
     ERROR("Error"),
     UNSCANNABLE("Unscannable"),
     UNKNOWN("Unknown");
