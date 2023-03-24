@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.events.VirusScannedEvent;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.VirusScannedEventService;
@@ -14,6 +15,10 @@ public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> 
 
     public VirusScannedEventHandler(VirusScannedEventService virusScanService) {
         this.virusScanService = virusScanService;
+    }
+
+    public VirusScannedEventHandler() {
+        this(new VirusScannedEventService(new DocumentMetadataStore()));
     }
 
     @Override
