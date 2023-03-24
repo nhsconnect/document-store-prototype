@@ -4,7 +4,7 @@ import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
 import { downloadFile } from "../../utils/utils";
 import { MemoryRouter, useNavigate } from "react-router";
-import { buildPatientDetails, searchResultFactory } from "../../utils/testBuilders";
+import { buildPatientDetails, buildSearchResult } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
 import routes from "../../enums/routes";
 
@@ -72,7 +72,7 @@ describe("<SearchResultsPage />", () => {
         it("displays search results when there are results", async () => {
             const description = "Doc description.";
             const indexed = new Date();
-            const searchResult = searchResultFactory.build({ description, indexed });
+            const searchResult = buildSearchResult({ description, indexed });
 
             findByNhsNumberMock.mockResolvedValue([searchResult]);
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
@@ -93,9 +93,9 @@ describe("<SearchResultsPage />", () => {
             const secondOldestDate = new Date(Date.UTC(2022, 7, 10, 10));
             const newestDate = new Date(Date.UTC(2022, 7, 11, 10));
             const searchResults = [
-                searchResultFactory.build({ indexed: oldestDate }),
-                searchResultFactory.build({ indexed: secondOldestDate }),
-                searchResultFactory.build({ indexed: newestDate }),
+                buildSearchResult({ indexed: oldestDate }),
+                buildSearchResult({ indexed: secondOldestDate }),
+                buildSearchResult({ indexed: newestDate }),
             ];
 
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
@@ -132,7 +132,7 @@ describe("<SearchResultsPage />", () => {
 
         it("calls API client and should download the ZIP file when user clicks on download all button", async () => {
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
-            findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
+            findByNhsNumberMock.mockResolvedValue([buildSearchResult()]);
 
             renderSearchResultsPage();
 
@@ -156,7 +156,7 @@ describe("<SearchResultsPage />", () => {
 
             usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
             getPresignedUrlForZipMock.mockResolvedValue(preSignedUrl);
-            findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
+            findByNhsNumberMock.mockResolvedValue([buildSearchResult()]);
 
             renderSearchResultsPage();
             userEvent.click(
@@ -172,7 +172,7 @@ describe("<SearchResultsPage />", () => {
 
         it("disables the download all button while waiting to download the zip file", async () => {
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
-            findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
+            findByNhsNumberMock.mockResolvedValue([buildSearchResult()]);
 
             renderSearchResultsPage();
             userEvent.click(await screen.findByRole("button", { name: "Download All Documents" }));
@@ -185,13 +185,22 @@ describe("<SearchResultsPage />", () => {
 
         it("displays error message when download fails after clicking download all button", async () => {
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
-            findByNhsNumberMock.mockResolvedValue([searchResultFactory.build()]);
+            findByNhsNumberMock.mockResolvedValue([buildSearchResult()]);
             getPresignedUrlForZipMock.mockRejectedValue(new Error("Failed to download docs!"));
 
             renderSearchResultsPage();
             userEvent.click(await screen.findByRole("button", { name: "Download All Documents" }));
 
             expect(await screen.findByRole("alert")).toBeInTheDocument();
+        });
+
+        it("disables download all button when there are no uninfected files available", async () => {
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            findByNhsNumberMock.mockResolvedValue([buildSearchResult({virusScanResult: "Infected"})]);
+
+            renderSearchResultsPage();
+
+            expect(await screen.findByRole("button", { name: "Download All Documents" })).toBeDisabled();
         });
     });
 

@@ -38,11 +38,16 @@ const buildDocument = (file, uploadStatus) => {
     };
 };
 
-const searchResultFactory = Factory.define(() => ({
-    id: "some-id",
-    description: "Some description",
-    type: "some type",
-    indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
-}));
+const buildSearchResult = (searchResultOverride) => {
+    return {
+        id: "some-id",
+        description: "Some description",
+        type: "some type",
+        indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
+        virusScanResult: "Clean",
+        ...searchResultOverride,
+    };
+}
 
-export { buildPatientDetails, buildTextFile, buildDocument, searchResultFactory };
+
+export { buildPatientDetails, buildTextFile, buildDocument, buildSearchResult };

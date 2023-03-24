@@ -59,6 +59,10 @@ const SearchResultsPage = () => {
         }
     };
 
+    const cleanFileIsPresent = (results) => {
+
+    }
+
     return (
         <>
             <BackButton />
