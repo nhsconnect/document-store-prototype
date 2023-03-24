@@ -25,7 +25,7 @@ const config = {
             OIDC_AUTHENTICATION: false,
         },
         dev: {
-            OIDC_AUTHENTICATION: false,
+            OIDC_AUTHENTICATION: true,
         },
         "pre-prod": {
             OIDC_AUTHENTICATION: true,
