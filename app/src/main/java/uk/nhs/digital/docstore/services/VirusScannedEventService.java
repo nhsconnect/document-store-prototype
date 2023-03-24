@@ -47,6 +47,8 @@ public class VirusScannedEventService {
                     "Updating DocumentReference {} to uploaded and adding virusScan result",
                     metadata.getId());
             metadataStore.save(metadata);
+        } else {
+            LOGGER.info("There is no metadata for the location provided");
         }
     }
 }
