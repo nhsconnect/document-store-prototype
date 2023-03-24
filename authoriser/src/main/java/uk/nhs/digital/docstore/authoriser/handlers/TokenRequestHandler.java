@@ -23,6 +23,8 @@ import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
+    public static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
+
     private final uk.nhs.digital.docstore.authoriser.OIDCClient OIDCClient;
 
     private Clock clock = Clock.systemUTC();
@@ -48,7 +50,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         this.OIDCClient = OIDCClient;
     }
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
