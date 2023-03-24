@@ -61,7 +61,9 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         if (authCode.isEmpty()) {
             throw new RuntimeException("Auth code is empty");
         }
-
+        // TODO don't push to live
+        LOGGER.debug("Headers: " + requestEvent.getHeaders().toString());
+        LOGGER.debug("MV Headers: " + requestEvent.getMultiValueHeaders().toString());
         if (!requestEvent.hasMatchingStateValues()) {
             // TODO: [PRMT-2779] Add redaction if it is required
             LOGGER.debug(
