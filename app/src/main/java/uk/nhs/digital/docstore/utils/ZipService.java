@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.FileName;
+import uk.nhs.digital.docstore.model.ScanResult;
 
 public class ZipService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZipService.class);
@@ -40,7 +41,7 @@ public class ZipService {
 
         for (Document document : documentList) {
             var fileName = document.getFileName().getValue();
-            if (document.isUploaded()) {
+            if (document.getVirusScanResult() == ScanResult.CLEAN) {
                 LOGGER.debug(
                         "Document ID: "
                                 + document.getReferenceId()

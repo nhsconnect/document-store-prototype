@@ -92,6 +92,21 @@ public class DocumentBuilder {
                 virusScanResult);
     }
 
+    public DocumentBuilder withVirusScanResult(ScanResult virusScanResult) {
+        return new DocumentBuilder(
+                referenceId,
+                nhsNumber,
+                contentType,
+                uploaded,
+                fileName,
+                created,
+                deleted,
+                indexed,
+                type,
+                location,
+                virusScanResult);
+    }
+
     public Document build() {
         return new Document(
                 referenceId,
