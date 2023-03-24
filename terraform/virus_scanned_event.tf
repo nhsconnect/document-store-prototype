@@ -13,6 +13,7 @@ resource "aws_lambda_function" "virus_scanned_event_lambda" {
   environment {
     variables = {
       QUARANTINE_BUCKET_NAME = var.quarantine_bucket_name
+      DYNAMODB_ENDPOINT = var.dynamodb_endpoint
     }
   }
 }
