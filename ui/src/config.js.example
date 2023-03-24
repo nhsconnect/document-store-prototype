@@ -22,10 +22,10 @@ const config = {
     },
     features: {
         local: {
-            OIDC_AUTHENTICATION: true,
+            OIDC_AUTHENTICATION: false,
         },
         dev: {
-            OIDC_AUTHENTICATION: true,
+            OIDC_AUTHENTICATION: false,
         },
         "pre-prod": {
             OIDC_AUTHENTICATION: true,

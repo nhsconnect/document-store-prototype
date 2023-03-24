@@ -1,6 +1,6 @@
 export const routes = Object.freeze({
     ROOT: "/",
-    AUTH_CALLBACK: "cis2-auth-callback",
+    AUTH_CALLBACK: "auth-callback",
     AUTH_ERROR: "/auth-error",
     HOME: "/home",
     UPLOAD: "/upload",
