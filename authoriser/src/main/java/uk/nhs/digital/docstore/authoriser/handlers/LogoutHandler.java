@@ -33,26 +33,21 @@ public class LogoutHandler extends BaseAuthRequestHandler
         var sessionId = requestEvent.getSessionId();
         var subject = requestEvent.getSubject();
         var multiValueHeaders = new HashMap<String, List<String>>();
+        // TODO: [PRMT-2779] Improve redaction if it is required
+        var redactedSessionId = sessionId.toString().substring(sessionId.toString().length() - 4);
+
+        LOGGER.debug("Logging out with session ID ending in: " + redactedSessionId);
 
         if (sessionId.isPresent() && subject.isPresent()) {
             var session = sessionStore.load(subject.get(), sessionId.get());
 
             if (session.isPresent()) {
-                // TODO: [PRMT-2779] Improve redaction if it is required
-                LOGGER.debug(
-                        "Deleting session with ID ending in "
-                                + sessionId
-                                        .toString()
-                                        .substring(sessionId.toString().length() - 4));
+                LOGGER.debug("Deleting session with ID ending in: " + redactedSessionId);
 
                 sessionStore.delete(session.get());
 
-                // TODO: [PRMT-2779] Improve redaction if it is required
                 LOGGER.debug(
-                        "Successfully deleted session "
-                                + sessionId
-                                        .toString()
-                                        .substring(sessionId.toString().length() - 4));
+                        "Successfully deleted session with ID ending in: " + redactedSessionId);
             }
 
             var subjectClaimCookie =

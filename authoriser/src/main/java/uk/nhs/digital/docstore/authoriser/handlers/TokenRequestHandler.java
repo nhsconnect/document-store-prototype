@@ -55,7 +55,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             TokenRequestEvent requestEvent, Context context) {
         var authCode = requestEvent.getAuthCode();
 
-        // TODO: [PRMT-2779] Add identifier such as a redacted session ID
+        // TODO: [PRMT-2779] Add identifier such as a redacted state
         LOGGER.debug("Handling token request");
 
         if (authCode.isEmpty()) {
@@ -63,7 +63,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         }
 
         if (!requestEvent.hasMatchingStateValues()) {
-            // TODO: [PRMT-2779] Add redaction if it is required
+            // TODO: [PRMT-2779] Add redaction if required
             LOGGER.debug(
                     "Mismatching state values. Cookie state: "
                             + requestEvent.getCookieState().orElse(null)
@@ -76,7 +76,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                     .withBody("");
         }
 
-        // TODO: [PRMT-2779] Add redaction if it is required
+        // TODO: [PRMT-2779] Add redaction if required
         LOGGER.debug(
                 "Authorising session for state: " + requestEvent.getCookieState().orElse(null));
 
@@ -88,7 +88,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             throw new RuntimeException(exception);
         }
 
-        // TODO: [PRMT-2779] Add redaction if it is required
+        // TODO: [PRMT-2779] Add redaction if required
         LOGGER.debug(
                 "Successfully authorised session with state: "
                         + requestEvent.getCookieState().orElse(null));
@@ -109,7 +109,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie, loggedInCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
-        // TODO: [PRMT-2779] Add or improve redaction if it is required
+        // TODO: [PRMT-2779] Add or improve redaction if required
         LOGGER.debug(
                 "Responding with auth cookies for session with ID ending in: "
                         + sessionId.substring(sessionId.length() - 4));
