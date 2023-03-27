@@ -15,10 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.authoriser.HTTPTokenRequestClient;
-import uk.nhs.digital.docstore.authoriser.OIDCClient;
-import uk.nhs.digital.docstore.authoriser.OIDCHttpClient;
-import uk.nhs.digital.docstore.authoriser.OIDCTokenFetcher;
+import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
@@ -60,9 +57,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         // TODO: [PRMT-2779] Add identifier such as a redacted session ID
         LOGGER.debug("Handling token request");
-
-        // TODO: [PRMT-2779] Remove this log once cookie headers debugging has been completed
-        LOGGER.debug("Headers: " + requestEvent.getHeaders());
 
         if (authCode.isEmpty()) {
             throw new RuntimeException("Auth code is empty");
