@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table } from "nhsuk-react-components";
+import {Button, Table, WarningCallout, ErrorMessage} from "nhsuk-react-components";
 import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -25,7 +25,7 @@ const SearchResultsPage = () => {
     const [downloadState, setDownloadState] = useState(states.INITIAL);
     const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
-    const [hasCleanFiles, setHasCleanFiles] = useState(false)
+    const [numberOfCleanFiles, setNumberOfCleanFiles] = useState(0)
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
@@ -38,8 +38,9 @@ const SearchResultsPage = () => {
             try {
                 const results = await documentStore.findByNhsNumber(patientDetails.nhsNumber);
                 results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
+                results[0].virusScanResult = "Infected"
                 setSearchResults(results);
-                setHasCleanFiles(results.some((doc) => (doc.virusScanResult === "Clean")))
+                setNumberOfCleanFiles(results.filter((doc) => (doc.virusScanResult === "Clean")).length)
                 setSubmissionState(states.SUCCEEDED);
             } catch (error) {
                 setSubmissionState(states.FAILED);
@@ -73,6 +74,12 @@ const SearchResultsPage = () => {
                 <>
                     {searchResults.length > 0 && (
                         <>
+                            {(numberOfCleanFiles < searchResults.length) && (
+                                <WarningCallout>
+                                    <WarningCallout.Label>Information</WarningCallout.Label>
+                                    <p>The files in red below are not available for download.</p>
+                                </WarningCallout>
+                            )}
                             <Table caption="List of documents available">
                                 <Table.Head>
                                     <Table.Row>
@@ -83,7 +90,7 @@ const SearchResultsPage = () => {
                                 <Table.Body>
                                     {searchResults.map((result, index) => (
                                         <Table.Row key={`document-${index}`}>
-                                            <Table.Cell>{result.description}</Table.Cell>
+                                            <Table.Cell>{result.virusScanResult === "Clean" ? result.description : <ErrorMessage>{result.description}</ErrorMessage>}</Table.Cell>
                                             <Table.Cell>{result.indexed.toLocaleString()}</Table.Cell>
                                         </Table.Row>
                                     ))}
@@ -92,7 +99,7 @@ const SearchResultsPage = () => {
                             {downloadState === states.PENDING && (
                                 <ProgressBar status="Downloading documents..."></ProgressBar>
                             )}
-                            <Button type="button" onClick={downloadAll} disabled={(downloadState === states.PENDING) || !hasCleanFiles}>
+                            <Button type="button" onClick={downloadAll} disabled={(downloadState === states.PENDING) || (numberOfCleanFiles < 1)}>
                                 Download All Documents
                             </Button>
                             {downloadState === states.SUCCEEDED && (

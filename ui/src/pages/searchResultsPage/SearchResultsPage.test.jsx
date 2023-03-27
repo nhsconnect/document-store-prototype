@@ -202,6 +202,31 @@ describe("<SearchResultsPage />", () => {
 
             expect(await screen.findByRole("button", { name: "Download All Documents" })).toBeDisabled();
         });
+
+        it("renders warning message when there is an infected file available", async () => {
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            const searchResult = [buildSearchResult({virusScanResult: "Infected"}), buildSearchResult({virusScanResult: "Clean"})];
+            findByNhsNumberMock.mockResolvedValue(searchResult);
+
+
+            renderSearchResultsPage();
+
+            expect(await screen.findByText("The files in red below are not available for download.")).toBeInTheDocument();
+        });
+
+        it("renders infected filename in red", async () => {
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            const infectedFilename = "InfectedFile";
+            const cleanFilename = "CleanFile";
+            const searchResult = [buildSearchResult({virusScanResult: "Infected", description: infectedFilename}), buildSearchResult({virusScanResult: "Clean", description: cleanFilename})];
+            findByNhsNumberMock.mockResolvedValue(searchResult);
+
+
+            renderSearchResultsPage();
+
+            expect(await screen.findByText(infectedFilename)).toHaveClass("nhsuk-error-message");
+            expect(await screen.findByText(cleanFilename)).not.toHaveClass("nhsuk-error-message");
+        });
     });
 
     describe("without NHS number", () => {
