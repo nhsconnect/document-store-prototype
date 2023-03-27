@@ -35,7 +35,7 @@ public class LoginRedirectHandler extends BaseAuthRequestHandler
 
         // TODO: [PRMT-2779] Add identifier such as redacted state
         LOGGER.debug(
-                "Redirecting user with state "
+                "Redirecting user with state ending in: "
                         + authRequestState.substring(authRequestState.length() - 4)
                         + " to "
                         + authRequestUri);
