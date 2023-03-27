@@ -33,8 +33,7 @@ resource "aws_api_gateway_method" "logout_proxy_method" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   resource_id   = aws_api_gateway_resource.logout_resource.id
   http_method   = "GET"
-  authorization = "CUSTOM"
-  authorizer_id = aws_api_gateway_authorizer.cis2_authoriser.id
+  authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "logout_lambda_integration" {
