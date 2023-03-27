@@ -25,6 +25,7 @@ const SearchResultsPage = () => {
     const [downloadState, setDownloadState] = useState(states.INITIAL);
     const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
+    const [hasCleanFiles, setHasCleanFiles] = useState(false)
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
@@ -38,11 +39,13 @@ const SearchResultsPage = () => {
                 const results = await documentStore.findByNhsNumber(patientDetails.nhsNumber);
                 results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
                 setSearchResults(results);
+                setHasCleanFiles(results.some((doc) => (doc.virusScanResult === "Clean")))
                 setSubmissionState(states.SUCCEEDED);
             } catch (error) {
                 setSubmissionState(states.FAILED);
             }
         };
+
         void search();
     }, [documentStore, patientDetails, navigate, setSubmissionState, setSearchResults]);
 
@@ -58,10 +61,6 @@ const SearchResultsPage = () => {
             setDownloadState(states.FAILED);
         }
     };
-
-    const cleanFileIsPresent = (results) => {
-
-    }
 
     return (
         <>
@@ -93,7 +92,7 @@ const SearchResultsPage = () => {
                             {downloadState === states.PENDING && (
                                 <ProgressBar status="Downloading documents..."></ProgressBar>
                             )}
-                            <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING}>
+                            <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING || !hasCleanFiles}>
                                 Download All Documents
                             </Button>
                             {downloadState === states.SUCCEEDED && (
