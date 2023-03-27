@@ -92,7 +92,7 @@ const SearchResultsPage = () => {
                             {downloadState === states.PENDING && (
                                 <ProgressBar status="Downloading documents..."></ProgressBar>
                             )}
-                            <Button type="button" onClick={downloadAll} disabled={downloadState === states.PENDING || !hasCleanFiles}>
+                            <Button type="button" onClick={downloadAll} disabled={(downloadState === states.PENDING) || !hasCleanFiles}>
                                 Download All Documents
                             </Button>
                             {downloadState === states.SUCCEEDED && (
