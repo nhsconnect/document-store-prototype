@@ -4,14 +4,13 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import java.util.HashMap;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.LogoutRequestEvent;
-
-import java.util.HashMap;
-import java.util.List;
 
 public class LogoutHandler extends BaseAuthRequestHandler
         implements RequestHandler<LogoutRequestEvent, APIGatewayProxyResponseEvent> {
@@ -35,7 +34,10 @@ public class LogoutHandler extends BaseAuthRequestHandler
         var subject = requestEvent.getSubject();
         var multiValueHeaders = new HashMap<String, List<String>>();
         // TODO: [PRMT-2779] Improve redaction if it is required
-        var redactedSessionId = sessionId.isEmpty() ? "null" : sessionId.toString().substring(sessionId.toString().length() - 4);
+        var redactedSessionId =
+                sessionId.isEmpty()
+                        ? "null"
+                        : sessionId.toString().substring(sessionId.toString().length() - 4);
 
         LOGGER.debug("Logging out with session ID ending in: " + redactedSessionId);
 
