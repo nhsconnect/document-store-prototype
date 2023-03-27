@@ -196,3 +196,14 @@ data aws_iam_policy_document "s3_object_access_policy_doc" {
 output "document-store-bucket" {
   value = aws_s3_bucket.document_store.bucket
 }
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.document_store.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.document_uploaded_lambda.arn
+    events              = ["s3:ObjectCreated:*"]
+  }
+  count = var.environment == "local" ? 1 : 0
+  depends_on = [aws_lambda_permission.s3_permission_for_document_upload_event]
+}
