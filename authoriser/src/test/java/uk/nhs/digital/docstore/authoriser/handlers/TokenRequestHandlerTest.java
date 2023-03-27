@@ -32,7 +32,7 @@ class TokenRequestHandlerTest {
                         authCode.getValue(),
                         "state",
                         state.getValue()));
-        request.setHeaders(Map.of("cookie", "State=" + state.getValue()));
+        request.setHeaders(Map.of("Cookie", "State=" + state.getValue()));
         var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
         var fixedTime = Instant.now(clock);
         var maxCookieAgeInSeconds = 100L;
@@ -87,7 +87,7 @@ class TokenRequestHandlerTest {
                         "redirect_uri", "https://redirect.uri",
                         "code", authCode.getValue(),
                         "state", new State().getValue()));
-        request.setHeaders(Map.of("cookie", "State=" + new State().getValue()));
+        request.setHeaders(Map.of("Cookie", "State=" + new State().getValue()));
         var session = new Session();
         session.setRole("some-role");
 

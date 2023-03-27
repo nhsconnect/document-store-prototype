@@ -10,11 +10,11 @@ public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
     public Optional<State> getCookieState() {
         var headers = getHeaders();
 
-        if (headers == null || headers.get("cookie") == null) {
+        if (headers == null || headers.get("Cookie") == null) {
             return Optional.empty();
         }
 
-        var cookiesString = headers.get("cookie");
+        var cookiesString = headers.get("Cookie");
         var cookies = new HashMap<String, String>();
 
         Arrays.stream(cookiesString.split(";"))

@@ -14,7 +14,7 @@ class TokenRequestEventTest {
         var tokenRequestEvent = new TokenRequestEvent();
 
         String stateValue = "value";
-        var headers = Map.of("cookie", "State=" + stateValue);
+        var headers = Map.of("Cookie", "State=" + stateValue);
 
         tokenRequestEvent.setHeaders(headers);
 
@@ -28,7 +28,7 @@ class TokenRequestEventTest {
         var tokenRequestEvent = new TokenRequestEvent();
 
         String stateValue = "value";
-        var headers = Map.of("cookie", "Foo=bar; State=" + stateValue);
+        var headers = Map.of("Cookie", "Foo=bar; State=" + stateValue);
 
         tokenRequestEvent.setHeaders(headers);
 
