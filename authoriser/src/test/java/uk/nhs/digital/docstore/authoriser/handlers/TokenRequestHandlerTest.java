@@ -54,27 +54,24 @@ class TokenRequestHandlerTest {
         assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
-                .contains(
-                        "State="
-                                + state
-                                + "; SameSite=Strict; Secure; Path=/; Max-Age=0; HttpOnly");
+                .contains("State=" + state + "; SameSite=Lax; Secure; Path=/; Max-Age=0; HttpOnly");
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains(
                         "SubjectClaim="
                                 + session.getOIDCSubject()
-                                + "; SameSite=Strict; Secure; Path=/; Max-Age="
+                                + "; SameSite=Lax; Secure; Path=/; Max-Age="
                                 + maxCookieAgeInSeconds
                                 + "; HttpOnly");
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains(
                         "SessionId="
                                 + session.getId()
-                                + "; SameSite=Strict; Secure; Path=/; Max-Age="
+                                + "; SameSite=Lax; Secure; Path=/; Max-Age="
                                 + maxCookieAgeInSeconds
                                 + "; HttpOnly");
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains(
-                        "LoggedIn=True; SameSite=Strict; Secure; Path=/; Max-Age="
+                        "LoggedIn=True; SameSite=Lax; Secure; Path=/; Max-Age="
                                 + maxCookieAgeInSeconds);
     }
 

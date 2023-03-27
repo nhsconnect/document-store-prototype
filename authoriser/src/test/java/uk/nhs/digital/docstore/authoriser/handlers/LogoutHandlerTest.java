@@ -45,14 +45,14 @@ public class LogoutHandlerTest {
                 .isEqualTo(
                         "SessionId="
                                 + sessionID
-                                + "; SameSite=Strict; Secure; Path=/; Max-Age=0; HttpOnly");
+                                + "; SameSite=Lax; Secure; Path=/; Max-Age=0; HttpOnly");
         assertThat(setCookieHeaders.get(1))
                 .isEqualTo(
                         "SubjectClaim="
                                 + subject.getValue()
-                                + "; SameSite=Strict; Secure; Path=/; Max-Age=0; HttpOnly");
+                                + "; SameSite=Lax; Secure; Path=/; Max-Age=0; HttpOnly");
         assertThat(setCookieHeaders.get(2))
-                .isEqualTo("LoggedIn=" + "; SameSite=Strict; Secure; Path=/; Max-Age=0");
+                .isEqualTo("LoggedIn=" + "; SameSite=Lax; Secure; Path=/; Max-Age=0");
 
         assertThat(sessionStore.load(subject, session.getId())).isEmpty();
     }
@@ -84,14 +84,14 @@ public class LogoutHandlerTest {
                 .isEqualTo(
                         "SessionId="
                                 + sessionID
-                                + "; SameSite=Strict; Secure; Path=/; Max-Age=0; HttpOnly");
+                                + "; SameSite=Lax; Secure; Path=/; Max-Age=0; HttpOnly");
         assertThat(setCookieHeaders.get(1))
                 .isEqualTo(
                         "SubjectClaim="
                                 + subject.getValue()
-                                + "; SameSite=Strict; Secure; Path=/; Max-Age=0; HttpOnly");
+                                + "; SameSite=Lax; Secure; Path=/; Max-Age=0; HttpOnly");
         assertThat(setCookieHeaders.get(2))
-                .isEqualTo("LoggedIn=" + "; SameSite=Strict; Secure; Path=/; Max-Age=0");
+                .isEqualTo("LoggedIn=" + "; SameSite=Lax; Secure; Path=/; Max-Age=0");
     }
 
     @Test
