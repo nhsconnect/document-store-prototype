@@ -10,28 +10,27 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.Tracer;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
-import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.DocumentLocation;
-import uk.nhs.digital.docstore.services.DocumentReferenceService;
+import uk.nhs.digital.docstore.services.VirusScannedEventService;
 
 public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Void> {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(DocumentUploadedEventHandler.class);
+    private static final String SCAN_RESULT = "Clean";
 
-    private final DocumentReferenceService documentReferenceService;
+    private final VirusScannedEventService virusScannedEventService;
 
     @SuppressWarnings("unused")
     public DocumentUploadedEventHandler() {
         this(
-                new DocumentReferenceService(
+                new VirusScannedEventService(
                         new DocumentMetadataStore(),
-                        new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")),
-                        new DocumentMetadataSerialiser()));
+                        new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL"))));
     }
 
-    public DocumentUploadedEventHandler(DocumentReferenceService documentReferenceService) {
-        this.documentReferenceService = documentReferenceService;
+    public DocumentUploadedEventHandler(VirusScannedEventService virusScannedEventService) {
+        this.virusScannedEventService = virusScannedEventService;
     }
 
     @Override
@@ -48,7 +47,8 @@ public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Voi
                 var objectKey = s3.getObject().getKey();
                 var location = String.format("s3://%s/%s", bucketName, objectKey);
 
-                documentReferenceService.markDocumentUploaded(new DocumentLocation(location));
+                virusScannedEventService.updateVirusScanResult(
+                        new DocumentLocation(location), SCAN_RESULT);
             }
         } catch (JsonProcessingException | IllFormedPatientDetailsException exception) {
             LOGGER.error(exception.getMessage(), exception);
