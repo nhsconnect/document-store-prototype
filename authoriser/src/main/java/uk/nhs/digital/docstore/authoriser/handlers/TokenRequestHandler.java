@@ -61,9 +61,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         // TODO: [PRMT-2779] Add identifier such as a redacted state
         LOGGER.debug("Handling token request");
 
-        // TODO: [PRMT-2779] Remove this log once cookie headers debugging has been completed
-        LOGGER.debug("Headers: " + requestEvent.getHeaders());
-
         if (authCode.isEmpty()) {
             throw new RuntimeException("Auth code is empty");
         }

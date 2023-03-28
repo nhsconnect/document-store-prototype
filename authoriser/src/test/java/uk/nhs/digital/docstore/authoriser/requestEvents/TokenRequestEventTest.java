@@ -1,58 +1,64 @@
 package uk.nhs.digital.docstore.authoriser.requestEvents;
 
-import com.nimbusds.oauth2.sdk.id.State;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class TokenRequestEventTest {
-
     @Test
-    void getCookieStateParsesSingleValueCookieHeader() {
-        var tokenRequestEvent = new TokenRequestEvent();
-
-        String stateValue = "value";
+    void getCookieStateParsesSingleValueCookieHeaderWithState() {
+        var stateValue = "value";
         var headers = Map.of("Cookie", "State=" + stateValue);
-
+        var tokenRequestEvent = new TokenRequestEvent();
         tokenRequestEvent.setHeaders(headers);
 
-        Optional<State> result = tokenRequestEvent.getCookieState();
-        Assertions.assertThat(result).isPresent();
-        Assertions.assertThat(result.get().getValue()).isEqualTo(stateValue);
+        var cookieState = tokenRequestEvent.getCookieState();
+
+        Assertions.assertThat(cookieState).isPresent();
+        Assertions.assertThat(cookieState.get().getValue()).isEqualTo(stateValue);
     }
 
     @Test
-    void getCookieStateParsesMultiValueCookieHeader() {
+    void getCookieStateParsesLowercaseCookieHeader() {
+        var headers = Map.of("cookie", "State=some-state");
         var tokenRequestEvent = new TokenRequestEvent();
-
-        String stateValue = "value";
-        var headers = Map.of("Cookie", "Foo=bar; State=" + stateValue);
-
         tokenRequestEvent.setHeaders(headers);
 
-        var result = tokenRequestEvent.getCookieState();
-        Assertions.assertThat(result).isPresent();
-        Assertions.assertThat(result.get().getValue()).isEqualTo(stateValue);
+        var cookieState = tokenRequestEvent.getCookieState();
+
+        Assertions.assertThat(cookieState).isPresent();
+    }
+
+    @Test
+    void getCookieStateParsesMultiValueCookieHeaderWithState() {
+        var stateValue = "value";
+        var headers = Map.of("Cookie", "Foo=bar; State=" + stateValue);
+        var tokenRequestEvent = new TokenRequestEvent();
+        tokenRequestEvent.setHeaders(headers);
+
+        var cookieState = tokenRequestEvent.getCookieState();
+
+        Assertions.assertThat(cookieState).isPresent();
+        Assertions.assertThat(cookieState.get().getValue()).isEqualTo(stateValue);
     }
 
     @Test
     void getCookieStateReturnsEmptyWhenNoHeadersAreSet() {
         var tokenRequestEvent = new TokenRequestEvent();
 
-        var result = tokenRequestEvent.getCookieState();
+        var cookieState = tokenRequestEvent.getCookieState();
 
-        Assertions.assertThat(result).isEmpty();
+        Assertions.assertThat(cookieState).isEmpty();
     }
 
     @Test
     void getCookieStateReturnsEmptyWhenNoCookieHeadersAreSet() {
         var tokenRequestEvent = new TokenRequestEvent();
         tokenRequestEvent.setHeaders(new HashMap<>());
-        tokenRequestEvent.setMultiValueHeaders(new HashMap<>());
 
-        var result = tokenRequestEvent.getCookieState();
-        Assertions.assertThat(result).isEmpty();
+        var cookieState = tokenRequestEvent.getCookieState();
+
+        Assertions.assertThat(cookieState).isEmpty();
     }
 }
