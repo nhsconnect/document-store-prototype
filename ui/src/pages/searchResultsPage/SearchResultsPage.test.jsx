@@ -216,7 +216,7 @@ describe("<SearchResultsPage />", () => {
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
         });
 
-        xit("renders new table with infected filenames when there is an infected file available", async () => {
+        it("renders new table with infected filenames when there is an infected file available", async () => {
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             const infectedFilename = "InfectedFile";
             const cleanFilename = "CleanFile";
@@ -239,16 +239,17 @@ describe("<SearchResultsPage />", () => {
     });
 
     describe("without NHS number", () => {
-        it("redirects to patient trace page when the NHS number is NOT available", () => {
+        it("redirects to patient trace page when the NHS number is NOT available", async () => {
             const navigateMock = jest.fn();
-            const patientDetails = buildPatientDetails({ nhsNumber: undefined });
 
-            usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
+            usePatientDetailsContext.mockReturnValue([undefined, jest.fn()]);
             useNavigate.mockReturnValue(navigateMock);
 
             renderSearchResultsPage();
 
-            expect(navigateMock).toHaveBeenCalledWith(routes.SEARCH_PATIENT);
+            await waitFor(() => {
+                expect(navigateMock).toHaveBeenCalledWith(routes.SEARCH_PATIENT);
+            });
         });
     });
 });

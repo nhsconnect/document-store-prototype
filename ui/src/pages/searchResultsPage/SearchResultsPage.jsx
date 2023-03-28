@@ -87,6 +87,27 @@ const SearchResultsPage = () => {
                                             </ErrorMessage>
                                         </ErrorSummary.Body>
                                     </ErrorSummary>
+                                    <Table
+                                        className={"nhsuk-form-group--error"}
+                                        caption="List of documents not available"
+                                    >
+                                        <Table.Head>
+                                            <Table.Row>
+                                                <Table.Cell>Filename</Table.Cell>
+                                            </Table.Row>
+                                        </Table.Head>
+                                        <Table.Body>
+                                            {searchResults
+                                                .filter((result) => result.virusScanResult !== "Clean")
+                                                .map((result, index) => (
+                                                    <Table.Row key={`document-${index}-error`}>
+                                                        <Table.Cell>
+                                                            <ErrorMessage>{result.description}</ErrorMessage>
+                                                        </Table.Cell>
+                                                    </Table.Row>
+                                                ))}
+                                        </Table.Body>
+                                    </Table>
                                 </>
                             )}
                             <Table caption="List of documents available">
@@ -97,12 +118,14 @@ const SearchResultsPage = () => {
                                     </Table.Row>
                                 </Table.Head>
                                 <Table.Body>
-                                    {searchResults.map((result, index) => (
-                                        <Table.Row key={`document-${index}`}>
-                                            <Table.Cell>{result.description}</Table.Cell>
-                                            <Table.Cell>{result.indexed.toLocaleString()}</Table.Cell>
-                                        </Table.Row>
-                                    ))}
+                                    {searchResults
+                                        .filter((result) => result.virusScanResult === "Clean")
+                                        .map((result, index) => (
+                                            <Table.Row key={`document-${index}`}>
+                                                <Table.Cell>{result.description}</Table.Cell>
+                                                <Table.Cell>{result.indexed.toLocaleString()}</Table.Cell>
+                                            </Table.Row>
+                                        ))}
                                 </Table.Body>
                             </Table>
                             {downloadState === states.PENDING && (
