@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {Button, Table, ErrorMessage, ErrorSummary} from "nhsuk-react-components";
+import { Button, Table, ErrorMessage, ErrorSummary } from "nhsuk-react-components";
 import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -25,7 +25,7 @@ const SearchResultsPage = () => {
     const [downloadState, setDownloadState] = useState(states.INITIAL);
     const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
-    const [numberOfCleanFiles, setNumberOfCleanFiles] = useState(0)
+    const [numberOfCleanFiles, setNumberOfCleanFiles] = useState(0);
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
@@ -38,9 +38,8 @@ const SearchResultsPage = () => {
             try {
                 const results = await documentStore.findByNhsNumber(patientDetails.nhsNumber);
                 results.sort((a, b) => (a.indexed < b.indexed ? 1 : -1));
-                results[0].virusScanResult = "Infected"
                 setSearchResults(results);
-                setNumberOfCleanFiles(results.filter((doc) => (doc.virusScanResult === "Clean")).length)
+                setNumberOfCleanFiles(results.filter((doc) => doc.virusScanResult === "Clean").length);
                 setSubmissionState(states.SUCCEEDED);
             } catch (error) {
                 setSubmissionState(states.FAILED);
@@ -74,14 +73,21 @@ const SearchResultsPage = () => {
                 <>
                     {searchResults.length > 0 && (
                         <>
-                            {(numberOfCleanFiles < searchResults.length) && (
-                                <ErrorSummary>
-                                    <ErrorSummary.Title>There is a problem</ErrorSummary.Title>
-                                    <ErrorSummary.Body>
-                                        <ErrorMessage>Some files are not available for download due to an issue</ErrorMessage>
-                                        <ErrorMessage>Take a screenshot of the list and contact GP Practice to access the files</ErrorMessage>
-                                    </ErrorSummary.Body>
-                                </ErrorSummary>
+                            {numberOfCleanFiles < searchResults.length && (
+                                <>
+                                    <ErrorSummary>
+                                        <ErrorSummary.Title>There is a problem</ErrorSummary.Title>
+                                        <ErrorSummary.Body>
+                                            <ErrorMessage>
+                                                Some files are not available for download due to an issue
+                                            </ErrorMessage>
+                                            <ErrorMessage>
+                                                Take a screenshot of the list and contact GP Practice to access the
+                                                files
+                                            </ErrorMessage>
+                                        </ErrorSummary.Body>
+                                    </ErrorSummary>
+                                </>
                             )}
                             <Table caption="List of documents available">
                                 <Table.Head>
@@ -93,7 +99,7 @@ const SearchResultsPage = () => {
                                 <Table.Body>
                                     {searchResults.map((result, index) => (
                                         <Table.Row key={`document-${index}`}>
-                                            <Table.Cell>{result.virusScanResult === "Clean" ? result.description : <ErrorMessage>{result.description}</ErrorMessage>}</Table.Cell>
+                                            <Table.Cell>{result.description}</Table.Cell>
                                             <Table.Cell>{result.indexed.toLocaleString()}</Table.Cell>
                                         </Table.Row>
                                     ))}
@@ -102,7 +108,11 @@ const SearchResultsPage = () => {
                             {downloadState === states.PENDING && (
                                 <ProgressBar status="Downloading documents..."></ProgressBar>
                             )}
-                            <Button type="button" onClick={downloadAll} disabled={(downloadState === states.PENDING) || (numberOfCleanFiles < 1)}>
+                            <Button
+                                type="button"
+                                onClick={downloadAll}
+                                disabled={downloadState === states.PENDING || numberOfCleanFiles < 1}
+                            >
                                 Download All Documents
                             </Button>
                             {downloadState === states.SUCCEEDED && (

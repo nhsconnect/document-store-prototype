@@ -1,4 +1,3 @@
-import { Factory } from "fishery";
 import { documentUploadStates } from "../enums/documentUploads";
 import { nanoid } from "nanoid/non-secure";
 
@@ -47,7 +46,6 @@ const buildSearchResult = (searchResultOverride) => {
         virusScanResult: "Clean",
         ...searchResultOverride,
     };
-}
-
+};
 
 export { buildPatientDetails, buildTextFile, buildDocument, buildSearchResult };

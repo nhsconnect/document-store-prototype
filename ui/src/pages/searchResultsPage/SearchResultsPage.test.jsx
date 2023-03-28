@@ -196,7 +196,7 @@ describe("<SearchResultsPage />", () => {
 
         it("disables download all button when there are no uninfected files available", async () => {
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
-            findByNhsNumberMock.mockResolvedValue([buildSearchResult({virusScanResult: "Infected"})]);
+            findByNhsNumberMock.mockResolvedValue([buildSearchResult({ virusScanResult: "Infected" })]);
 
             renderSearchResultsPage();
 
@@ -205,7 +205,10 @@ describe("<SearchResultsPage />", () => {
 
         it("renders warning message when there is an infected file available", async () => {
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
-            const searchResult = [buildSearchResult({virusScanResult: "Infected"}), buildSearchResult({virusScanResult: "Clean"})];
+            const searchResult = [
+                buildSearchResult({ virusScanResult: "Infected" }),
+                buildSearchResult({ virusScanResult: "Clean" }),
+            ];
             findByNhsNumberMock.mockResolvedValue(searchResult);
 
             renderSearchResultsPage();
@@ -213,17 +216,25 @@ describe("<SearchResultsPage />", () => {
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
         });
 
-        it("renders infected filename in red", async () => {
+        xit("renders new table with infected filenames when there is an infected file available", async () => {
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             const infectedFilename = "InfectedFile";
             const cleanFilename = "CleanFile";
-            const searchResult = [buildSearchResult({virusScanResult: "Infected", description: infectedFilename}), buildSearchResult({virusScanResult: "Clean", description: cleanFilename})];
+            const searchResult = [
+                buildSearchResult({ virusScanResult: "Infected", description: infectedFilename }),
+                buildSearchResult({ virusScanResult: "Clean", description: cleanFilename }),
+            ];
             findByNhsNumberMock.mockResolvedValue(searchResult);
 
             renderSearchResultsPage();
 
-            expect(await screen.findByText(infectedFilename)).toHaveClass("nhsuk-error-message");
-            expect(await screen.findByText(cleanFilename)).not.toHaveClass("nhsuk-error-message");
+            const infectedTable = await screen.findByText("List of documents not available");
+            expect(infectedTable).toBeInTheDocument();
+            expect(within(infectedTable).findByText(infectedFilename));
+
+            const cleanTable = await screen.findByText("List of documents available");
+            expect(cleanTable).toBeInTheDocument();
+            expect(within(cleanTable).findByText(cleanFilename));
         });
     });
 
