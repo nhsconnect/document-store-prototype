@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {Button, Table, WarningCallout, ErrorMessage} from "nhsuk-react-components";
+import {Button, Table, ErrorMessage, ErrorSummary} from "nhsuk-react-components";
 import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -75,10 +75,13 @@ const SearchResultsPage = () => {
                     {searchResults.length > 0 && (
                         <>
                             {(numberOfCleanFiles < searchResults.length) && (
-                                <WarningCallout>
-                                    <WarningCallout.Label>Information</WarningCallout.Label>
-                                    <p>The files in red below are not available for download.</p>
-                                </WarningCallout>
+                                <ErrorSummary>
+                                    <ErrorSummary.Title>There is a problem</ErrorSummary.Title>
+                                    <ErrorSummary.Body>
+                                        <ErrorMessage>Some files are not available for download due to an issue</ErrorMessage>
+                                        <ErrorMessage>Take a screenshot of the list and contact GP Practice to access the files</ErrorMessage>
+                                    </ErrorSummary.Body>
+                                </ErrorSummary>
                             )}
                             <Table caption="List of documents available">
                                 <Table.Head>

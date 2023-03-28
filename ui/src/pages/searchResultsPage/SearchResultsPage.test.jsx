@@ -208,10 +208,9 @@ describe("<SearchResultsPage />", () => {
             const searchResult = [buildSearchResult({virusScanResult: "Infected"}), buildSearchResult({virusScanResult: "Clean"})];
             findByNhsNumberMock.mockResolvedValue(searchResult);
 
-
             renderSearchResultsPage();
 
-            expect(await screen.findByText("The files in red below are not available for download.")).toBeInTheDocument();
+            expect(await screen.findByText("There is a problem")).toBeInTheDocument();
         });
 
         it("renders infected filename in red", async () => {
@@ -220,7 +219,6 @@ describe("<SearchResultsPage />", () => {
             const cleanFilename = "CleanFile";
             const searchResult = [buildSearchResult({virusScanResult: "Infected", description: infectedFilename}), buildSearchResult({virusScanResult: "Clean", description: cleanFilename})];
             findByNhsNumberMock.mockResolvedValue(searchResult);
-
 
             renderSearchResultsPage();
 
