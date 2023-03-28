@@ -34,5 +34,5 @@ resource "aws_lambda_permission" "s3_permission_for_document_upload_event" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.document_uploaded_lambda.arn
   principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.document_store.arn
+  source_arn    = aws_s3_bucket.test_document_store.arn
 }

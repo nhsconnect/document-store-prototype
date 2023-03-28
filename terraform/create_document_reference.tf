@@ -31,6 +31,7 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
   environment {
     variables = merge({
       AMPLIFY_BASE_URL = local.amplify_base_url
+      TEST_DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.test_document_store.bucket
     }, local.common_environment_variables)
   }
 }
