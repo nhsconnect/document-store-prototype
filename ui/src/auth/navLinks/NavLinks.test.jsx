@@ -2,15 +2,15 @@ import { render, screen } from "@testing-library/react";
 import NavLinks from "./NavLinks";
 import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
 import routes from "../../enums/routes";
-import { useCookies } from "react-cookie";
 
 jest.mock("../../providers/ConfigurationProvider");
-jest.mock("react-cookie");
 
 describe("NavLinks", () => {
     const oldWindowLocation = window.location;
 
     afterEach(() => {
+        jest.clearAllMocks();
+        localStorage.clear();
         window.location = oldWindowLocation;
     });
 
@@ -18,7 +18,6 @@ describe("NavLinks", () => {
         const baseApiUrl = "https://api.url";
         const baseUiUrl = "http://localhost:3000";
         const logoutHandlerUrl = `${baseApiUrl}/Auth/Logout?redirect_uri=${baseUiUrl}${routes.ROOT}`;
-        const cookies = { LoggedIn: "some cookie" };
         const windowLocationProperties = {
             href: { value: baseUiUrl },
         };
@@ -26,24 +25,33 @@ describe("NavLinks", () => {
         delete window.location;
         window.location = Object.defineProperties({}, windowLocationProperties);
 
+        localStorage.setItem("LoggedIn", "true");
+
         useBaseAPIUrl.mockReturnValue(baseApiUrl);
-        useCookies.mockReturnValue([cookies]);
 
         render(<NavLinks />);
 
         expect(useBaseAPIUrl).toHaveBeenCalledWith("doc-store-api");
+        expect(localStorage.getItem).toHaveBeenCalledWith("LoggedIn");
         expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", routes.HOME);
         expect(screen.getByRole("link", { name: "Log Out" })).toHaveAttribute("href", logoutHandlerUrl);
     });
 
-    it("does not render the nav links if SessionId cookie is not present", () => {
-        const cookies = {};
-
-        useCookies.mockReturnValue([cookies]);
+    it.each(["false", ""])("does not render the nav links if LoggedIn is: %s", (loggedInValue) => {
+        localStorage.setItem("LoggedIn", loggedInValue);
 
         render(<NavLinks />);
 
-        expect(useCookies).toHaveBeenCalledWith(["LoggedIn"]);
+        expect(localStorage.getItem).toHaveBeenCalledWith("LoggedIn");
+        expect(screen.queryByRole("link", { name: "Home" })).not.toBeInTheDocument();
+        expect(screen.queryByRole("link", { name: "Log Out" })).not.toBeInTheDocument();
+    });
+
+    it("does not render the nav links if LoggedIn value does not exist", () => {
+        localStorage.clear();
+
+        render(<NavLinks />);
+
         expect(screen.queryByRole("link", { name: "Home" })).not.toBeInTheDocument();
         expect(screen.queryByRole("link", { name: "Log Out" })).not.toBeInTheDocument();
     });

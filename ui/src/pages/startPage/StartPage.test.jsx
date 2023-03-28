@@ -6,7 +6,7 @@ jest.mock("../../providers/ConfigurationProvider");
 
 describe("StartPage", () => {
     afterEach(() => {
-        jest.resetAllMocks();
+        jest.clearAllMocks();
     });
 
     it("renders the page header", () => {
@@ -43,8 +43,8 @@ describe("StartPage", () => {
     });
 
     it("renders a button link with an href to /home when OIDC federation is enabled", () => {
-        useFeatureToggle.mockReturnValueOnce(true);
-        useFeatureToggle.mockReturnValueOnce("https://api.url");
+        useFeatureToggle.mockReturnValue(true);
+        useFeatureToggle.mockReturnValue("https://api.url");
 
         render(<StartPage />);
 
@@ -54,8 +54,8 @@ describe("StartPage", () => {
     it("renders a button link with an href to the auth login endpoint when OIDC federation is disabled", () => {
         const baseAPIUrl = "https://api.url";
 
-        useFeatureToggle.mockReturnValueOnce(false);
-        useBaseAPIUrl.mockReturnValueOnce(baseAPIUrl);
+        useFeatureToggle.mockReturnValue(false);
+        useBaseAPIUrl.mockReturnValue(baseAPIUrl);
 
         render(<StartPage />);
 

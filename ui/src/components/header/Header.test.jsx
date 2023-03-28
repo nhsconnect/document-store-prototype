@@ -3,7 +3,6 @@ import Header from "./Header";
 import routes from "../../enums/routes";
 import { useFeatureToggle } from "../../providers/ConfigurationProvider";
 import { useAuth } from "react-oidc-context";
-import { Cookies } from "react-cookie";
 import { MemoryRouter } from "react-router";
 
 jest.mock("../../providers/ConfigurationProvider");
@@ -42,13 +41,13 @@ describe("Header", () => {
     });
 
     describe("OIDC_AUTHENTICATION toggle", () => {
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
+
         describe("toggled on", () => {
             beforeEach(() => {
                 useFeatureToggle.mockReturnValue(true);
-            });
-
-            afterEach(() => {
-                jest.resetAllMocks();
             });
 
             it("renders nav links when authenticated", () => {
@@ -77,9 +76,12 @@ describe("Header", () => {
                 useFeatureToggle.mockReturnValue(false);
             });
 
+            afterEach(() => {
+                localStorage.clear();
+            });
+
             it("renders nav links when authenticated", () => {
-                const cookies = new Cookies();
-                cookies.set("LoggedIn", "some-cookie;");
+                localStorage.setItem("LoggedIn", "true");
 
                 render(<Header />);
 
@@ -89,9 +91,7 @@ describe("Header", () => {
             });
 
             it("does not render nav links when unauthenticated", () => {
-                const cookies = new Cookies();
-                cookies.set("LoggedIn", "some-cookie;");
-                cookies.remove("LoggedIn");
+                localStorage.setItem("LoggedIn", "false");
 
                 render(<Header />);
 

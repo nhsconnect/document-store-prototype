@@ -3,30 +3,42 @@ import { MemoryRouter, useNavigate } from "react-router";
 import { render, screen } from "@testing-library/react";
 import routes from "../../enums/routes";
 
-jest.mock("react-cookie");
 jest.mock("react-router", () => ({
     ...jest.requireActual("react-router"),
     useNavigate: jest.fn(),
 }));
 
 describe("ProtectedRoutes", () => {
-    beforeEach(() => {
+    afterEach(() => {
+        jest.clearAllMocks();
         localStorage.clear();
     });
 
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
+    it.each(["false", ""])(
+        "does not render children when user IS NOT authenticated with LoggedIn is: %s",
+        (loggedInValues) => {
+            const notRenderedText = "Not Rendered Text";
 
-    it.each(["false", ""])("does not render children when user IS NOT authenticated", (loggedInValues) => {
+            localStorage.setItem("LoggedIn", loggedInValues);
+
+            useNavigate.mockReturnValue(jest.fn());
+
+            renderProtectedRoutes(<div>{notRenderedText}</div>);
+
+            expect(localStorage.getItem).toHaveBeenCalledWith("LoggedIn");
+            expect(screen.queryByText(notRenderedText)).not.toBeInTheDocument();
+        }
+    );
+
+    it("does not render children if LoggedIn value does not exist", () => {
         const notRenderedText = "Not Rendered Text";
 
-        localStorage.setItem("LoggedIn", loggedInValues);
+        localStorage.clear();
+
         useNavigate.mockReturnValue(jest.fn());
 
         renderProtectedRoutes(<div>{notRenderedText}</div>);
 
-        expect(localStorage.getItem).toHaveBeenCalledWith("LoggedIn");
         expect(screen.queryByText(notRenderedText)).not.toBeInTheDocument();
     });
 
@@ -34,6 +46,7 @@ describe("ProtectedRoutes", () => {
         const navigateMock = jest.fn();
 
         localStorage.setItem("LoggedIn", "false");
+
         useNavigate.mockReturnValue(navigateMock);
 
         renderProtectedRoutes(<div>this-should-NOT-be-rendered</div>);
@@ -56,6 +69,7 @@ describe("ProtectedRoutes", () => {
         const navigateMock = jest.fn();
 
         localStorage.setItem("LoggedIn", "true");
+
         useNavigate.mockReturnValue(navigateMock);
 
         renderProtectedRoutes(<div>this-should-be-rendered</div>);
