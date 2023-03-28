@@ -110,7 +110,14 @@
         "cognito-idp:DeleteIdentityProvider",
         "cognito-idp:DescribeIdentityProvider",
         "cognito-idp:UpdateIdentityProvider",
-        "cognito-idp:AddCustomAttributes"
+        "cognito-idp:AddCustomAttributes",
+        "cognito-idp:SetUserPoolMfaConfig",
+        "cognito-idp:DeleteUserPool",
+        "cognito-idp:DeleteUserPoolClient",
+        "cognito-idp:CreateGroup",
+        "cognito-idp:DeleteGroup",
+        "cognito-idp:AdminAddUserToGroup",
+        "cognito-idp:AdminRemoveUserFromGroup"
       ],
       "Resource": "*"
     },
@@ -184,7 +191,8 @@
         "iam:GetPolicyVersion",
         "iam:ListPolicyVersions",
         "iam:DeletePolicy",
-        "iam:UpdateAssumeRolePolicy"
+        "iam:UpdateAssumeRolePolicy",
+        "iam:DeleteRole"
       ],
       "Resource": "*"
     },
@@ -242,8 +250,14 @@
       "Action": [
         "ssm:GetParameters",
         "ssm:GetParameter",
+        "ssm:PutParameter",
         "ssm:DescribeParameters",
-        "ssm:ListTagsForResource"
+        "ssm:ListTagsForResource",
+        "ssm:DeleteParameter",
+        "ssm:CreateDocument",
+        "ssm:AddTagsToResource",
+        "ssm:DeleteDocument",
+        "ssm:GetDocument"
       ],
       "Resource": "*"
     },
@@ -322,7 +336,8 @@
         "cloudformation:GetTemplate",
         "cloudformation:ListExports",
         "cloudformation:UpdateStack",
-        "cloudformation:DescribeStackEvents"
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:DeleteStack"
       ],
       "Resource": "*"
     },
@@ -355,7 +370,38 @@
         "ec2:DescribeInternetGateways",
         "ec2:DescribeRouteTables",
         "ec2:RevokeSecurityGroupIngress",
-        "ec2:DescribeSecurityGroups"
+        "ec2:DescribeSecurityGroups",
+        "ec2:CreateSecurityGroup",
+        "ec2:DeleteSecurityGroup",
+        "ec2:AuthorizeSecurityGroupIngress"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowAppConfig",
+      "Effect": "Allow",
+      "Action": [
+        "appconfig:CreateApplication",
+        "appconfig:CreateDeploymentStrategy",
+        "appconfig:CreateEnvironment",
+        "appconfig:DeleteApplication",
+        "appconfig:DeleteDeploymentStrategy",
+        "appconfig:DeleteEnvironment",
+        "appconfig:CreateConfigurationProfile",
+        "appconfig:DeleteConfigurationProfile"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowECS",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:DescribeClusters",
+        "ecs:CreateCluster",
+        "ecs:DescribeService",
+        "ecs:CreateServices",
+        "ecs:DescribeTasks",
+        "ecs:DeleteCluster"
       ],
       "Resource": "*"
     }
