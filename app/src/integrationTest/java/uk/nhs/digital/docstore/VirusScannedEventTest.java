@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
+import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.handlers.VirusScannedEventHandler;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
@@ -24,6 +26,7 @@ import uk.nhs.digital.docstore.services.VirusScannedEventService;
 public class VirusScannedEventTest extends BaseDocumentStoreTest {
 
     @Mock Context context;
+    @Mock SplunkPublisher sensitiveIndex;
     VirusScannedEventHandler handler;
     DocumentMetadataStore metadataStore;
     VirusScannedEventService virusScanService;
@@ -44,7 +47,12 @@ public class VirusScannedEventTest extends BaseDocumentStoreTest {
         DynamoDBMapper dynamoMapper = new DynamoDBMapper(aws.getDynamoDBClient());
         this.metadataStore = new DocumentMetadataStore(dynamoMapper);
         this.virusScanService =
-                new VirusScannedEventService(metadataStore, clock, QUARANTINE_BUCKET_NAME);
+                new VirusScannedEventService(
+                        metadataStore,
+                        clock,
+                        QUARANTINE_BUCKET_NAME,
+                        sensitiveIndex,
+                        new DocumentMetadataSerialiser());
         this.handler = new VirusScannedEventHandler(this.virusScanService);
     }
 

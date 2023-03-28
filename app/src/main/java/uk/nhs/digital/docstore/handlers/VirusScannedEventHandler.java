@@ -4,8 +4,10 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.events.VirusScannedEvent;
+import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.VirusScannedEventService;
 
@@ -18,7 +20,10 @@ public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> 
     }
 
     public VirusScannedEventHandler() {
-        this(new VirusScannedEventService(new DocumentMetadataStore()));
+        this(
+                new VirusScannedEventService(
+                        new DocumentMetadataStore(),
+                        new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL"))));
     }
 
     @Override
@@ -36,7 +41,7 @@ public class VirusScannedEventHandler implements RequestHandler<SNSEvent, Void> 
                                                 String.format("s3://%s/%s", bucketName, key));
                                 virusScanService.updateVirusScanResult(
                                         documentLocation, virusScannedEvent.getResult());
-                            } catch (JsonProcessingException e) {
+                            } catch (JsonProcessingException | IllFormedPatientDetailsException e) {
                                 throw new RuntimeException(e);
                             }
                         });
