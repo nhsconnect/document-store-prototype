@@ -1,19 +1,19 @@
-import { useCookies } from "react-cookie";
 import routes from "../../enums/routes";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
 
 const ProtectedRoutes = ({ children }) => {
-    const [cookies] = useCookies(["LoggedIn"]);
     const navigate = useNavigate();
 
+    const isLoggedIn = localStorage.getItem("LoggedIn") === "true";
+
     useEffect(() => {
-        if (!cookies.LoggedIn) {
+        if (!isLoggedIn) {
             navigate(routes.ROOT);
         }
-    }, [cookies, navigate]);
+    }, [isLoggedIn, navigate]);
 
-    return <>{!!cookies.LoggedIn && children}</>;
+    return <>{isLoggedIn && children}</>;
 };
 
 export default ProtectedRoutes;

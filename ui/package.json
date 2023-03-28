@@ -62,7 +62,8 @@
     "jest": {
         "moduleNameMapper": {
             "axios": "axios/dist/node/axios.cjs"
-        }
+        },
+        "resetMocks": false
     },
     "overrides": {
         "nth-check": "2.1.1"

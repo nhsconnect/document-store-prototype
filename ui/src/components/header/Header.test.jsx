@@ -47,6 +47,10 @@ describe("Header", () => {
                 useFeatureToggle.mockReturnValue(true);
             });
 
+            afterEach(() => {
+                jest.resetAllMocks();
+            });
+
             it("renders nav links when authenticated", () => {
                 useAuth.mockReturnValue({ isAuthenticated: true });
 

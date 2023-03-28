@@ -4,7 +4,11 @@ import { useBaseAPIUrl, useFeatureToggle } from "../../providers/ConfigurationPr
 
 jest.mock("../../providers/ConfigurationProvider");
 
-describe("<StartPage />", () => {
+describe("StartPage", () => {
+    afterEach(() => {
+        jest.resetAllMocks();
+    });
+
     it("renders the page header", () => {
         render(<StartPage />);
 

@@ -1,5 +1,4 @@
 import ProtectedRoutes from "./ProtectedRoutes";
-import { useCookies } from "react-cookie";
 import { MemoryRouter, useNavigate } from "react-router";
 import { render, screen } from "@testing-library/react";
 import routes from "../../enums/routes";
@@ -9,24 +8,32 @@ jest.mock("react-router", () => ({
     ...jest.requireActual("react-router"),
     useNavigate: jest.fn(),
 }));
-describe("ProtectedRoutes", () => {
-    it("does not render children when user IS NOT authenticated", () => {
-        const cookies = {};
 
-        useCookies.mockReturnValue([cookies]);
+describe("ProtectedRoutes", () => {
+    beforeEach(() => {
+        localStorage.clear();
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it.each(["false", ""])("does not render children when user IS NOT authenticated", (loggedInValues) => {
+        const notRenderedText = "Not Rendered Text";
+
+        localStorage.setItem("LoggedIn", loggedInValues);
         useNavigate.mockReturnValue(jest.fn());
 
-        renderProtectedRoutes(<div>this-should-NOT-be-rendered</div>);
+        renderProtectedRoutes(<div>{notRenderedText}</div>);
 
-        expect(useCookies).toHaveBeenCalledWith(["LoggedIn"]);
-        expect(screen.queryByText("this-should-NOT-be-rendered")).not.toBeInTheDocument();
+        expect(localStorage.getItem).toHaveBeenCalledWith("LoggedIn");
+        expect(screen.queryByText(notRenderedText)).not.toBeInTheDocument();
     });
 
     it("does redirect if a user IS NOT authenticated", () => {
         const navigateMock = jest.fn();
-        const cookies = {};
 
-        useCookies.mockReturnValue([cookies]);
+        localStorage.setItem("LoggedIn", "false");
         useNavigate.mockReturnValue(navigateMock);
 
         renderProtectedRoutes(<div>this-should-NOT-be-rendered</div>);
@@ -35,21 +42,20 @@ describe("ProtectedRoutes", () => {
     });
 
     it("does render children when user IS authenticated", () => {
-        const cookies = { LoggedIn: "some cookie" };
+        const renderedText = "Rendered Text";
 
-        useCookies.mockReturnValue([cookies]);
+        localStorage.setItem("LoggedIn", "true");
 
-        renderProtectedRoutes(<div>this-should-be-rendered</div>);
+        renderProtectedRoutes(<div>{renderedText}</div>);
 
-        expect(useCookies).toHaveBeenCalledWith(["LoggedIn"]);
-        expect(screen.getByText("this-should-be-rendered")).toBeInTheDocument();
+        expect(localStorage.getItem).toHaveBeenCalledWith("LoggedIn");
+        expect(screen.getByText(renderedText)).toBeInTheDocument();
     });
 
     it("does not redirect if the user IS authenticated", async () => {
         const navigateMock = jest.fn();
-        const cookies = { LoggedIn: "some cookie" };
 
-        useCookies.mockReturnValue([cookies]);
+        localStorage.setItem("LoggedIn", "true");
         useNavigate.mockReturnValue(navigateMock);
 
         renderProtectedRoutes(<div>this-should-be-rendered</div>);
