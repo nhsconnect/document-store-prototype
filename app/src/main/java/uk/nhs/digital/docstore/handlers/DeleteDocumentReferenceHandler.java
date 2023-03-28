@@ -32,7 +32,7 @@ public class DeleteDocumentReferenceHandler
                 new ApiConfig(),
                 new DocumentDeletionService(
                         new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")),
-                        new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME")),
+                        new DocumentStore(),
                         new DocumentMetadataStore(),
                         new DocumentMetadataSerialiser()));
     }

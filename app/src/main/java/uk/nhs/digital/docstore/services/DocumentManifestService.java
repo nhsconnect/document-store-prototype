@@ -21,16 +21,19 @@ public class DocumentManifestService {
     private final AuditPublisher sensitiveIndex;
     private final DocumentZipTraceStore zipTraceStore;
     private final DocumentStore documentStore;
+    private final String bucketName;
     private final String dbTimeToLive;
 
     public DocumentManifestService(
             AuditPublisher sensitiveIndex,
             DocumentZipTraceStore zipTraceStore,
             DocumentStore documentStore,
+            String bucketName,
             String dbTimeToLive) {
         this.sensitiveIndex = sensitiveIndex;
         this.zipTraceStore = zipTraceStore;
         this.documentStore = documentStore;
+        this.bucketName = bucketName;
         this.dbTimeToLive = dbTimeToLive;
     }
 
@@ -40,9 +43,11 @@ public class DocumentManifestService {
         var documentPath = "tmp/" + CommonUtils.generateRandomUUIDString();
         var fileName = new FileName("patient-record-" + nhsNumber.getValue() + ".zip");
 
-        var documentLocation = documentStore.addDocument(documentPath, zipInputStream);
+        var documentLocation =
+                new DocumentLocation(String.format("s3://%s/%s", bucketName, documentPath));
         var documentZipTrace = createDocumentZipTrace(documentLocation);
 
+        documentStore.addDocument(documentLocation, zipInputStream);
         zipTraceStore.save(documentZipTrace);
 
         var preSignedUrl = documentStore.generatePreSignedUrlForZip(documentLocation, fileName);

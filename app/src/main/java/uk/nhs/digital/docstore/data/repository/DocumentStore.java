@@ -20,11 +20,9 @@ public class DocumentStore {
     private static final Duration PRE_SIGNED_URL_DURATION = Duration.ofMinutes(30);
     private static final String AWS_REGION = "eu-west-2";
     private static final String DEFAULT_ENDPOINT = "";
-    private final String bucketName;
-
     private final AmazonS3 client;
 
-    public DocumentStore(String bucketName) {
+    public DocumentStore() {
         var clientBuilder = AmazonS3ClientBuilder.standard();
         var s3Endpoint = System.getenv("S3_ENDPOINT");
         boolean s3_use_path_style = "true".equals(System.getenv("S3_USE_PATH_STYLE"));
@@ -37,17 +35,16 @@ public class DocumentStore {
                             .withPathStyleAccessEnabled(s3_use_path_style);
         }
         client = clientBuilder.build();
-        this.bucketName = bucketName;
     }
 
-    public DocumentStore(AmazonS3 client, String bucketName) {
+    public DocumentStore(AmazonS3 client) {
         this.client = client;
-        this.bucketName = bucketName;
     }
 
     public URL generatePreSignedUrlForZip(DocumentLocation documentLocation, FileName fileName) {
         var generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(bucketName, documentLocation.getPath())
+                new GeneratePresignedUrlRequest(
+                                documentLocation.getBucketName(), documentLocation.getPath())
                         .withExpiration(getExpirationDate())
                         .withResponseHeaders(
                                 new ResponseHeaderOverrides()
@@ -59,7 +56,8 @@ public class DocumentStore {
 
     public URL generatePreSignedUrlForDocument(DocumentLocation documentLocation) {
         var generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(bucketName, documentLocation.getPath())
+                new GeneratePresignedUrlRequest(
+                                documentLocation.getBucketName(), documentLocation.getPath())
                         .withExpiration(Date.from(Instant.now().plus(PRE_SIGNED_URL_DURATION)))
                         .withMethod(HttpMethod.PUT);
 
@@ -67,12 +65,16 @@ public class DocumentStore {
     }
 
     public S3ObjectInputStream getObjectFromS3(DocumentLocation documentLocation) {
-        return client.getObject(bucketName, documentLocation.getPath()).getObjectContent();
+        return client.getObject(documentLocation.getBucketName(), documentLocation.getPath())
+                .getObjectContent();
     }
 
-    public DocumentLocation addDocument(String documentKey, InputStream documentValue) {
-        client.putObject(bucketName, documentKey, documentValue, new ObjectMetadata());
-        return new DocumentLocation(String.format("s3://%s/%s", bucketName, documentKey));
+    public void addDocument(DocumentLocation documentLocation, InputStream documentValue) {
+        client.putObject(
+                documentLocation.getBucketName(),
+                documentLocation.getPath(),
+                documentValue,
+                new ObjectMetadata());
     }
 
     private Date getExpirationDate() {
@@ -82,6 +84,6 @@ public class DocumentStore {
     }
 
     public void deleteObjectAtLocation(DocumentLocation location) {
-        client.deleteObject(bucketName, location.getPath());
+        client.deleteObject(location.getBucketName(), location.getPath());
     }
 }

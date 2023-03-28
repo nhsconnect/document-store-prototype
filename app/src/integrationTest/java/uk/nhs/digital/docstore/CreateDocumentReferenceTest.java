@@ -45,7 +45,7 @@ public class CreateDocumentReferenceTest extends BaseDocumentStoreTest {
                                         new DynamoDBMapper(aws.getDynamoDBClient())),
                                 auditPublisher,
                                 new DocumentMetadataSerialiser()),
-                        new DocumentStore(aws.getS3Client(), documentStoreBucketName));
+                        new DocumentStore(aws.getS3Client()));
         requestBuilder = new RequestEventBuilder();
     }
 

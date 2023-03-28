@@ -46,7 +46,7 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
     @BeforeEach
     public void setUp() {
         metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
-        documentStore = new DocumentStore(aws.getS3Client(), documentStoreBucketName);
+        documentStore = new DocumentStore(aws.getS3Client());
         DocumentZipTraceStore zipTraceStore =
                 new DocumentZipTraceStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         createDocumentManifestByNhsNumberHandler =
@@ -56,6 +56,7 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
                         zipTraceStore,
                         documentStore,
                         publisher,
+                        documentStoreBucketName,
                         "1");
     }
 
@@ -63,18 +64,24 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
     void uploadsZipOfAllDocsAndSavesMetadataForGivenNhsNumber()
             throws IllFormedPatientDetailsException, JsonProcessingException {
         var nhsNumber = new NhsNumber("9000000009");
+        var location = "s3://" + documentStoreBucketName + "/test";
         var metadataBuilder = DocumentMetadataBuilder.theMetadata().withDocumentUploaded(true);
         var metadataList =
                 List.of(
-                        metadataBuilder.withFileName("Some document").build(),
-                        metadataBuilder.withFileName("another document").build());
+                        metadataBuilder
+                                .withFileName("Some document")
+                                .withLocation(location)
+                                .build(),
+                        metadataBuilder
+                                .withFileName("another document")
+                                .withLocation(location)
+                                .build());
 
         metadataList.forEach(
                 metadata -> {
                     metadataStore.save(metadata);
                     var input = IOUtils.toInputStream("Test data", "UTF-8");
-                    documentStore.addDocument(
-                            new DocumentLocation(metadata.getLocation()).getPath(), input);
+                    documentStore.addDocument(new DocumentLocation(location), input);
                 });
 
         var requestEvent = createRequestEvent(nhsNumber);

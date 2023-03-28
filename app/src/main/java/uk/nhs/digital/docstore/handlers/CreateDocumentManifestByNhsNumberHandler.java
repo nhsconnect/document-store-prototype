@@ -38,8 +38,9 @@ public class CreateDocumentManifestByNhsNumberHandler
                 new ApiConfig(),
                 new DocumentMetadataStore(),
                 new DocumentZipTraceStore(),
-                new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME")),
+                new DocumentStore(),
                 new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")),
+                System.getenv("DOCUMENT_STORE_BUCKET_NAME"),
                 System.getenv("DOCUMENT_ZIP_TRACE_TTL_IN_DAYS"));
     }
 
@@ -49,6 +50,7 @@ public class CreateDocumentManifestByNhsNumberHandler
             DocumentZipTraceStore zipTraceStore,
             DocumentStore documentStore,
             SplunkPublisher splunkPublisher,
+            String bucketName,
             String dbTimeToLive) {
         FhirContext fhirContext = FhirContext.forR4();
         fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
@@ -56,7 +58,7 @@ public class CreateDocumentManifestByNhsNumberHandler
         this.apiConfig = apiConfig;
         documentManifestService =
                 new DocumentManifestService(
-                        splunkPublisher, zipTraceStore, documentStore, dbTimeToLive);
+                        splunkPublisher, zipTraceStore, documentStore, bucketName, dbTimeToLive);
         metadataSearchService =
                 new DocumentMetadataSearchService(metadataStore, new DocumentMetadataSerialiser());
         zipService = new ZipService(documentStore);

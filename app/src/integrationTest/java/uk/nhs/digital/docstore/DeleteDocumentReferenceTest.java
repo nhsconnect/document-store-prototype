@@ -25,7 +25,6 @@ import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.handlers.DeleteDocumentReferenceHandler;
-import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
@@ -41,16 +40,14 @@ public class DeleteDocumentReferenceTest extends BaseDocumentStoreTest {
     private DocumentStore documentStore;
 
     private DocumentMetadataStore documentMetadataStore;
-    private static final String AWS_REGION = "eu-west-2";
 
     @BeforeEach
     void setUp() {
         var apiConfig = new StubbedApiConfig("http://ui-url");
-        var bucketName = new AwsS3Helper(aws.getS3Client()).getDocumentStoreBucketName();
 
         documentMetadataStore =
                 new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
-        documentStore = new DocumentStore(aws.getS3Client(), bucketName);
+        documentStore = new DocumentStore(aws.getS3Client());
         var deletionService =
                 new DocumentDeletionService(
                         auditPublisher,
@@ -66,17 +63,18 @@ public class DeleteDocumentReferenceTest extends BaseDocumentStoreTest {
     void deletesDocumentAndPublishesAuditMessage()
             throws JsonProcessingException, IllFormedPatientDetailsException {
         var nhsNumber = new NhsNumber("1234567890");
+        var location = "s3://" + documentStoreBucketName + "/test";
         var metadata =
                 DocumentMetadataBuilder.theMetadata()
                         .withNhsNumber(nhsNumber)
                         .withDocumentUploaded(true)
+                        .withLocation(location)
                         .build();
         var content = "content of file stored in S3";
 
         documentMetadataStore.save(metadata);
         documentStore.addDocument(
-                new DocumentLocation(metadata.getLocation()).getPath(),
-                new ByteArrayInputStream(content.getBytes()));
+                new DocumentLocation(location), new ByteArrayInputStream(content.getBytes()));
 
         deleteDocumentReferenceHandler.handleRequest(createRequestEvent(nhsNumber), context);
 

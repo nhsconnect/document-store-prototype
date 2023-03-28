@@ -42,7 +42,8 @@ class DocumentManifestServiceTest {
     @BeforeEach
     void setUp() {
         documentManifestService =
-                new DocumentManifestService(publisher, zipTraceStore, documentStore, "1");
+                new DocumentManifestService(
+                        publisher, zipTraceStore, documentStore, "test-bucket", "1");
     }
 
     @Test
@@ -51,7 +52,6 @@ class DocumentManifestServiceTest {
                     JsonProcessingException {
         var zipInputStream = new ByteArrayInputStream(new byte[10]);
         var nhsNumber = new NhsNumber("9087654321");
-        var documentLocation = new DocumentLocation("s3://s3/location");
         var presignedUrl = new URL("https://presigned-url-with-filename");
         var fileName = new FileName("Document Title");
         var document =
@@ -63,10 +63,9 @@ class DocumentManifestServiceTest {
         var expectedSensitiveAuditMessage =
                 new DownloadAllPatientRecordsAuditMessage(nhsNumber, documentList);
 
-        when(documentStore.addDocument(anyString(), eq(zipInputStream)))
-                .thenReturn(documentLocation);
         doNothing().when(zipTraceStore).save(any());
-        when(documentStore.generatePreSignedUrlForZip(eq(documentLocation), any(FileName.class)))
+        when(documentStore.generatePreSignedUrlForZip(
+                        any(DocumentLocation.class), any(FileName.class)))
                 .thenReturn(presignedUrl);
 
         var actualPresignedUrlString =

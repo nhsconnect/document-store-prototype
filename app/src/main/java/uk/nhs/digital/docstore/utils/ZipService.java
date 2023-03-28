@@ -21,11 +21,6 @@ public class ZipService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZipService.class);
     private final DocumentStore documentStore;
 
-    public ZipService() {
-        var bucketName = System.getenv("DOCUMENT_STORE_BUCKET_NAME");
-        documentStore = new DocumentStore(bucketName);
-    }
-
     public ZipService(DocumentStore documentStore) {
         this.documentStore = documentStore;
     }

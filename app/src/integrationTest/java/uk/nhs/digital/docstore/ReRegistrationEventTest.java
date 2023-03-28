@@ -27,7 +27,6 @@ import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.handlers.ReRegistrationEventHandler;
-import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
@@ -44,10 +43,8 @@ public class ReRegistrationEventTest extends BaseDocumentStoreTest {
 
     @BeforeEach
     void setUp() {
-        var bucketName = new AwsS3Helper(aws.getS3Client()).getDocumentStoreBucketName();
-
         metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
-        documentStore = new DocumentStore(aws.getS3Client(), bucketName);
+        documentStore = new DocumentStore(aws.getS3Client());
         deletionService =
                 new DocumentDeletionService(
                         publisher, documentStore, metadataStore, new DocumentMetadataSerialiser());
@@ -58,6 +55,7 @@ public class ReRegistrationEventTest extends BaseDocumentStoreTest {
     @Test
     void deletePatientDocuments() throws IllFormedPatientDetailsException, JsonProcessingException {
         var nhsNumber = new NhsNumber("9890123456");
+        var location = "s3://" + documentStoreBucketName + "/test";
         var reRegistrationMessage =
                 new JSONObject()
                         .put("nhsNumber", nhsNumber.getValue())
@@ -78,13 +76,13 @@ public class ReRegistrationEventTest extends BaseDocumentStoreTest {
                 DocumentMetadataBuilder.theMetadata()
                         .withNhsNumber(nhsNumber)
                         .withDocumentUploaded(true)
+                        .withLocation(location)
                         .build();
         var content = "content of file stored in S3";
 
         metadataStore.save(metadata);
         documentStore.addDocument(
-                new DocumentLocation(metadata.getLocation()).getPath(),
-                new ByteArrayInputStream(content.getBytes()));
+                new DocumentLocation(location), new ByteArrayInputStream(content.getBytes()));
 
         var failedMessages = handler.handleRequest(sqsEvent, context);
 

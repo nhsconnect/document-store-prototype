@@ -26,7 +26,7 @@ public class ReRegistrationEventHandler implements RequestHandler<SQSEvent, SQSB
         this(
                 new DocumentDeletionService(
                         new SplunkPublisher(System.getenv("NEMS_SQS_AUDIT_QUEUE_URL")),
-                        new DocumentStore(System.getenv("DOCUMENT_STORE_BUCKET_NAME")),
+                        new DocumentStore(),
                         new DocumentMetadataStore(),
                         new DocumentMetadataSerialiser()));
     }
