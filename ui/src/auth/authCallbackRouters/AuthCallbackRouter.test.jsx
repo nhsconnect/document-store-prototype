@@ -1,6 +1,7 @@
 import AuthCallbackRouter from "./AuthCallbackRouter";
 import { render, screen } from "@testing-library/react";
 import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
+import routes from "../../enums/routes";
 
 jest.mock("../../providers/ConfigurationProvider");
 
@@ -16,7 +17,7 @@ describe("AuthCallbackRouter", () => {
         const allQueryParams = `?${codeAndStateQueryParams}&client_id=some-client-id`;
         const baseUiUrl = "http://localhost:3000";
         const baseAPIUrl = "https://api.url";
-        const tokenRequestHandlerUrl = `${baseAPIUrl}/Auth/TokenRequest?${codeAndStateQueryParams}&redirect_uri=${baseUiUrl}/home`;
+        const tokenRequestHandlerUrl = `${baseAPIUrl}/Auth/TokenRequest?${codeAndStateQueryParams}&redirect_uri=${baseUiUrl}${routes.AUTH_SUCCESS}`;
         const windowLocationProperties = {
             search: { value: allQueryParams },
             replace: { value: jest.fn() },

@@ -19,6 +19,7 @@ import AuthErrorPage from "./pages/authErrorPage/AuthErrorPage";
 import DocumentStoreProvider from "./providers/DocumentStoreProvider";
 import routes from "./enums/routes";
 import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
+import AuthSuccessRouter from "./auth/authSuccessRouter/AuthSuccessRouter";
 
 const AppRoutes = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
@@ -26,6 +27,7 @@ const AppRoutes = () => {
     const {
         ROOT,
         AUTH_CALLBACK,
+        AUTH_SUCCESS,
         AUTH_ERROR,
         HOME,
         UPLOAD,
@@ -52,6 +54,7 @@ const AppRoutes = () => {
                 element={isOIDCAuthActive ? <OIDCAuthCallbackRouter /> : <AuthCallbackRouter />}
                 path={AUTH_CALLBACK}
             />
+            <Route element={<AuthSuccessRouter />} path={AUTH_SUCCESS} />
             <Route element={<AuthErrorPage />} path={AUTH_ERROR} />
             <Route
                 element={

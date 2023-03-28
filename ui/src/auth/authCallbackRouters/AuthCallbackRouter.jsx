@@ -10,7 +10,7 @@ const AuthCallbackRouter = () => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const code = urlSearchParams.get("code");
         const state = urlSearchParams.get("state");
-        const redirectUri = new URL(routes.HOME, window.location.href);
+        const redirectUri = new URL(routes.AUTH_SUCCESS, window.location.href);
         const tokenRequestUrl = `${baseAPIUrl}/Auth/TokenRequest?code=${code}&state=${state}&redirect_uri=${redirectUri}`;
 
         window.location.replace(tokenRequestUrl);
