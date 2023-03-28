@@ -22,6 +22,7 @@ import uk.nhs.digital.docstore.NHSDocumentReference;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
+import uk.nhs.digital.docstore.config.VirusScannerConfig;
 import uk.nhs.digital.docstore.create.CreateDocumentReferenceRequestValidator;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
@@ -45,6 +46,7 @@ public class CreateDocumentReferenceHandler
     private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
     private final DocumentStore documentStore;
+    private final VirusScannerConfig virusScannerConfig;
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
     private final CreateDocumentReferenceRequestValidator requestValidator =
@@ -57,15 +59,18 @@ public class CreateDocumentReferenceHandler
                         new DocumentMetadataStore(),
                         new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")),
                         new DocumentMetadataSerialiser()),
-                new DocumentStore());
+                new DocumentStore(),
+                new VirusScannerConfig());
     }
 
     public CreateDocumentReferenceHandler(
             ApiConfig apiConfig,
             DocumentReferenceService documentReferenceService,
-            DocumentStore documentStore) {
+            DocumentStore documentStore,
+            VirusScannerConfig virusScannerConfig) {
         this.apiConfig = apiConfig;
         this.documentReferenceService = documentReferenceService;
+        this.virusScannerConfig = virusScannerConfig;
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING);
         this.documentStore = documentStore;
@@ -89,9 +94,9 @@ public class CreateDocumentReferenceHandler
 
             var document = inputDocumentReference.parse();
 
+            var s3BucketName = virusScannerConfig.getDocumentStoreBucketName();
             String s3ObjectKey = CommonUtils.generateRandomUUIDString();
-            var s3Location =
-                    "s3://" + System.getenv("DOCUMENT_STORE_BUCKET_NAME") + "/" + s3ObjectKey;
+            var s3Location = "s3://" + s3BucketName + "/" + s3ObjectKey;
             document.setLocation(new DocumentLocation(s3Location));
 
             LOGGER.debug("Saving DocumentReference to DynamoDB");

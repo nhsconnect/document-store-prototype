@@ -157,3 +157,8 @@ variable "quarantine_bucket_name" {
   type    = string
   default = ""
 }
+
+variable "virus_scanner_is_stubbed" {
+  type    = string
+  default = "false"
+}

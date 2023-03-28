@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.audit.message.CreateDocumentMetadataAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
+import uk.nhs.digital.docstore.config.VirusScannerConfig;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
@@ -45,7 +46,8 @@ public class CreateDocumentReferenceTest extends BaseDocumentStoreTest {
                                         new DynamoDBMapper(aws.getDynamoDBClient())),
                                 auditPublisher,
                                 new DocumentMetadataSerialiser()),
-                        new DocumentStore(aws.getS3Client()));
+                        new DocumentStore(aws.getS3Client()),
+                        new VirusScannerConfig());
         requestBuilder = new RequestEventBuilder();
     }
 
