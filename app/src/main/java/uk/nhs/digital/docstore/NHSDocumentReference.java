@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.StringType;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.FileName;
@@ -39,6 +40,10 @@ public class NHSDocumentReference extends DocumentReference {
     @Child(name = "deleted")
     @Description(shortDefinition = "When the document reference was deleted.")
     private InstantType deleted;
+
+    @Child(name = "virusScanResult")
+    @Description(shortDefinition = "Result of the document reference virus scan.")
+    private StringType virusScanResult;
 
     @Override
     public boolean isEmpty() {
@@ -99,6 +104,15 @@ public class NHSDocumentReference extends DocumentReference {
     public NHSDocumentReference setFileName(FileName fileName) {
         setDescription(fileName.getValue());
         return this;
+    }
+
+    public NHSDocumentReference setVirusScanResult(String virusScanResult) {
+        this.virusScanResult = new StringType(virusScanResult);
+        return this;
+    }
+
+    public String getVirusScanResult() {
+        return virusScanResult.getValue();
     }
 
     public Document parse() throws IllFormedPatientDetailsException {

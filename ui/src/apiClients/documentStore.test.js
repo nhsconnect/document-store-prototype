@@ -29,6 +29,7 @@ describe("documentStore", () => {
             description: "description",
             docStatus: "final",
             indexed: "2022-08-10T10:34:41.515050Z",
+            virusScanResult: "Clean",
         };
         const responseBody = {
             total: 1,
@@ -40,6 +41,7 @@ describe("documentStore", () => {
                 id: resourceObject.id,
                 description: resourceObject.description,
                 indexed: new Date(Date.UTC(2022, 7, 10, 10, 34, 41, 515)),
+                virusScanResult: resourceObject.virusScanResult,
             },
         ];
 

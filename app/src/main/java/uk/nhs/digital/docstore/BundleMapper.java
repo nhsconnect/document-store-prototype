@@ -59,6 +59,7 @@ public class BundleMapper {
                                 document.isUploaded()
                                         ? new InstantType(document.getIndexed().toString())
                                         : null)
+                        .setVirusScanResult(document.getVirusScanResult().toString())
                         .setNhsNumber(document.getNhsNumber())
                         .setFileName(document.getFileName())
                         .setType(type)

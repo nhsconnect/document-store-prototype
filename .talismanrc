@@ -40,7 +40,7 @@ fileignoreconfig:
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/RealPdsFhirServiceTest.java
   checksum: 3b9a9615b5ade544c4e0ba3807875b4a50b4b262adb69d5a65f4a55c8f989d81
 - filename: app/src/main/java/uk/nhs/digital/docstore/handlers/DocumentUploadedEventHandler.java
-  checksum: 01acb34290060c451d9c3445e1de1ac82a4a7790dc7a23a60cdb70ace6449f6d
+  checksum: d3bca05d7463074ae27820ca44d2dc4ff9d4b6a4f11e19465093e669f3d22174
 - filename: app/src/test/java/uk/nhs/digital/docstore/patientdetails/auth/SignedJwtBuilderTest.java
   checksum: 2a28956f8ed4aaa703476d2a268b66c1cc2bc96c62ff90e6df629912f86afd62
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/auth/SignedJwtBuilder.java
@@ -50,7 +50,7 @@ fileignoreconfig:
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/auth/SigningKeyProvider.java
   checksum: 18548f2e92a9524531f5e497da021bff523201f5c61ec6e085ae7442b6da8a45
 - filename: app/src/main/java/uk/nhs/digital/docstore/handlers/CreateDocumentReferenceHandler.java
-  checksum: f11dc74d87b94bfe6ae003465991136f4c548f85fdd16301c4cb359564c4143d
+  checksum: 06a6e75c34a10148fd0f001a2ae0f51215d1aceda9e740c7279015686d3703c6
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/entity/DocumentMetadata.java
   checksum: 7f882c7edc89fb482e5987b79e8ceb4b3fb391fda97edd92c4e86e4956ddcc8e
 - filename: app/src/e2eTest/java/uk/nhs/digital/docstore/helpers/AwsS3Helper.java
@@ -92,7 +92,7 @@ fileignoreconfig:
 - filename: app/src/main/java/uk/nhs/digital/docstore/data/repository/DocumentStore.java
   checksum: d0e2ce5d02269a63253f0d1f6db6a6bca6b60c0d62c53afd872f58b66d07ad6b
 - filename: app/src/integrationTest/java/uk/nhs/digital/docstore/helpers/AwsS3Helper.java
-  checksum: 70f29ae53e3c7ec268d645210571f3024be77e87ba4a21091bb3e2120478a814
+  checksum: 35399d7ca7e1840a05b8aad630f63e3ac1efc3bc2fe4b049f0b553f074d22007
 - filename: terraform/authoriser.tf
   checksum: 82777b8520f7385ee83dddfbda62401b5f00729f4b148a53f683eea9a1dad505
 - filename: ui/src/components/documentsInput/DocumentsInput.jsx
@@ -134,7 +134,7 @@ fileignoreconfig:
 - filename: terraform/alarms.tf
   checksum: 0c0221749e8d98ff6e4a92fb65d8040251b777b78e1c2963f4e098755dace29d
 - filename: app/src/main/java/uk/nhs/digital/docstore/handlers/CreateDocumentReferenceHandler.java
-  checksum: f11dc74d87b94bfe6ae003465991136f4c548f85fdd16301c4cb359564c4143d
+  checksum: 06a6e75c34a10148fd0f001a2ae0f51215d1aceda9e740c7279015686d3703c6
 - filename: docs/images/user-journey-architecture-diagram.png
   checksum: 968be502fb78179616144b9d2a9da6b6d88c6d1660a5de7e2dde33c24d3c087b
 - filename: authoriser/src/main/java/uk/nhs/digital/docstore/authoriser/models/Session.java
@@ -163,6 +163,11 @@ fileignoreconfig:
   checksum: 66e15f7bc0431556f6524c5cced8369de7035bf911c4463dd7d31378c45e01b4
 - filename: terraform/main.tf
   checksum: 47245a578b883ec283c56f62cd700df3b9581ea371d06d452281950a9526f8bc
+- filename: ui/src/apiClients/documentStore.test.js
+  checksum: fae238cccd7181407232750b36a7bdf777fc61af8162722ee9a75cb667e4e307
+- filename: terraform/document_store.tf
+  checksum: c63a33e7b7eb31992c5fafbb448a88d252a36b804fd78e24cc524552ea596703
+
 version: ""
 scopeconfig:
   - scope: node

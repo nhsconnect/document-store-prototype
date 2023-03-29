@@ -21,6 +21,7 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                           id: resource.id,
                           description: resource.description,
                           indexed: new Date(resource.indexed),
+                          virusScanResult: resource.virusScanResult,
                       }))
                     : [];
             },
