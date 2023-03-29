@@ -198,7 +198,7 @@ output "document-store-bucket" {
 }
 
 resource "aws_s3_bucket" "test_document_store" {
-  bucket = "test-doc-store"
+  bucket = "test-document-store"
 
   lifecycle {
     ignore_changes = [

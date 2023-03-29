@@ -25,7 +25,7 @@ public class AwsS3Helper {
     public String getDocumentStoreBucketName() {
         var documentBucket =
                 s3Client.listBuckets().stream()
-                        .filter(bucket -> bucket.getName().equals("test-doc-store"))
+                        .filter(bucket -> bucket.getName().equals("test-document-store"))
                         .findFirst();
 
         if (documentBucket.isEmpty()) {
