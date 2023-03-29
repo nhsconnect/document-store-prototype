@@ -13,9 +13,11 @@ aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 rm "s3://$ENV_S3" --recursi
 
 TABLE_NAME="DocumentReferenceMetadata"
 
-aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} dynamodb describe-table --table-name $TABLE_NAME | jq '.Table | del(.TableId, .TableArn, .ItemCount, .TableSizeBytes, .CreationDateTime, .TableStatus, .LatestStreamArn, .LatestStreamLabel, .ProvisionedThroughput.NumberOfDecreasesToday, .ProvisionedThroughput.LastIncreaseDateTime)' > schema.json
-
-aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} dynamodb delete-table --table-name $TABLE_NAME
-
-aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} dynamodb create-table --cli-input-json file://schema.json \
-&& rm schema.json
+aws dynamodb scan \
+  --attributes-to-get "ID" \
+  --table-name $TABLE_NAME --query "Items[*]" \
+  ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} \
+  | jq --compact-output '.[]' \
+  | tr '\n' '\0' \
+  | xargs -0 -t -I keyItem \
+    aws dynamodb delete-item ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} --table-name $TABLE_NAME --key=keyItem
