@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-const ConfigContext = createContext(undefined);
+const ConfigContext = createContext(null);
 
 export const useFeatureToggle = (toggleName) => {
     const config = useContext(ConfigContext);

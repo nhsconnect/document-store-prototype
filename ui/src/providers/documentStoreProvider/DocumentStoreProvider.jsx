@@ -4,7 +4,7 @@ import { useDocumentStore } from "../../apiClients/documentStore";
 import { useDocumentStoreAuthErrorInterceptor } from "../../apiClients/useDocumentStoreAuthErrorInterceptor";
 import { useFeatureToggle } from "../configProvider/ConfigProvider";
 
-const DocumentStoreContext = createContext(undefined);
+const DocumentStoreContext = createContext(null);
 
 const DocumentStoreProvider = ({ children }) => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
