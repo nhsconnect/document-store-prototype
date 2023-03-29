@@ -9,10 +9,16 @@ const NavLinks = () => {
     const redirectUri = new URL(routes.ROOT, window.location.href);
     const logoutUrl = `${baseAPIUrl}/Auth/Logout?redirect_uri=${redirectUri}`;
 
+    const handleLogOut = () => {
+        sessionStorage.setItem("LoggedIn", "false");
+    };
+
     return isLoggedIn ? (
         <>
             <Header.NavItem href={routes.HOME}>Home</Header.NavItem>
-            <Header.NavItem href={logoutUrl}>Log Out</Header.NavItem>
+            <Header.NavItem href={logoutUrl} onClick={handleLogOut}>
+                Log Out
+            </Header.NavItem>
         </>
     ) : null;
 };

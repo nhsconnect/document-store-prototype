@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import NavLinks from "./NavLinks";
 import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import routes from "../../enums/routes";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("../../providers/configProvider/ConfigProvider");
 
@@ -54,5 +55,14 @@ describe("NavLinks", () => {
 
         expect(screen.queryByRole("link", { name: "Home" })).not.toBeInTheDocument();
         expect(screen.queryByRole("link", { name: "Log Out" })).not.toBeInTheDocument();
+    });
+
+    it("change LoggedIn in session storage to false when logging out", () => {
+        sessionStorage.setItem("LoggedIn", "true");
+        render(<NavLinks />);
+
+        userEvent.click(screen.getByRole("link", { name: "Log Out" }));
+
+        expect(sessionStorage.setItem).toHaveBeenCalledWith("LoggedIn", "false");
     });
 });
