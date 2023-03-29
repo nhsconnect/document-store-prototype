@@ -2,27 +2,34 @@ import { render } from "@testing-library/react";
 import { MemoryRouter, useNavigate } from "react-router";
 import AuthSuccessRouter from "./AuthSuccessRouter";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("react-router", () => ({
     ...jest.requireActual("react-router"),
     useNavigate: jest.fn(),
 }));
 
 describe("AuthSuccessRouter", () => {
-    beforeEach(() => {
-        sessionStorage.clear();
-    });
-
     afterEach(() => {
         jest.clearAllMocks();
     });
 
     it("sets the LoggedIn session storage value to true", () => {
+        const session = {
+            isLoggedIn: true,
+        };
+        const setSessionMock = jest.fn();
+        useSessionContext.mockReturnValue([session, setSessionMock]);
+
         useNavigate.mockReturnValue(jest.fn());
 
         renderAuthSuccessRouter();
 
-        expect(sessionStorage.setItem).toHaveBeenCalledWith("LoggedIn", "true");
+        expect(setSessionMock).toHaveBeenCalledWith({
+            ...session,
+            isLoggedIn: true,
+        });
     });
 
     it("navigates to HOME", () => {

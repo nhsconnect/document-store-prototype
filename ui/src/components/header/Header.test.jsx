@@ -4,19 +4,37 @@ import routes from "../../enums/routes";
 import { useFeatureToggle } from "../../providers/configProvider/ConfigProvider";
 import { useAuth } from "react-oidc-context";
 import { MemoryRouter } from "react-router";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("../../providers/configProvider/ConfigProvider");
 jest.mock("react-oidc-context");
 
 describe("Header", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     describe("default rendering", () => {
         it("renders the header", () => {
+            const session = {
+                isLoggedIn: true,
+            };
+            const setSessionMock = jest.fn();
+            useSessionContext.mockReturnValue([session, setSessionMock]);
+
             render(<Header />);
 
             expect(screen.getByRole("banner")).toBeInTheDocument();
         });
 
         it("renders a logo that links to the root path", () => {
+            const session = {
+                isLoggedIn: true,
+            };
+            const setSessionMock = jest.fn();
+            useSessionContext.mockReturnValue([session, setSessionMock]);
+
             render(<Header />);
 
             const nhsLogoLink = screen.getByRole("link", { name: "NHS homepage" });
@@ -41,10 +59,6 @@ describe("Header", () => {
     });
 
     describe("OIDC_AUTHENTICATION toggle", () => {
-        afterEach(() => {
-            jest.clearAllMocks();
-        });
-
         describe("toggled on", () => {
             beforeEach(() => {
                 useFeatureToggle.mockReturnValue(true);
@@ -76,12 +90,13 @@ describe("Header", () => {
                 useFeatureToggle.mockReturnValue(false);
             });
 
-            afterEach(() => {
-                sessionStorage.clear();
-            });
-
             it("renders nav links when authenticated", () => {
-                sessionStorage.setItem("LoggedIn", "true");
+                const session = {
+                    isLoggedIn: true,
+                };
+
+                const setSessionMock = jest.fn();
+                useSessionContext.mockReturnValue([session, setSessionMock]);
 
                 render(<Header />);
 
@@ -91,7 +106,12 @@ describe("Header", () => {
             });
 
             it("does not render nav links when unauthenticated", () => {
-                sessionStorage.setItem("LoggedIn", "false");
+                const session = {
+                    isLoggedIn: false,
+                };
+
+                const setSessionMock = jest.fn();
+                useSessionContext.mockReturnValue([session, setSessionMock]);
 
                 render(<Header />);
 

@@ -1,11 +1,13 @@
 import routes from "../../enums/routes";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
 const ProtectedRoutes = ({ children }) => {
     const navigate = useNavigate();
 
-    const isLoggedIn = sessionStorage.getItem("LoggedIn") === "true";
+    const [session] = useSessionContext();
+    const { isLoggedIn } = session;
 
     useEffect(() => {
         if (!isLoggedIn) {

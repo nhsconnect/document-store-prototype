@@ -20,6 +20,7 @@ import DocumentStoreProvider from "./providers/documentStoreProvider/DocumentSto
 import routes from "./enums/routes";
 import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
 import AuthSuccessRouter from "./auth/authSuccessRouter/AuthSuccessRouter";
+import SessionProvider from "./providers/sessionProvider/SessionProvider";
 
 const AppRoutes = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
@@ -104,10 +105,12 @@ const App = () => {
         <ConfigProvider config={config}>
             <BrowserRouter>
                 <AuthProvider>
-                    <Layout>
-                        <AuthenticatorErrors />
-                        <AppRoutes />
-                    </Layout>
+                    <SessionProvider>
+                        <Layout>
+                            <AuthenticatorErrors />
+                            <AppRoutes />
+                        </Layout>
+                    </SessionProvider>
                 </AuthProvider>
             </BrowserRouter>
         </ConfigProvider>

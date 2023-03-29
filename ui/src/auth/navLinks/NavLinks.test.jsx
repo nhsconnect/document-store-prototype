@@ -3,7 +3,9 @@ import NavLinks from "./NavLinks";
 import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import routes from "../../enums/routes";
 import userEvent from "@testing-library/user-event";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("../../providers/configProvider/ConfigProvider");
 
 describe("NavLinks", () => {
@@ -11,7 +13,6 @@ describe("NavLinks", () => {
 
     afterEach(() => {
         jest.clearAllMocks();
-        sessionStorage.clear();
         window.location = oldWindowLocation;
     });
 
@@ -26,30 +27,29 @@ describe("NavLinks", () => {
         delete window.location;
         window.location = Object.defineProperties({}, windowLocationProperties);
 
-        sessionStorage.setItem("LoggedIn", "true");
+        const session = {
+            isLoggedIn: true,
+        };
+
+        const setSessionMock = jest.fn();
+        useSessionContext.mockReturnValue([session, setSessionMock]);
 
         useBaseAPIUrl.mockReturnValue(baseApiUrl);
 
         render(<NavLinks />);
 
         expect(useBaseAPIUrl).toHaveBeenCalledWith("doc-store-api");
-        expect(sessionStorage.getItem).toHaveBeenCalledWith("LoggedIn");
         expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", routes.HOME);
         expect(screen.getByRole("link", { name: "Log Out" })).toHaveAttribute("href", logoutHandlerUrl);
     });
 
-    it.each(["false", ""])("does not render the nav links if LoggedIn is: %s", (loggedInValue) => {
-        sessionStorage.setItem("LoggedIn", loggedInValue);
+    it.each([false, null, undefined])("does not render the nav links if isLoggedIn is: %s", (loggedInValue) => {
+        const session = {
+            isLoggedIn: loggedInValue,
+        };
 
-        render(<NavLinks />);
-
-        expect(sessionStorage.getItem).toHaveBeenCalledWith("LoggedIn");
-        expect(screen.queryByRole("link", { name: "Home" })).not.toBeInTheDocument();
-        expect(screen.queryByRole("link", { name: "Log Out" })).not.toBeInTheDocument();
-    });
-
-    it("does not render the nav links if LoggedIn value does not exist", () => {
-        sessionStorage.clear();
+        const setSessionMock = jest.fn();
+        useSessionContext.mockReturnValue([session, setSessionMock]);
 
         render(<NavLinks />);
 
@@ -57,12 +57,28 @@ describe("NavLinks", () => {
         expect(screen.queryByRole("link", { name: "Log Out" })).not.toBeInTheDocument();
     });
 
-    it("change LoggedIn in session storage to false when logging out", () => {
-        sessionStorage.setItem("LoggedIn", "true");
+    it("does not render the nav links if isLoggedIn value does not exist", () => {
+        render(<NavLinks />);
+
+        expect(screen.queryByRole("link", { name: "Home" })).not.toBeInTheDocument();
+        expect(screen.queryByRole("link", { name: "Log Out" })).not.toBeInTheDocument();
+    });
+
+    it("change isLoggedIn in session context to false when logging out", () => {
+        const session = {
+            isLoggedIn: true,
+        };
+
+        const setSessionMock = jest.fn();
+        useSessionContext.mockReturnValue([session, setSessionMock]);
+
         render(<NavLinks />);
 
         userEvent.click(screen.getByRole("link", { name: "Log Out" }));
 
-        expect(sessionStorage.setItem).toHaveBeenCalledWith("LoggedIn", "false");
+        expect(setSessionMock).toHaveBeenCalledWith({
+            ...session,
+            isLoggedIn: false,
+        });
     });
 });
