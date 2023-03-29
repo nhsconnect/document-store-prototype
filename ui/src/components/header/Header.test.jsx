@@ -17,11 +17,7 @@ describe("Header", () => {
 
     describe("default rendering", () => {
         it("renders the header", () => {
-            const session = {
-                isLoggedIn: true,
-            };
-            const setSessionMock = jest.fn();
-            useSessionContext.mockReturnValue([session, setSessionMock]);
+            useSessionContext.mockReturnValue([{ isLoggedIn: true }, jest.fn()]);
 
             render(<Header />);
 
@@ -29,11 +25,7 @@ describe("Header", () => {
         });
 
         it("renders a logo that links to the root path", () => {
-            const session = {
-                isLoggedIn: true,
-            };
-            const setSessionMock = jest.fn();
-            useSessionContext.mockReturnValue([session, setSessionMock]);
+            useSessionContext.mockReturnValue([{ isLoggedIn: true }, jest.fn()]);
 
             render(<Header />);
 
@@ -91,12 +83,7 @@ describe("Header", () => {
             });
 
             it("renders nav links when authenticated", () => {
-                const session = {
-                    isLoggedIn: true,
-                };
-
-                const setSessionMock = jest.fn();
-                useSessionContext.mockReturnValue([session, setSessionMock]);
+                useSessionContext.mockReturnValue([{ isLoggedIn: true }, jest.fn()]);
 
                 render(<Header />);
 
@@ -106,12 +93,7 @@ describe("Header", () => {
             });
 
             it("does not render nav links when unauthenticated", () => {
-                const session = {
-                    isLoggedIn: false,
-                };
-
-                const setSessionMock = jest.fn();
-                useSessionContext.mockReturnValue([session, setSessionMock]);
+                useSessionContext.mockReturnValue([{ isLoggedIn: false }, jest.fn()]);
 
                 render(<Header />);
 

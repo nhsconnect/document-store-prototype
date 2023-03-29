@@ -16,12 +16,10 @@ describe("AuthSuccessRouter", () => {
     });
 
     it("sets the LoggedIn session storage value to true", () => {
-        const session = {
-            isLoggedIn: true,
-        };
+        const session = { isLoggedIn: true };
         const setSessionMock = jest.fn();
-        useSessionContext.mockReturnValue([session, setSessionMock]);
 
+        useSessionContext.mockReturnValue([session, setSessionMock]);
         useNavigate.mockReturnValue(jest.fn());
 
         renderAuthSuccessRouter();

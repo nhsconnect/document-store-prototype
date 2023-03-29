@@ -27,13 +27,7 @@ describe("NavLinks", () => {
         delete window.location;
         window.location = Object.defineProperties({}, windowLocationProperties);
 
-        const session = {
-            isLoggedIn: true,
-        };
-
-        const setSessionMock = jest.fn();
-        useSessionContext.mockReturnValue([session, setSessionMock]);
-
+        useSessionContext.mockReturnValue([{ isLoggedIn: true }, jest.fn()]);
         useBaseAPIUrl.mockReturnValue(baseApiUrl);
 
         render(<NavLinks />);
@@ -48,8 +42,7 @@ describe("NavLinks", () => {
             isLoggedIn: loggedInValue,
         };
 
-        const setSessionMock = jest.fn();
-        useSessionContext.mockReturnValue([session, setSessionMock]);
+        useSessionContext.mockReturnValue([session, jest.fn()]);
 
         render(<NavLinks />);
 
@@ -68,8 +61,8 @@ describe("NavLinks", () => {
         const session = {
             isLoggedIn: true,
         };
-
         const setSessionMock = jest.fn();
+
         useSessionContext.mockReturnValue([session, setSessionMock]);
 
         render(<NavLinks />);

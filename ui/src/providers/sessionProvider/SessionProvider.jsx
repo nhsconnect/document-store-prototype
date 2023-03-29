@@ -1,13 +1,17 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const SessionContext = createContext(null);
 
 const SessionProvider = ({ children }) => {
-    const sessionState = useState({
-        isLoggedIn: false,
-    });
+    const [session, setSession] = useState({ isLoggedIn: sessionStorage.getItem("LoggedIn") === "true" });
 
-    return <SessionContext.Provider value={sessionState}>{children}</SessionContext.Provider>;
+    useEffect(() => {
+        if (session.isLoggedIn) {
+            sessionStorage.setItem("LoggedIn", "true");
+        }
+    }, [session]);
+
+    return <SessionContext.Provider value={[session, setSession]}>{children}</SessionContext.Provider>;
 };
 
 export default SessionProvider;
