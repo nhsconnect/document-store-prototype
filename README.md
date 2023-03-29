@@ -3,6 +3,17 @@
 Enables the NHS to fulfil their role as data controller and enable access requests. This is an interoperable service
 that is capable of uploading, downloading, and deleting patient documents.
 
+## Table Of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Running Locally](#running-locally)
+3. [Testing](#testing)
+4. [Running Services On AWS](#running-services-on-aws)
+5. [Monitoring](#monitoring)
+6. [Secrets](#secrets)
+7. [Accessibility](#accessibility)
+8. [Troubleshooting](#troubleshooting)
+
 ## Prerequisites
 
 - [Git](https://git-scm.com/)
@@ -201,6 +212,15 @@ aws sns subscribe --topic-arn [topic-arn] --protocol email --notification-endpoi
 
 You will receive a confirmation email with a link allowing you to confirm the subscription. We are also subscribing to
 the SNS topic using email addresses that are provided for Microsoft Teams channels.
+
+## Secrets
+
+To prevent secrets and sensitive info being pushed from a dev's machine, it is recommended to use a tool such
+as [Talisman](https://thoughtworks.github.io/talisman/) that checks changes for anything that looks suspicious. It is
+recommended
+to [install this as a pre-commit hook](https://thoughtworks.github.io/talisman/docs/installation/global-hook/). There is
+also a [.talismanrc](./.talismanrc) file that is used
+to [configure Talisman, suppress flagged files, and prevent false positives](https://thoughtworks.github.io/talisman/docs/configuring-talisman).
 
 ## Accessibility
 

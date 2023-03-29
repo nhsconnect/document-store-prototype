@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: README.md
+  checksum: b1856492d41bb336b703fed4855e218fd47d535888f2790da3ef848ac74cfbb9
 - filename: app/src/main/java/uk/nhs/digital/docstore/patientdetails/PatientSearchConfig.java  
   checksum: 2fe3bca550f9835e84f065bebb962c35ffc2ba0185c7c764bb1875e476b846ce
 - filename: docker-compose.yaml
@@ -167,7 +169,6 @@ fileignoreconfig:
   checksum: fae238cccd7181407232750b36a7bdf777fc61af8162722ee9a75cb667e4e307
 - filename: terraform/document_store.tf
   checksum: c63a33e7b7eb31992c5fafbb448a88d252a36b804fd78e24cc524552ea596703
-
 version: ""
 scopeconfig:
   - scope: node
