@@ -110,24 +110,26 @@ const SearchResultsPage = () => {
                                     </Table>
                                 </>
                             )}
-                            <Table caption="List of documents available">
-                                <Table.Head>
-                                    <Table.Row>
-                                        <Table.Cell>Filename</Table.Cell>
-                                        <Table.Cell>Uploaded At</Table.Cell>
-                                    </Table.Row>
-                                </Table.Head>
-                                <Table.Body>
-                                    {searchResults
-                                        .filter((result) => result.virusScanResult === "Clean")
-                                        .map((result, index) => (
-                                            <Table.Row key={`document-${index}`}>
-                                                <Table.Cell>{result.description}</Table.Cell>
-                                                <Table.Cell>{result.indexed.toLocaleString()}</Table.Cell>
-                                            </Table.Row>
-                                        ))}
-                                </Table.Body>
-                            </Table>
+                            {numberOfCleanFiles > 0 && (
+                                <Table caption="List of documents available">
+                                    <Table.Head>
+                                        <Table.Row>
+                                            <Table.Cell>Filename</Table.Cell>
+                                            <Table.Cell>Uploaded At</Table.Cell>
+                                        </Table.Row>
+                                    </Table.Head>
+                                    <Table.Body>
+                                        {searchResults
+                                            .filter((result) => result.virusScanResult === "Clean")
+                                            .map((result, index) => (
+                                                <Table.Row key={`document-${index}`}>
+                                                    <Table.Cell>{result.description}</Table.Cell>
+                                                    <Table.Cell>{result.indexed.toLocaleString()}</Table.Cell>
+                                                </Table.Row>
+                                            ))}
+                                    </Table.Body>
+                                </Table>
+                            )}
                             {downloadState === states.PENDING && (
                                 <ProgressBar status="Downloading documents..."></ProgressBar>
                             )}

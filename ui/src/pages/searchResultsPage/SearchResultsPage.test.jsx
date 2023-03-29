@@ -236,6 +236,18 @@ describe("<SearchResultsPage />", () => {
             expect(cleanTable).toBeInTheDocument();
             expect(within(cleanTable).findByText(cleanFilename));
         });
+
+        it("doesn't render clean table if all files available are infected", async () => {
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            const infectedFilename = "InfectedFile";
+            const searchResult = [buildSearchResult({ virusScanResult: "Infected", description: infectedFilename })];
+            findByNhsNumberMock.mockResolvedValue(searchResult);
+
+            renderSearchResultsPage();
+
+            expect(await screen.findByText("List of documents not available")).toBeInTheDocument();
+            expect(screen.queryByText("List of documents available")).not.toBeInTheDocument();
+        });
     });
 
     describe("without NHS number", () => {
