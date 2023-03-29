@@ -1,15 +1,15 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import DeleteDocumentsPage from "./DeleteDocumentsPage";
-import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import userEvent from "@testing-library/user-event";
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useNavigate } from "react-router";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
 
 jest.mock("react-router");
-jest.mock("../../providers/DocumentStoreProvider");
-jest.mock("../../providers/PatientDetailsProvider");
+jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
+jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider");
 
 describe("DeleteDocumentsPage", () => {
     beforeEach(() => {

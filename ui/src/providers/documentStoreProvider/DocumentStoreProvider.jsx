@@ -1,8 +1,8 @@
 import { useContext, createContext } from "react";
 import { useAuth } from "react-oidc-context";
-import { useDocumentStore } from "../apiClients/documentStore";
-import { useDocumentStoreAuthErrorInterceptor } from "../apiClients/useDocumentStoreAuthErrorInterceptor";
-import { useFeatureToggle } from "./ConfigurationProvider";
+import { useDocumentStore } from "../../apiClients/documentStore";
+import { useDocumentStoreAuthErrorInterceptor } from "../../apiClients/useDocumentStoreAuthErrorInterceptor";
+import { useFeatureToggle } from "../configProvider/ConfigProvider";
 
 const DocumentStoreContext = createContext(undefined);
 

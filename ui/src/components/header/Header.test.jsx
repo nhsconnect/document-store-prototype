@@ -1,11 +1,11 @@
 import { render, screen, within } from "@testing-library/react";
 import Header from "./Header";
 import routes from "../../enums/routes";
-import { useFeatureToggle } from "../../providers/ConfigurationProvider";
+import { useFeatureToggle } from "../../providers/configProvider/ConfigProvider";
 import { useAuth } from "react-oidc-context";
 import { MemoryRouter } from "react-router";
 
-jest.mock("../../providers/ConfigurationProvider");
+jest.mock("../../providers/configProvider/ConfigProvider");
 jest.mock("react-oidc-context");
 
 describe("Header", () => {
@@ -77,11 +77,11 @@ describe("Header", () => {
             });
 
             afterEach(() => {
-                localStorage.clear();
+                sessionStorage.clear();
             });
 
             it("renders nav links when authenticated", () => {
-                localStorage.setItem("LoggedIn", "true");
+                sessionStorage.setItem("LoggedIn", "true");
 
                 render(<Header />);
 
@@ -91,7 +91,7 @@ describe("Header", () => {
             });
 
             it("does not render nav links when unauthenticated", () => {
-                localStorage.setItem("LoggedIn", "false");
+                sessionStorage.setItem("LoggedIn", "false");
 
                 render(<Header />);
 

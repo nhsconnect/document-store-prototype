@@ -1,9 +1,9 @@
 import AuthCallbackRouter from "./AuthCallbackRouter";
 import { render, screen } from "@testing-library/react";
-import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
+import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import routes from "../../enums/routes";
 
-jest.mock("../../providers/ConfigurationProvider");
+jest.mock("../../providers/configProvider/ConfigProvider");
 
 describe("AuthCallbackRouter", () => {
     const oldWindowLocation = window.location;

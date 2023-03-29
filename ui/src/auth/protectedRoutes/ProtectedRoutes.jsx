@@ -5,7 +5,7 @@ import { useEffect } from "react";
 const ProtectedRoutes = ({ children }) => {
     const navigate = useNavigate();
 
-    const isLoggedIn = localStorage.getItem("LoggedIn") === "true";
+    const isLoggedIn = sessionStorage.getItem("LoggedIn") === "true";
 
     useEffect(() => {
         if (!isLoggedIn) {

@@ -1,8 +1,8 @@
 import AuthErrorPage from "./AuthErrorPage";
 import { render, screen } from "@testing-library/react";
-import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
+import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 
-jest.mock("../../providers/ConfigurationProvider");
+jest.mock("../../providers/configProvider/ConfigProvider");
 
 describe("AuthErrorPage", () => {
     it("renders the page", () => {

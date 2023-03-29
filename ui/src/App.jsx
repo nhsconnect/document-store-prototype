@@ -5,18 +5,18 @@ import config from "./config";
 import OidcAuthenticator from "./auth/oidcAuthenticator/OidcAuthenticator";
 import HomePage from "./pages/homePage/HomePage";
 import Layout from "./components/layout/Layout";
-import PatientDetailsProvider from "./providers/PatientDetailsProvider";
+import PatientDetailsProvider from "./providers/patientDetailsProvider/PatientDetailsProvider";
 import { PatientTracePage } from "./pages/patientTracePage/PatientTracePage";
 import UploadDocumentsPage from "./pages/uploadDocumentsPage/UploadDocumentsPage";
 import SearchResultsPage from "./pages/searchResultsPage/SearchResultsPage";
 import StartPage from "./pages/startPage/StartPage";
 import OIDCAuthCallbackRouter from "./auth/authCallbackRouters/OIDCAuthCallbackRouter";
-import AuthProvider from "./providers/AuthProvider";
+import AuthProvider from "./providers/authProvider/AuthProvider";
 import DeleteDocumentsPage from "./pages/deleteDocumentsPage/DeleteDocumentsPage";
-import ConfigurationProvider, { useFeatureToggle } from "./providers/ConfigurationProvider";
+import ConfigProvider, { useFeatureToggle } from "./providers/configProvider/ConfigProvider";
 import AuthCallbackRouter from "./auth/authCallbackRouters/AuthCallbackRouter";
 import AuthErrorPage from "./pages/authErrorPage/AuthErrorPage";
-import DocumentStoreProvider from "./providers/DocumentStoreProvider";
+import DocumentStoreProvider from "./providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "./enums/routes";
 import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
 import AuthSuccessRouter from "./auth/authSuccessRouter/AuthSuccessRouter";
@@ -101,7 +101,7 @@ const AuthenticatorErrors = () => {
 
 const App = () => {
     return (
-        <ConfigurationProvider config={config}>
+        <ConfigProvider config={config}>
             <BrowserRouter>
                 <AuthProvider>
                     <Layout>
@@ -110,7 +110,7 @@ const App = () => {
                     </Layout>
                 </AuthProvider>
             </BrowserRouter>
-        </ConfigurationProvider>
+        </ConfigProvider>
     );
 };
 

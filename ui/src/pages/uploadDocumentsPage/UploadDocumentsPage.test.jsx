@@ -2,15 +2,15 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 import { documentUploadStates } from "../../enums/documentUploads";
-import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import UploadDocumentsPage from "./UploadDocumentsPage";
 import { useNavigate } from "react-router";
 import { buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
 
-jest.mock("../../providers/DocumentStoreProvider");
-jest.mock("../../providers/PatientDetailsProvider");
+jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
+jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider");
 jest.mock("react-router");
 
 describe("<UploadDocumentsPage />", () => {

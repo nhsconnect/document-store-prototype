@@ -1,11 +1,11 @@
-import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
+import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import routes from "../../enums/routes";
 import { Header } from "nhsuk-react-components";
 
 const NavLinks = () => {
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
 
-    const isLoggedIn = localStorage.getItem("LoggedIn") === "true";
+    const isLoggedIn = sessionStorage.getItem("LoggedIn") === "true";
     const redirectUri = new URL(routes.ROOT, window.location.href);
     const logoutUrl = `${baseAPIUrl}/Auth/Logout?redirect_uri=${redirectUri}`;
 

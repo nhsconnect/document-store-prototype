@@ -2,12 +2,12 @@ import { Button, ErrorSummary, Fieldset, Input, WarningCallout } from "nhsuk-rea
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import BackButton from "../../components/backButton/BackButton";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
 import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 
 const states = {
     IDLE: "idle",

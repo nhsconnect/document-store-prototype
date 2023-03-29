@@ -1,6 +1,6 @@
 import React from "react";
 import { ButtonLink } from "nhsuk-react-components";
-import { useBaseAPIUrl, useFeatureToggle } from "../../providers/ConfigurationProvider";
+import { useBaseAPIUrl, useFeatureToggle } from "../../providers/configProvider/ConfigProvider";
 
 const StartPage = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");

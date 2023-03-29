@@ -1,4 +1,4 @@
-import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
+import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import { useEffect } from "react";
 import routes from "../../enums/routes";
 import ProgressBar from "../../components/progressBar/ProgressBar";

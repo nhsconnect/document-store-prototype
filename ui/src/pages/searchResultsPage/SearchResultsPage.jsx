@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table, ErrorMessage, ErrorSummary } from "nhsuk-react-components";
-import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import BackButton from "../../components/backButton/BackButton";
@@ -8,7 +8,7 @@ import { downloadFile } from "../../utils/utils";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
 import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
 
 const states = {

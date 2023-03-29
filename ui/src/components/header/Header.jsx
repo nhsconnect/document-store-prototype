@@ -1,6 +1,6 @@
 import React from "react";
 import { Header as HeaderComponent } from "nhsuk-react-components";
-import { useFeatureToggle } from "../../providers/ConfigurationProvider";
+import { useFeatureToggle } from "../../providers/configProvider/ConfigProvider";
 import NavLinks from "../../auth/navLinks/NavLinks";
 import OidcAuthenticator from "../../auth/oidcAuthenticator/OidcAuthenticator";
 import routes from "../../enums/routes";

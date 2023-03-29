@@ -3,14 +3,14 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import produce from "immer";
-import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import BackButton from "../../components/backButton/BackButton";
 import DocumentsInput from "../../components/documentsInput/DocumentsInput";
 import { formatSize } from "../../utils/utils";
 import { documentUploadStates as stateNames, documentUploadSteps } from "../../enums/documentUploads";
 import UploadSummary from "../../components/uploadSummary/UploadSummary";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
 
 const UploadDocumentsPage = ({ nextPagePath }) => {

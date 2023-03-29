@@ -6,7 +6,7 @@ const AuthSuccessRouter = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        localStorage.setItem("LoggedIn", "true");
+        sessionStorage.setItem("LoggedIn", "true");
         navigate(routes.HOME);
     }, [navigate]);
 

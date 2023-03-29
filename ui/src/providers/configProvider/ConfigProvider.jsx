@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
 
-const ConfigurationContext = createContext(undefined);
+const ConfigContext = createContext(undefined);
 
 export const useFeatureToggle = (toggleName) => {
-    const config = useContext(ConfigurationContext);
+    const config = useContext(ConfigContext);
 
     const features = config?.features[process.env["REACT_APP_ENV"]];
 
@@ -15,7 +15,7 @@ export const useFeatureToggle = (toggleName) => {
 };
 
 export const useBaseAPIUrl = (apiName) => {
-    const config = useContext(ConfigurationContext);
+    const config = useContext(ConfigContext);
 
     const apiEndpoints = config?.API.endpoints;
 
@@ -32,8 +32,8 @@ export const useBaseAPIUrl = (apiName) => {
     return endpointConfiguration.endpoint;
 };
 
-const ConfigurationProvider = ({ children, config }) => {
-    return <ConfigurationContext.Provider value={config}>{children}</ConfigurationContext.Provider>;
+const ConfigProvider = ({ children, config }) => {
+    return <ConfigContext.Provider value={config}>{children}</ConfigContext.Provider>;
 };
 
-export default ConfigurationProvider;
+export default ConfigProvider;

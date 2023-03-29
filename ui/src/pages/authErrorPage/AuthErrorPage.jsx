@@ -1,5 +1,5 @@
 import { ButtonLink } from "nhsuk-react-components";
-import { useBaseAPIUrl } from "../../providers/ConfigurationProvider";
+import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 
 const AuthErrorPage = () => {
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");

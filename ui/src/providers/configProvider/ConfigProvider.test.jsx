@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import ConfigurationProvider, { useFeatureToggle } from "./ConfigurationProvider";
+import ConfigProvider, { useFeatureToggle } from "./ConfigProvider";
 
-describe("<ConfigurationProvider />", () => {
+describe("ConfigProvider", () => {
     const reactAppEnv = process.env.REACT_APP_ENV;
     const baseConfig = {
         API: {
@@ -27,9 +27,9 @@ describe("<ConfigurationProvider />", () => {
 
         process.env.REACT_APP_ENV = "development";
         render(
-            <ConfigurationProvider config={config}>
+            <ConfigProvider config={config}>
                 <TestComponent />
-            </ConfigurationProvider>
+            </ConfigProvider>
         );
 
         expect(screen.getByText("active")).toBeInTheDocument();
@@ -43,9 +43,9 @@ describe("<ConfigurationProvider />", () => {
 
         process.env.REACT_APP_ENV = "development";
         render(
-            <ConfigurationProvider config={config}>
+            <ConfigProvider config={config}>
                 <TestComponent />
-            </ConfigurationProvider>
+            </ConfigProvider>
         );
 
         expect(screen.getByText("inactive")).toBeInTheDocument();
@@ -59,9 +59,9 @@ describe("<ConfigurationProvider />", () => {
 
         process.env.REACT_APP_ENV = "development";
         render(
-            <ConfigurationProvider config={config}>
+            <ConfigProvider config={config}>
                 <TestComponent />
-            </ConfigurationProvider>
+            </ConfigProvider>
         );
 
         expect(screen.getByText("inactive")).toBeInTheDocument();
@@ -70,9 +70,9 @@ describe("<ConfigurationProvider />", () => {
     it("provides a default value of false when feature toggle are undefined for the current env", () => {
         process.env.REACT_APP_ENV = "non-existent-env";
         render(
-            <ConfigurationProvider config={baseConfig}>
+            <ConfigProvider config={baseConfig}>
                 <TestComponent />
-            </ConfigurationProvider>
+            </ConfigProvider>
         );
 
         expect(screen.getByText("inactive")).toBeInTheDocument();
@@ -81,9 +81,9 @@ describe("<ConfigurationProvider />", () => {
     it("provides a default value of false to the consuming component when REACT_APP_ENV is undefined", () => {
         process.env.REACT_APP_ENV = undefined;
         render(
-            <ConfigurationProvider config={baseConfig}>
+            <ConfigProvider config={baseConfig}>
                 <TestComponent />
-            </ConfigurationProvider>
+            </ConfigProvider>
         );
 
         expect(screen.getByText("inactive")).toBeInTheDocument();

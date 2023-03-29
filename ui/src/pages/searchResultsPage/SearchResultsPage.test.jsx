@@ -1,15 +1,15 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
-import { usePatientDetailsContext } from "../../providers/PatientDetailsProvider";
+import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import SearchResultsPage from "./SearchResultsPage";
 import userEvent from "@testing-library/user-event";
 import { downloadFile } from "../../utils/utils";
 import { MemoryRouter, useNavigate } from "react-router";
 import { buildPatientDetails, buildSearchResult } from "../../utils/testBuilders";
-import { useAuthorisedDocumentStore } from "../../providers/DocumentStoreProvider";
+import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
 
-jest.mock("../../providers/DocumentStoreProvider");
-jest.mock("../../providers/PatientDetailsProvider");
+jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
+jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider");
 jest.mock("react-router", () => ({
     ...jest.requireActual("react-router"),
     useNavigate: jest.fn(),

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useMemo } from "react";
-import { useBaseAPIUrl } from "../providers/ConfigurationProvider";
+import { useBaseAPIUrl } from "../providers/configProvider/ConfigProvider";
 
 const DOCUMENT_STORE_API = "doc-store-api";
 

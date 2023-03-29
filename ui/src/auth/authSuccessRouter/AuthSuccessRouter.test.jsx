@@ -10,19 +10,19 @@ jest.mock("react-router", () => ({
 
 describe("AuthSuccessRouter", () => {
     beforeEach(() => {
-        localStorage.clear();
+        sessionStorage.clear();
     });
 
     afterEach(() => {
         jest.clearAllMocks();
     });
 
-    it("sets the LoggedIn local storage value to true", () => {
+    it("sets the LoggedIn session storage value to true", () => {
         useNavigate.mockReturnValue(jest.fn());
 
         renderAuthSuccessRouter();
 
-        expect(localStorage.setItem).toHaveBeenCalledWith("LoggedIn", "true");
+        expect(sessionStorage.setItem).toHaveBeenCalledWith("LoggedIn", "true");
     });
 
     it("navigates to HOME", () => {

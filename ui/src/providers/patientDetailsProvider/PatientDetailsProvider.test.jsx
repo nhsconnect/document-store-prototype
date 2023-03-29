@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import PatientDetailsProvider, { usePatientDetailsContext } from "./PatientDetailsProvider";
-import { buildPatientDetails } from "../utils/testBuilders";
+import { buildPatientDetails } from "../../utils/testBuilders";
 
 describe("PatientDetailsProvider", () => {
     it("provides NHS number and family name", () => {
