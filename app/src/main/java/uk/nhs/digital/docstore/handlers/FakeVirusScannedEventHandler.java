@@ -14,22 +14,22 @@ import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.VirusScannedEventService;
 
-public class DocumentUploadedEventHandler implements RequestHandler<S3Event, Void> {
+public class FakeVirusScannedEventHandler implements RequestHandler<S3Event, Void> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(DocumentUploadedEventHandler.class);
+            LoggerFactory.getLogger(FakeVirusScannedEventHandler.class);
     private static final String SCAN_RESULT = "Clean";
 
     private final VirusScannedEventService virusScannedEventService;
 
     @SuppressWarnings("unused")
-    public DocumentUploadedEventHandler() {
+    public FakeVirusScannedEventHandler() {
         this(
                 new VirusScannedEventService(
                         new DocumentMetadataStore(),
                         new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL"))));
     }
 
-    public DocumentUploadedEventHandler(VirusScannedEventService virusScannedEventService) {
+    public FakeVirusScannedEventHandler(VirusScannedEventService virusScannedEventService) {
         this.virusScannedEventService = virusScannedEventService;
     }
 

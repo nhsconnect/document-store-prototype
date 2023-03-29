@@ -23,16 +23,16 @@ import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.handlers.DocumentUploadedEventHandler;
+import uk.nhs.digital.docstore.handlers.FakeVirusScannedEventHandler;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.VirusScannedEventService;
 
 @ExtendWith(MockitoExtension.class)
-public class DocumentUploadedEventTest extends BaseDocumentStoreTest {
+public class FakeVirusScannedEventTest extends BaseDocumentStoreTest {
     private static final String QUARANTINE_BUCKET_NAME = "quarantine-test-bucket";
     @Mock private Context context;
-    private DocumentUploadedEventHandler documentUploadedEventHandler;
+    private FakeVirusScannedEventHandler fakeVirusScannedEventHandler;
     private DocumentMetadataStore documentMetadataStore;
     private final Clock clock = Clock.fixed(Instant.now(), TimeZone.getDefault().toZoneId());
 
@@ -50,7 +50,7 @@ public class DocumentUploadedEventTest extends BaseDocumentStoreTest {
                         publisher,
                         new DocumentMetadataSerialiser());
 
-        documentUploadedEventHandler = new DocumentUploadedEventHandler(virusScannedEventService);
+        fakeVirusScannedEventHandler = new FakeVirusScannedEventHandler(virusScannedEventService);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class DocumentUploadedEventTest extends BaseDocumentStoreTest {
         var documentLocation = new DocumentLocation(documentMetadata.getLocation());
         documentMetadataStore.save(documentMetadata);
 
-        documentUploadedEventHandler.handleRequest(
+        fakeVirusScannedEventHandler.handleRequest(
                 makeS3EventNotification(documentLocation), context);
         var actual = documentMetadataStore.getByLocation(documentLocation);
 

@@ -247,9 +247,9 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
   bucket = aws_s3_bucket.test_document_store.id
 
   lambda_function {
-    lambda_function_arn = aws_lambda_function.document_uploaded_lambda.arn
+    lambda_function_arn = aws_lambda_function.fake_virus_scanned_event_lambda.arn
     events              = ["s3:ObjectCreated:*"]
   }
 
-  depends_on = [aws_lambda_permission.s3_permission_for_document_upload_event]
+  depends_on = [aws_lambda_permission.s3_permission_for_fake_virus_scanned_event]
 }
