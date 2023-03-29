@@ -57,10 +57,8 @@ public class LogoutHandler extends BaseAuthRequestHandler
                     httpOnlyCookieBuilder("SubjectClaim", subject.get().getValue(), 0L);
             var sessionIdCookie =
                     httpOnlyCookieBuilder("SessionId", sessionId.get().toString(), 0L);
-            var loggedInCookie = cookieBuilder("LoggedIn", "", 0L);
 
-            multiValueHeaders.put(
-                    "Set-Cookie", List.of(sessionIdCookie, subjectClaimCookie, loggedInCookie));
+            multiValueHeaders.put("Set-Cookie", List.of(sessionIdCookie, subjectClaimCookie));
         }
 
         var headers = new HashMap<String, String>();

@@ -17,7 +17,6 @@ import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 class TokenRequestHandlerTest {
-
     @Test
     void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws Exception {
         var request = new TokenRequestEvent();
@@ -69,10 +68,6 @@ class TokenRequestHandlerTest {
                                 + "; SameSite=Lax; Secure; Path=/; Max-Age="
                                 + maxCookieAgeInSeconds
                                 + "; HttpOnly");
-        assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
-                .contains(
-                        "LoggedIn=True; SameSite=Lax; Secure; Path=/; Max-Age="
-                                + maxCookieAgeInSeconds);
     }
 
     @Test

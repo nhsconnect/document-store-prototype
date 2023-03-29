@@ -108,8 +108,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 httpOnlyCookieBuilder(
                         "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
         var sessionIdCookie = httpOnlyCookieBuilder("SessionId", sessionId, maxCookieAgeInSeconds);
-        var loggedInCookie = cookieBuilder("LoggedIn", "True", maxCookieAgeInSeconds);
-        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie, loggedInCookie);
+        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
         // TODO: [PRMT-2779] Add or improve redaction if required
