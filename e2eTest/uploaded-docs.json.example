@@ -1,0 +1,72 @@
+{
+  "DocumentReferenceMetadata": [
+    {
+      "PutRequest": {
+        "Item": {
+          "Type": {
+            "L": [
+              {
+                "S": "22151000087106"
+              }
+            ]
+          },
+          "ContentType": {
+            "S": "text/plain"
+          },
+          "FileName": {
+            "S": "first-test-document.txt"
+          },
+          "ID": {
+            "S": "1413609a-feb2-49f7-81d8-0df0819e9608"
+          },
+          "NhsNumber": {
+            "S": "9449306621"
+          },
+          "VirusScanResult": {
+            "S": "Not Scanned"
+          },
+          "Location": {
+            "S": "%s3-location-1%"
+          },
+          "Created": {
+            "S": "2021-07-11T15:57:30Z"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Type": {
+            "L": [
+              {
+                "S": "22151000087106"
+              }
+            ]
+          },
+          "ContentType": {
+            "S": "text/plain"
+          },
+          "FileName": {
+            "S": "second-test-document.txt"
+          },
+          "ID": {
+            "S": "8043f459-ed6c-487f-945f-b57e608a486d"
+          },
+          "NhsNumber": {
+            "S": "9449306621"
+          },
+          "VirusScanResult": {
+            "S": "Not Scanned"
+          },
+          "Location": {
+            "S": "%s3-location-2%"
+          },
+          "Created": {
+            "S": "2021-07-11T15:57:30Z"
+          }
+        }
+      }
+    }
+  ]
+}
