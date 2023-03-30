@@ -4,6 +4,7 @@ module "document_manifest_endpoint" {
   resource_id    = aws_api_gateway_resource.document_manifest_resource.id
   lambda_arn     = aws_lambda_function.document_manifest_lambda.invoke_arn
   http_method    = "GET"
+  authorization  = "COGNITO_USER_POOLS"
   authorizer_id  = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
@@ -24,7 +25,7 @@ resource "aws_lambda_function" "document_manifest_lambda" {
   memory_size      = 1000
   filename         = var.lambda_jar_filename
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
-  layers = [
+  layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {

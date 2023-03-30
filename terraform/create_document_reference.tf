@@ -4,6 +4,7 @@ module "create_doc_ref_endpoint" {
   resource_id    = aws_api_gateway_resource.doc_ref_collection_resource.id
   lambda_arn     = aws_lambda_function.create_doc_ref_lambda.invoke_arn
   http_method    = "POST"
+  authorization = "COGNITO_USER_POOLS"
   authorizer_id  = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
