@@ -3,7 +3,7 @@ import { logAccessibilityViolations } from "../support/utils";
 describe("Uploads docs and tests it looks OK", () => {
     before(() => {
         cy.exec("./e2e-teardown.sh $ENVIRONMENT");
-    })
+    });
 
     it("searches for a patient using their NHS number and uploads documents", () => {
         const baseUrl = Cypress.config("baseUrl");
@@ -20,12 +20,12 @@ describe("Uploads docs and tests it looks OK", () => {
         cy.title().should("eq", "Inactive Patient Record Administration");
         cy.injectAxe();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        cy.findByRole("button", {name: "Start now"}).click();
+        cy.findByRole("button", { name: "Start now" }).click();
 
         if (oidcProvider === "cis2devoidc") {
             cy.findByPlaceholderText("User Name").type(username);
             cy.findByPlaceholderText("Password").type(password);
-            cy.findByRole("button", {name: "Continue"}).click();
+            cy.findByRole("button", { name: "Continue" }).click();
         }
 
         if (oidcProvider === "COGNITO") {
@@ -36,25 +36,25 @@ describe("Uploads docs and tests it looks OK", () => {
 
         cy.url().should("eq", baseUrl + "/home");
         cy.injectAxe();
-        cy.findByRole("radio", {name: /Upload/}).check();
+        cy.findByRole("radio", { name: /Upload/ }).check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        cy.findByRole("button", {name: "Continue"}).click();
+        cy.findByRole("button", { name: "Continue" }).click();
 
         cy.url().should("eq", baseUrl + "/upload/search-patient");
-        cy.findByRole("textbox", {name: "Enter NHS number"}).type(nhsNumber);
-        cy.findByRole("button", {name: "Search"}).click();
+        cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
+        cy.findByRole("button", { name: "Search" }).click();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        cy.findByRole("button", {name: "Next"}).click();
+        cy.findByRole("button", { name: "Next" }).click();
 
         cy.url().should("eq", baseUrl + "/upload/submit");
         cy.get("input[type=file]").selectFile(uploadedFilePathNames);
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        cy.findByRole("button", {name: "Upload"}).click();
+        cy.findByRole("button", { name: "Upload" }).click();
         cy.findByRole("table", {
             name: "Successfully uploaded documents",
         }).within(() => cy.findAllByRole("row").should("have.length", 3));
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        cy.findByRole("button", {name: "Start Again"}).click();
+        cy.findByRole("button", { name: "Start Again" }).click();
 
         cy.url().should("eq", Cypress.config("baseUrl") + "/home");
 

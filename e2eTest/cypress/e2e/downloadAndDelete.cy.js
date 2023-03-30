@@ -5,7 +5,7 @@ describe("downloads and deletes docs", () => {
     before(() => {
         cy.exec("./e2e-teardown.sh $ENVIRONMENT");
         cy.exec("./e2e-download-journey-setup.sh $ENVIRONMENT");
-    })
+    });
 
     it("searches for a patient, downloads, and then deletes docs", () => {
         const baseUrl = Cypress.config("baseUrl");
@@ -19,12 +19,12 @@ describe("downloads and deletes docs", () => {
         cy.title().should("eq", "Inactive Patient Record Administration");
         cy.injectAxe();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        cy.findByRole("button", {name: "Start now"}).click();
+        cy.findByRole("button", { name: "Start now" }).click();
 
         if (oidcProvider === "cis2devoidc") {
             cy.findByPlaceholderText("User Name").type(username);
             cy.findByPlaceholderText("Password").type(password);
-            cy.findByRole("button", {name: "Continue"}).click();
+            cy.findByRole("button", { name: "Continue" }).click();
         }
 
         if (oidcProvider === "COGNITO") {
@@ -36,28 +36,28 @@ describe("downloads and deletes docs", () => {
         cy.url().should("eq", baseUrl + "/home");
         cy.injectAxe();
 
-        cy.findByRole("radio", {name: /Download/}).check();
-        cy.findByRole("button", {name: "Continue"}).click();
+        cy.findByRole("radio", { name: /Download/ }).check();
+        cy.findByRole("button", { name: "Continue" }).click();
 
         cy.url().should("eq", baseUrl + "/search/patient");
-        cy.findByRole("textbox", {name: "Enter NHS number"}).type(nhsNumber);
-        cy.findByRole("button", {name: "Search"}).click();
-        cy.findByRole("button", {name: "Next"}).click();
+        cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
+        cy.findByRole("button", { name: "Search" }).click();
+        cy.findByRole("button", { name: "Next" }).click();
 
         cy.url().should("eq", baseUrl + "/search/results");
         cy.readFile(downloadedDocumentPath).should("not.exist");
-        cy.findByRole("button", {name: "Download All Documents"}).click();
+        cy.findByRole("button", { name: "Download All Documents" }).click();
         cy.readFile(downloadedDocumentPath).should("exist");
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
 
-        cy.findByRole("button", {name: "Delete All Documents"}).click();
+        cy.findByRole("button", { name: "Delete All Documents" }).click();
         cy.url().should("eq", baseUrl + "/search/results/delete");
-        cy.findByRole("radio", {name: "Yes"}).check();
+        cy.findByRole("radio", { name: "Yes" }).check();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        cy.findByRole("button", {name: "Continue"}).click();
+        cy.findByRole("button", { name: "Continue" }).click();
         cy.url().should("eq", baseUrl + "/search/results");
 
-        cy.findByRole("link", {name: "Log Out"}).click();
+        cy.findByRole("link", { name: "Log Out" }).click();
         cy.url().should("eq", baseUrl + "/");
     });
 });
