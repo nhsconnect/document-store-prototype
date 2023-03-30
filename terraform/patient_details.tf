@@ -29,7 +29,7 @@ module "patient_details_endpoint" {
   resource_id    = aws_api_gateway_resource.patient_details_collection_resource.id
   lambda_arn     = aws_lambda_function.search_patient_details_lambda.invoke_arn
   http_method    = "GET"
-  authorizer_id  = aws_api_gateway_authorizer.cognito_authorizer.id
+  authorizer_id  = var.enable_session_auth ? aws_api_gateway_authorizer.cis2_authoriser.id : aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
 module "patient_details_collection_preflight" {
@@ -58,7 +58,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
   memory_size      = 448
   filename         = var.lambda_jar_filename
   source_code_hash = filebase64sha256(var.lambda_jar_filename)
-  layers = [
+  layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {

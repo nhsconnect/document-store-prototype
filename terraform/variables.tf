@@ -16,6 +16,12 @@ variable "cloud_only_service_instances" {
   default = 1
 }
 
+// TODO: [PRMT-2779] Consider improving the naming for this
+variable "enable_session_auth" {
+  type    = bool
+  default = false
+}
+
 variable "enable_basic_auth" {
   type    = bool
   default = true

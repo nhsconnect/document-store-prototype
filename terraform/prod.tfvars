@@ -1,5 +1,6 @@
 environment                  = "prod"
 account_id                   = "487224344892"
+enable_session_auth          = false
 cognito_domain_prefix        = "prod-"
 oidc_providers               = ["COGNITO"]
 cis2_provider_oidc_issuer    = "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_IeQo9ubVl"
