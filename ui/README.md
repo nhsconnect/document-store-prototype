@@ -10,9 +10,9 @@
 
 ## Prerequisites
 
-- [Node](https://nodejs.org/en/download/)
-- [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
-- [nvm](https://github.com/nvm-sh/nvm)
+-   [Node](https://nodejs.org/en/download/)
+-   [npm](https://docs.npmjs.com/cli/v6/commands/npm-install)
+-   [nvm](https://github.com/nvm-sh/nvm)
 
 _Note: Node/npm versions can be managed using [nvm](https://github.com/nvm-sh/nvm). The version can be found in
 the [.nvmrc](.nvmrc)._
@@ -50,7 +50,7 @@ file needs to be modified to connect to a Cognito pool and the API Gateway. Ther
 API gateway config. The placeholder values can be found in the Terraform output.
 
 | Placeholder           | Terraform output    |
-|-----------------------|---------------------|
+| --------------------- | ------------------- |
 | `%api-gateway-id%`    | `api_gateway_id`    |
 | `%api-gateway-stage%` | `api_gateway_stage` |
 
