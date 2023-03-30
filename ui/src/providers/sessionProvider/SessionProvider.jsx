@@ -6,9 +6,7 @@ const SessionProvider = ({ children }) => {
     const [session, setSession] = useState({ isLoggedIn: sessionStorage.getItem("LoggedIn") === "true" });
 
     useEffect(() => {
-        if (session.isLoggedIn) {
-            sessionStorage.setItem("LoggedIn", "true");
-        }
+        sessionStorage.setItem("LoggedIn", session.isLoggedIn ? "true" : "false");
     }, [session]);
 
     return <SessionContext.Provider value={[session, setSession]}>{children}</SessionContext.Provider>;

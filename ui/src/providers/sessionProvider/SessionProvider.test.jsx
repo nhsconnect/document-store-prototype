@@ -43,6 +43,18 @@ describe("SessionProvider", () => {
             expect(sessionStorage.setItem).toHaveBeenCalledWith("LoggedIn", "true");
         });
     });
+
+    it("sets the logged in session storage value to false when state changes with logged in set to false", async () => {
+        sessionStorage.setItem("LoggedIn", "true");
+
+        renderSessionProvider(<TestComponent />);
+        userEvent.click(screen.getByRole("button", { name: "Log Out" }));
+
+        expect(screen.getByText("Is Not Logged In")).toBeInTheDocument();
+        await waitFor(() => {
+            expect(sessionStorage.setItem).toHaveBeenCalledWith("LoggedIn", "false");
+        });
+    });
 });
 
 const renderSessionProvider = (children) => {
@@ -58,11 +70,16 @@ const TestComponent = () => {
         setSession({ ...session, isLoggedIn: true });
     };
 
+    const handleLogOut = () => {
+        setSession({ ...session, isLoggedIn: false });
+    };
+
     return (
         <>
             <p>
                 {isLoggedInText}
                 <button onClick={handleLogIn}>Log In</button>
+                <button onClick={handleLogOut}>Log Out</button>
             </p>
         </>
     );
