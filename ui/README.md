@@ -27,47 +27,52 @@ To install dependencies, run:
 npm install
 ```
 
-_Note: Ensure you have the correct Node version set before doing this._
+Or from the root directory, run:
+
+```bash
+make install-ui
+```
+
+_Note: Ensure you have the correct Node version set before doing this (i.e. `nvm use`)._
 
 ### 2. Create Config
 
 Create a config file by copying [config.js.local.example](src/config.js.local.example) and rename it to `config.js`.
 
-_Note: If cognito user pool is modified, `userPoolId` and `userPoolWebClientId` will need to be changed in the config
-file and replaced by the new values that can be found in Cognito User Pool in the AWS Console._
+_Note: If Cognito user pool has been modified, `userPoolId` and `userPoolWebClientId` will need to be changed in the
+config
+file and replaced by the new values that can be found in Cognito user pool in the AWS Console._
 
 ### 3. Setup Config
 
 The [config.js](src/config.js) file must be modified to include values necessary to connect to backend services. This
 file needs to be modified to connect to a Cognito pool and the API Gateway. There are two placeholders to replace in the
-API gateway configuration.
+API gateway config. The placeholder values can be found in the Terraform output.
 
 | Placeholder           | Terraform output    |
 |-----------------------|---------------------|
 | `%api-gateway-id%`    | `api_gateway_id`    |
 | `%api-gateway-stage%` | `api_gateway_stage` |
 
-You can view the Terraform output by running:
+### 4. Start The UI
 
-```bash
-./tasks view-terraform-logs
-```
-
-### 4. Start The App
-
-The UI can be started by running:
+To start the UI, run:
 
 ```bash
 npm start
 ```
 
-_Note: Do not exit the program/terminal whilst running the UI or Cypress tests. The can run the latter in another
-terminal window._
+Or from the root directory, run:
 
-### 5. Log Into The App
+```bash
+make start-ui
+```
 
-The app is authenticated using Cognito, logging in with valid credentials is still a
-necessity as is configuring the local app to connect to the relevant user pool.
+### 5. Log Into The
+
+The app is authenticated
+using [CIS2](https://digital.nhs.uk/services/identity-and-access-management/nhs-care-identity-service-2), logging in
+with valid credentials is still a necessity as is configuring the local app to connect to the relevant user pool.
 
 ## Testing
 
@@ -81,13 +86,20 @@ following command:
 npm test
 ```
 
+Or from the root directory, run:
+
+```bash
+make test-ui
+```
+
 ## Feature Toggles
 
-We have implemented a rudimentary feature toggle system using the `config.js` file. Feature activation is determined at
-build time depending on the `NODE_ENV` environment variable. There is a configuration
-React [context provider](src/providers/configProvider/ConfigProvider.jsx) and a custom hook for checking the value of
-the
-toggle.
+We have implemented a rudimentary feature toggle system using [config.js](src/config.js). Feature activation is
+determined at
+build time depending on the `NODE_ENV` env variable. There is
+a [React context config provider](src/providers/configProvider/ConfigProvider.jsx) and a custom hook for checking the
+value of
+the toggle.
 
 ## Design
 
