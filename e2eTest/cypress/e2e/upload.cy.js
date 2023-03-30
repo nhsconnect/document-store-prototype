@@ -1,6 +1,10 @@
 import { logAccessibilityViolations } from "../support/utils";
 
 describe("Uploads docs and tests it looks OK", () => {
+    before(() => {
+        cy.exec("./e2e-teardown.sh $ENVIRONMENT");
+    })
+
     it("searches for a patient using their NHS number and uploads documents", () => {
         const baseUrl = Cypress.config("baseUrl");
         const nhsNumber = Cypress.env("REACT_APP_ENV") === "local" ? "9000000009" : "9449305552";
@@ -53,5 +57,8 @@ describe("Uploads docs and tests it looks OK", () => {
         cy.findByRole("button", {name: "Start Again"}).click();
 
         cy.url().should("eq", Cypress.config("baseUrl") + "/home");
+
+        cy.findByRole("link", { name: "Log Out" }).click();
+        cy.url().should("eq", baseUrl + "/");
     });
 });
