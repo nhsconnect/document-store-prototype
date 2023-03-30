@@ -283,11 +283,13 @@ configure-e2e-test)
   clear_assumed_iam_role
   ;;
 run-e2e-test)
+  assume_ci_role
   cd e2eTest
   source ./cypress.sh
   echo $CYPRESS_BASE_URL
   rm cypress.sh
   CYPRESS_BASE_URL=${CYPRESS_BASE_URL} ./node_modules/.bin/cypress run
+  clear_assumed_iam_role
   ;;
 create-cognito-user)
   username=$2

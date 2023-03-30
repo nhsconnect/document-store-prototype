@@ -160,7 +160,7 @@ fileignoreconfig:
 - filename: deploy-to-localstack.sh
   checksum: bd8545e9b73334a7226c1090ace3741749d7b1cae09e695b4cc0fc51b77027a2
 - filename: tasks
-  checksum: b0dfce157e6a87997b37b5ee60b96495abb9d002e750e41e598408c436dbe390
+  checksum: db8f2fd58c5c073f49570905e13ed225f8a0146dbadbad220e5cc226ce7bf3c9
 - filename: terraform/cognito.tf
   checksum: 66e15f7bc0431556f6524c5cced8369de7035bf911c4463dd7d31378c45e01b4
 - filename: terraform/main.tf
@@ -169,6 +169,8 @@ fileignoreconfig:
   checksum: fae238cccd7181407232750b36a7bdf777fc61af8162722ee9a75cb667e4e307
 - filename: terraform/document_store.tf
   checksum: c63a33e7b7eb31992c5fafbb448a88d252a36b804fd78e24cc524552ea596703
+- filename: e2eTest/e2e-download-journey-setup.sh
+  checksum: 46920c73fb83dc10a5ed9695fc78232a968d6c14ae6a607e47af34364c1c9e99
 version: ""
 scopeconfig:
   - scope: node
