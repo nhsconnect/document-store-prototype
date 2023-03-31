@@ -74,7 +74,7 @@ resource "aws_lambda_function" "authoriser_lambda" {
   ]
 
   environment {
-    variables = {
+    variables = var.enable_session_auth ? local.authoriser_environment_variables : {
       AUTH_CONFIG = jsonencode({
         resourcesForPCSEUsers = [
           local.search_patient_details_invocation_arn,

@@ -19,7 +19,7 @@ public class AuthoriserHandler extends BaseAuthRequestHandler
 
     @SuppressWarnings("unused")
     public AuthoriserHandler() {
-        this.sessionStore = new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient()));
+        this(new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())));
     }
 
     public AuthoriserHandler(SessionStore sessionStore) {
