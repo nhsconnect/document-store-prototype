@@ -1,7 +1,5 @@
 package uk.nhs.digital.docstore.authoriser.handlers;
 
-import static uk.nhs.digital.docstore.authoriser.handlers.BaseAuthRequestHandler.getDynamodbClient;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -13,7 +11,7 @@ import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.AuthoriserRequestEvent;
 
-public class AuthoriserHandler
+public class AuthoriserHandler extends BaseAuthRequestHandler
         implements RequestHandler<AuthoriserRequestEvent, IamPolicyResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthoriserHandler.class);
 
