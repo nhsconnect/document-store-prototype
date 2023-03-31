@@ -15,6 +15,8 @@ fileignoreconfig:
   checksum: c977a7264b9471475fade1959b6b804554714c8c7cdf800a27cdc10237f0b6b7
 - filename: ui/src/components/DocumentsInput.js
   checksum: 40a32581128e743013059ff23449819d3f2c98429769c2c6f1c81fd451009867
+- filename: terraform/modules/api_gateway_preflight/main.tf
+  checksum: 03c4f13a198bbb70893ae34adbd97ee8dfce2dac329fa221c981f82eca289dde
 - filename: ui/src/components/UploadSummary.js
   checksum: 52589b3e499115d195f095d0c5895f12525799bb56829815b1d90147d1a4194e
 - filename: terraform/patientdetailsapi.tf
@@ -105,8 +107,6 @@ fileignoreconfig:
   checksum: c9f24c877e0a4d95c500417af322ba2e070287bdf6c84b3eade3792fb5f89b84
 - filename: ui/src/pages/searchResultsPage/SearchResultsPage.jsx
   checksum: 806352a49e739a6007920051bba367232b911595025167a27f1da15ada02f7ec
-- filename: terraform/modules/api_gateway_preflight/main.tf
-  checksum: e0ad220c61603e02a4385b80a37e042091a0b95c661a9f7e6a8a3aafc2b99c96
 - filename: terraform/document_reference.tf
   checksum: 2d568f43fbb17d4d66fe07e5075b1a383ceea8fc03229c5c1e95a44ceafb6f7e
 - filename: ui/src/pages/uploadDocumentsPage/UploadDocumentsPage.jsx
