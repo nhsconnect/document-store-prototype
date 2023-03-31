@@ -1,24 +1,33 @@
 import axios from "axios";
 import { useMemo } from "react";
-import { useBaseAPIUrl } from "../providers/configProvider/ConfigProvider";
+import { useBaseAPIUrl, useFeatureToggle } from "../providers/configProvider/ConfigProvider";
 
 const DOCUMENT_STORE_API = "doc-store-api";
 
 export const useDocumentStoreClient = (bearerToken, documentStoreAuthErrorInterceptor) => {
     const baseUrl = useBaseAPIUrl(DOCUMENT_STORE_API);
+    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
 
     return useMemo(() => {
-        const axiosInstance = axios.create({
+        const headers = !isOIDCAuthActive
+            ? {
+                  Accept: "application/fhir+json",
+              }
+            : {
+                  Accept: "application/fhir+json",
+                  Authorization: `Bearer ${bearerToken}`,
+              };
+
+        const documentStoreReq = {
             baseURL: baseUrl,
-            headers: {
-                Accept: "application/fhir+json",
-                Authorization: `Bearer ${bearerToken}`,
-            },
-        });
+            headers,
+            withCredentials: !isOIDCAuthActive,
+        };
+        const axiosInstance = axios.create(documentStoreReq);
         if (documentStoreAuthErrorInterceptor) {
             axiosInstance.interceptors.response.use((response) => response, documentStoreAuthErrorInterceptor);
         }
 
         return axiosInstance;
-    }, [baseUrl, documentStoreAuthErrorInterceptor, bearerToken]);
+    }, [documentStoreAuthErrorInterceptor, baseUrl, isOIDCAuthActive, bearerToken]);
 };
