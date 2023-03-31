@@ -34,7 +34,11 @@ public class AuthoriserHandler extends BaseAuthRequestHandler
         var iamPolicyResponse = new IamPolicyResponse();
 
         // TODO: [PRMT-2779] Add identifier such as a redacted session ID
-        LOGGER.debug("Handling authorisation request");
+        LOGGER.debug(
+                "Handling authorisation request:"
+                        + sessionId.orElse(null)
+                        + ", "
+                        + subject.orElse(null));
 
         if (sessionId.isPresent() && subject.isPresent()) {
             // TODO: [PRMT-2779] Remove/improve this redaction if it is insufficient
