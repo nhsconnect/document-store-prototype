@@ -9,7 +9,16 @@ resource "aws_ssm_parameter" "virus_scan_notifications_sns_topic_arn" {
 }
 
 resource "aws_sns_topic_subscription" "proactive_notifications_sns_topic_subscription" {
-  endpoint  = data.aws_ssm_parameter.cloud_security_email.value
+  for_each  = toset(nonsensitive(split(",", data.aws_ssm_parameter.cloud_security_notification_email_list.value)))
+  endpoint  = each.value
   protocol  = "email"
   topic_arn = data.aws_cloudformation_export.proactive_notifications_sns_topic.value
+  filter_policy = jsonencode({
+    "notificationType" : ["scanResult"],
+    "scanResult" : ["Infected", "Error", "Unscannable", "Suspicious"]
+  })
+}
+
+data "aws_ssm_parameter" "cloud_security_notification_email_list" {
+  name = "/prs/${var.environment}/user-input/cloud-security-notification-email-list"
 }

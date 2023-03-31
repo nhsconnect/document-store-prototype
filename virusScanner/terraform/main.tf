@@ -70,8 +70,8 @@ resource "aws_route_table_association" "virus_scanning_subnet2_route_table_assoc
   route_table_id = aws_route_table.virus_scanning_route_table.id
 }
 
-data "aws_ssm_parameter" "cloud_security_email" {
-  name = "/prs/${var.environment}/user-input/cloud-security-email"
+data "aws_ssm_parameter" "cloud_security_admin_email" {
+  name = "/prs/${var.environment}/user-input/cloud-security-admin-email"
 }
 
 resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
@@ -81,7 +81,7 @@ resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
     SubnetA = aws_subnet.virus_scanning_subnet1.id
     SubnetB = aws_subnet.virus_scanning_subnet2.id
     ConsoleSecurityGroupCidrBlock = var.black_hole_address
-    Email = data.aws_ssm_parameter.cloud_security_email.value
+    Email = data.aws_ssm_parameter.cloud_security_admin_email.value
     OnlyScanWhenQueueThresholdExceeded = "Yes"
     MinRunningAgents = 0
     NumMessagesInQueueScalingThreshold = 1
