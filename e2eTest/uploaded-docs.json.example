@@ -26,7 +26,7 @@
             "S": "Not Scanned"
           },
           "Location": {
-            "S": "%s3-location-1%"
+            "S": "s3-location-1"
           },
           "Created": {
             "S": "2021-07-11T15:57:30Z"
@@ -60,7 +60,7 @@
             "S": "Not Scanned"
           },
           "Location": {
-            "S": "%s3-location-2%"
+            "S": "s3-location-2"
           },
           "Created": {
             "S": "2021-07-11T15:57:30Z"
