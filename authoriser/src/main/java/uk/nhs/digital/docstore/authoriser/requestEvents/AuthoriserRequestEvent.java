@@ -16,18 +16,28 @@ public class AuthoriserRequestEvent extends APIGatewayProxyRequestEvent {
     private Optional<String> getCookie(String cookieName) {
         var headers = getHeaders();
 
-        if (headers == null || headers.get("cookie") == null || headers.get("cookie").isEmpty()) {
+        var hasUpper = headers != null && headers.containsKey("Cookie");
+
+        var cookieKey = hasUpper ? "Cookie" : "cookie";
+
+        var hasNoCookie =
+                headers == null
+                        || headers.get(cookieKey) == null
+                        || headers.get(cookieKey).isEmpty();
+
+        if (hasNoCookie) {
             return Optional.empty();
         }
 
-        var cookieHeader = headers.get("cookie");
+        var cookieHeader = headers.get(cookieKey);
+
         var cookies = new HashMap<String, String>();
 
         Arrays.stream(cookieHeader.split(";"))
                 .forEach(
-                        cookie -> {
-                            var keyValue = cookie.split("=");
-                            cookies.put(keyValue[0].trim(), keyValue[1].trim());
+                        cookieString -> {
+                            var keyValueTuple = cookieString.split("=");
+                            cookies.put(keyValueTuple[0].trim(), keyValueTuple[1].trim());
                         });
 
         return Optional.ofNullable(cookies.get(cookieName));

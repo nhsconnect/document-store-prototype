@@ -24,7 +24,6 @@ public class ApiConfig {
         headers.put("Content-Type", "application/fhir+json");
         headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
         headers.put("Access-Control-Allow-Methods", methods);
-        headers.put("Access-Control-Allow-Credentials", "true");
 
         if (location != null) {
             headers.put("Location", location);
