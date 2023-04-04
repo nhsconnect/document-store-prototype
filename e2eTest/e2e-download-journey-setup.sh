@@ -33,10 +33,10 @@ else
                   .Location.S = \$s3location2\
             else
                 .
-            end)" uploaded-docs.json.example > file://uploaded-docs.json
+            end)" uploaded-docs.json.example > uploaded-docs.json
 fi
 
-aws dynamodb batch-write-item --request-items file://uploaded-docs.json ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+aws dynamodb batch-write-item --request-items uploaded-docs.json ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
 
 aws s3api put-object --bucket $S3_BUCKET_NAME --key $KEY1 --body content.txt ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
 
