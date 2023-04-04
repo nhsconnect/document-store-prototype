@@ -51,7 +51,7 @@ resource "aws_api_gateway_integration_response" "preflight_integration_response"
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,Cookie,X-Api-Key,X-Amz-Security-Token'",
     "method.response.header.Access-Control-Allow-Methods" = var.methods,
     "method.response.header.Access-Control-Allow-Origin"  = var.origin,
-    "method.response.header.Access-Control-Allow-Credentials"  = "'true'"
+    "method.response.header.Access-Control-Allow-Credentials"  = "true"
   }
   depends_on = [aws_api_gateway_method_response.preflight_method_response]
 }
