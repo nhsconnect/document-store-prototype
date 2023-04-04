@@ -111,7 +111,6 @@ resource "aws_api_gateway_gateway_response" "doc_store_unauthorised_response" {
     "gatewayresponse.header.Access-Control-Allow-Origin"  = "'${local.amplify_base_url}'"
     "gatewayresponse.header.Access-Control-Allow-Methods" = "'*'"
     "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-    "gatewayresponse.header.Access-Control-Allow-Headers" = "true"
 
 
   }
