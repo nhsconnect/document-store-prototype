@@ -14,27 +14,15 @@ KEY2="file-2"
 S3_LOCATION_1="s3://${S3_BUCKET_NAME}/${KEY1}"
 S3_LOCATION_2="s3://${S3_BUCKET_NAME}/${KEY2}"
 
-if [[ $ENVIRONMENT == "local" ]]; then
-    jq --arg s3location1 "$S3_LOCATION_1" --arg s3location2 "$S3_LOCATION_2" ".DocumentReferenceMetadata[].PutRequest.Item |= (
-        if .Location.S == \"s3-location-1\" then
-            .Location.S = \$s3location1\
-        elif
-            .Location.S == \"s3-location-2\" then
-              .Location.S = \$s3location2\
-        else
-            .
-        end)" uploaded-docs.json.example > uploaded-docs.json
-else
-    jq --arg s3location1 "$S3_LOCATION_1" --arg s3location2 "$S3_LOCATION_2" ".DocumentReferenceMetadata[].PutRequest.Item |= (
-            if .Location.S == \"s3-location-1\" then
-                .Location.S = \$s3location1\
-            elif
-                .Location.S == \"s3-location-2\" then
-                  .Location.S = \$s3location2\
-            else
-                .
-            end)" uploaded-docs.json.example > file://uploaded-docs.json
-fi
+jq --arg s3location1 "$S3_LOCATION_1" --arg s3location2 "$S3_LOCATION_2" ".DocumentReferenceMetadata[].PutRequest.Item |= (
+    if .Location.S == \"s3-location-1\" then
+        .Location.S = \$s3location1\
+    elif
+        .Location.S == \"s3-location-2\" then
+          .Location.S = \$s3location2\
+    else
+        .
+    end)" uploaded-docs.json.example > uploaded-docs.json
 
 aws dynamodb batch-write-item --request-items file://uploaded-docs.json ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
 
