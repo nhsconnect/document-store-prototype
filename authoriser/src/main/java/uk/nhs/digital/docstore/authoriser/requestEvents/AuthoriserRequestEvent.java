@@ -3,8 +3,12 @@ package uk.nhs.digital.docstore.authoriser.requestEvents;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AuthoriserRequestEvent extends APIGatewayProxyRequestEvent {
+    public static final Logger LOGGER = LoggerFactory.getLogger(AuthoriserRequestEvent.class);
+
     public Optional<Subject> getSubject() {
         return getCookie("SubjectClaim").map(Subject::new);
     }
@@ -39,6 +43,7 @@ public class AuthoriserRequestEvent extends APIGatewayProxyRequestEvent {
                             var keyValueTuple = cookieString.split("=");
                             cookies.put(keyValueTuple[0].trim(), keyValueTuple[1].trim());
                         });
+        LOGGER.debug(cookieHeader, headers);
 
         return Optional.ofNullable(cookies.get(cookieName));
     }
