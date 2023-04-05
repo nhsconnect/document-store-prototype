@@ -1,1 +1,1 @@
-DOJO_DOCKER_IMAGE="nhsdev/prm-docker-arf-front-end-dojo:af37eabb5b798823cd6a4576a15ea3faf5f332ed"
+DOJO_DOCKER_IMAGE="nhsdev/prm-docker-arf-front-end-dojo:b91acd7058f19fbdf8a1d0c4d5d2afb59120f037"
