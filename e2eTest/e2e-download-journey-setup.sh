@@ -7,8 +7,7 @@ if [[ -z "$AWS_ENDPOINT" && $ENVIRONMENT == "local" ]]; then
     AWS_ENDPOINT=http://localhost:4566
 fi
 
-S3_BUCKET_NAME=$(aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 ls | awk '{print $3}' | grep test)
-
+S3_BUCKET_NAME=$(aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 ls | awk '{print $3}' | grep test-document-store)
 
 KEY1="file-1"
 KEY2="file-2"
