@@ -16,6 +16,7 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
                     },
                 });
+                console.log(data);
                 return data.total > 0
                     ? data.entry.map(({ resource }) => ({
                           id: resource.id,
@@ -35,6 +36,7 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
                     },
                 });
+                console.log(data);
                 return data;
             },
             getPresignedUrlForZip: async (nhsNumber) => {
