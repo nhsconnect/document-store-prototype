@@ -8,6 +8,8 @@ if [[ -z "$AWS_ENDPOINT" && $ENVIRONMENT == "local" ]]; then
 fi
 
 S3_BUCKET_NAME=$(aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 ls | awk '{print $3}' | grep test)
+
+
 KEY1="file-1"
 KEY2="file-2"
 
@@ -24,8 +26,8 @@ jq --arg s3location1 "$S3_LOCATION_1" --arg s3location2 "$S3_LOCATION_2" ".Docum
         .
     end)" uploaded-docs.json.example > uploaded-docs.json
 
-aws dynamodb batch-write-item --request-items file://uploaded-docs.json ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+echo aws dynamodb batch-write-item --request-items file://uploaded-docs.json ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
 
-aws s3api put-object --bucket $S3_BUCKET_NAME --key $KEY1 --body content.txt ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+echo aws s3api put-object --bucket $S3_BUCKET_NAME --key $KEY1 --body content.txt ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
 
-aws s3api put-object --bucket $S3_BUCKET_NAME --key $KEY2 --body content.txt ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+echo aws s3api put-object --bucket $S3_BUCKET_NAME --key $KEY2 --body content.txt ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
