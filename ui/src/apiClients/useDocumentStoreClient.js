@@ -11,17 +11,17 @@ export const useDocumentStoreClient = (bearerToken, documentStoreAuthErrorInterc
     return useMemo(() => {
         const headers = !isOIDCAuthActive
             ? {
-                  Accept: "application/fhir+json",
+                  Accept: "application/json"
               }
             : {
-                  Accept: "application/fhir+json",
-                  Authorization: `Bearer ${bearerToken}`,
+                  Accept: "application/json",
+                  Authorization: `Bearer ${bearerToken}`
               };
 
         const documentStoreReq = {
             baseURL: baseUrl,
             headers,
-            withCredentials: !isOIDCAuthActive,
+            withCredentials: !isOIDCAuthActive
         };
         const axiosInstance = axios.create(documentStoreReq);
         if (documentStoreAuthErrorInterceptor) {
