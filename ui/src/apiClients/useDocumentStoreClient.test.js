@@ -21,7 +21,7 @@ describe("useDocumentStoreClient()", () => {
 
         expect(useBaseAPIUrl).toHaveBeenCalledWith(apiName);
         expect(result.current.defaults.baseURL).toEqual(baseAPIURL);
-        expect(result.current.defaults.headers["Accept"]).toEqual("application/fhir+json");
+        expect(result.current.defaults.headers["Accept"]).toEqual("application/json");
         expect(result.current.defaults.headers["Authorization"]).toEqual(`Bearer ${bearerToken}`);
         expect(result.current.defaults.withCredentials).toEqual(false);
     });
@@ -40,7 +40,7 @@ describe("useDocumentStoreClient()", () => {
 
         expect(useBaseAPIUrl).toHaveBeenCalledWith(apiName);
         expect(result.current.defaults.baseURL).toEqual(baseAPIURL);
-        expect(result.current.defaults.headers["Accept"]).toEqual("application/fhir+json");
+        expect(result.current.defaults.headers["Accept"]).toEqual("application/json");
         expect(result.current.defaults.headers["Authorization"]).toEqual(undefined);
         expect(result.current.defaults.withCredentials).toEqual(true);
     });
