@@ -34,12 +34,12 @@ resource "aws_iam_role" "lambda_execution_role" {
   name = "LambdaExecution"
 
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Sid       = ""
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
         Principal = {
           Service = "lambda.amazonaws.com"
         }
@@ -110,8 +110,7 @@ resource "aws_api_gateway_gateway_response" "doc_store_unauthorised_response" {
   response_parameters = {
     "gatewayresponse.header.Access-Control-Allow-Origin"  = "'${local.amplify_base_url}'"
     "gatewayresponse.header.Access-Control-Allow-Methods" = "'*'"
-    "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,XYZ'"
-
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
 
   }
 }
@@ -127,18 +126,18 @@ resource "aws_api_gateway_gateway_response" "doc_store_bad_gateway_response" {
   response_parameters = {
     "gatewayresponse.header.Access-Control-Allow-Origin"  = "'${local.amplify_base_url}'"
     "gatewayresponse.header.Access-Control-Allow-Methods" = "'*'"
-    "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,XYZ'"
+    "gatewayresponse.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
   }
 }
 
-resource aws_iam_policy "dynamodb_table_access_policy" {
+resource "aws_iam_policy" "dynamodb_table_access_policy" {
   name   = "DynamoDBTableAccess"
   policy = data.aws_iam_policy_document.dynamodb_table_access_policy_doc.json
 }
 
-data aws_iam_policy_document "dynamodb_table_access_policy_doc" {
+data "aws_iam_policy_document" "dynamodb_table_access_policy_doc" {
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "dynamodb:BatchGetItem",
       "dynamodb:BatchWriteItem",
