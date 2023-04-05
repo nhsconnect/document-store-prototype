@@ -26,8 +26,8 @@ jq --arg s3location1 "$S3_LOCATION_1" --arg s3location2 "$S3_LOCATION_2" ".Docum
         .
     end)" uploaded-docs.json.example > uploaded-docs.json
 
-echo aws dynamodb batch-write-item --request-items file://uploaded-docs.json ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+aws dynamodb batch-write-item --request-items file://uploaded-docs.json ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
 
-echo aws s3api put-object --bucket $S3_BUCKET_NAME --key $KEY1 --body content.txt ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+aws s3api put-object --bucket "$S3_BUCKET_NAME" --key $KEY1 --body content.txt ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
 
-echo aws s3api put-object --bucket $S3_BUCKET_NAME --key $KEY2 --body content.txt ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
+aws s3api put-object --bucket "$S3_BUCKET_NAME" --key $KEY2 --body content.txt ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT}
