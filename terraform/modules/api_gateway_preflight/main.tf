@@ -15,8 +15,8 @@ resource "aws_api_gateway_method_response" "preflight_method_response" {
   resource_id     = var.resource_id
   http_method     = aws_api_gateway_method.preflight_method.http_method
   status_code     = "200"
-  response_templates = {
-    "application/json" = "{\"message\":$context.error.messageString}"
+  response_models = {
+    "application/json" = "Empty"
   }
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = true,
