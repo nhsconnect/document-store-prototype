@@ -27,6 +27,7 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                     : [];
             },
             getPatientDetails: async (nhsNumber) => {
+                console.log("Calling the lambda with:", request.defaults.headers, bearerToken);
                 const { data } = await request.get("/PatientDetails", {
                     headers: {
                         ...request.defaults.headers,
