@@ -15,15 +15,15 @@ resource "aws_api_gateway_method_response" "preflight_method_response" {
   resource_id     = var.resource_id
   http_method     = aws_api_gateway_method.preflight_method.http_method
   status_code     = "200"
-  # response_templates = {
-  #   "application/json" = "{\"message\":$context.error.messageString}"
-  # }
-  # response_parameters = {
-  #   "method.response.header.Access-Control-Allow-Headers" = true,
-  #   "method.response.header.Access-Control-Allow-Methods" = true,
-  #   "method.response.header.Access-Control-Allow-Origin"  = true,
-  #   "method.response.header.Access-Control-Allow-Credentials"  = true
-  # }
+  response_templates = {
+    "application/json" = "{\"message\":$context.error.messageString}"
+  }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true,
+    "method.response.header.Access-Control-Allow-Credentials"  = true
+  }
   depends_on = [aws_api_gateway_method.preflight_method]
 }
 
@@ -47,11 +47,11 @@ resource "aws_api_gateway_integration_response" "preflight_integration_response"
   resource_id         = var.resource_id
   http_method         = aws_api_gateway_method.preflight_method.http_method
   status_code         = aws_api_gateway_method_response.preflight_method_response.status_code
-  # response_parameters = {
-  #   "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,Cookie,X-Api-Key,X-Amz-Security-Token'",
-  #   "method.response.header.Access-Control-Allow-Methods" = var.methods,
-  #   "method.response.header.Access-Control-Allow-Origin"  = var.origin,
-  #   "method.response.header.Access-Control-Allow-Credentials"  = "'true'"
-  # }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,Cookie,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Methods" = var.methods,
+    "method.response.header.Access-Control-Allow-Origin"  = var.origin,
+    "method.response.header.Access-Control-Allow-Credentials"  = "'true'"
+  }
   depends_on = [aws_api_gateway_method_response.preflight_method_response]
 }
