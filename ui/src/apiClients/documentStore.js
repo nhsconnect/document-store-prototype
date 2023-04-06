@@ -27,7 +27,7 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                     : [];
             },
             getPatientDetails: async (nhsNumber) => {
-                console.log("Calling the lambda with:", request.defaults.headers, bearerToken);
+                console.log("Calling the lambda with:", request.defaults.headers, "bearer:", bearerToken);
                 const { data } = await request.get("/PatientDetails", {
                     headers: {
                         ...request.defaults.headers,
@@ -37,7 +37,7 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
                     },
                 });
-                console.log(data);
+                console.log("data:", data);
                 return data;
             },
             getPresignedUrlForZip: async (nhsNumber) => {

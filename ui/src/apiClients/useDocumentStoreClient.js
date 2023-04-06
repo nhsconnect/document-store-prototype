@@ -9,15 +9,12 @@ export const useDocumentStoreClient = (bearerToken, documentStoreAuthErrorInterc
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
 
     return useMemo(() => {
-        const headers =
-            // !isOIDCAuthActive
-            // ?
-            { Accept: "application/json" };
-        //
-        // : {
-        //       Accept: "application/json",
-        //       Authorization: `Bearer ${bearerToken}`
-        //   };
+        const headers = !isOIDCAuthActive
+            ? { Accept: "application/json" }
+            : {
+                  Accept: "application/json",
+                  Authorization: `Bearer ${bearerToken}`,
+              };
 
         const documentStoreReq = {
             baseURL: baseUrl,
@@ -28,7 +25,8 @@ export const useDocumentStoreClient = (bearerToken, documentStoreAuthErrorInterc
         if (documentStoreAuthErrorInterceptor) {
             axiosInstance.interceptors.response.use((response) => response, documentStoreAuthErrorInterceptor);
         }
-        console.log(documentStoreReq);
+        console.log(documentStoreReq, "axios:", axiosInstance);
+        console.log("is OIDC auth active:", isOIDCAuthActive);
         return axiosInstance;
     }, [documentStoreAuthErrorInterceptor, baseUrl, isOIDCAuthActive, bearerToken]);
 };
