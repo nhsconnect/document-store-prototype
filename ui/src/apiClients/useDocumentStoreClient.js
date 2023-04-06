@@ -6,27 +6,25 @@ const DOCUMENT_STORE_API = "doc-store-api";
 
 export const useDocumentStoreClient = (bearerToken, documentStoreAuthErrorInterceptor) => {
     const baseUrl = useBaseAPIUrl(DOCUMENT_STORE_API);
-    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
+    const isCognitoActive = useFeatureToggle("OIDC_AUTHENTICATION");
 
     return useMemo(() => {
-        const headers = !isOIDCAuthActive
-            ? { Accept: "application/json" }
-            : {
+        const headers = isCognitoActive
+            ? {
                   Accept: "application/json",
                   Authorization: `Bearer ${bearerToken}`,
-              };
+              }
+            : { Accept: "application/json" };
 
         const documentStoreReq = {
             baseURL: baseUrl,
             headers,
-            withCredentials: true,
+            withCredentials: !isCognitoActive,
         };
         const axiosInstance = axios.create(documentStoreReq);
         if (documentStoreAuthErrorInterceptor) {
             axiosInstance.interceptors.response.use((response) => response, documentStoreAuthErrorInterceptor);
         }
-        console.log(documentStoreReq, "axios:", axiosInstance);
-        console.log("is OIDC auth active:", isOIDCAuthActive);
         return axiosInstance;
-    }, [documentStoreAuthErrorInterceptor, baseUrl, isOIDCAuthActive, bearerToken]);
+    }, [documentStoreAuthErrorInterceptor, baseUrl, isCognitoActive, bearerToken]);
 };

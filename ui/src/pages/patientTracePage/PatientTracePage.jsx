@@ -35,9 +35,7 @@ export const PatientTracePage = ({ nextPage }) => {
         try {
             setSubmissionState(states.SEARCHING);
             setStatusCode(null);
-            console.log("soSubmit:", data);
             const response = await documentStore.getPatientDetails(data.nhsNumber);
-            console.log("response: ", response);
             setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
         } catch (e) {

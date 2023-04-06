@@ -16,7 +16,6 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
                     },
                 });
-                console.log(data);
                 return data.total > 0
                     ? data.entry.map(({ resource }) => ({
                           id: resource.id,
@@ -27,7 +26,6 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                     : [];
             },
             getPatientDetails: async (nhsNumber) => {
-                console.log("Calling the lambda with:", request.defaults.headers, "bearer:", bearerToken);
                 const { data } = await request.get("/PatientDetails", {
                     headers: {
                         ...request.defaults.headers,
@@ -37,7 +35,6 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                         "subject.identifier": `https://fhir.nhs.uk/Id/nhs-number|${nhsNumber}`,
                     },
                 });
-                console.log("data:", data);
                 return data;
             },
             getPresignedUrlForZip: async (nhsNumber) => {

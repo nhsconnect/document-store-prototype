@@ -57,6 +57,8 @@ public class SearchPatientDetailsHandler
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent requestEvent, Context context) {
         Tracer.setMDCContext(context);
+        LOGGER.debug("PATIENT DETAILS LAMBDA HIT");
+        LOGGER.debug("Patient request:" + requestEvent);
 
         LOGGER.debug("API Gateway event received - processing starts");
         var searchParameters = queryParametersFrom(requestEvent);
