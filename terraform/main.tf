@@ -99,6 +99,23 @@ resource "aws_api_gateway_deployment" "api_deploy" {
   }
 }
 
+resource "aws_api_gateway_gateway_response" "doc_store_authorised_response" {
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  status_code   = "200"
+  response_type = "DEFAULT_2XX"
+
+  response_templates = {
+    "application/json" = "{\"message\":$context.error.messageString}"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,Cookie,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Methods" = var.methods,
+    "method.response.header.Access-Control-Allow-Origin"  = var.origin,
+    "method.response.header.Access-Control-Allow-Credentials"  = "'true'"
+  }
+}
+
 resource "aws_api_gateway_gateway_response" "doc_store_unauthorised_response" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   response_type = "DEFAULT_4XX"
