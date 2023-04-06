@@ -218,7 +218,7 @@ describe("documentStore", () => {
         };
 
         const get = jest.fn(async (path, options) => {
-            expect(path).toEqual("/PatientDetailsTest");
+            expect(path).toEqual("/PatientDetails");
             expect(options.params["subject.identifier"]).toEqual(queryStringParameters["subject.identifier"]);
             return { data: responseBody };
         });
