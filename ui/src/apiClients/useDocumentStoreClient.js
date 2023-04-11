@@ -14,7 +14,10 @@ export const useDocumentStoreClient = (bearerToken, documentStoreAuthErrorInterc
                   Accept: "application/json",
                   Authorization: `Bearer ${bearerToken}`,
               }
-            : { Accept: "application/json" };
+            : {
+                  Accept: "application/json",
+                  "Set-Cookie": "SubjectClaim=555042709107; SessionId=84f3193c-347b-4987-b5f1-b728cf37b44e",
+              };
 
         const documentStoreReq = {
             baseURL: baseUrl,
