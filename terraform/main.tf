@@ -99,17 +99,6 @@ resource "aws_api_gateway_deployment" "api_deploy" {
   }
 }
 
-resource "aws_api_gateway_gateway_response" "doc_store_authorised_response" {
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  status_code   = "200"
-  response_type = "DEFAULT_2XX"
-
-  response_templates = {
-    "application/json" = "{\"message\":$context.error.messageString}"
-  }
-
-}
-
 resource "aws_api_gateway_gateway_response" "doc_store_unauthorised_response" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
   response_type = "DEFAULT_4XX"
