@@ -8,14 +8,6 @@ variable "http_method" {
   type = string
 }
 
-resource "aws_api_gateway_method" "proxy_method" {
-  rest_api_id   = var.api_gateway_id
-  resource_id   = var.resource_id
-  http_method   = var.http_method
-  authorization = var.authorization
-  authorizer_id = var.authorizer_id
-}
-
 resource "aws_api_gateway_integration" "lambda_integration" {
   rest_api_id             = var.api_gateway_id
   resource_id             = var.resource_id
