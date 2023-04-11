@@ -22,7 +22,7 @@ public class ApiConfig {
             int statusCode, String body, String methods, String location) {
         var headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/fhir+json");
-        headers.put("Access-Control-Allow-Origin", "*");
+        headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
         headers.put("Access-Control-Allow-Methods", methods);
         headers.put("Access-Control-Allow-Credentials", "'true'");
 
