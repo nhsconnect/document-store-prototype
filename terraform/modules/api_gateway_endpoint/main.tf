@@ -11,7 +11,7 @@ variable http_method {
 resource "aws_api_gateway_method_response" "get_method_200_response" {
   rest_api_id = var.api_gateway_id
   resource_id = var.resource_id
-  http_method = "GET"
+  http_method = var.http_method
   status_code = "200"
   response_models = {
     "application/json" = "Empty"
