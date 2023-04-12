@@ -22,6 +22,7 @@ resource "aws_api_gateway_method_response" "get_method_200_response" {
     "method.response.header.Access-Control-Allow-Origin"      = true,
     "method.response.header.Access-Control-Allow-Credentials" = true
   }
+  depends_on = [aws_api_gateway_method.proxy_method]
 }
 
 resource "aws_api_gateway_method" "proxy_method" {
