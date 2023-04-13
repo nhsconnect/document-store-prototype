@@ -26,6 +26,7 @@ public class ApiConfig {
         headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
         headers.put("Access-Control-Allow-Methods", methods);
         headers.put("Access-Control-Allow-Credentials", "'true'");
+        headers.put("Vary", "Origin");
 
         if (location != null) {
             headers.put("Location", location);
