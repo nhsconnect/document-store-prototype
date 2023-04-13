@@ -15,6 +15,7 @@ public class ApiConfig {
             LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);
             return "__unset__AMPLIFY_BASE_URL";
         }
+        LOGGER.debug("get amplify base url:" + url);
         return url;
     }
 
