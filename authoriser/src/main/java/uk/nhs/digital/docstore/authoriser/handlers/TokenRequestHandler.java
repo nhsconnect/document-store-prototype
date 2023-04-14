@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.HTTPTokenRequestClient;
@@ -97,7 +98,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                         + requestEvent.getCookieState().orElse(null));
 
         var headers = new HashMap<String, String>();
-        headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
+        //        headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
         headers.put("Access-Control-Allow-Credentials", "true");
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
@@ -117,11 +118,15 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 "Responding with auth cookies for session with ID ending in: "
                         + sessionId.substring(sessionId.length() - 4));
 
+        JSONObject json = new JSONObject();
+        json.put("subjectClaim", session.getOIDCSubject());
+        json.put("sessionId", sessionId);
+
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
                 .withStatusCode(SEE_OTHER_STATUS_CODE)
                 .withHeaders(headers)
-                .withBody("")
+                .withBody(json.toString())
                 .withMultiValueHeaders(multiValueHeaders);
     }
 
