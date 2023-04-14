@@ -28,10 +28,20 @@ import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
-
+    public static final String AMPLIFY_BASE_URL_ENV_VAR = "AMPLIFY_BASE_URL";
     private final uk.nhs.digital.docstore.authoriser.OIDCClient OIDCClient;
 
     private Clock clock = Clock.systemUTC();
+
+    public String getAmplifyBaseUrl() {
+        String url = System.getenv(AMPLIFY_BASE_URL_ENV_VAR);
+        if (url == null) {
+            LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);
+            return "__unset__AMPLIFY_BASE_URL";
+        }
+        LOGGER.debug("get amplify base url:" + url);
+        return url;
+    }
 
     @SuppressWarnings("unused")
     public TokenRequestHandler() {
@@ -100,6 +110,8 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         var headers = new HashMap<String, String>();
         //        headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
         headers.put("Access-Control-Allow-Credentials", "true");
+        headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
+        headers.put("Access-Control-Allow-Methods", "Content-Type,Authorization,Cookie,X-Auth-Token");
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
         var sessionId = session.getId().toString();
