@@ -18,8 +18,10 @@ const AuthCallbackRouter = () => {
         const tokenRequestUrl = `${baseAPIUrl}/Auth/TokenRequest?code=${code}&state=${state}&redirect_uri=${redirectUri}`;
         fetch(tokenRequestUrl, {
             headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": `${baseAPIUrl}`
+                "Content-Type": "application/fhir+json",
+                "Access-Control-Allow-Origin": `${baseAPIUrl}`,
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Allow-Methods": "OPTIONS, GET"
             },
             mode: "cors"
         })
