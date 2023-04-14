@@ -49,8 +49,6 @@ class TokenRequestHandlerTest {
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(303);
-//        assertThat(response.getHeaders().get("Location")).startsWith(redirectUrl);
-//        assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains("State=" + state + "; SameSite=Lax; Secure; Path=/; Max-Age=0; HttpOnly");
