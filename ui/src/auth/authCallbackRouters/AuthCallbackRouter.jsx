@@ -16,14 +16,20 @@ const AuthCallbackRouter = () => {
         const state = urlSearchParams.get("state");
         const redirectUri = new URL(routes.AUTH_SUCCESS, window.location.href);
         const tokenRequestUrl = `${baseAPIUrl}/Auth/TokenRequest?code=${code}&state=${state}&redirect_uri=${redirectUri}`;
-        fetch(tokenRequestUrl)
+        fetch(tokenRequestUrl, {
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": `${baseAPIUrl}`
+            },
+            mode: "cors"
+        })
             .then((res) => {
                 res.json().then((json) => {
                     setSession({
                         ...session,
                         subjectClaim: json.subjectClaim,
                         sessionId: json.sessionId,
-                        isLoggedIn: true,
+                        isLoggedIn: true
                     });
 
                     navigate(routes.HOME);
