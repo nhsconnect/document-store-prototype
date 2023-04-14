@@ -26,7 +26,7 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                     : [];
             },
             getPatientDetails: async (nhsNumber) => {
-                const { data } = await request.get("/PatientDetails", {
+                const { data } = await request.get("/PatientDetailsTest", {
                     headers: {
                         ...request.defaults.headers,
                         Accept: "application/json",
