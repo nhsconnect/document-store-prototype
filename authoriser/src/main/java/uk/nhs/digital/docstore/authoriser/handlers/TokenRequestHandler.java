@@ -110,9 +110,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         var headers = new HashMap<String, String>();
         //        headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
         headers.put("Access-Control-Allow-Credentials", "true");
-        headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
-        headers.put(
-                "Access-Control-Allow-Methods", "Content-Type,Authorization,Cookie,X-Auth-Token");
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
         var sessionId = session.getId().toString();
