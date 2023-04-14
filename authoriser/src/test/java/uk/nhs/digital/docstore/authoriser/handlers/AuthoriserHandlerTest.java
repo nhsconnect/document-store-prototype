@@ -47,7 +47,7 @@ class AuthoriserHandlerTest {
         var expectedIamPolicyResponse = new IamPolicyResponse();
         expectedIamPolicyResponse.setPolicyDocument(policyDocument);
         var requestEvent = new AuthoriserRequestEvent();
-        requestEvent.setHeaders(Map.of("cookie", "Subject=some-subject;"));
+        requestEvent.setHeaders(Map.of("x-auth-cookie", "Subject=some-subject;"));
         var authoriserHandler = new AuthoriserHandler(new InMemorySessionStore());
 
         var actualIamPolicyResponse =
@@ -67,7 +67,7 @@ class AuthoriserHandlerTest {
         var expectedIamPolicyResponse = new IamPolicyResponse();
         expectedIamPolicyResponse.setPolicyDocument(policyDocument);
         var requestEvent = new AuthoriserRequestEvent();
-        requestEvent.setHeaders(Map.of("cookie", "SessionId=" + UUID.randomUUID() + ";"));
+        requestEvent.setHeaders(Map.of("x-auth-cookie", "SessionId=" + UUID.randomUUID() + ";"));
         var authoriserHandler = new AuthoriserHandler(new InMemorySessionStore());
 
         var actualIamPolicyResponse =
@@ -120,7 +120,7 @@ class AuthoriserHandlerTest {
         var requestEvent = new AuthoriserRequestEvent();
         requestEvent.setHeaders(
                 Map.of(
-                        "cookie",
+                        "x-auth-cookie",
                         "SessionId=" + UUID.randomUUID() + "; SubjectClaim=some-subject;"));
         var authoriserHandler = new AuthoriserHandler(new InMemorySessionStore());
 
