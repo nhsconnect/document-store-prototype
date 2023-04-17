@@ -13,7 +13,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.HTTPTokenRequestClient;
@@ -126,7 +125,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         // TODO: [PRMT-2779] Add or improve redaction if required
         LOGGER.debug(
                 "Responding with auth cookies for session with ID ending in: "
-                        + sessionId.substring(sessionId.length() - 4));        
+                        + sessionId.substring(sessionId.length() - 4));
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)

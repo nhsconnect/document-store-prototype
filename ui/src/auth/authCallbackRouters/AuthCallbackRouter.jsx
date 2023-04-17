@@ -24,7 +24,7 @@ const AuthCallbackRouter = () => {
                         ...session,
                         subjectClaim: json.subjectClaim,
                         sessionId: json.sessionId,
-                        isLoggedIn: true
+                        isLoggedIn: true,
                     });
                 });
                 navigate(routes.HOME);

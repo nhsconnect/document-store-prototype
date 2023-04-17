@@ -13,17 +13,17 @@ export const useDocumentStoreClient = (bearerToken, documentStoreAuthErrorInterc
         const headers = isCognitoActive
             ? {
                   Accept: "application/json",
-                  Authorization: `Bearer ${bearerToken}`
+                  Authorization: `Bearer ${bearerToken}`,
               }
             : {
                   Accept: "application/json",
-                  "X-Auth-Cookie": `SessionId=${session.sessionId}; SubjectClaim=${session.subjectClaim}`
+                  "X-Auth-Cookie": `SessionId=${session.sessionId}; SubjectClaim=${session.subjectClaim}`,
               };
 
         const documentStoreReq = {
             baseURL: baseUrl,
             headers,
-            withCredentials: !isCognitoActive
+            withCredentials: !isCognitoActive,
         };
         const axiosInstance = axios.create(documentStoreReq);
         if (documentStoreAuthErrorInterceptor) {
