@@ -16,10 +16,11 @@ const AuthCallbackRouter = () => {
         const state = urlSearchParams.get("state");
         const redirectUri = new URL(routes.AUTH_SUCCESS, window.location.href);
         const tokenRequestUrl = `${baseAPIUrl}/Auth/TokenRequest?code=${code}&state=${state}&redirect_uri=${redirectUri}`;
+        const amplifyUri = window.location.href;
         fetch(tokenRequestUrl, {
             headers: {
                 "Content-Type": "application/fhir+json",
-                "Access-Control-Allow-Origin": `${baseAPIUrl}`,
+                "Access-Control-Allow-Origin": `${amplifyUri}`,
                 "Access-Control-Allow-Credentials": "true",
                 "Access-Control-Allow-Methods": "GET"
             },
