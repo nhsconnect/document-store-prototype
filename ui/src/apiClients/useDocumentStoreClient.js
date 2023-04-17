@@ -17,8 +17,7 @@ export const useDocumentStoreClient = (bearerToken, documentStoreAuthErrorInterc
               }
             : {
                   Accept: "application/json",
-                  "X-Auth-Token": `SubjectClaim=${session.sessionId}; sessionId=${session.subjectClaim}`,
-                  "Access-Control-Allow-Credentials": "true"
+                  "X-Auth-Token": `SubjectClaim=${session.sessionId}; sessionId=${session.subjectClaim}`,                  
               };
 
         const documentStoreReq = {
