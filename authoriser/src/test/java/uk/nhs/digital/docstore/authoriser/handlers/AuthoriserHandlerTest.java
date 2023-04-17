@@ -90,9 +90,7 @@ class AuthoriserHandlerTest {
         var sessionId = UUID.randomUUID();
         var subject = new Subject();
         requestEvent.setHeaders(
-                Map.of(
-                        "cookie",
-                        "SessionId=" + sessionId + "; SubjectClaim=" + subject + ";"));
+                Map.of("cookie", "SessionId=" + sessionId + "; SubjectClaim=" + subject + ";"));
         var inMemorySessionStore = new InMemorySessionStore();
         var authoriserHandler = new AuthoriserHandler(inMemorySessionStore);
         var session =
