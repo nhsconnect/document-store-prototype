@@ -12,7 +12,7 @@ class AuthoriserRequestEventTest {
         var requestEventSubject = new Subject("some-subject");
         var headers =
                 Map.of(
-                        "x-auth-cookie",
+                        "cookie",
                         "SessionId=some-session-id; SubjectClaim="
                                 + requestEventSubject.getValue());
         var authoriserRequestEvent = new AuthoriserRequestEvent();
@@ -26,7 +26,7 @@ class AuthoriserRequestEventTest {
 
     @Test
     void returnsNullableIfNoSubjectCookieFound() {
-        var headers = Map.of("x-auth-cookie", "SessionId=some-session-id;");
+        var headers = Map.of("cookie", "SessionId=some-session-id;");
         var authoriserRequestEvent = new AuthoriserRequestEvent();
         authoriserRequestEvent.setHeaders(headers);
 
@@ -40,7 +40,7 @@ class AuthoriserRequestEventTest {
         var requestEventSessionId = UUID.randomUUID();
         var headers =
                 Map.of(
-                        "x-auth-cookie",
+                        "cookie",
                         "SessionId=" + requestEventSessionId + "; SubjectClaim=some-subject;");
         var authoriserRequestEvent = new AuthoriserRequestEvent();
         authoriserRequestEvent.setHeaders(headers);
@@ -53,7 +53,7 @@ class AuthoriserRequestEventTest {
 
     @Test
     void returnsNullableIfNoSessionIdCookieFound() {
-        var headers = Map.of("x-auth-cookie", "SubjectClaim=some-subject;");
+        var headers = Map.of("cookie", "SubjectClaim=some-subject;");
         var authoriserRequestEvent = new AuthoriserRequestEvent();
         authoriserRequestEvent.setHeaders(headers);
 
@@ -88,7 +88,7 @@ class AuthoriserRequestEventTest {
 
     @Test
     void returnsNullableIfCookiesAreEmpty() {
-        var headers = Map.of("x-auth-cookie", "");
+        var headers = Map.of("cookie", "");
         var authoriserRequestEvent = new AuthoriserRequestEvent();
         authoriserRequestEvent.setHeaders(headers);
 

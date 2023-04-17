@@ -91,7 +91,7 @@ class AuthoriserHandlerTest {
         var subject = new Subject();
         requestEvent.setHeaders(
                 Map.of(
-                        "x-auth-cookie",
+                        "cookie",
                         "SessionId=" + sessionId + "; SubjectClaim=" + subject + ";"));
         var inMemorySessionStore = new InMemorySessionStore();
         var authoriserHandler = new AuthoriserHandler(inMemorySessionStore);
