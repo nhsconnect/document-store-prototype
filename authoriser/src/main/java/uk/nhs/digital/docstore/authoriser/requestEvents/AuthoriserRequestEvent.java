@@ -20,9 +20,9 @@ public class AuthoriserRequestEvent extends APIGatewayProxyRequestEvent {
     private Optional<String> getCookie(String cookieName) {
         var headers = getHeaders();
 
-        var hasUpper = headers != null && headers.containsKey("X-Auth-Cookie");
+        var hasUpper = headers != null && headers.containsKey("Cookie");
 
-        var cookieKey = hasUpper ? "X-Auth-Cookie" : "x-auth-cookie";
+        var cookieKey = hasUpper ? "Cookie" : "cookie";
 
         var hasNoCookie =
                 headers == null
