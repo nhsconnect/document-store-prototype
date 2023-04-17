@@ -28,6 +28,7 @@ export const PatientTracePage = ({ nextPage }) => {
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [statusCode, setStatusCode] = useState(null);
+    const [isFormValid, setFormValid] = useState(null);
     const [patientDetails, setPatientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
 
@@ -46,6 +47,11 @@ export const PatientTracePage = ({ nextPage }) => {
         }
     };
 
+    const onError = () => {
+        setFormValid(false);
+        setSubmissionState(states.FAILED);
+    };
+
     const onNextClicked = () => {
         navigate(nextPage);
     };
@@ -54,17 +60,21 @@ export const PatientTracePage = ({ nextPage }) => {
         <>
             <BackButton />
             {submissionState !== states.SUCCEEDED ? (
-                <form onSubmit={handleSubmit(doSubmit)} noValidate>
+                <form noValidate onSubmit={handleSubmit(doSubmit, onError)}>
                     {submissionState === states.FAILED && statusCode !== 404 && (
                         <>
-                            {statusCode === 400 ? (
+                            {statusCode === 400 || !isFormValid ? (
                                 <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
                                     <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
                                     <ErrorSummary.Body>
-                                        <p>
-                                            The NHS number provided is invalid. Please check the number you have
-                                            entered.
-                                        </p>
+                                        {statusCode === 400 ? (
+                                            <p>
+                                                The NHS number provided is invalid. Please check the number you have
+                                                entered.
+                                            </p>
+                                        ) : (
+                                            formState.errors.nhsNumber?.message
+                                        )}
                                     </ErrorSummary.Body>
                                 </ErrorSummary>
                             ) : (
