@@ -126,17 +126,13 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         // TODO: [PRMT-2779] Add or improve redaction if required
         LOGGER.debug(
                 "Responding with auth cookies for session with ID ending in: "
-                        + sessionId.substring(sessionId.length() - 4));
-
-        JSONObject json = new JSONObject();
-        json.put("subjectClaim", session.getOIDCSubject());
-        json.put("sessionId", sessionId);
+                        + sessionId.substring(sessionId.length() - 4));        
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
                 .withStatusCode(SEE_OTHER_STATUS_CODE)
                 .withHeaders(headers)
-                .withBody(json.toString())
+                .withBody("")
                 .withMultiValueHeaders(multiValueHeaders);
     }
 
