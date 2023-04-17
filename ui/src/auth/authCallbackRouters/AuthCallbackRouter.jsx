@@ -21,8 +21,7 @@ const AuthCallbackRouter = () => {
             headers: {
                 "Content-Type": "application/fhir+json",
                 "Access-Control-Allow-Origin": `${amplifyUri}`,
-                "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Allow-Methods": "GET"
+                "Access-Control-Allow-Credentials": "true"
             },
             mode: "cors",
             method: "GET"
