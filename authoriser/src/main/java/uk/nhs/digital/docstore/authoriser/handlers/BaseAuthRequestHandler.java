@@ -76,7 +76,7 @@ public abstract class BaseAuthRequestHandler {
         return fieldName
                 + "="
                 + fieldContents
-                + "; SameSite=Lax; Secure; Path=/; Max-Age="
+                + "; SameSite=None; Secure; Path=/; Max-Age="
                 + maxAgeInSeconds;
     }
 }

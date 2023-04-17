@@ -43,6 +43,6 @@ public class LoginRedirectHandlerTest {
                 .isEqualTo(
                         "State="
                                 + state.getValue()
-                                + "; SameSite=Lax; Secure; Path=/; Max-Age=300; HttpOnly");
+                                + "; SameSite=None; Secure; Path=/; Max-Age=300; HttpOnly");
     }
 }
