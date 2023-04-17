@@ -48,7 +48,7 @@ resource "aws_api_gateway_integration_response" "preflight_integration_response"
   http_method = aws_api_gateway_method.preflight_method.http_method
   status_code = aws_api_gateway_method_response.preflight_method_response.status_code
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers"     = "'Content-Type,X-Amz-Date,Authorization,Cookie,X-Api-Key,X-Amz-Security-Token,X-Auth-Token'",
+    "method.response.header.Access-Control-Allow-Headers"     = "'Content-Type,X-Amz-Date,Authorization,Cookie,X-Api-Key,X-Amz-Security-Token,X-Auth-Token,Accept'",
     "method.response.header.Access-Control-Allow-Methods"     = var.methods,
     "method.response.header.Access-Control-Allow-Origin"      = var.origin,
     "method.response.header.Access-Control-Allow-Credentials" = "'true'"
