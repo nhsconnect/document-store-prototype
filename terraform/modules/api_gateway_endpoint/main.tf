@@ -4,25 +4,8 @@ variable "lambda_arn" {}
 variable "authorization" {}
 variable "authorizer_id" {}
 
-variable http_method {
+variable "http_method" {
   type = string
-}
-
-resource "aws_api_gateway_method_response" "get_method_200_response" {
-  rest_api_id = var.api_gateway_id
-  resource_id = var.resource_id
-  http_method = var.http_method
-  status_code = "200"
-  response_models = {
-    "application/json" = "Empty"
-  }
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers"     = true,
-    "method.response.header.Access-Control-Allow-Methods"     = true,
-    "method.response.header.Access-Control-Allow-Origin"      = true,
-    "method.response.header.Access-Control-Allow-Credentials" = true
-  }
-  depends_on = [aws_api_gateway_method.proxy_method]
 }
 
 resource "aws_api_gateway_method" "proxy_method" {
@@ -42,6 +25,6 @@ resource "aws_api_gateway_integration" "lambda_integration" {
   uri                     = var.lambda_arn
 }
 
-output http_method {
+output "http_method" {
   value = var.http_method
 }
