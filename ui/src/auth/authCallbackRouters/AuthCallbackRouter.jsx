@@ -21,9 +21,10 @@ const AuthCallbackRouter = () => {
                 "Content-Type": "application/fhir+json",
                 "Access-Control-Allow-Origin": `${baseAPIUrl}`,
                 "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Allow-Methods": "OPTIONS, GET"
+                "Access-Control-Allow-Methods": "GET"
             },
-            mode: "cors"
+            mode: "cors",
+            method: "GET"
         })
             .then((res) => {
                 res.json().then((json) => {
