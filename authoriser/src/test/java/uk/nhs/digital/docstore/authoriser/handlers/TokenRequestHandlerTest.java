@@ -51,7 +51,8 @@ class TokenRequestHandlerTest {
         assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
-                .contains("State=" + state + "; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly");
+                .contains(
+                        "State=" + state + "; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly");
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains(
                         "SubjectClaim="
