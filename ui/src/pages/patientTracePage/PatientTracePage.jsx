@@ -28,7 +28,6 @@ export const PatientTracePage = ({ nextPage }) => {
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [statusCode, setStatusCode] = useState(null);
-    const [isFormValid, setFormValid] = useState(null);
     const [patientDetails, setPatientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
 
@@ -48,8 +47,8 @@ export const PatientTracePage = ({ nextPage }) => {
     };
 
     const onError = () => {
-        setFormValid(false);
         setSubmissionState(states.FAILED);
+        console.log(formState.errors.nhsNumber?.message);
     };
 
     const onNextClicked = () => {
@@ -63,7 +62,7 @@ export const PatientTracePage = ({ nextPage }) => {
                 <form noValidate onSubmit={handleSubmit(doSubmit, onError)}>
                     {submissionState === states.FAILED && statusCode !== 404 && (
                         <>
-                            {statusCode === 400 || !isFormValid ? (
+                            {statusCode === 400 || !formState.isValid ? (
                                 <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
                                     <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
                                     <ErrorSummary.Body>
