@@ -46,41 +46,44 @@ export const PatientTracePage = ({ nextPage }) => {
         }
     };
 
-    const onError = () => {
-        setSubmissionState(states.FAILED);
-        console.log(formState.errors.nhsNumber?.message);
-    };
+    // const onError = () => {
+    //     setSubmissionState(states.FAILED);
+    //     console.log(formState.errors.nhsNumber?.message);
+    // };
 
     const onNextClicked = () => {
         navigate(nextPage);
     };
 
+    console.log(!!formState.errors.nhsNumber?.message);
+
     return (
         <>
             <BackButton />
-            {submissionState !== states.SUCCEEDED ? (
-                <form noValidate onSubmit={handleSubmit(doSubmit, onError)}>
-                    {submissionState === states.FAILED && statusCode !== 404 && (
-                        <>
-                            {statusCode === 400 || !formState.isValid ? (
-                                <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
-                                    <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
-                                    <ErrorSummary.Body>
-                                        {statusCode === 400 ? (
-                                            <p>
-                                                The NHS number provided is invalid. Please check the number you have
-                                                entered.
-                                            </p>
-                                        ) : (
-                                            formState.errors.nhsNumber?.message
-                                        )}
-                                    </ErrorSummary.Body>
-                                </ErrorSummary>
-                            ) : (
-                                <ServiceError></ServiceError>
-                            )}
-                        </>
+            {/*if start typing and browser validation fails or if we submit and submissionState is set to failed*/}
+            {((submissionState === states.FAILED && statusCode !== 404) || formState.errors.nhsNumber?.message) && (
+                <>
+                    {(statusCode === 400 || formState.errors.nhsNumber?.message) ? (
+                        <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
+                            <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
+                            <ErrorSummary.Body>
+                                {statusCode === 400 ? (
+                                    <p>
+                                        The NHS number provided is invalid. Please check the number you have
+                                        entered.
+                                    </p>
+                                ) : (
+                                    formState.errors.nhsNumber?.message
+                                )}
+                            </ErrorSummary.Body>
+                        </ErrorSummary>
+                    ) : (
+                        <ServiceError></ServiceError>
                     )}
+                </>
+            )}
+            {submissionState !== states.SUCCEEDED ? (
+                <form noValidate onSubmit={handleSubmit(doSubmit)}>
                     <Fieldset>
                         <Fieldset.Legend headingLevel="h1" isPageHeading>
                             Search for patient
