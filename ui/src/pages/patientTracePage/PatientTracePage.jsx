@@ -1,4 +1,4 @@
-import { Button, ErrorMessage, ErrorSummary, Fieldset, Input, WarningCallout } from "nhsuk-react-components";
+import { Button, ErrorSummary, Fieldset, Input, WarningCallout } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -18,7 +18,7 @@ const states = {
 
 export const PatientTracePage = ({ nextPage }) => {
     const documentStore = useAuthorisedDocumentStore();
-    const { register, formState, handleSubmit } = useForm();
+    const { register, formState, handleSubmit } = useForm({ reValidateMode: "onSubmit", });
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
         required: "Enter patient's 10 digit NHS number",
         pattern: {
@@ -37,6 +37,7 @@ export const PatientTracePage = ({ nextPage }) => {
             setStatusCode(null);
             const response = await documentStore.getPatientDetails(data.nhsNumber);
             setPatientDetails(response.result.patientDetails);
+            console.log(response)
             setSubmissionState(states.SUCCEEDED);
         } catch (e) {
             if (e.response?.status) {
@@ -57,21 +58,24 @@ export const PatientTracePage = ({ nextPage }) => {
             {submissionState !== states.SUCCEEDED ? (
                 <>
                     {(submissionState === states.FAILED && statusCode !== 404) ||
-                        (!formState.isValid && formState.isSubmitted && (
+                        (!!formState.errors && formState.isSubmitted) && (
                             <>
-                                {statusCode === 400 || !formState.isValid ? (
+                                {statusCode !== 500 ? (
                                     <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
                                         <ErrorSummary.Title id="error-summary-title">
                                             There is a problem
                                         </ErrorSummary.Title>
-
-                                        <ErrorMessage>Enter patient&apos;s 10 digit NHS number</ErrorMessage>
+                                        <ErrorSummary.Body>
+                                            <ErrorSummary.List>
+                                                <ErrorSummary.Item href="#nhs-number-input">Enter patient&apos;s 10 digit NHS number</ErrorSummary.Item>
+                                            </ErrorSummary.List>
+                                        </ErrorSummary.Body>
                                     </ErrorSummary>
                                 ) : (
                                     <ServiceError></ServiceError>
                                 )}
                             </>
-                        ))}
+                        )}
                     <form noValidate onSubmit={handleSubmit(doSubmit)}>
                         <Fieldset>
                             <Fieldset.Legend headingLevel="h1" isPageHeading>
@@ -79,6 +83,7 @@ export const PatientTracePage = ({ nextPage }) => {
                             </Fieldset.Legend>
                             <Input
                                 id="nhs-number-input"
+                                for="nhs-number-input"
                                 name="nhsNumber"
                                 label="Enter NHS number"
                                 hint="A 10-digit number, for example, 485 777 3456"
@@ -86,7 +91,7 @@ export const PatientTracePage = ({ nextPage }) => {
                                 type="text"
                                 {...nhsNumberProps}
                                 inputRef={nhsNumberRef}
-                                readOnly={submissionState === states.SUCCEEDED}
+                                readOnly={submissionState === states.SUCCEEDED || submissionState === states.SEARCHING}
                             />
                         </Fieldset>
                         {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
