@@ -34,17 +34,19 @@ export const PatientTracePage = ({ nextPage }) => {
     const doSubmit = async (data) => {
         try {
             setSubmissionState(states.SEARCHING);
-            setStatusCode(null);
             const response = await documentStore.getPatientDetails(data.nhsNumber);
             setPatientDetails(response.result.patientDetails);
-            console.log(response)
+            console.log("response:" + response)
             setSubmissionState(states.SUCCEEDED);
+            setStatusCode(400)
+            console.log("statuscode:" + statusCode)
         } catch (e) {
             if (e.response?.status) {
                 setStatusCode(e.response.status);
             }
             setSubmissionState(states.FAILED);
         }
+
     };
 
     const onNextClicked = () => {
@@ -83,7 +85,6 @@ export const PatientTracePage = ({ nextPage }) => {
                             </Fieldset.Legend>
                             <Input
                                 id="nhs-number-input"
-                                for="nhs-number-input"
                                 name="nhsNumber"
                                 label="Enter NHS number"
                                 hint="A 10-digit number, for example, 485 777 3456"
