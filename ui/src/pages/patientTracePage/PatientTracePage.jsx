@@ -1,4 +1,4 @@
-import { Button, ErrorSummary, Fieldset, Input, WarningCallout } from "nhsuk-react-components";
+import { Button, ErrorMessage, ErrorSummary, Fieldset, Input, WarningCallout } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -20,10 +20,10 @@ export const PatientTracePage = ({ nextPage }) => {
     const documentStore = useAuthorisedDocumentStore();
     const { register, formState, handleSubmit } = useForm();
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
-        required: "Please enter a 10 digit NHS number",
+        required: "Enter patient's 10 digit NHS number",
         pattern: {
             value: /^[0-9]{10}$/,
-            message: "Please enter a 10 digit NHS number",
+            message: "Enter patient's 10 digit NHS number",
         },
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
@@ -46,69 +46,59 @@ export const PatientTracePage = ({ nextPage }) => {
         }
     };
 
-    // const onError = () => {
-    //     setSubmissionState(states.FAILED);
-    //     console.log(formState.errors.nhsNumber?.message);
-    // };
-
     const onNextClicked = () => {
         navigate(nextPage);
     };
-
-    console.log(!!formState.errors.nhsNumber?.message);
 
     return (
         <>
             <BackButton />
             {/*if start typing and browser validation fails or if we submit and submissionState is set to failed*/}
-            {((submissionState === states.FAILED && statusCode !== 404) || formState.errors.nhsNumber?.message) && (
-                <>
-                    {(statusCode === 400 || formState.errors.nhsNumber?.message) ? (
-                        <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
-                            <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
-                            <ErrorSummary.Body>
-                                {statusCode === 400 ? (
-                                    <p>
-                                        The NHS number provided is invalid. Please check the number you have
-                                        entered.
-                                    </p>
-                                ) : (
-                                    formState.errors.nhsNumber?.message
-                                )}
-                            </ErrorSummary.Body>
-                        </ErrorSummary>
-                    ) : (
-                        <ServiceError></ServiceError>
-                    )}
-                </>
-            )}
             {submissionState !== states.SUCCEEDED ? (
-                <form noValidate onSubmit={handleSubmit(doSubmit)}>
-                    <Fieldset>
-                        <Fieldset.Legend headingLevel="h1" isPageHeading>
-                            Search for patient
-                        </Fieldset.Legend>
-                        <Input
-                            id="nhs-number-input"
-                            name="nhsNumber"
-                            label="Enter NHS number"
-                            hint="A 10-digit number, for example, 485 777 3456"
-                            error={formState.errors.nhsNumber?.message}
-                            type="text"
-                            {...nhsNumberProps}
-                            inputRef={nhsNumberRef}
-                            readOnly={submissionState === states.SUCCEEDED}
-                        />
-                    </Fieldset>
-                    {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
-                    {submissionState === states.FAILED && statusCode === 404 && (
-                        <WarningCallout>
-                            <WarningCallout.Label headingLevel="h2">Patient Not Found</WarningCallout.Label>
-                            <p>Please verify NHS number again.</p>
-                        </WarningCallout>
-                    )}
-                    <Button type="submit">Search</Button>
-                </form>
+                <>
+                    {(submissionState === states.FAILED && statusCode !== 404) ||
+                        (!formState.isValid && formState.isSubmitted && (
+                            <>
+                                {statusCode === 400 || !formState.isValid ? (
+                                    <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
+                                        <ErrorSummary.Title id="error-summary-title">
+                                            There is a problem
+                                        </ErrorSummary.Title>
+
+                                        <ErrorMessage>Enter patient&apos;s 10 digit NHS number</ErrorMessage>
+                                    </ErrorSummary>
+                                ) : (
+                                    <ServiceError></ServiceError>
+                                )}
+                            </>
+                        ))}
+                    <form noValidate onSubmit={handleSubmit(doSubmit)}>
+                        <Fieldset>
+                            <Fieldset.Legend headingLevel="h1" isPageHeading>
+                                Search for patient
+                            </Fieldset.Legend>
+                            <Input
+                                id="nhs-number-input"
+                                name="nhsNumber"
+                                label="Enter NHS number"
+                                hint="A 10-digit number, for example, 485 777 3456"
+                                error={formState.errors.nhsNumber?.message}
+                                type="text"
+                                {...nhsNumberProps}
+                                inputRef={nhsNumberRef}
+                                readOnly={submissionState === states.SUCCEEDED}
+                            />
+                        </Fieldset>
+                        {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
+                        {submissionState === states.FAILED && statusCode === 404 && (
+                            <WarningCallout>
+                                <WarningCallout.Label headingLevel="h2">Patient Not Found</WarningCallout.Label>
+                                <p>Please verify NHS number again.</p>
+                            </WarningCallout>
+                        )}
+                        <Button type="submit">Search</Button>
+                    </form>
+                </>
             ) : (
                 <>
                     <h1>Verify patient details</h1>
