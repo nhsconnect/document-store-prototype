@@ -85,14 +85,11 @@ export const useDocumentStore = (bearerToken, interceptor) => {
 
                 try {
                     const { data } = await request.post("/DocumentReference", requestBody);
-
-                    console.log("MAKING DOC POST REQ: ", data);
                     const url = data.content[0].attachment.url;
                     let s3Url = setUrlHostToLocalHost(url);
 
                     await storage.put(s3Url, document, {
                         headers: {
-                            ...request.defaults.headers,
                             "Content-Type": document.type,
                         },
                         onUploadProgress: ({ total, loaded }) => {
@@ -101,7 +98,6 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                     });
                     onUploadStateChange(documentUploadStates.SUCCEEDED, 100);
                 } catch (e) {
-                    console.error(e);
                     onUploadStateChange(documentUploadStates.FAILED, 0);
                 }
             },

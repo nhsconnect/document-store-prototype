@@ -38,16 +38,21 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
     };
 
     const uploadDocument = async (document) => {
-        await documentStore.uploadDocument(document.file, patientDetails?.nhsNumber, (state, progress) => {
-            setValue(
-                "documents",
-                produce(getValues("documents"), (draft) => {
-                    const documentIndex = draft.findIndex((draftDocument) => draftDocument.id === document.id);
-                    draft[documentIndex].state = state;
-                    draft[documentIndex].progress = progress;
-                })
-            );
-        });
+        console.log("SENDING DOC:", document);
+        try {
+            await documentStore.uploadDocument(document.file, patientDetails?.nhsNumber, (state, progress) => {
+                setValue(
+                    "documents",
+                    produce(getValues("documents"), (draft) => {
+                        const documentIndex = draft.findIndex((draftDocument) => draftDocument.id === document.id);
+                        draft[documentIndex].state = state;
+                        draft[documentIndex].progress = progress;
+                    })
+                );
+            });
+        } catch (e) {
+            console.log("UPLOAD ERROR:", e);
+        }
     };
 
     const inferUploadStep = () => {
