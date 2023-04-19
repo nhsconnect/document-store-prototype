@@ -33,22 +33,20 @@ export const PatientTracePage = ({ nextPage }) => {
 
     const doSubmit = async (data) => {
         try {
+            setStatusCode(null)
             setSubmissionState(states.SEARCHING);
             const response = await documentStore.getPatientDetails(data.nhsNumber);
             setPatientDetails(response.result.patientDetails);
-            console.log("response:" + response)
             setSubmissionState(states.SUCCEEDED);
-            setStatusCode(400)
-            console.log("statuscode:" + statusCode)
         } catch (e) {
             if (e.response?.status) {
                 setStatusCode(e.response.status);
             }
             setSubmissionState(states.FAILED);
         }
-
     };
-
+    console.log("submissionState", submissionState);
+    console.log("statusCode", statusCode);
     const onNextClicked = () => {
         navigate(nextPage);
     };
@@ -56,11 +54,10 @@ export const PatientTracePage = ({ nextPage }) => {
     return (
         <>
             <BackButton />
-            {/*if start typing and browser validation fails or if we submit and submissionState is set to failed*/}
             {submissionState !== states.SUCCEEDED ? (
                 <>
-                    {(submissionState === states.FAILED && statusCode !== 404) ||
-                        (!!formState.errors && formState.isSubmitted) && (
+                    {((submissionState === states.FAILED && statusCode !== 404) ||
+                        (!!formState.errors && formState.isSubmitted)) && (
                             <>
                                 {statusCode !== 500 ? (
                                     <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
