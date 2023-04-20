@@ -59,12 +59,11 @@ public class DynamoDBSessionStore implements SessionStore {
 
     @Override
     public List<Session> queryBySessionId(SessionID sessionId) {
-        var partitionKey = Session.PARTITION_KEY_PREFIX + sessionId.getValue();
         var expressionAttributeValues = new HashMap<String, AttributeValue>();
-        expressionAttributeValues.put(":oidcSessionId", new AttributeValue().withS(partitionKey));
+        expressionAttributeValues.put(":id", new AttributeValue().withS(sessionId.getValue()));
         var queryExpression =
                 new DynamoDBQueryExpression<Session>()
-                        .withKeyConditionExpression("OIDC_SESSION_ID = :oidcSessionId")
+                        .withKeyConditionExpression("oidcSessionId = :id")
                         .withExpressionAttributeValues(expressionAttributeValues);
 
         return dynamoDBMapper.query(Session.class, queryExpression);
