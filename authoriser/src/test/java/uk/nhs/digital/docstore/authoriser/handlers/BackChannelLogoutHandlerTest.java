@@ -10,6 +10,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
+import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import com.nimbusds.openid.connect.sdk.validators.LogoutTokenValidator;
 import java.time.Instant;
 import java.util.UUID;
@@ -22,8 +23,48 @@ import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 class BackChannelLogoutHandlerTest {
     private final SignedJWTFactory jwtFactory = new SignedJWTFactory();
 
+    //    @Test
+    //    public void destroysAllSessionsForASubjectWhenTheLogoutTokenIsValid() throws Exception {
+    //        var jwtClaims = LogoutTokenClaimsSetBuilder.build();
+    //        var tokenValidator =
+    //                new LogoutTokenValidator(
+    //                        new Issuer(jwtClaims.getIssuer()),
+    //                        new ClientID(jwtClaims.getAudience().get(0)),
+    //                        JWSAlgorithm.RS256,
+    //                        new JWKSet(jwtFactory.getJWK()));
+    //        var logoutToken = jwtFactory.createJWT(jwtClaims.toJWTClaimsSet());
+    //        var timeToExist = Instant.ofEpochSecond(10L);
+    //        var sessionOne =
+    //                Session.create(
+    //                        UUID.randomUUID(),
+    //                        timeToExist,
+    //                        jwtClaims.getSubject(),
+    //                        jwtClaims.getSessionID());
+    //        var sessionTwo =
+    //                Session.create(
+    //                        UUID.randomUUID(),
+    //                        timeToExist,
+    //                        jwtClaims.getSubject(),
+    //                        jwtClaims.getSessionID());
+    //        var sessionStore = new InMemorySessionStore();
+    //        var request =
+    //                new APIGatewayProxyRequestEvent()
+    //                        .withBody("logout_token=" + logoutToken.serialize());
+    //        var handler = new BackChannelLogoutHandler(tokenValidator, sessionStore);
+    //
+    //        sessionStore.save(sessionOne);
+    //        sessionStore.save(sessionTwo);
+    //        var response = handler.handleRequest(request, mock(Context.class));
+    //
+    //        assertThat(response.getStatusCode()).isEqualTo(200);
+    //        assertThat(response.getIsBase64Encoded()).isFalse();
+    //        assertThat(response.getBody()).isEqualTo("");
+    //        assertThat(sessionStore.load(jwtClaims.getSubject(), sessionOne.getId())).isEmpty();
+    //        assertThat(sessionStore.load(jwtClaims.getSubject(), sessionTwo.getId())).isEmpty();
+    //    }
+
     @Test
-    public void destroysAllSessionsForASubjectWhenTheLogoutTokenIsValid() throws Exception {
+    public void destroysCurrentSessionWhenTheLogoutTokenIsValid() throws Exception {
         var jwtClaims = LogoutTokenClaimsSetBuilder.build();
         var tokenValidator =
                 new LogoutTokenValidator(
@@ -44,7 +85,7 @@ class BackChannelLogoutHandlerTest {
                         UUID.randomUUID(),
                         timeToExist,
                         jwtClaims.getSubject(),
-                        jwtClaims.getSessionID());
+                        new SessionID("ses2"));
         var sessionStore = new InMemorySessionStore();
         var request =
                 new APIGatewayProxyRequestEvent()
@@ -59,7 +100,7 @@ class BackChannelLogoutHandlerTest {
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getBody()).isEqualTo("");
         assertThat(sessionStore.load(jwtClaims.getSubject(), sessionOne.getId())).isEmpty();
-        assertThat(sessionStore.load(jwtClaims.getSubject(), sessionTwo.getId())).isEmpty();
+        assertThat(sessionStore.load(jwtClaims.getSubject(), sessionTwo.getId())).isNotEmpty();
     }
 
     @Test

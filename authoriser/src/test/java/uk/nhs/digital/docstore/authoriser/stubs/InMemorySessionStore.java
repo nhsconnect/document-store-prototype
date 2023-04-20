@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.authoriser.stubs;
 
 import com.nimbusds.oauth2.sdk.id.Subject;
+import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,13 @@ public class InMemorySessionStore implements SessionStore {
     public List<Session> queryByOIDCSubject(Subject subject) {
         return sessionHashMap.values().stream()
                 .filter(session -> session.getOIDCSubject().equals(subject.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Session> queryBySessionId(SessionID sessionId) {
+        return sessionHashMap.values().stream()
+                .filter(session -> session.getOidcSessionID().equals(sessionId.getValue()))
                 .collect(Collectors.toList());
     }
 }

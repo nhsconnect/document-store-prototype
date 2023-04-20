@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.authoriser.repository;
 
 import com.nimbusds.oauth2.sdk.id.Subject;
+import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,4 +17,6 @@ public interface SessionStore {
     void batchDelete(List<Session> sessions);
 
     List<Session> queryByOIDCSubject(Subject subject);
+
+    List<Session> queryBySessionId(SessionID sessionId);
 }

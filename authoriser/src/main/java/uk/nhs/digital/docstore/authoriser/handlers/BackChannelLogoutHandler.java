@@ -62,7 +62,6 @@ public class BackChannelLogoutHandler extends BaseAuthRequestHandler
         }
 
         LogoutTokenClaimsSet claims;
-
         try {
             claims = tokenValidator.validate(logoutToken);
         } catch (BadJOSEException | JOSEException exception) {
@@ -72,10 +71,17 @@ public class BackChannelLogoutHandler extends BaseAuthRequestHandler
                     .withBody("")
                     .withIsBase64Encoded(false);
         }
+        var sessions = sessionStore.queryBySessionId(claims.getSessionID());
 
-        var sessions = sessionStore.queryByOIDCSubject(claims.getSubject());
-
-        sessionStore.batchDelete(sessions);
+        if (sessions.size() >= 1) {
+            sessionStore.batchDelete(sessions);
+        } else {
+            LOGGER.debug("Session does not exist in db for Session " + claims.getSessionID());
+            return new APIGatewayProxyResponseEvent()
+                    .withStatusCode(400)
+                    .withBody("")
+                    .withIsBase64Encoded(false);
+        }
 
         return new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)

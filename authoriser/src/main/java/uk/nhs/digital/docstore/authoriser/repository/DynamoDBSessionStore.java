@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.nimbusds.oauth2.sdk.id.Subject;
+import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,19 @@ public class DynamoDBSessionStore implements SessionStore {
         var queryExpression =
                 new DynamoDBQueryExpression<Session>()
                         .withKeyConditionExpression("PK = :pk")
+                        .withExpressionAttributeValues(expressionAttributeValues);
+
+        return dynamoDBMapper.query(Session.class, queryExpression);
+    }
+
+    @Override
+    public List<Session> queryBySessionId(SessionID sessionId) {
+        var partitionKey = Session.PARTITION_KEY_PREFIX + sessionId.getValue();
+        var expressionAttributeValues = new HashMap<String, AttributeValue>();
+        expressionAttributeValues.put(":oidcSessionId", new AttributeValue().withS(partitionKey));
+        var queryExpression =
+                new DynamoDBQueryExpression<Session>()
+                        .withKeyConditionExpression("OIDC_SESSION_ID = :oidcSessionId")
                         .withExpressionAttributeValues(expressionAttributeValues);
 
         return dynamoDBMapper.query(Session.class, queryExpression);
