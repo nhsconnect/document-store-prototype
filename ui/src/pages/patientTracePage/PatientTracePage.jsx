@@ -45,8 +45,7 @@ export const PatientTracePage = ({ nextPage }) => {
             setSubmissionState(states.FAILED);
         }
     };
-    console.log("submissionState", submissionState);
-    console.log("statusCode", statusCode);
+
     const onNextClicked = () => {
         navigate(nextPage);
     };
