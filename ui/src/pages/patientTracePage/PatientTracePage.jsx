@@ -18,12 +18,12 @@ const states = {
 
 export const PatientTracePage = ({ nextPage }) => {
     const documentStore = useAuthorisedDocumentStore();
-    const { register, formState, handleSubmit } = useForm();
+    const { register, formState, handleSubmit } = useForm({ reValidateMode: "onSubmit" });
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
-        required: "Please enter a 10 digit NHS number",
+        required: "Enter patient's 10 digit NHS number",
         pattern: {
             value: /^[0-9]{10}$/,
-            message: "Please enter a 10 digit NHS number",
+            message: "Enter patient's 10 digit NHS number",
         },
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
@@ -33,8 +33,8 @@ export const PatientTracePage = ({ nextPage }) => {
 
     const doSubmit = async (data) => {
         try {
-            setSubmissionState(states.SEARCHING);
             setStatusCode(null);
+            setSubmissionState(states.SEARCHING);
             const response = await documentStore.getPatientDetails(data.nhsNumber);
             setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
@@ -54,17 +54,19 @@ export const PatientTracePage = ({ nextPage }) => {
         <>
             <BackButton />
             {submissionState !== states.SUCCEEDED ? (
-                <form onSubmit={handleSubmit(doSubmit)} noValidate>
-                    {submissionState === states.FAILED && statusCode !== 404 && (
+                <>
+                    {((submissionState === states.FAILED && statusCode !== 404) ||
+                        (!!formState.errors && formState.isSubmitted)) && (
                         <>
-                            {statusCode === 400 ? (
+                            {statusCode !== 500 ? (
                                 <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
                                     <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
                                     <ErrorSummary.Body>
-                                        <p>
-                                            The NHS number provided is invalid. Please check the number you have
-                                            entered.
-                                        </p>
+                                        <ErrorSummary.List>
+                                            <ErrorSummary.Item href="#nhs-number-input">
+                                                Enter patient&apos;s 10 digit NHS number
+                                            </ErrorSummary.Item>
+                                        </ErrorSummary.List>
                                     </ErrorSummary.Body>
                                 </ErrorSummary>
                             ) : (
@@ -72,31 +74,33 @@ export const PatientTracePage = ({ nextPage }) => {
                             )}
                         </>
                     )}
-                    <Fieldset>
-                        <Fieldset.Legend headingLevel="h1" isPageHeading>
-                            Search for patient
-                        </Fieldset.Legend>
-                        <Input
-                            id="nhs-number-input"
-                            name="nhsNumber"
-                            label="Enter NHS number"
-                            hint="A 10-digit number, for example, 485 777 3456"
-                            error={formState.errors.nhsNumber?.message}
-                            type="text"
-                            {...nhsNumberProps}
-                            inputRef={nhsNumberRef}
-                            readOnly={submissionState === states.SUCCEEDED}
-                        />
-                    </Fieldset>
-                    {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
-                    {submissionState === states.FAILED && statusCode === 404 && (
-                        <WarningCallout>
-                            <WarningCallout.Label headingLevel="h2">Patient Not Found</WarningCallout.Label>
-                            <p>Please verify NHS number again.</p>
-                        </WarningCallout>
-                    )}
-                    <Button type="submit">Search</Button>
-                </form>
+                    <form noValidate onSubmit={handleSubmit(doSubmit)}>
+                        <Fieldset>
+                            <Fieldset.Legend headingLevel="h1" isPageHeading>
+                                Search for patient
+                            </Fieldset.Legend>
+                            <Input
+                                id="nhs-number-input"
+                                name="nhsNumber"
+                                label="Enter NHS number"
+                                hint="A 10-digit number, for example, 485 777 3456"
+                                error={formState.errors.nhsNumber?.message}
+                                type="text"
+                                {...nhsNumberProps}
+                                inputRef={nhsNumberRef}
+                                readOnly={submissionState === states.SUCCEEDED || submissionState === states.SEARCHING}
+                            />
+                        </Fieldset>
+                        {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
+                        {submissionState === states.FAILED && statusCode === 404 && (
+                            <WarningCallout>
+                                <WarningCallout.Label headingLevel="h2">Patient Not Found</WarningCallout.Label>
+                                <p>Please verify NHS number again.</p>
+                            </WarningCallout>
+                        )}
+                        <Button type="submit">Search</Button>
+                    </form>
+                </>
             ) : (
                 <>
                     <h1>Verify patient details</h1>
