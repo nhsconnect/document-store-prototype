@@ -77,11 +77,15 @@ public class SearchPatientDetailsHandler
             var json = convertToJson(patientDetails);
             var body = getBody(json);
 
-            LOGGER.debug("Processing finished - about to return the response");
-            return apiConfig.getApiGatewayResponse(200, body, "GET", null);
+            LOGGER.debug("Processing finished - about to return the response: \n " + body);
+            var apiGatewayResponse = apiConfig.getApiGatewayResponse(200, body, "GET", null);
+            LOGGER.debug("Response: " + apiGatewayResponse);
+            return apiGatewayResponse;
         } catch (PatientNotFoundException e) {
+            LOGGER.debug("Patient not found - error: "+ e.getMessage());
             return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
         } catch (Exception exception) {
+            LOGGER.debug("OH NO IT'S ALL ON FIRE - error: "+ exception.getMessage());
             return errorResponseGenerator.errorResponse(exception);
         }
     }
