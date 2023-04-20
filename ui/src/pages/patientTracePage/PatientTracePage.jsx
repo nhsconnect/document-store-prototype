@@ -18,7 +18,7 @@ const states = {
 
 export const PatientTracePage = ({ nextPage }) => {
     const documentStore = useAuthorisedDocumentStore();
-    const { register, formState, handleSubmit } = useForm({ reValidateMode: "onSubmit", });
+    const { register, formState, handleSubmit } = useForm({ reValidateMode: "onSubmit" });
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
         required: "Enter patient's 10 digit NHS number",
         pattern: {
@@ -33,7 +33,7 @@ export const PatientTracePage = ({ nextPage }) => {
 
     const doSubmit = async (data) => {
         try {
-            setStatusCode(null)
+            setStatusCode(null);
             setSubmissionState(states.SEARCHING);
             const response = await documentStore.getPatientDetails(data.nhsNumber);
             setPatientDetails(response.result.patientDetails);
@@ -58,23 +58,23 @@ export const PatientTracePage = ({ nextPage }) => {
                 <>
                     {((submissionState === states.FAILED && statusCode !== 404) ||
                         (!!formState.errors && formState.isSubmitted)) && (
-                            <>
-                                {statusCode !== 500 ? (
-                                    <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
-                                        <ErrorSummary.Title id="error-summary-title">
-                                            There is a problem
-                                        </ErrorSummary.Title>
-                                        <ErrorSummary.Body>
-                                            <ErrorSummary.List>
-                                                <ErrorSummary.Item href="#nhs-number-input">Enter patient&apos;s 10 digit NHS number</ErrorSummary.Item>
-                                            </ErrorSummary.List>
-                                        </ErrorSummary.Body>
-                                    </ErrorSummary>
-                                ) : (
-                                    <ServiceError></ServiceError>
-                                )}
-                            </>
-                        )}
+                        <>
+                            {statusCode !== 500 ? (
+                                <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
+                                    <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
+                                    <ErrorSummary.Body>
+                                        <ErrorSummary.List>
+                                            <ErrorSummary.Item href="#nhs-number-input">
+                                                Enter patient&apos;s 10 digit NHS number
+                                            </ErrorSummary.Item>
+                                        </ErrorSummary.List>
+                                    </ErrorSummary.Body>
+                                </ErrorSummary>
+                            ) : (
+                                <ServiceError></ServiceError>
+                            )}
+                        </>
+                    )}
                     <form noValidate onSubmit={handleSubmit(doSubmit)}>
                         <Fieldset>
                             <Fieldset.Legend headingLevel="h1" isPageHeading>
