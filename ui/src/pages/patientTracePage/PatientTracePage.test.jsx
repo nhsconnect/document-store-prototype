@@ -146,7 +146,7 @@ describe("<PatientTracePage/>", () => {
             userEvent.click(screen.getByRole("button", { name: "Search" }));
 
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
-            expect(await screen.findAllByText("Enter patient's 10 digit NHS number")).toBeInTheDocument();
+            expect(await screen.findByText("Enter patient's 10 digit NHS number")).toBeInTheDocument();
         });
 
         it("displays a message when patient is sensitive", async () => {
@@ -219,7 +219,7 @@ describe("<PatientTracePage/>", () => {
             userEvent.click(screen.getByRole("button", { name: "Search" }));
 
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
-            expect(await screen.findAllByText("Enter patient's 10 digit NHS number")).toBeInTheDocument();
+            expect(await screen.findByText("Enter patient's 10 digit NHS number")).toBeInTheDocument();
             expect(await screen.findByRole("alert")).toBeInTheDocument();
             expect(screen.getByRole("button", { name: "Search" })).toBeInTheDocument();
             expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
