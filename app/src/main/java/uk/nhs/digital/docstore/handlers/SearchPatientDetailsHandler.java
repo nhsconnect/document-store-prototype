@@ -82,10 +82,10 @@ public class SearchPatientDetailsHandler
             LOGGER.debug("Response: " + apiGatewayResponse);
             return apiGatewayResponse;
         } catch (PatientNotFoundException e) {
-            LOGGER.debug("Patient not found - error: "+ e.getMessage());
+            LOGGER.debug("Patient not found - error: " + e.getMessage());
             return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
         } catch (Exception exception) {
-            LOGGER.debug("OH NO IT'S ALL ON FIRE - error: "+ exception.getMessage());
+            LOGGER.debug("OH NO IT'S ALL ON FIRE - error: " + exception.getMessage());
             return errorResponseGenerator.errorResponse(exception);
         }
     }
