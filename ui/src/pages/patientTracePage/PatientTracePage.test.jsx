@@ -146,7 +146,9 @@ describe("<PatientTracePage/>", () => {
             userEvent.click(screen.getByRole("button", { name: "Search" }));
 
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
-            expect(await screen.findByText("Enter patient's 10 digit NHS number")).toBeInTheDocument();
+            expect(
+                await screen.findByText("The NHS number provided is invalid. Please check the number you have entered.")
+            ).toBeInTheDocument();
         });
 
         it("displays a message when patient is sensitive", async () => {

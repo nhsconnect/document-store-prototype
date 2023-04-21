@@ -53,7 +53,7 @@ export const PatientTracePage = ({ nextPage }) => {
     return (
         <>
             <BackButton />
-            {submissionState !== states.SUCCEEDED ? (
+            {submissionState !== (states.SUCCEEDED || states.SEARCHING) ? (
                 <>
                     {((submissionState === states.FAILED && statusCode !== 404) ||
                         (!!formState.errors && formState.isSubmitted)) && (
@@ -62,11 +62,18 @@ export const PatientTracePage = ({ nextPage }) => {
                                 <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
                                     <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
                                     <ErrorSummary.Body>
-                                        <ErrorSummary.List>
-                                            <ErrorSummary.Item href="#nhs-number-input">
-                                                Enter patient&apos;s 10 digit NHS number
-                                            </ErrorSummary.Item>
-                                        </ErrorSummary.List>
+                                        {statusCode === 400 ? (
+                                            <p>
+                                                The NHS number provided is invalid. Please check the number you have
+                                                entered.
+                                            </p>
+                                        ) : (
+                                            <ErrorSummary.List>
+                                                <ErrorSummary.Item href="#nhs-number-input">
+                                                    Enter patient&apos;s 10 digit NHS number
+                                                </ErrorSummary.Item>
+                                            </ErrorSummary.List>
+                                        )}
                                     </ErrorSummary.Body>
                                 </ErrorSummary>
                             ) : (
