@@ -1,4 +1,4 @@
-import { Button, ErrorSummary, Fieldset, Input, WarningCallout } from "nhsuk-react-components";
+import { Button, Fieldset, Input, WarningCallout } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -8,6 +8,7 @@ import PatientSummary from "../../components/patientSummary/PatientSummary";
 import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
+import ErrorBox from "../../components/errorBox/ErrorBox";
 
 const states = {
     IDLE: "idle",
@@ -20,61 +21,16 @@ export const PatientTracePage = ({ nextPage }) => {
     const documentStore = useAuthorisedDocumentStore();
     const { register, formState, handleSubmit } = useForm({ reValidateMode: "onSubmit" });
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
-        required: "Enter patient's 10 digit NHS number",
+        required: "Enter a valid patient NHS number",
         pattern: {
             value: /^[0-9]{10}$/,
-            message: "Enter patient's 10 digit NHS number",
+            message: "Enter a valid patient NHS number",
         },
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [statusCode, setStatusCode] = useState(null);
     const [patientDetails, setPatientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
-    const displayErrorMessage = (statusCode) => {
-        switch (statusCode) {
-            case 400:
-                return (
-                    <>
-                        <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
-                        <ErrorSummary.Body>
-                            <ErrorSummary.List>
-                                <ErrorSummary.Item href="#nhs-number-input">
-                                    The NHS number provided is invalid. Please check the number you have entered
-                                </ErrorSummary.Item>
-                            </ErrorSummary.List>
-                        </ErrorSummary.Body>
-                    </>
-                );
-            case 404:
-                return (
-                    <>
-                        <ErrorSummary.Title id="error-summary-title">Patient Not Found</ErrorSummary.Title>
-                        <ErrorSummary.Body>
-                            <ErrorSummary.List>
-                                <ErrorSummary.Item href="#nhs-number-input">
-                                    Please verify NHS number again
-                                </ErrorSummary.Item>
-                            </ErrorSummary.List>
-                        </ErrorSummary.Body>
-                    </>
-                );
-            case 500:
-                return <ServiceError></ServiceError>;
-            default:
-                return (
-                    <>
-                        <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
-                        <ErrorSummary.Body>
-                            <ErrorSummary.List>
-                                <ErrorSummary.Item href="#nhs-number-input">
-                                    Enter patient&apos;s 10 digit NHS number
-                                </ErrorSummary.Item>
-                            </ErrorSummary.List>
-                        </ErrorSummary.Body>
-                    </>
-                );
-        }
-    };
 
     const doSubmit = async (data) => {
         try {
@@ -107,9 +63,14 @@ export const PatientTracePage = ({ nextPage }) => {
                 <>
                     {submissionState === states.FAILED && (
                         <>
-                            <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
-                                {displayErrorMessage(statusCode)}
-                            </ErrorSummary>
+                            {statusCode === 500 ? (
+                                <ServiceError />
+                            ) : (
+                                <ErrorBox
+                                    messageTitle={"There is a problem"}
+                                    messageBody={"Enter a valid patient NHS number"}
+                                />
+                            )}
                         </>
                     )}
                     <form noValidate onSubmit={handleSubmit(doSubmit, onError)}>
