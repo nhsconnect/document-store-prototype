@@ -30,6 +30,51 @@ export const PatientTracePage = ({ nextPage }) => {
     const [statusCode, setStatusCode] = useState(null);
     const [patientDetails, setPatientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
+    const displayErrorMessage = (statusCode) => {
+        switch (statusCode) {
+            case 400:
+                return (
+                    <>
+                        <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
+                        <ErrorSummary.Body>
+                            <ErrorSummary.List>
+                                <ErrorSummary.Item href="#nhs-number-input">
+                                    The NHS number provided is invalid. Please check the number you have entered
+                                </ErrorSummary.Item>
+                            </ErrorSummary.List>
+                        </ErrorSummary.Body>
+                    </>
+                );
+            case 404:
+                return (
+                    <>
+                        <ErrorSummary.Title id="error-summary-title">Patient Not Found</ErrorSummary.Title>
+                        <ErrorSummary.Body>
+                            <ErrorSummary.List>
+                                <ErrorSummary.Item href="#nhs-number-input">
+                                    Please verify NHS number again
+                                </ErrorSummary.Item>
+                            </ErrorSummary.List>
+                        </ErrorSummary.Body>
+                    </>
+                );
+            case 500:
+                return <ServiceError></ServiceError>;
+            default:
+                return (
+                    <>
+                        <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
+                        <ErrorSummary.Body>
+                            <ErrorSummary.List>
+                                <ErrorSummary.Item href="#nhs-number-input">
+                                    Enter patient&apos;s 10 digit NHS number
+                                </ErrorSummary.Item>
+                            </ErrorSummary.List>
+                        </ErrorSummary.Body>
+                    </>
+                );
+        }
+    };
 
     const doSubmit = async (data) => {
         try {
@@ -46,6 +91,11 @@ export const PatientTracePage = ({ nextPage }) => {
         }
     };
 
+    const onError = async () => {
+        setSubmissionState(states.FAILED);
+        setStatusCode(null);
+    };
+
     const onNextClicked = () => {
         navigate(nextPage);
     };
@@ -55,33 +105,14 @@ export const PatientTracePage = ({ nextPage }) => {
             <BackButton />
             {submissionState !== (states.SUCCEEDED || states.SEARCHING) ? (
                 <>
-                    {((submissionState === states.FAILED && statusCode !== 404) ||
-                        (!!formState.errors && formState.isSubmitted)) && (
+                    {submissionState === states.FAILED && (
                         <>
-                            {statusCode !== 500 ? (
-                                <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
-                                    <ErrorSummary.Title id="error-summary-title">There is a problem</ErrorSummary.Title>
-                                    <ErrorSummary.Body>
-                                        {statusCode === 400 ? (
-                                            <p>
-                                                The NHS number provided is invalid. Please check the number you have
-                                                entered.
-                                            </p>
-                                        ) : (
-                                            <ErrorSummary.List>
-                                                <ErrorSummary.Item href="#nhs-number-input">
-                                                    Enter patient&apos;s 10 digit NHS number
-                                                </ErrorSummary.Item>
-                                            </ErrorSummary.List>
-                                        )}
-                                    </ErrorSummary.Body>
-                                </ErrorSummary>
-                            ) : (
-                                <ServiceError></ServiceError>
-                            )}
+                            <ErrorSummary aria-labelledby="error-summary-title" role="alert" tabIndex={-1}>
+                                {displayErrorMessage(statusCode)}
+                            </ErrorSummary>
                         </>
                     )}
-                    <form noValidate onSubmit={handleSubmit(doSubmit)}>
+                    <form noValidate onSubmit={handleSubmit(doSubmit, onError)}>
                         <Fieldset>
                             <Fieldset.Legend headingLevel="h1" isPageHeading>
                                 Search for patient
@@ -99,12 +130,6 @@ export const PatientTracePage = ({ nextPage }) => {
                             />
                         </Fieldset>
                         {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
-                        {submissionState === states.FAILED && statusCode === 404 && (
-                            <WarningCallout>
-                                <WarningCallout.Label headingLevel="h2">Patient Not Found</WarningCallout.Label>
-                                <p>Please verify NHS number again.</p>
-                            </WarningCallout>
-                        )}
                         <Button type="submit">Search</Button>
                     </form>
                 </>

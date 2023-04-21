@@ -147,7 +147,7 @@ describe("<PatientTracePage/>", () => {
 
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
             expect(
-                await screen.findByText("The NHS number provided is invalid. Please check the number you have entered.")
+                await screen.findByText("The NHS number provided is invalid. Please check the number you have entered")
             ).toBeInTheDocument();
         });
 
