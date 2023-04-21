@@ -73,7 +73,7 @@ public class BackChannelLogoutHandler extends BaseAuthRequestHandler
         }
         var sessions = sessionStore.queryBySessionId(claims.getSessionID());
 
-        LOGGER.debug("Found " + sessions.size() +" sessions " + logoutToken);
+        LOGGER.debug("Found " + sessions.size() + " sessions " + logoutToken);
         LOGGER.debug(sessions.toString());
 
         if (sessions.size() >= 1) {
