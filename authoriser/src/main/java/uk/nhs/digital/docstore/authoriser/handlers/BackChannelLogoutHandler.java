@@ -73,8 +73,12 @@ public class BackChannelLogoutHandler extends BaseAuthRequestHandler
         }
         var sessions = sessionStore.queryBySessionId(claims.getSessionID());
 
+        LOGGER.debug("Found " + sessions.size() +" sessions " + logoutToken);
+        LOGGER.debug(sessions.toString());
+
         if (sessions.size() >= 1) {
             sessionStore.batchDelete(sessions);
+            LOGGER.debug("Deleted " + sessions.size() + " sessions");
         } else {
             LOGGER.debug("Session does not exist in db for Session " + claims.getSessionID());
             return new APIGatewayProxyResponseEvent()
