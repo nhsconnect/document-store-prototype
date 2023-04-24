@@ -19,7 +19,7 @@ const states = {
 
 export const PatientTracePage = ({ nextPage }) => {
     const documentStore = useAuthorisedDocumentStore();
-    const { register, formState, handleSubmit } = useForm({ reValidateMode: "onSubmit" });
+    const { register, handleSubmit } = useForm({ reValidateMode: "onSubmit" });
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
         required: "Enter a valid patient NHS number",
         pattern: {
@@ -30,6 +30,7 @@ export const PatientTracePage = ({ nextPage }) => {
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [statusCode, setStatusCode] = useState(null);
     const [patientDetails, setPatientDetails] = usePatientDetailsContext();
+    const [isInputError, setIsInputError] = useState(false);
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
@@ -44,12 +45,16 @@ export const PatientTracePage = ({ nextPage }) => {
                 setStatusCode(e.response.status);
             }
             setSubmissionState(states.FAILED);
+            if (statusCode !== 500) {
+                setIsInputError(true);
+            }
         }
     };
 
     const onError = async () => {
         setSubmissionState(states.FAILED);
         setStatusCode(null);
+        setIsInputError(true);
     };
 
     const onNextClicked = () => {
@@ -59,7 +64,7 @@ export const PatientTracePage = ({ nextPage }) => {
     return (
         <>
             <BackButton />
-            {submissionState !== (states.SUCCEEDED || states.SEARCHING) ? (
+            {submissionState !== states.SUCCEEDED ? (
                 <>
                     {submissionState === states.FAILED && (
                         <>
@@ -73,7 +78,7 @@ export const PatientTracePage = ({ nextPage }) => {
                             )}
                         </>
                     )}
-                    <form noValidate onSubmit={handleSubmit(doSubmit, onError)}>
+                    <form onSubmit={handleSubmit(doSubmit, onError)} noValidate>
                         <Fieldset>
                             <Fieldset.Legend headingLevel="h1" isPageHeading>
                                 Search for patient
@@ -83,7 +88,11 @@ export const PatientTracePage = ({ nextPage }) => {
                                 name="nhsNumber"
                                 label="Enter NHS number"
                                 hint="A 10-digit number, for example, 485 777 3456"
-                                error={formState.errors.nhsNumber?.message}
+                                error={
+                                    submissionState !== states.SEARCHING &&
+                                    isInputError &&
+                                    "Enter a valid patient NHS number"
+                                }
                                 type="text"
                                 {...nhsNumberProps}
                                 inputRef={nhsNumberRef}
