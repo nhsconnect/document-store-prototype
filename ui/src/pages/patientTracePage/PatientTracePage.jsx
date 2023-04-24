@@ -21,20 +21,21 @@ export const PatientTracePage = ({ nextPage }) => {
     const documentStore = useAuthorisedDocumentStore();
     const { register, handleSubmit } = useForm({ reValidateMode: "onSubmit" });
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
-        required: "Enter a valid patient NHS number",
+        required: "Enter patient's 10 digit NHS number",
         pattern: {
             value: /^[0-9]{10}$/,
-            message: "Enter a valid patient NHS number",
+            message: "Enter patient's 10 digit NHS number",
         },
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [statusCode, setStatusCode] = useState(null);
     const [patientDetails, setPatientDetails] = usePatientDetailsContext();
-    const [isInputError, setIsInputError] = useState(false);
+    const [inputError, setInputError] = useState(null);
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
+            setInputError(null);
             setStatusCode(null);
             setSubmissionState(states.SEARCHING);
             const response = await documentStore.getPatientDetails(data.nhsNumber);
@@ -42,19 +43,19 @@ export const PatientTracePage = ({ nextPage }) => {
             setSubmissionState(states.SUCCEEDED);
         } catch (e) {
             if (e.response?.status) {
-                setStatusCode(e.response.status);
+                setStatusCode(e.response?.status);
+                if (e.response?.status < 500) {
+                    setInputError("Enter a valid patient NHS number");
+                }
             }
             setSubmissionState(states.FAILED);
-            if (statusCode !== 500) {
-                setIsInputError(true);
-            }
         }
     };
 
     const onError = async () => {
         setSubmissionState(states.FAILED);
         setStatusCode(null);
-        setIsInputError(true);
+        setInputError("Enter patient's 10 digit NHS number");
     };
 
     const onNextClicked = () => {
@@ -68,13 +69,10 @@ export const PatientTracePage = ({ nextPage }) => {
                 <>
                     {submissionState === states.FAILED && (
                         <>
-                            {statusCode === 500 ? (
+                            {statusCode >= 500 ? (
                                 <ServiceError />
                             ) : (
-                                <ErrorBox
-                                    messageTitle={"There is a problem"}
-                                    messageBody={"Enter a valid patient NHS number"}
-                                />
+                                <ErrorBox messageTitle={"There is a problem"} messageBody={inputError} />
                             )}
                         </>
                     )}
@@ -88,11 +86,7 @@ export const PatientTracePage = ({ nextPage }) => {
                                 name="nhsNumber"
                                 label="Enter NHS number"
                                 hint="A 10-digit number, for example, 485 777 3456"
-                                error={
-                                    submissionState !== states.SEARCHING &&
-                                    isInputError &&
-                                    "Enter a valid patient NHS number"
-                                }
+                                error={submissionState !== states.SEARCHING && inputError}
                                 type="text"
                                 {...nhsNumberProps}
                                 inputRef={nhsNumberRef}

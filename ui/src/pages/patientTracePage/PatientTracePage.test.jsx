@@ -131,6 +131,26 @@ describe("<PatientTracePage/>", () => {
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
         });
 
+        it("displays server error message when server is down", async () => {
+            const errorResponse = {
+                response: {
+                    status: 500,
+                    message: "500 service is currently unavailable.",
+                },
+            };
+
+            getPatientDetailsMock.mockRejectedValue(errorResponse);
+
+            renderPatientTracePage();
+            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "0987654321");
+            userEvent.click(screen.getByRole("button", { name: "Search" }));
+
+            expect(await screen.findByText("Sorry, the service is currently unavailable.")).toBeInTheDocument();
+            expect(await screen.queryByText("There is a problem")).not.toBeInTheDocument();
+            expect(await screen.queryByText("Enter a valid patient NHS number")).not.toBeInTheDocument();
+            // expect(await screen.findByText("Enter patient's 10 digit NHS number")).not.toBeInTheDocument();
+        });
+
         it("displays a message when NHS number is invalid", async () => {
             const errorResponse = {
                 response: {
@@ -196,7 +216,7 @@ describe("<PatientTracePage/>", () => {
             userEvent.click(screen.getByRole("button", { name: "Search" }));
 
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
-            expect(await screen.findAllByText("Enter a valid patient NHS number")).toHaveLength(2);
+            expect(await screen.findAllByText("Enter patient's 10 digit NHS number")).toHaveLength(2);
         });
 
         it.each([["123456789"], ["12345678901"], ["123456789A"]])(
@@ -207,22 +227,9 @@ describe("<PatientTracePage/>", () => {
                 userEvent.click(screen.getByRole("button", { name: "Search" }));
 
                 expect(await screen.findByText("There is a problem")).toBeInTheDocument();
-                expect(await screen.findAllByText("Enter a valid patient NHS number")).toHaveLength(2);
+                expect(await screen.findAllByText("Enter patient's 10 digit NHS number")).toHaveLength(2);
             }
         );
-
-        it("displays an error message when there is a problem retrieving the patient details", async () => {
-            getPatientDetailsMock.mockRejectedValue(new Error("Problem retrieving patient details"));
-
-            renderPatientTracePage();
-            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "0987654321");
-            userEvent.click(screen.getByRole("button", { name: "Search" }));
-
-            expect(await screen.findByText("There is a problem")).toBeInTheDocument();
-            expect(await screen.findAllByText("Enter a valid patient NHS number")).toHaveLength(2);
-            expect(screen.getByRole("button", { name: "Search" })).toBeInTheDocument();
-            expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
-        });
     });
 });
 
