@@ -38,7 +38,7 @@ public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
                 .map(parameters -> parameters.get("redirect_uri"));
     }
 
-    //TODO AKH delete
+    // TODO AKH delete
     public Map<String, String> dumpCookie() {
         var headers = getHeaders();
 

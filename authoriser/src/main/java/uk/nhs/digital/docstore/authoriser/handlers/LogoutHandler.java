@@ -7,7 +7,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
@@ -35,15 +34,18 @@ public class LogoutHandler extends BaseAuthRequestHandler
         var sessionId = requestEvent.getSessionId();
         var subject = requestEvent.getSubject();
         var multiValueHeaders = new HashMap<String, List<String>>();
-
-        //TODO AKH delete
-        var cookie = requestEvent.dumpCookie();
-        LOGGER.warn("Cookie values: ");
-        for (Map.Entry<String, String> entry : cookie.entrySet()) {
-            LOGGER.warn("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+        try {
+            // TODO AKH delete
+            var cookie = requestEvent.dumpCookie();
+            LOGGER.warn("Cookie values: ");
+            for (Map.Entry<String, String> entry : cookie.entrySet()) {
+                LOGGER.warn("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            }
+            LOGGER.warn("End cookie values");
+            // TODO AKH finish delete
+        } catch (Exception e) {
+            LOGGER.warn("Likely no cookies");
         }
-        LOGGER.warn("End cookie values");
-        //TODO AKH finish delete
 
         // TODO: [PRMT-2779] Improve redaction if it is required
         var redactedSessionId =
