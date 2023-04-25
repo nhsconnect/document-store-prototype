@@ -37,5 +37,4 @@ public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
         return Optional.ofNullable(getQueryStringParameters())
                 .map(parameters -> parameters.get("redirect_uri"));
     }
-
 }
