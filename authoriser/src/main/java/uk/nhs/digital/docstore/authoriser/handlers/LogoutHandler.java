@@ -34,6 +34,10 @@ public class LogoutHandler extends BaseAuthRequestHandler
         var subject = requestEvent.getSubject();
         var multiValueHeaders = new HashMap<String, List<String>>();
 
+        //TODO AKH remove
+        var headerMap = requestEvent.retrieveHeaders();
+        headerMap.forEach((k, v) -> LOGGER.warn("{}: {}", k, v));
+
         // TODO: [PRMT-2779] Improve redaction if it is required
         var redactedSessionId =
                 sessionId.isEmpty()
