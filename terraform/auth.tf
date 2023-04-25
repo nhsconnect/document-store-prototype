@@ -47,6 +47,7 @@ resource aws_iam_policy "arf_auth_table_policy" {
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
         ],
         "Resource" : [
           aws_dynamodb_table.access_request_fulfilment_auth.arn
