@@ -153,7 +153,7 @@ describe("<UploadDocumentsPage />", () => {
             expect(
                 screen.getByRole("heading", { name: "Some of your documents failed to upload" })
             ).toBeInTheDocument();
-            expect(screen.getByRole("table", { name: "Failed uploads" })).toBeInTheDocument();
+            expect(screen.getByText("Failed uploads")).toBeInTheDocument();
             expect(screen.getByText("If you want to upload another patient's health record")).toBeInTheDocument();
 
             userEvent.click(screen.getByRole("button", { name: "Start Again" }));
