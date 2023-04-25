@@ -113,21 +113,11 @@ describe("UploadSummary", () => {
                 "You can try to upload the documents again if you wish and/or make a note of the failures for future reference."
             )
         ).toBeInTheDocument();
-        expect(
-            screen.getByText(/Please check your internet connection. If the issue persists please contact the/)
-        ).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "NHS National Service Desk" })).toHaveAttribute(
+        expect(screen.getAllByText("Documents that have failed to upload")).toHaveLength(2);
+        expect(screen.getByRole("link", { name: "Documents that have failed to upload" })).toHaveAttribute(
             "href",
-            "https://digital.nhs.uk/about-nhs-digital/contact-us#nhs-digital-service-desks"
+            "#failed-uploads"
         );
-    });
-
-    it("opens NHS National Service Desk link in a new tab", () => {
-        const documents = [buildDocument(buildTextFile(), documentUploadStates.FAILED)];
-
-        renderUploadSummary({ documents });
-
-        expect(screen.getByRole("link", { name: "NHS National Service Desk" })).toHaveAttribute("target", "_blank");
     });
 
     it("displays each doc that failed to upload in a table", () => {
@@ -136,7 +126,7 @@ describe("UploadSummary", () => {
 
         renderUploadSummary({ documents });
 
-        const failedToUploadDocsTable = screen.getByRole("table", { name: "Failed uploads" });
+        const failedToUploadDocsTable = screen.getByRole("table", { id: "failed-uploads" });
         files.forEach(({ name, size }) => {
             expect(within(failedToUploadDocsTable).getByText(name)).toBeInTheDocument();
             expect(within(failedToUploadDocsTable).getByText(formatSize(size))).toBeInTheDocument();

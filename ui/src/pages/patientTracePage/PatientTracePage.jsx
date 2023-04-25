@@ -72,7 +72,12 @@ export const PatientTracePage = ({ nextPage }) => {
                             {statusCode >= 500 ? (
                                 <ServiceError />
                             ) : (
-                                <ErrorBox messageTitle={"There is a problem"} messageBody={inputError} />
+                                <ErrorBox
+                                    messageTitle={"There is a problem"}
+                                    messageLinkBody={inputError}
+                                    errorInputLink={"#nhs-number-input"}
+                                    errorBoxSummaryId={"error-box-summary"}
+                                />
                             )}
                         </>
                     )}

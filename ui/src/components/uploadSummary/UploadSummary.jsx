@@ -1,8 +1,9 @@
-import { Details, ErrorSummary, Table, WarningCallout } from "nhsuk-react-components";
+import { Details, Table, WarningCallout } from "nhsuk-react-components";
 import { documentUploadStates } from "../../enums/documentUploads";
 import { formatSize, getFormattedDate } from "../../utils/utils";
 import PatientSummary from "../patientSummary/PatientSummary";
 import React from "react";
+import ErrorBox from "../errorBox/ErrorBox";
 
 const UploadSummary = ({ patientDetails, documents }) => {
     const successfulUploads = documents.filter((document) => {
@@ -12,35 +13,32 @@ const UploadSummary = ({ patientDetails, documents }) => {
         return document.state === documentUploadStates.FAILED;
     });
     const tableMargin = { marginBottom: 50 };
+    const tableCaption = (
+        <>
+            <h3>Failed uploads</h3>
+            <span className="nhsuk-error-message" id="example-error">
+                <span className="nhsuk-u-visually-hidden">Error:</span> Documents that have failed to upload
+            </span>
+        </>
+    );
 
     return (
         <section>
+            {failedUploads.length > 0 && (
+                <ErrorBox
+                    errorBoxSummaryId={"failed-document-uploads-summary-title"}
+                    errorInputLink={"#failed-uploads"}
+                    messageTitle={"Some of your documents failed to upload"}
+                    messageLinkBody={"Documents that have failed to upload"}
+                    messageBody={
+                        "You can try to upload the documents again if you wish and/or make a note of the failures for future reference."
+                    }
+                ></ErrorBox>
+            )}
             <h1>Upload Summary</h1>
             {failedUploads.length > 0 && (
-                <>
-                    <ErrorSummary aria-labelledby="failed-document-uploads-summary-title" role="alert" tabIndex={-1}>
-                        <ErrorSummary.Title id="failed-document-uploads-summary-title">
-                            Some of your documents failed to upload
-                        </ErrorSummary.Title>
-                        <ErrorSummary.Body>
-                            <p>
-                                You can try to upload the documents again if you wish and/or make a note of the failures
-                                for future reference.
-                            </p>
-                            <p>
-                                Please check your internet connection. If the issue persists please contact the{" "}
-                                <a
-                                    href="https://digital.nhs.uk/about-nhs-digital/contact-us#nhs-digital-service-desks"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    NHS National Service Desk
-                                </a>
-                                .
-                            </p>
-                        </ErrorSummary.Body>
-                    </ErrorSummary>
-                    <Table responsive caption="Failed uploads" style={tableMargin}>
+                <div className={"nhsuk-form-group--error"}>
+                    <Table responsive caption={tableCaption} style={tableMargin} id="failed-uploads">
                         <Table.Body>
                             {failedUploads.map((document) => {
                                 return (
@@ -52,7 +50,7 @@ const UploadSummary = ({ patientDetails, documents }) => {
                             })}
                         </Table.Body>
                     </Table>
-                </>
+                </div>
             )}
             {failedUploads.length === 0 && (
                 <h2>All documents have been successfully uploaded on {getFormattedDate(new Date())}</h2>
