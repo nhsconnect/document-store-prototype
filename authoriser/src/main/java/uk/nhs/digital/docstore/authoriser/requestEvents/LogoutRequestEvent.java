@@ -12,7 +12,9 @@ public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
             return Optional.empty();
         }
 
-        String[] cookiesArr = headers.get("cookie").split(";");
+        var authCookie =
+                headers.get("Cookie") == null ? headers.get("cookie") : headers.get("Cookie");
+        String[] cookiesArr = authCookie.split(";");
 
         Map<String, String> cookiesMap = new HashMap<>();
         String[] cookieSplits;
