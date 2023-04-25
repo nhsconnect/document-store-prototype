@@ -6,15 +6,28 @@ import java.util.*;
 
 public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
     private Optional<String> getCookie(String cookieName) {
+
         var headers = getHeaders();
 
-        if (headers == null || headers.get("cookie") == null || headers.get("cookie").isEmpty()) {
+        if (null == headers || headers.isEmpty()) {
             return Optional.empty();
         }
 
-        var authCookie =
-                headers.get("Cookie") == null ? headers.get("cookie") : headers.get("Cookie");
-        String[] cookiesArr = authCookie.split(";");
+        String cookieData = null;
+
+        if (headers.containsKey("cookie")) {
+            cookieData = headers.get("cookie");
+        }
+
+        if (headers.containsKey("Cookie")) {
+            cookieData = headers.get("Cookie");
+        }
+
+        if (cookieData == null || cookieData.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String[] cookiesArr = cookieData.split(";");
 
         Map<String, String> cookiesMap = new HashMap<>();
         String[] cookieSplits;
