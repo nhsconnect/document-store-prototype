@@ -52,9 +52,4 @@ public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
         return Optional.ofNullable(getQueryStringParameters())
                 .map(parameters -> parameters.get("redirect_uri"));
     }
-
-    // TODO AKH remove
-    public Map<String, String> retrieveHeaders() {
-        return getHeaders();
-    }
 }
