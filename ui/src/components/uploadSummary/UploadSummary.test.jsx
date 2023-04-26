@@ -22,7 +22,7 @@ describe("UploadSummary", () => {
         expect(screen.queryByText("View successfully uploaded documents")).not.toBeInTheDocument();
     });
 
-    it("displays successfully uploaded docs", () => {
+    it("displays successfully uploaded docs and callout message", () => {
         const files = [buildTextFile("one", 100), buildTextFile("two", 101)];
         const documents = files.map((file) => buildDocument(file, documentUploadStates.SUCCEEDED));
 
@@ -35,6 +35,7 @@ describe("UploadSummary", () => {
             expect(within(uploadedDocsTable).getByText(name)).toBeInTheDocument();
             expect(within(uploadedDocsTable).getByText(formatSize(size))).toBeInTheDocument();
         });
+        expect(screen.getByText("Before you close this page")).toBeInTheDocument();
     });
 
     it("displays a collapsible list of successfully uploaded docs", () => {
@@ -110,7 +111,7 @@ describe("UploadSummary", () => {
         expect(screen.getByRole("alert", { name: "There is a problem" })).toBeInTheDocument();
         expect(
             screen.getByText(
-                "You can try to upload the documents again if you wish, or they must be printed and sent via PCSE"
+                "Some documents failed to upload. You can try to upload the documents again if you wish, or they must be printed and sent via PCSE"
             )
         ).toBeInTheDocument();
         expect(screen.getAllByText("Documents that have failed to upload")).toHaveLength(2);
