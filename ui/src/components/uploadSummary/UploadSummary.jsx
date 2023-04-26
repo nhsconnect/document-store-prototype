@@ -31,7 +31,8 @@ const UploadSummary = ({ patientDetails, documents }) => {
                     messageTitle={"There is a problem"}
                     messageLinkBody={"Documents that have failed to upload"}
                     messageBody={
-                        "Some documents failed to upload. You can try to upload the documents again if you wish or make a note of the failures for future reference"
+                        "You can try to upload the documents again if you wish, " +
+                        "or they must be printed and sent via PCSE"
                     }
                 ></ErrorBox>
             )}
@@ -94,13 +95,10 @@ const UploadSummary = ({ patientDetails, documents }) => {
             <WarningCallout style={{ marginTop: 75 }}>
                 <WarningCallout.Label>Before you close this page</WarningCallout.Label>
                 <ul>
+                    <li>Take a screenshot of this summary page and attach it to the patient&apos;s record</li>
                     <li>
-                        We recommend that you take a screenshot of this summary page and attach it to the patient&apos;s
-                        record
-                    </li>
-                    <li>
-                        When you have finished uploading documents for this patient and they are deducted from your
-                        practice, please delete any temporary files created for upload on your computer
+                        When you have finished uploading, and the patient is deducted from your practice, delete all
+                        temporary files created for upload on your computer
                     </li>
                 </ul>
             </WarningCallout>

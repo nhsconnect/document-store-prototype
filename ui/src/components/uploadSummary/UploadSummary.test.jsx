@@ -110,7 +110,7 @@ describe("UploadSummary", () => {
         expect(screen.getByRole("alert", { name: "There is a problem" })).toBeInTheDocument();
         expect(
             screen.getByText(
-                "Some documents failed to upload. You can try to upload the documents again if you wish or make a note of the failures for future reference"
+                "You can try to upload the documents again if you wish, or they must be printed and sent via PCSE"
             )
         ).toBeInTheDocument();
         expect(screen.getAllByText("Documents that have failed to upload")).toHaveLength(2);
