@@ -28,10 +28,10 @@ const UploadSummary = ({ patientDetails, documents }) => {
                 <ErrorBox
                     errorBoxSummaryId={"failed-document-uploads-summary-title"}
                     errorInputLink={"#failed-uploads"}
-                    messageTitle={"Some of your documents failed to upload"}
+                    messageTitle={"There is a problem"}
                     messageLinkBody={"Documents that have failed to upload"}
                     messageBody={
-                        "You can try to upload the documents again if you wish and/or make a note of the failures for future reference."
+                        "Some documents failed to upload. You can try to upload the documents again if you wish or make a note of the failures for future reference"
                     }
                 ></ErrorBox>
             )}
