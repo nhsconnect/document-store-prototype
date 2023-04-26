@@ -69,7 +69,7 @@ export const PatientTracePage = ({ nextPage }) => {
                 <>
                     {submissionState === states.FAILED && (
                         <>
-                            {statusCode >= 500 ? (
+                            {statusCode >= 500 || !inputError ? (
                                 <ServiceError />
                             ) : (
                                 <ErrorBox
