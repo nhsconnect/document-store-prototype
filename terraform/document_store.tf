@@ -9,7 +9,7 @@ resource "aws_s3_bucket" "document_store" {
 
 }
 
-resource "aws_s3_bucket_policy" "allow_only_https_access_" {
+resource "aws_s3_bucket_policy" "document_store_bucket_policy" {
   bucket = aws_s3_bucket.document_store.id
   policy = jsonencode({
                   "Version": "2012-10-17",
@@ -232,6 +232,33 @@ resource "aws_s3_bucket" "test_document_store" {
       cors_rule
     ]
   }
+}
+
+resource "aws_s3_bucket_policy" "test_document_store_bucket_policy" {
+  bucket = aws_s3_bucket.test_document_store.id
+  policy = jsonencode({
+                  "Version": "2012-10-17",
+                      "Statement": [
+                          {
+                              "Principal": {
+                                  "AWS": "*"
+                              },
+                              "Action": [
+                                  "s3:*"
+                              ],
+                              "Resource": [
+                                  "${aws_s3_bucket.test_document_store.arn}/*",
+                                  "${aws_s3_bucket.test_document_store.arn}"
+                              ],
+                              "Effect": "Deny",
+                              "Condition": {
+                                  "Bool": {
+                                      "aws:SecureTransport": "false"
+                                  }
+                              }
+                          }
+                      ]
+                  })
 }
 
 resource "aws_s3_bucket_acl" "test_document_store_acl" {
