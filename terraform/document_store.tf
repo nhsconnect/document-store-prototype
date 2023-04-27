@@ -9,6 +9,33 @@ resource "aws_s3_bucket" "document_store" {
 
 }
 
+resource "aws_s3_bucket_policy" "allow_only_https_access_" {
+  bucket = aws_s3_bucket.document_store.id
+  policy = jsonencode({
+                  "Version": "2012-10-17",
+                      "Statement": [
+                          {
+                              "Principal": {
+                                  "AWS": "*"
+                              },
+                              "Action": [
+                                  "s3:*"
+                              ],
+                              "Resource": [
+                                  "${aws_s3_bucket.document_store.arn}/*",
+                                  "${aws_s3_bucket.document_store.arn}"
+                              ],
+                              "Effect": "Deny",
+                              "Condition": {
+                                  "Bool": {
+                                      "aws:SecureTransport": "false"
+                                  }
+                              }
+                          }
+                      ]
+                  })
+}
+
 resource "aws_s3_bucket_acl" "document_store_acl" {
   bucket = aws_s3_bucket.document_store.id
   acl    = "private"
