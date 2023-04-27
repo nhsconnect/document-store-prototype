@@ -87,7 +87,7 @@ resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
     NumMessagesInQueueScalingThreshold = 1
     AllowAccessToAllKmsKeys = "No"
   }
-  timeouts: { create = "60m" delete = "2h" }
+  timeouts { create = "60m" delete = "2h" }
   template_url = "https://css-cft.s3.amazonaws.com/ConsoleCloudFormationTemplate.yaml"
   capabilities = ["CAPABILITY_NAMED_IAM"]
 }
