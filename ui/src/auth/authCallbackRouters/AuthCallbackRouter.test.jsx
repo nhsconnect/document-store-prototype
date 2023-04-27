@@ -12,7 +12,7 @@ describe("AuthCallbackRouter", () => {
         window.location = oldWindowLocation;
     });
 
-    it.skip("navigates to the token request handler URl", () => {
+    it("navigates to the token request handler URl", () => {
         const codeAndStateQueryParams = "code=some-auth-code&state=some-state";
         const allQueryParams = `?${codeAndStateQueryParams}&client_id=some-client-id`;
         const baseUiUrl = "http://localhost:3000";
@@ -34,7 +34,7 @@ describe("AuthCallbackRouter", () => {
         expect(window.location.replace).toHaveBeenCalledWith(tokenRequestHandlerUrl);
     });
 
-    it.skip("returns a loading state until redirection to token request handler", () => {
+    it("returns a loading state until redirection to token request handler", () => {
         render(<AuthCallbackRouter />);
 
         expect(screen.getByRole("progressbar", { name: "Logging in..." })).toBeInTheDocument();
