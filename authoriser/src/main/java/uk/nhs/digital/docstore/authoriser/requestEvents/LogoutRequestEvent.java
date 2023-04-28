@@ -5,7 +5,18 @@ import com.nimbusds.oauth2.sdk.id.Subject;
 import java.util.*;
 
 public class LogoutRequestEvent extends APIGatewayProxyRequestEvent {
+
+    public LogoutRequestEvent() {
+        super();
+    }
+
+    public LogoutRequestEvent withHeaders(Map<String, String> headers) {
+        super.setHeaders(headers);
+        return this;
+    }
+
     private Optional<String> getCookie(String cookieName) {
+
 
         var headers = getHeaders();
 

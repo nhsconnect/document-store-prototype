@@ -7,14 +7,11 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.auth0.jwt.JWT;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.handlers.LogoutHandler;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
@@ -22,7 +19,6 @@ import uk.nhs.digital.docstore.authoriser.requestEvents.LogoutRequestEvent;
 import uk.nhs.digital.docstore.helpers.AWSServiceContainer;
 import uk.nhs.digital.docstore.helpers.DynamoDBHelper;
 
-import static com.auth0.jwt.algorithms.Algorithm.none;
 
 public class LogoutTest {
     @Mock private Context context;
@@ -48,8 +44,8 @@ public class LogoutTest {
         db.save(sessionTwo);
         var request = createRequestEvent(sessionIdToRemove, subjectToRemove);
 
-        var logoutHandler = new LogoutHandler();
-        var result = logoutHandler.handleRequest((LogoutRequestEvent) request, context);
+        var logoutHandler = new LogoutHandler(db);
+        /*var result =*/ logoutHandler.handleRequest(request, context);
 
         assert(db.load(subjectToRemove, UUID.fromString(sessionIdToRemove.getValue())).isEmpty());
     }
@@ -57,10 +53,10 @@ public class LogoutTest {
     @Test
     public void shouldRedirectToRequestedUrl() {}
 
-    private APIGatewayProxyRequestEvent createRequestEvent(SessionID sessionId, Subject subject) {
+    private LogoutRequestEvent createRequestEvent(SessionID sessionId, Subject subject) {
         HashMap<String, String> headers = new HashMap<>();
-        headers.put("cookie", "SessionId" + sessionId.getValue() + "; SubjectClaim" + subject.getValue());
+        headers.put("Cookie", "SessionId" + sessionId.getValue() + "; SubjectClaim" + subject.getValue());
 
-        return new APIGatewayProxyRequestEvent().withHeaders(headers);
+        return new LogoutRequestEvent().withHeaders(headers);
     }
 }
