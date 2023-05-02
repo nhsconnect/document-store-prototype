@@ -12,5 +12,5 @@ cis2_client_callback_urls    = []
 cis2_client_signout_urls     = []
 cognito_key_id               = "hkmsNYnD3kvYvyaOWcuqPT2K5lad8tT8mWZU1sF6n14="
 pds_fhir_is_stubbed          = "false"
-cloud_storage_security_agent_role_arn = "arn:aws:iam::694282683086:policy/CloudStorageSecAgentRole"
+cloud_storage_security_agent_role_arn = "arn:aws:iam::694282683086:role/CloudStorageSecAgentRole-d2ixsle"
 quarantine_bucket_name                = "cloudstoragesecquarantine-694282683086-eu-west-2"
