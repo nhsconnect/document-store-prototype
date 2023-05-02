@@ -77,7 +77,7 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       module.patient_details_collection_preflight,
       module.doc_ref_collection_preflight,
       module.document_manifest_preflight,
-      aws_api_gateway_authorizer.cognito_authorizer,
+      # aws_api_gateway_authorizer.cognito_authorizer,
       aws_api_gateway_authorizer.cis2_authoriser,
       aws_api_gateway_resource.doc_ref_collection_resource,
       aws_api_gateway_resource.patient_details_collection_resource,
