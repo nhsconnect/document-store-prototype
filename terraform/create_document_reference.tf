@@ -4,8 +4,8 @@ module "create_doc_ref_endpoint" {
   resource_id    = aws_api_gateway_resource.doc_ref_collection_resource.id
   lambda_arn     = aws_lambda_function.create_doc_ref_lambda.invoke_arn
   http_method    = "POST"
-  authorization  = var.enable_session_auth ? "CUSTOM" : "COGNITO_USER_POOLS" //TODO
-  authorizer_id  = var.enable_session_auth ? aws_api_gateway_authorizer.cis2_authoriser.id : aws_api_gateway_authorizer.cognito_authorizer.id  //TODO
+  authorization  = "CUSTOM" //TODO
+authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
 }
 
 module create_document_reference_alarms {
