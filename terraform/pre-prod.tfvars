@@ -1,13 +1,13 @@
 environment                  = "pre-prod"
 account_id                   = "694282683086"
-enable_session_auth          = false
-cognito_domain_prefix        = "pre-prod-"
-oidc_providers               = ["COGNITO"]
-cis2_provider_oidc_issuer    = "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_0UlxTpOj3"
-cis2_provider_authorize_url  = "https://pre-prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/authorize"
-cis2_provider_token_url      = "https://pre-prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/token"
-cis2_provider_attributes_url = "https://pre-prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/userInfo"
-cis2_provider_jwks_uri       = "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_0UlxTpOj3/.well-known/jwks.json"
+enable_session_auth                   = true
+# cognito_domain_prefix        = "pre-prod-"
+oidc_providers                        = ["cis2devoidc", "COGNITO"]
+cis2_provider_oidc_issuer             = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc"
+cis2_provider_authorize_url           = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/authorize"
+cis2_provider_token_url               = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/access_token"
+cis2_provider_attributes_url          = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/userinfo"
+cis2_provider_jwks_uri                = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/connect/jwk_uri"
 cis2_client_callback_urls    = []
 cis2_client_signout_urls     = []
 cognito_key_id               = "hkmsNYnD3kvYvyaOWcuqPT2K5lad8tT8mWZU1sF6n14="
