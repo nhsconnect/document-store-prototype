@@ -26,8 +26,6 @@ const oidcConfig = {
     automaticSilentRenew: false,
 };
 
-console.log("OIDC CONFIG: ", oidcConfig);
-
 const AuthProvider = ({ children }) => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
 
