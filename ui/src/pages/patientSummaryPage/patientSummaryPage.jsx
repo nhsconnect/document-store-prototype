@@ -1,8 +1,10 @@
-import { Button, Fieldset, Input } from "nhsuk-react-components";
+import { Button, Fieldset, Input, WarningCallout } from "nhsuk-react-components";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import BackButton from "../../components/backButton/BackButton";
+import PatientSummary from "../../components/patientSummary/PatientSummary";
 import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
@@ -15,7 +17,7 @@ const states = {
     FAILED: "failed",
 };
 
-export const PatientTracePage = () => {
+export const PatientTracePage = ({ nextPage }) => {
     const documentStore = useAuthorisedDocumentStore();
     const { register, handleSubmit } = useForm({ reValidateMode: "onSubmit" });
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
@@ -27,9 +29,9 @@ export const PatientTracePage = () => {
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const [statusCode, setStatusCode] = useState(null);
-    const setPatientDetails = usePatientDetailsContext()[1];
+    const [patientDetails, setPatientDetails] = usePatientDetailsContext();
     const [inputError, setInputError] = useState(null);
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
@@ -56,45 +58,34 @@ export const PatientTracePage = () => {
         setInputError("Enter patient's 10 digit NHS number");
     };
 
+    const onNextClicked = () => {
+        navigate(nextPage);
+    };
+
     return (
         <>
             <BackButton />
-                <>
-                    {submissionState === states.FAILED && (
-                        <>
-                            {statusCode >= 500 || !inputError ? (
-                                <ServiceError />
-                            ) : (
-                                <ErrorBox
-                                    messageTitle={"There is a problem"}
-                                    messageLinkBody={inputError}
-                                    errorInputLink={"#nhs-number-input"}
-                                    errorBoxSummaryId={"error-box-summary"}
-                                />
-                            )}
-                        </>
+            <h1>Verify patient details</h1>
+            {(patientDetails.superseded || patientDetails.restricted) && (
+                <WarningCallout>
+                    <WarningCallout.Label headingLevel="h2">Information</WarningCallout.Label>
+                    {patientDetails.superseded && <p>The NHS number for this patient has changed.</p>}
+                    {patientDetails.restricted && (
+                        <p>
+                            Certain details about this patient cannot be displayed without the necessary access.
+                        </p>
                     )}
-                    <form onSubmit={handleSubmit(doSubmit, onError)} noValidate>
-                        <Fieldset>
-                            <Fieldset.Legend headingLevel="h1" isPageHeading>
-                                Search for patient
-                            </Fieldset.Legend>
-                            <Input
-                                id="nhs-number-input"
-                                name="nhsNumber"
-                                label="Enter NHS number"
-                                hint="A 10-digit number, for example, 485 777 3456"
-                                error={submissionState !== states.SEARCHING && inputError}
-                                type="text"
-                                {...nhsNumberProps}
-                                inputRef={nhsNumberRef}
-                                readOnly={submissionState === states.SUCCEEDED || submissionState === states.SEARCHING}
-                            />
-                        </Fieldset>
-                        {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
-                        <Button type="submit">Search</Button>
-                    </form>
-                </>
+                </WarningCallout>
+            )}
+            <PatientSummary patientDetails={patientDetails} />
+            {nextPage?.includes("upload") && (
+                <p>
+                    Ensure these patient details match the electronic health records and attachments you are
+                    about to upload.
+                </p>
+            )}
+            <Button onClick={onNextClicked}>Next</Button>
         </>
     );
 };
+
