@@ -5,7 +5,7 @@ import { useBaseAPIUrl, useFeatureToggle } from "../../providers/configProvider/
 const StartPage = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
-
+    console.log("OIDC AUTH ACTIVE: ", isOIDCAuthActive);
     return (
         <>
             <h1>Inactive Patient Record Administration</h1>
