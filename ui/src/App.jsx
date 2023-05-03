@@ -13,14 +13,18 @@ import StartPage from "./pages/startPage/StartPage";
 import OIDCAuthCallbackRouter from "./auth/authCallbackRouters/OIDCAuthCallbackRouter";
 import AuthProvider from "./providers/authProvider/AuthProvider";
 import DeleteDocumentsPage from "./pages/deleteDocumentsPage/DeleteDocumentsPage";
-import ConfigProvider from "./providers/configProvider/ConfigProvider";
+import ConfigProvider, { useFeatureToggle } from "./providers/configProvider/ConfigProvider";
+import AuthCallbackRouter from "./auth/authCallbackRouters/AuthCallbackRouter";
 import AuthErrorPage from "./pages/authErrorPage/AuthErrorPage";
 import DocumentStoreProvider from "./providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "./enums/routes";
+import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
 import AuthSuccessRouter from "./auth/authSuccessRouter/AuthSuccessRouter";
 import SessionProvider from "./providers/sessionProvider/SessionProvider";
 
 const AppRoutes = () => {
+    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
+
     const {
         ROOT,
         AUTH_CALLBACK,
@@ -36,12 +40,21 @@ const AppRoutes = () => {
         SEARCH_RESULTS_DELETE,
     } = routes;
 
-    const ProtectedAuthRoutes = ({ children }) => <OidcAuthenticator.Protected>{children}</OidcAuthenticator.Protected>;
+    const ProtectedAuthRoutes = ({ children }) => {
+        return isOIDCAuthActive ? (
+            <OidcAuthenticator.Protected>{children}</OidcAuthenticator.Protected>
+        ) : (
+            <ProtectedRoutes>{children}</ProtectedRoutes>
+        );
+    };
 
     return (
         <Routes>
             <Route element={<StartPage />} path={ROOT} />
-            <Route element={<OIDCAuthCallbackRouter />} path={AUTH_CALLBACK} />
+            <Route
+                element={isOIDCAuthActive ? <OIDCAuthCallbackRouter /> : <AuthCallbackRouter />}
+                path={AUTH_CALLBACK}
+            />
             <Route element={<AuthSuccessRouter />} path={AUTH_SUCCESS} />
             <Route element={<AuthErrorPage />} path={AUTH_ERROR} />
             <Route
@@ -82,7 +95,10 @@ const AppRoutes = () => {
     );
 };
 
-const AuthenticatorErrors = () => <OidcAuthenticator.Errors />;
+const AuthenticatorErrors = () => {
+    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
+    return isOIDCAuthActive ? <OidcAuthenticator.Errors /> : null;
+};
 
 const App = () => {
     return (

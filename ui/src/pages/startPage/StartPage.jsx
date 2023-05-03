@@ -1,8 +1,9 @@
 import React from "react";
 import { ButtonLink } from "nhsuk-react-components";
-import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
+import { useBaseAPIUrl, useFeatureToggle } from "../../providers/configProvider/ConfigProvider";
 
 const StartPage = () => {
+    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
 
     return (
@@ -34,7 +35,7 @@ const StartPage = () => {
             </p>
             <h2>Before You Start</h2>
             <p>You can only use this service if you have a valid NHS smartcard.</p>
-            <ButtonLink href={`${baseAPIUrl}/Auth/Login`}>Start now</ButtonLink>
+            <ButtonLink href={isOIDCAuthActive ? "/home" : `${baseAPIUrl}/Auth/Login`}>Start now</ButtonLink>
         </>
     );
 };
