@@ -3,7 +3,6 @@ import { Button, Table, ErrorMessage, ErrorSummary } from "nhsuk-react-component
 import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import BackButton from "../../components/backButton/BackButton";
 import { downloadFile } from "../../utils/utils";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
 import ProgressBar from "../../components/progressBar/ProgressBar";
@@ -64,7 +63,6 @@ const SearchResultsPage = () => {
 
     return (
         <>
-            <BackButton />
             <h1>Download electronic health records and attachments</h1>
             {(submissionState === states.FAILED || downloadState === states.FAILED) && <ServiceError />}
             <PatientSummary patientDetails={patientDetails} />

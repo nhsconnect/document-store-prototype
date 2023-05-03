@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
-import BackButton from "../../components/backButton/BackButton";
 import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -47,7 +46,6 @@ const DeleteDocumentsPage = () => {
 
     return (
         <>
-            <BackButton />
             {submissionState === states.FAILED && (
                 <ServiceError message="There has been an issue deleting these records, please try again later." />
             )}
