@@ -1,13 +1,9 @@
 import React from "react";
 import { Header as HeaderComponent } from "nhsuk-react-components";
-import { useFeatureToggle } from "../../providers/configProvider/ConfigProvider";
-import NavLinks from "../../auth/navLinks/NavLinks";
 import OidcAuthenticator from "../../auth/oidcAuthenticator/OidcAuthenticator";
 import routes from "../../enums/routes";
 
 const Header = () => {
-    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
-
     return (
         <HeaderComponent transactional>
             <HeaderComponent.Container>
@@ -17,7 +13,7 @@ const Header = () => {
                 </HeaderComponent.ServiceName>
             </HeaderComponent.Container>
             <HeaderComponent.Nav>
-                {isOIDCAuthActive ? <OidcAuthenticator.NavLinks /> : <NavLinks />}
+                <OidcAuthenticator.NavLinks />
             </HeaderComponent.Nav>
         </HeaderComponent>
     );
