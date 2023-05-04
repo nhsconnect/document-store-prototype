@@ -5,21 +5,13 @@ import PatientDetailsProvider from "../../providers/patientDetailsProvider/Patie
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import { PatientSummaryPage } from "./patientSummaryPage";
-import { createContext } from "react";
 
 jest.mock("react-router");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
-jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider"),
-    () => ({
-        __esModule: true,
-        PatientDetailsContext: createContext(null),
-    });
 
 describe("<PatientSummaryPage/>", () => {
-    const getPatientDetailsMock = jest.fn();
-
     beforeEach(() => {
-        useAuthorisedDocumentStore.mockReturnValue({ getPatientDetails: getPatientDetailsMock });
+        useAuthorisedDocumentStore.mockReturnValue();
     });
 
     describe("render the page when patient details are found", () => {
@@ -73,7 +65,6 @@ describe("<PatientSummaryPage/>", () => {
                 </PatientDetailsProvider>
             );
 
-            userEvent.click(await screen.findByRole("button", { name: "Next" }));
             expect(await screen.findByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
             expect(
                 screen.queryByText(
