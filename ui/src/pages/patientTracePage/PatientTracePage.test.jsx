@@ -28,64 +28,6 @@ describe("<PatientTracePage/>", () => {
     });
 
     describe("patient details search", () => {
-        it("displays the patient details when their data is found", async () => {
-            const nhsNumber = "9000000000";
-            const familyName = "Smith";
-            const patientDetails = buildPatientDetails({ familyName, nhsNumber });
-            const patientDetailsResponse = { result: { patientDetails } };
-
-            getPatientDetailsMock.mockResolvedValue(patientDetailsResponse);
-
-            renderPatientTracePage();
-            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), nhsNumber);
-            userEvent.click(screen.getByRole("button", { name: "Search" }));
-
-            expect(await screen.findByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
-            expect(screen.getByText(familyName)).toBeInTheDocument();
-            expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
-        });
-
-        it("displays text specific to upload path if user has selected upload", async () => {
-            const nhsNumber = "9000000000";
-            const patientDetails = buildPatientDetails({ nhsNumber });
-            const patientDetailsResponse = { result: { patientDetails } };
-            const expectedNextPage = "upload";
-
-            getPatientDetailsMock.mockResolvedValue(patientDetailsResponse);
-            useNavigate.mockImplementation(() => jest.fn());
-
-            renderPatientTracePage({ nextPage: expectedNextPage });
-            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), nhsNumber);
-            userEvent.click(screen.getByRole("button", { name: "Search" }));
-            userEvent.click(await screen.findByRole("button", { name: "Next" }));
-
-            expect(
-                screen.getByText(
-                    "Ensure these patient details match the electronic health records and attachments you are about to upload."
-                )
-            );
-        });
-
-        it("doesn't display text specific to upload path if user has selected download", async () => {
-            const nhsNumber = "9000000000";
-            const patientDetailsResponse = { result: { patientDetails: buildPatientDetails({ nhsNumber }) } };
-            const expectedNextPage = "download";
-
-            useNavigate.mockImplementation(() => jest.fn());
-            getPatientDetailsMock.mockResolvedValue(patientDetailsResponse);
-
-            renderPatientTracePage({ nextPage: expectedNextPage });
-            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), nhsNumber);
-            userEvent.click(screen.getByRole("button", { name: "Search" }));
-            userEvent.click(await screen.findByRole("button", { name: "Next" }));
-
-            expect(
-                screen.queryByText(
-                    "Ensure these patient details match the electronic health records and attachments you are about to upload."
-                )
-            ).not.toBeInTheDocument();
-        });
-
         it("displays a loading spinner when the patients details are being requested", async () => {
             getPatientDetailsMock.mockResolvedValue([]);
 
@@ -97,21 +39,6 @@ describe("<PatientTracePage/>", () => {
                 expect(screen.getByRole("progressbar")).toBeInTheDocument();
             });
             expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-        });
-
-        it("displays a message when NHS number is superseded", async () => {
-            const nhsNumber = "9000000000";
-            const supersededNhsNumber = "9000000012";
-            const patientDetails = buildPatientDetails({ superseded: true, nhsNumber });
-            const patientDetailsResponse = { result: { patientDetails } };
-
-            getPatientDetailsMock.mockResolvedValue(patientDetailsResponse);
-
-            renderPatientTracePage();
-            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), supersededNhsNumber);
-            userEvent.click(screen.getByRole("button", { name: "Search" }));
-
-            expect(await screen.findByText("The NHS number for this patient has changed."));
         });
 
         it("displays a message when no patient details are found", async () => {
@@ -168,26 +95,6 @@ describe("<PatientTracePage/>", () => {
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
             expect(await screen.findAllByText("Enter a valid patient NHS number")).toHaveLength(2);
         });
-
-        it("displays a message when patient is sensitive", async () => {
-            const nhsNumber = "9124038456";
-            const restrictedPatientDetails = {
-                result: { patientDetails: buildPatientDetails({ nhsNumber, postalCode: null, restricted: true }) },
-            };
-
-            getPatientDetailsMock.mockResolvedValue(restrictedPatientDetails);
-
-            renderPatientTracePage();
-
-            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), nhsNumber);
-            userEvent.click(screen.getByRole("button", { name: "Search" }));
-
-            expect(
-                await screen.findByText(
-                    "Certain details about this patient cannot be displayed without the necessary access."
-                )
-            ).toBeInTheDocument();
-        });
     });
 
     describe("navigation", () => {
@@ -204,9 +111,9 @@ describe("<PatientTracePage/>", () => {
             renderPatientTracePage({ nextPage: expectedNextPage });
             userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), nhsNumber);
             userEvent.click(screen.getByRole("button", { name: "Search" }));
-            userEvent.click(await screen.findByRole("button", { name: "Next" }));
-
-            expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+            });
         });
     });
 
