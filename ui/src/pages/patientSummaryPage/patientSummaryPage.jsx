@@ -21,7 +21,7 @@ export const PatientSummaryPage = ({ nextPage }) => {
     return (
         <>
             <BackButton />
-            <h1>Verify patient details</h1>
+            <h1 role="heading">Verify patient details</h1>
             {patientDetails && (patientDetails.superseded || patientDetails.restricted) && (
                 <WarningCallout>
                     <WarningCallout.Label headingLevel="h2">Information</WarningCallout.Label>

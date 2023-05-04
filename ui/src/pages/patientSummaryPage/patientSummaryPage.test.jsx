@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useNavigate } from "react-router";
 import PatientDetailsProvider from "../../providers/patientDetailsProvider/PatientDetailsProvider";
@@ -14,19 +14,17 @@ describe("<PatientSummaryPage/>", () => {
         useAuthorisedDocumentStore.mockReturnValue();
     });
 
-    xdescribe("render the page when patient details are found", () => {
+    describe("render the page when patient details are found", () => {
         it("renders the patient details page when patient data is found", async () => {
             const nhsNumber = "9000000000";
             const familyName = "Smith";
             const patientDetails = buildPatientDetails({ familyName, nhsNumber });
 
             useNavigate.mockImplementation(() => jest.fn());
-            render(
-                <PatientDetailsProvider value={patientDetails}>
-                    <PatientSummaryPage />
-                </PatientDetailsProvider>
-            );
-            expect(await screen.findByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
+
+            renderPatientSummaryPage(null, patientDetails);
+
+            expect(screen.getByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
             expect(screen.getByText(familyName)).toBeInTheDocument();
             expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
         });
@@ -37,16 +35,11 @@ describe("<PatientSummaryPage/>", () => {
             const expectedNextPage = "upload";
 
             useNavigate.mockImplementation(() => jest.fn());
-            render(
-                <PatientDetailsProvider value={patientDetails}>
-                    <PatientSummaryPage nextPage={expectedNextPage} />
-                </PatientDetailsProvider>
-            );
+            renderPatientSummaryPage({ expectedNextPage }, patientDetails);
 
-            userEvent.click(await screen.findByRole("button", { name: "Next" }));
-            expect(await screen.findByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
+            expect(screen.getByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
             expect(
-                screen.getByText(
+                screen.queryByText(
                     "Ensure these patient details match the electronic health records and attachments you are about to upload."
                 )
             );
@@ -56,16 +49,11 @@ describe("<PatientSummaryPage/>", () => {
             const nhsNumber = "9000000000";
             const patientDetails = buildPatientDetails({ nhsNumber });
             const expectedNextPage = "download";
-
             useNavigate.mockImplementation(() => jest.fn());
 
-            render(
-                <PatientDetailsProvider value={patientDetails}>
-                    <PatientSummaryPage nextPage={expectedNextPage} />
-                </PatientDetailsProvider>
-            );
+            renderPatientSummaryPage({ expectedNextPage }, patientDetails);
 
-            expect(await screen.findByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
+            expect(screen.getByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
             expect(
                 screen.queryByText(
                     "Ensure these patient details match the electronic health records and attachments you are about to upload."
@@ -79,29 +67,19 @@ describe("<PatientSummaryPage/>", () => {
 
             useNavigate.mockImplementation(() => jest.fn());
 
-            render(
-                <PatientDetailsProvider value={patientDetails}>
-                    <PatientSummaryPage />
-                </PatientDetailsProvider>
-            );
+            renderPatientSummaryPage(null, patientDetails);
 
-            expect(await screen.findByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
+            expect(screen.getByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
             expect(screen.findByText("The NHS number for this patient has changed."));
         });
 
         it("displays a message when patient is sensitive", async () => {
             const nhsNumber = "9124038456";
-            const restrictedPatientDetails = {
-                result: { patientDetails: buildPatientDetails({ nhsNumber, postalCode: null, restricted: true }) },
-            };
+            const patientDetails = buildPatientDetails({ nhsNumber, postalCode: null, restricted: true });
 
-            render(
-                <PatientDetailsProvider value={restrictedPatientDetails}>
-                    <PatientSummaryPage />
-                </PatientDetailsProvider>
-            );
+            renderPatientSummaryPage(null, patientDetails);
 
-            expect(await screen.findByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
+            expect(screen.getByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
             expect(
                 screen.findByText(
                     "Certain details about this patient cannot be displayed without the necessary access."
@@ -124,9 +102,10 @@ describe("<PatientSummaryPage/>", () => {
                     <PatientSummaryPage nextPage={expectedNextPage} />
                 </PatientDetailsProvider>
             );
-            userEvent.click(await screen.findByRole("button", { name: "Next" }));
-
-            expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+            userEvent.click(await screen.getByRole("button", { name: "Next" }));
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+            });
         });
 
         it("navigates to home page when no patient details found", async () => {
@@ -140,8 +119,22 @@ describe("<PatientSummaryPage/>", () => {
                     <PatientSummaryPage />
                 </PatientDetailsProvider>
             );
-
-            expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+            });
         });
     });
 });
+
+const renderPatientSummaryPage = (propsOverride, context) => {
+    const props = {
+        expectedNextPage: "download",
+        ...propsOverride,
+    };
+
+    render(
+        <PatientDetailsProvider value={context}>
+            <PatientSummaryPage {...props} />
+        </PatientDetailsProvider>
+    );
+};
