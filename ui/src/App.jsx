@@ -21,6 +21,7 @@ import routes from "./enums/routes";
 import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
 import AuthSuccessRouter from "./auth/authSuccessRouter/AuthSuccessRouter";
 import SessionProvider from "./providers/sessionProvider/SessionProvider";
+import { PatientSummaryPage } from "./pages/patientSummaryPage/patientSummaryPage";
 
 const AppRoutes = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
@@ -33,6 +34,7 @@ const AppRoutes = () => {
         HOME,
         UPLOAD,
         UPLOAD_SEARCH_PATIENT,
+        UPLOAD_SEARCH_PATIENT_RESULT,
         UPLOAD_SUBMIT,
         SEARCH,
         SEARCH_PATIENT,
@@ -87,7 +89,12 @@ const AppRoutes = () => {
                         </PatientDetailsProvider>
                     }
                 >
-                    <Route path={UPLOAD_SEARCH_PATIENT} element={<PatientTracePage nextPage={UPLOAD_SUBMIT} />} />
+                    <Route
+                        path={UPLOAD_SEARCH_PATIENT}
+                        element={<PatientTracePage nextPage={UPLOAD_SEARCH_PATIENT_RESULT} />}
+                    />
+                    <Route path={UPLOAD_SEARCH_PATIENT} element={<PatientSummaryPage nextPage={UPLOAD_SUBMIT} />} />
+
                     <Route path={UPLOAD_SUBMIT} element={<UploadDocumentsPage nextPagePath={HOME} />} />
                 </Route>
             </Route>

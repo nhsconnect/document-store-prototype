@@ -7,6 +7,7 @@ import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import ErrorBox from "../../components/errorBox/ErrorBox";
+import { useNavigate } from "react-router";
 
 const states = {
     IDLE: "idle",
@@ -15,7 +16,7 @@ const states = {
     FAILED: "failed",
 };
 
-export const PatientTracePage = () => {
+export const PatientTracePage = ({ nextPage }) => {
     const documentStore = useAuthorisedDocumentStore();
     const { register, handleSubmit } = useForm({ reValidateMode: "onSubmit" });
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
@@ -29,7 +30,7 @@ export const PatientTracePage = () => {
     const [statusCode, setStatusCode] = useState(null);
     const setPatientDetails = usePatientDetailsContext()[1];
     const [inputError, setInputError] = useState(null);
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
@@ -39,6 +40,7 @@ export const PatientTracePage = () => {
             const response = await documentStore.getPatientDetails(data.nhsNumber);
             setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
+            navigate(nextPage);
         } catch (e) {
             if (e.response?.status) {
                 setStatusCode(e.response?.status);
@@ -59,42 +61,42 @@ export const PatientTracePage = () => {
     return (
         <>
             <BackButton />
-                <>
-                    {submissionState === states.FAILED && (
-                        <>
-                            {statusCode >= 500 || !inputError ? (
-                                <ServiceError />
-                            ) : (
-                                <ErrorBox
-                                    messageTitle={"There is a problem"}
-                                    messageLinkBody={inputError}
-                                    errorInputLink={"#nhs-number-input"}
-                                    errorBoxSummaryId={"error-box-summary"}
-                                />
-                            )}
-                        </>
-                    )}
-                    <form onSubmit={handleSubmit(doSubmit, onError)} noValidate>
-                        <Fieldset>
-                            <Fieldset.Legend headingLevel="h1" isPageHeading>
-                                Search for patient
-                            </Fieldset.Legend>
-                            <Input
-                                id="nhs-number-input"
-                                name="nhsNumber"
-                                label="Enter NHS number"
-                                hint="A 10-digit number, for example, 485 777 3456"
-                                error={submissionState !== states.SEARCHING && inputError}
-                                type="text"
-                                {...nhsNumberProps}
-                                inputRef={nhsNumberRef}
-                                readOnly={submissionState === states.SUCCEEDED || submissionState === states.SEARCHING}
+            <>
+                {submissionState === states.FAILED && (
+                    <>
+                        {statusCode >= 500 || !inputError ? (
+                            <ServiceError />
+                        ) : (
+                            <ErrorBox
+                                messageTitle={"There is a problem"}
+                                messageLinkBody={inputError}
+                                errorInputLink={"#nhs-number-input"}
+                                errorBoxSummaryId={"error-box-summary"}
                             />
-                        </Fieldset>
-                        {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
-                        <Button type="submit">Search</Button>
-                    </form>
-                </>
+                        )}
+                    </>
+                )}
+                <form onSubmit={handleSubmit(doSubmit, onError)} noValidate>
+                    <Fieldset>
+                        <Fieldset.Legend headingLevel="h1" isPageHeading>
+                            Search for patient
+                        </Fieldset.Legend>
+                        <Input
+                            id="nhs-number-input"
+                            name="nhsNumber"
+                            label="Enter NHS number"
+                            hint="A 10-digit number, for example, 485 777 3456"
+                            error={submissionState !== states.SEARCHING && inputError}
+                            type="text"
+                            {...nhsNumberProps}
+                            inputRef={nhsNumberRef}
+                            readOnly={submissionState === states.SUCCEEDED || submissionState === states.SEARCHING}
+                        />
+                    </Fieldset>
+                    {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
+                    <Button type="submit">Search</Button>
+                </form>
+            </>
         </>
     );
 };
