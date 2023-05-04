@@ -38,6 +38,7 @@ const AppRoutes = () => {
         UPLOAD_SUBMIT,
         SEARCH,
         SEARCH_PATIENT,
+        SEARCH_PATIENT_RESULT,
         SEARCH_RESULTS,
         SEARCH_RESULTS_DELETE,
     } = routes;
@@ -77,7 +78,9 @@ const AppRoutes = () => {
                         </PatientDetailsProvider>
                     }
                 >
-                    <Route path={SEARCH_PATIENT} element={<PatientTracePage nextPage={SEARCH_RESULTS} />} />
+                    <Route path={SEARCH_PATIENT} element={<PatientTracePage nextPage={SEARCH_PATIENT_RESULT} />} />
+                    <Route path={SEARCH_PATIENT_RESULT} element={<PatientSummaryPage nextPage={SEARCH_RESULTS} />} />
+
                     <Route path={SEARCH_RESULTS} element={<SearchResultsPage />} />
                     <Route path={SEARCH_RESULTS_DELETE} element={<DeleteDocumentsPage />} />
                 </Route>
@@ -93,7 +96,7 @@ const AppRoutes = () => {
                         path={UPLOAD_SEARCH_PATIENT}
                         element={<PatientTracePage nextPage={UPLOAD_SEARCH_PATIENT_RESULT} />}
                     />
-                    <Route path={UPLOAD_SEARCH_PATIENT} element={<PatientSummaryPage nextPage={UPLOAD_SUBMIT} />} />
+                    <Route path={UPLOAD_SEARCH_PATIENT_RESULT} element={<PatientSummaryPage nextPage={UPLOAD_SUBMIT} />} />
 
                     <Route path={UPLOAD_SUBMIT} element={<UploadDocumentsPage nextPagePath={HOME} />} />
                 </Route>

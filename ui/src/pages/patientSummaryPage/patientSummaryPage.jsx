@@ -22,7 +22,7 @@ export const PatientSummaryPage = ({ nextPage }) => {
         <>
             <BackButton />
             <h1>Verify patient details</h1>
-            {(patientDetails.superseded || patientDetails.restricted) && (
+            {patientDetails && (patientDetails.superseded || patientDetails.restricted) && (
                 <WarningCallout>
                     <WarningCallout.Label headingLevel="h2">Information</WarningCallout.Label>
                     {patientDetails.superseded && <p>The NHS number for this patient has changed.</p>}

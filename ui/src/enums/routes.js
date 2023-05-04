@@ -10,6 +10,7 @@ export const routes = Object.freeze({
     UPLOAD_SUBMIT: "/upload/submit",
     SEARCH: "/search",
     SEARCH_PATIENT: "/search/patient",
+    SEARCH_PATIENT_RESULT: "/search/patient/result",
     SEARCH_RESULTS: "/search/results",
     SEARCH_RESULTS_DELETE: "/search/results/delete",
 });
