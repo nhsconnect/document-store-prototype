@@ -2,8 +2,8 @@ import { createContext, useContext, useState } from "react";
 
 const PatientDetailsContext = createContext(null);
 
-const PatientDetailsProvider = ({ children }) => {
-    const patientDetails = useState();
+const PatientDetailsProvider = ({ children, value = null }) => {
+    const patientDetails = useState(value);
 
     return <PatientDetailsContext.Provider value={patientDetails}>{children}</PatientDetailsContext.Provider>;
 };

@@ -28,7 +28,6 @@ describe("<PatientTracePage/>", () => {
     });
 
     describe("patient details search", () => {
-
         it("displays a loading spinner when the patients details are being requested", async () => {
             getPatientDetailsMock.mockResolvedValue([]);
 
@@ -96,7 +95,6 @@ describe("<PatientTracePage/>", () => {
             expect(await screen.findByText("There is a problem")).toBeInTheDocument();
             expect(await screen.findAllByText("Enter a valid patient NHS number")).toHaveLength(2);
         });
-
     });
 
     describe("navigation", () => {
@@ -112,7 +110,7 @@ describe("<PatientTracePage/>", () => {
 
             renderPatientTracePage({ nextPage: expectedNextPage });
             userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), nhsNumber);
-            userEvent.click(screen.getByRole("button", { name: "Search" }))
+            userEvent.click(screen.getByRole("button", { name: "Search" }));
             await waitFor(() => {
                 expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
             });

@@ -96,7 +96,10 @@ const AppRoutes = () => {
                         path={UPLOAD_SEARCH_PATIENT}
                         element={<PatientTracePage nextPage={UPLOAD_SEARCH_PATIENT_RESULT} />}
                     />
-                    <Route path={UPLOAD_SEARCH_PATIENT_RESULT} element={<PatientSummaryPage nextPage={UPLOAD_SUBMIT} />} />
+                    <Route
+                        path={UPLOAD_SEARCH_PATIENT_RESULT}
+                        element={<PatientSummaryPage nextPage={UPLOAD_SUBMIT} />}
+                    />
 
                     <Route path={UPLOAD_SUBMIT} element={<UploadDocumentsPage nextPagePath={HOME} />} />
                 </Route>
