@@ -9,12 +9,12 @@ import { PatientSummaryPage } from "./patientSummaryPage";
 jest.mock("react-router");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
 
-xdescribe("<PatientSummaryPage/>", () => {
+describe("<PatientSummaryPage/>", () => {
     beforeEach(() => {
         useAuthorisedDocumentStore.mockReturnValue();
     });
 
-    describe("render the page when patient details are found", () => {
+    xdescribe("render the page when patient details are found", () => {
         it("renders the patient details page when patient data is found", async () => {
             const nhsNumber = "9000000000";
             const familyName = "Smith";
