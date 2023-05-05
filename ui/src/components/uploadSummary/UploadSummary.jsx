@@ -99,6 +99,10 @@ const UploadSummary = ({ patientDetails, documents }) => {
                         When you have finished uploading, and the patient is deducted from your practice, delete all
                         temporary files created for upload on your computer
                     </li>
+                    <li>
+                        If you have accidentally uploaded incorrect documents, please contact Primary Care Support
+                        England (PSCE)
+                    </li>
                 </ul>
             </WarningCallout>
         </section>
