@@ -222,7 +222,7 @@ pipelines:
           environment_variables:
             ENVIRONMENT: pre-prod
             NHS_CIS2_ENVIRONMENT: development
-            OIDC_PROVIDER_ID: "COGNITO"
+            OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
@@ -230,7 +230,7 @@ pipelines:
           environment_variables:
             ENVIRONMENT: pre-prod
             NHS_CIS2_ENVIRONMENT: development
-            OIDC_PROVIDER_ID: "COGNITO"
+            OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
           jobs:
             e2e-test: *e2e_test
