@@ -90,8 +90,10 @@ public class CreateDocumentReferenceHandler
         try {
             var inputDocumentReference =
                     jsonParser.parseResource(NHSDocumentReference.class, input.getBody());
-            LOGGER.debug("Input document reference desc: " + inputDocumentReference.getDescription());
-            LOGGER.debug("Input document reference  filename: " + inputDocumentReference.getFileName());
+            LOGGER.debug(
+                    "Input document reference desc: " + inputDocumentReference.getDescription());
+            LOGGER.debug(
+                    "Input document reference  filename: " + inputDocumentReference.getFileName());
             requestValidator.validate(inputDocumentReference);
 
             var document = inputDocumentReference.parse();
