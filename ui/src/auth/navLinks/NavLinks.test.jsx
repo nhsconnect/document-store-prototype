@@ -33,7 +33,7 @@ describe("NavLinks", () => {
         render(<NavLinks />);
 
         expect(useBaseAPIUrl).toHaveBeenCalledWith("doc-store-api");
-        expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", routes.HOME);
+        expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", routes.ROOT);
         expect(screen.getByRole("link", { name: "Log Out" })).toHaveAttribute("href", logoutHandlerUrl);
     });
 

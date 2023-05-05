@@ -36,7 +36,7 @@ const NavLinks = () => {
 
     return isAuthenticated ? (
         <>
-            <Header.NavItem href={routes.HOME}>Home</Header.NavItem>
+            <Header.NavItem href={routes.ROOT}>Home</Header.NavItem>
             <Header.NavItem href={routes.ROOT} onClick={logout}>
                 Log Out
             </Header.NavItem>

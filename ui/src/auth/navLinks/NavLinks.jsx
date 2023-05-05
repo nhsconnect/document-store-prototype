@@ -19,7 +19,7 @@ const NavLinks = () => {
 
     return isLoggedIn ? (
         <>
-            <Header.NavItem href={routes.HOME}>Home</Header.NavItem>
+            <Header.NavItem href={routes.ROOT}>Home</Header.NavItem>
             <Header.NavItem href={logoutUrl} onClick={handleLogOut}>
                 Log Out
             </Header.NavItem>

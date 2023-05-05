@@ -174,7 +174,7 @@ describe("OidcAuthenticator", () => {
 
             renderWithRouter(<OidcAuthenticator.NavLinks />);
 
-            expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", routes.HOME);
+            expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("href", routes.ROOT);
             expect(screen.getByRole("link", { name: "Log Out" })).toHaveAttribute("href", routes.ROOT);
         });
 
