@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.NHSDocumentReference;
 import uk.nhs.digital.docstore.exceptions.InvalidCodingCodeException;
+import uk.nhs.digital.docstore.exceptions.InvalidFileTypeException;
 import uk.nhs.digital.docstore.exceptions.MissingRequiredValueException;
 import uk.nhs.digital.docstore.exceptions.UnrecognisedCodingSystemException;
 import uk.nhs.digital.docstore.helpers.TestHelpers;
@@ -100,6 +101,18 @@ public class CreateDocumentReferenceRequestValidatorTest {
                 jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
         assertThatThrownBy(() -> validator.validate(inputDocumentReference))
                 .isExactlyInstanceOf(MissingRequiredValueException.class);
+    }
+
+    @Test
+    void throwsAnExceptionIfTheFileExtensionInTheDocumentReferenceIsInvalid() throws IOException {
+        String validRequestJson =
+                testHelpers.getContentFromResource(
+                        "create/create-document-reference-request-invalid-file.json");
+        var jsonParser = fhirContext.newJsonParser();
+        var inputDocumentReference =
+                jsonParser.parseResource(NHSDocumentReference.class, validRequestJson);
+        assertThatThrownBy(() -> validator.validate(inputDocumentReference))
+                .isExactlyInstanceOf(InvalidFileTypeException.class);
     }
 
     @Test
