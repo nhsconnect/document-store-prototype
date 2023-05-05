@@ -10,7 +10,6 @@ describe("<HomePage />", () => {
     it("renders the page", () => {
         render(<HomePage />);
 
-        expect(screen.getByText("Back")).toBeInTheDocument();
         const form = within(screen.getByRole("group", { name: "How do you want to use the service?" }));
         expect(form.getByRole("heading", { name: "How do you want to use the service?" })).toBeInTheDocument();
         expect(form.getByText("Select an option")).toBeInTheDocument();

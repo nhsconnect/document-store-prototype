@@ -2,7 +2,6 @@ import React from "react";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import BackButton from "../../components/backButton/BackButton";
 import routes from "../../enums/routes";
 
 const HomePage = () => {
@@ -21,7 +20,6 @@ const HomePage = () => {
 
     return (
         <>
-            <BackButton />
             <form onSubmit={handleSubmit(submit)}>
                 <Fieldset>
                     <Fieldset.Legend headingLevel="h1" isPageHeading>
