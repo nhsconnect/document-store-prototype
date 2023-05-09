@@ -78,7 +78,7 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                         },
                     ],
                     description: document.name,
-                    created: "2021-07-11T16:57:30+01:00",
+                    created: new Date().toISOString(),
                 };
 
                 onUploadStateChange(documentUploadStates.UPLOADING, 0);
