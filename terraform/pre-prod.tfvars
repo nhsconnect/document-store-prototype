@@ -1,7 +1,6 @@
 environment                  = "pre-prod"
 account_id                   = "694282683086"
 enable_session_auth                   = true
-# cognito_domain_prefix        = "pre-prod-"
 oidc_providers                        = ["cis2devoidc"]
 cis2_provider_oidc_issuer             = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc"
 cis2_provider_authorize_url           = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/authorize"

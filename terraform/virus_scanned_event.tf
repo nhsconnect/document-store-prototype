@@ -22,14 +22,12 @@ resource "aws_lambda_function" "virus_scanned_event_lambda" {
 
 data "aws_ssm_parameter" "virus_scan_notifications_sns_topic_arn" {
   name = "/prs/${var.environment}/virus-scan-notifications-sns-topic-arn"
-  count = var.environment == "dev" ? 1 : 0
 }
 
 resource "aws_sns_topic_subscription" "virus_scanned_lambda_topic_subscription" {
   endpoint  = aws_lambda_function.virus_scanned_event_lambda.arn
   protocol  = "lambda"
   topic_arn = data.aws_ssm_parameter.virus_scan_notifications_sns_topic_arn[0].value
-  count = var.environment == "dev" ? 1 : 0
 }
 
 resource "aws_lambda_permission" "sns_permission_for_virus_scan_event" {
@@ -38,7 +36,6 @@ resource "aws_lambda_permission" "sns_permission_for_virus_scan_event" {
   function_name = aws_lambda_function.virus_scanned_event_lambda.arn
   principal     = "sns.amazonaws.com"
   source_arn    = data.aws_ssm_parameter.virus_scan_notifications_sns_topic_arn[0].value
-  count         = var.environment == "dev" ? 1 : 0
 }
 
 module virus_scanner_alarms {
