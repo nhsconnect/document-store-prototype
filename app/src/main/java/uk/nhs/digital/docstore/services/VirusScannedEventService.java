@@ -66,8 +66,9 @@ public class VirusScannedEventService {
                                 location.getPath()));
             }
             LOGGER.info(
-                    "Updating DocumentReference {} to uploaded and adding virusScan result",
-                    metadata.getId());
+                    "Updating DocumentReference {} to uploaded and adding virusScan result as {}",
+                    metadata.getId(),
+                    scanResult);
             metadataStore.save(metadata);
             var document = metadataSerialiser.toDocumentModel(metadata);
             sensitiveIndex.publish(
