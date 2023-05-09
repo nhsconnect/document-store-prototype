@@ -237,7 +237,6 @@ _deploy-to-localstack)
 tf_plan)
   assume_ci_role
   tf_init
-  terraform force-unlock -force f87db490-4e43-16a0-d2fc-32d4a4ec5c04
   terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" \
     -var cis2_provider_client_id=$(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id) \
     -var cis2_provider_client_secret=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \
