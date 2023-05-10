@@ -27,8 +27,8 @@ public class DocumentMetadataBuilder {
     private final String type = "SNOMED";
     private final String virusScanResult;
     private static final Logger LOGGER =
-        LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
-    
+            LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
+
     public static DocumentMetadataBuilder theMetadata() throws IllFormedPatientDetailsException {
         var nhsNumber = randomNumeric(10);
         var location = String.format("s3://%s/%s", randomAlphabetic(6), randomAlphabetic(10));

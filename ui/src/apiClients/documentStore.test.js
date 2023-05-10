@@ -111,7 +111,7 @@ describe("documentStore", () => {
                 created: "2021-07-11T15:57:30.000Z",
             };
 
-            Date.now = jest.fn(() => new Date("2021-07-11T15:57:30.000Z").valueOf())
+            Date.now = jest.fn(() => new Date("2021-07-11T15:57:30.000Z").valueOf());
 
             const put = jest.fn(async (s3url, document, { onUploadProgress }) => {
                 return new Promise((resolve) => {
@@ -132,7 +132,6 @@ describe("documentStore", () => {
             const { result } = renderHook(() => useDocumentStore());
             await result.current.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
 
-
             expect(post).toHaveBeenCalledWith("/DocumentReference", expect.objectContaining(requestBody));
             expect(put).toHaveBeenCalledWith(
                 metadataResponseBody.content[0].attachment.url,
@@ -148,7 +147,7 @@ describe("documentStore", () => {
             const post = jest.fn(() => {
                 throw new Error("Request failed");
             });
-            Date.now = jest.fn(() => new Date("2021-07-11T15:57:30.000Z").valueOf())
+            Date.now = jest.fn(() => new Date("2021-07-11T15:57:30.000Z").valueOf());
             useDocumentStoreClient.mockImplementation(() => ({ post }));
 
             const fileName = "hello.txt";
@@ -177,7 +176,7 @@ describe("documentStore", () => {
                     },
                 ],
             };
-            Date.now = jest.fn(() => new Date("2021-07-11T15:57:30.000Z").valueOf())
+            Date.now = jest.fn(() => new Date("2021-07-11T15:57:30.000Z").valueOf());
             const post = jest.fn(() => {
                 return { data: metadataResponseBody };
             });

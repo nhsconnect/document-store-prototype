@@ -23,7 +23,7 @@ import uk.nhs.digital.docstore.model.Document;
 public class BundleMapper {
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
     private static final Logger LOGGER =
-        LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
+            LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
 
     public Bundle toBundle(List<Document> documents) throws IllFormedPatientDetailsException {
         var entries = new ArrayList<BundleEntryComponent>();
