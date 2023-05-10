@@ -138,6 +138,7 @@ public class CreateDocumentReferenceHandler
                             .setId(savedDocument.getReferenceId());
 
             var resourceAsJson = jsonParser.encodeResourceToString(resource);
+            LOGGER.debug("savedDoc - is uploaded" + savedDocument.isUploaded());
 
             LOGGER.debug("Processing finished - about to return the response");
             return apiConfig.getApiGatewayResponse(
