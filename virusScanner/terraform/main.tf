@@ -22,7 +22,7 @@ resource "aws_vpc" "virus_scanning_vpc" {
 resource "aws_subnet" "virus_scanning_subnet1" {
   availability_zone = "eu-west-2a"
   vpc_id = aws_vpc.virus_scanning_vpc.id
-  cidr_block = "0.0.0.0/0"
+  cidr_block = "10.0.1.0/24"
 
   tags = {
     Name = "Virus scanning subnet for eu-west-2a"
