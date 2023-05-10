@@ -113,7 +113,8 @@ public class DocumentMetadataBuilder {
     }
 
     public DocumentMetadataBuilder withDocumentUploaded(Boolean uploaded) {
-        //TODO: INVESTIGATE WHERE THIS CONSTRUCTORS ARE USED, DO WE NEED THEM TO INSTANTIATE THE VALUES WE NEED WHEN CREATE DOC HAPPENS
+        // TODO: INVESTIGATE WHERE THIS CONSTRUCTORS ARE USED, DO WE NEED THEM TO INSTANTIATE THE
+        // VALUES WE NEED WHEN CREATE DOC HAPPENS
         LOGGER.debug("////ISUPLOADED////", uploaded);
         var indexedAt = uploaded ? Instant.now().toString() : null;
         return new DocumentMetadataBuilder(
@@ -144,7 +145,8 @@ public class DocumentMetadataBuilder {
     }
 
     public DocumentMetadataBuilder withIndexed(String indexed) {
-        //TODO: INVESTIGATE WHERE THIS CONSTRUCTORS ARE USED, DO WE NEED THEM TO INSTANTIATE THE VALUES WE NEED WHEN CREATE DOC HAPPENS
+        // TODO: INVESTIGATE WHERE THIS CONSTRUCTORS ARE USED, DO WE NEED THEM TO INSTANTIATE THE
+        // VALUES WE NEED WHEN CREATE DOC HAPPENS
         return new DocumentMetadataBuilder(
                 id,
                 nhsNumber,
