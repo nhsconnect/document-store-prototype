@@ -148,7 +148,7 @@ describe("documentStore", () => {
             const post = jest.fn(() => {
                 throw new Error("Request failed");
             });
-
+            Date.now = jest.fn(() => new Date("2021-07-11T15:57:30.000Z").valueOf())
             useDocumentStoreClient.mockImplementation(() => ({ post }));
 
             const fileName = "hello.txt";
@@ -177,6 +177,7 @@ describe("documentStore", () => {
                     },
                 ],
             };
+            Date.now = jest.fn(() => new Date("2021-07-11T15:57:30.000Z").valueOf())
             const post = jest.fn(() => {
                 return { data: metadataResponseBody };
             });
