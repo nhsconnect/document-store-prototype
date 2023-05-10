@@ -58,7 +58,7 @@ public class BundleMapper {
                                         .collect(toList()));
         var isUploaded = document.isUploaded();
 
-        LOGGER.debug("///ISUPLOADED///", isUploaded);
+        LOGGER.debug("///ISUPLOADED/// = " + (isUploaded ? "true" : "false"));
         return (DocumentReference)
                 new NHSDocumentReference()
                         .setCreated(new DateTimeType(document.getCreated().toString()))
