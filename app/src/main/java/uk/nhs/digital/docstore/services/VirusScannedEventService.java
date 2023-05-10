@@ -55,7 +55,9 @@ public class VirusScannedEventService {
         var metadata = metadataStore.getByLocation(location);
         if (metadata != null) {
             metadata.setDocumentUploaded(true);
-            metadata.setIndexed(Instant.now(clock).toString());
+            var now = Instant.now(clock).toString();
+            LOGGER.debug("/////NOW/////|", now);
+            metadata.setIndexed(now);
             metadata.setVirusScanResult(scanResult);
             if (scanResult.equals(ScanResult.INFECTED.toString())) {
                 metadata.setLocation(

@@ -14,11 +14,16 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DocumentReference;
 import org.hl7.fhir.r4.model.InstantType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.handlers.DocumentReferenceSearchHandler;
 import uk.nhs.digital.docstore.model.Document;
 
 public class BundleMapper {
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
 
     public Bundle toBundle(List<Document> documents) throws IllFormedPatientDetailsException {
         var entries = new ArrayList<BundleEntryComponent>();
@@ -51,12 +56,14 @@ public class BundleMapper {
                                                                 .setSystem(
                                                                         DOCUMENT_TYPE_CODING_SYSTEM))
                                         .collect(toList()));
+        var isUploaded = document.isUploaded();
 
+        LOGGER.debug("///ISUPLOADED///", isUploaded);
         return (DocumentReference)
                 new NHSDocumentReference()
                         .setCreated(new DateTimeType(document.getCreated().toString()))
                         .setIndexed(
-                                document.isUploaded()
+                                isUploaded
                                         ? new InstantType(document.getIndexed().toString())
                                         : null)
                         .setVirusScanResult(document.getVirusScanResult().toString())

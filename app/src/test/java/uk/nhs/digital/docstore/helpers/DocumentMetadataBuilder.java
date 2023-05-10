@@ -6,8 +6,11 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
+import uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 @SuppressWarnings("unused")
@@ -23,7 +26,9 @@ public class DocumentMetadataBuilder {
     private final String fileName;
     private final String type = "SNOMED";
     private final String virusScanResult;
-
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
+    
     public static DocumentMetadataBuilder theMetadata() throws IllFormedPatientDetailsException {
         var nhsNumber = randomNumeric(10);
         var location = String.format("s3://%s/%s", randomAlphabetic(6), randomAlphabetic(10));
@@ -108,6 +113,7 @@ public class DocumentMetadataBuilder {
     }
 
     public DocumentMetadataBuilder withDocumentUploaded(Boolean uploaded) {
+        LOGGER.debug("////ISUPLOADED////", uploaded);
         var indexedAt = uploaded ? Instant.now().toString() : null;
         return new DocumentMetadataBuilder(
                 id,
