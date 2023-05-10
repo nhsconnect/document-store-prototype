@@ -81,7 +81,7 @@ describe("UploadSummary", () => {
         expect(
             screen.queryByRole("heading", { name: /All documents have been successfully uploaded on/ })
         ).not.toBeInTheDocument();
-        expect(screen.queryByText("View successfully uploaded documents")).not.toBeInTheDocument();
+        expect(screen.queryByText("View succe0ssfully uploaded documents")).not.toBeInTheDocument();
     });
 
     it("displays message and does not display an alert if all the docs were uploaded successfully", () => {
@@ -97,6 +97,9 @@ describe("UploadSummary", () => {
         ).toBeInTheDocument();
         expect(
             screen.queryByRole("alert", { name: "Some of your documents failed to upload" })
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText(`${documents.length} of ${files.length} files failed to upload`)
         ).not.toBeInTheDocument();
     });
 
@@ -132,6 +135,15 @@ describe("UploadSummary", () => {
             expect(within(failedToUploadDocsTable).getByText(name)).toBeInTheDocument();
             expect(within(failedToUploadDocsTable).getByText(formatSize(size))).toBeInTheDocument();
         });
+    });
+
+    it("displays number of failed uploads and total uploads when there is at least 1 failed upload", () => {
+        const files = [buildTextFile("one", 100), buildTextFile("two", 101)];
+        const documents = files.map((file) => buildDocument(file, documentUploadStates.FAILED));
+
+        renderUploadSummary({ documents });
+
+        expect(screen.getByText(`${documents.length} of ${files.length} files failed to upload`));
     });
 });
 

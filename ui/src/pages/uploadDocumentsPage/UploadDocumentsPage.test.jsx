@@ -151,7 +151,7 @@ describe("<UploadDocumentsPage />", () => {
             expect(screen.getByText(documentTwo.name)).toBeInTheDocument();
             expect(screen.getByText(documentThree.name)).toBeInTheDocument();
             expect(screen.getByRole("heading", { name: "There is a problem" })).toBeInTheDocument();
-            expect(screen.getByText("Failed uploads")).toBeInTheDocument();
+            expect(screen.getByText(`1 of 3 files failed to upload`));
             expect(screen.getByText("If you want to upload another patient's health record")).toBeInTheDocument();
 
             userEvent.click(screen.getByRole("button", { name: "Start Again" }));

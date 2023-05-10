@@ -15,7 +15,9 @@ const UploadSummary = ({ patientDetails, documents }) => {
     const tableMargin = { marginBottom: 50 };
     const tableCaption = (
         <>
-            <h3>Failed uploads</h3>
+            <h3>
+                {failedUploads.length} of {documents.length} files failed to upload
+            </h3>
             <span className="nhsuk-error-message" id="example-error">
                 <span className="nhsuk-u-visually-hidden">Error:</span> Documents that have failed to upload
             </span>
