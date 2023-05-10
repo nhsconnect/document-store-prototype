@@ -108,8 +108,10 @@ describe("documentStore", () => {
                     },
                 ],
                 description: document.name,
-                created: "2021-07-11T16:57:30+01:00",
+                created: "2021-07-11T15:57:30.000Z",
             };
+
+            Date.now = jest.fn(() => new Date("2021-07-11T15:57:30.000Z").valueOf())
 
             const put = jest.fn(async (s3url, document, { onUploadProgress }) => {
                 return new Promise((resolve) => {
@@ -129,6 +131,7 @@ describe("documentStore", () => {
             const onUploadStateChangeMock = jest.fn();
             const { result } = renderHook(() => useDocumentStore());
             await result.current.uploadDocument(document, nhsNumber, onUploadStateChangeMock);
+
 
             expect(post).toHaveBeenCalledWith("/DocumentReference", expect.objectContaining(requestBody));
             expect(put).toHaveBeenCalledWith(
