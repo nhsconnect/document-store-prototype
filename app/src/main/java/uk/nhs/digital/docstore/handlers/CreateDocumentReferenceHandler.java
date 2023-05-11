@@ -106,8 +106,6 @@ public class CreateDocumentReferenceHandler
             LOGGER.debug("Saving DocumentReference to DynamoDB");
             presignedS3Url = documentStore.generatePreSignedUrlForDocument(document.getLocation());
             savedDocument = documentReferenceService.save(document);
-            LOGGER.debug("Doc - is uploaded " + document.isUploaded());
-            LOGGER.debug("Doc - get indexed " + document.getIndexed());
 
             LOGGER.debug("Generating response body");
             var type =
@@ -140,7 +138,6 @@ public class CreateDocumentReferenceHandler
                             .setId(savedDocument.getReferenceId());
 
             var resourceAsJson = jsonParser.encodeResourceToString(resource);
-            LOGGER.debug("savedDoc - is uploaded " + savedDocument.isUploaded());
 
             LOGGER.debug("Processing finished - about to return the response");
             return apiConfig.getApiGatewayResponse(
