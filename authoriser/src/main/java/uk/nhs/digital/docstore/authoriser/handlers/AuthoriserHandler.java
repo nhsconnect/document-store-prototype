@@ -71,6 +71,7 @@ public class AuthoriserHandler extends BaseAuthRequestHandler
 
         iamPolicyResponse.setPolicyDocument(policyDocument);
 
+        LOGGER.debug(iamPolicyResponse.toString());
         return iamPolicyResponse;
     }
 }
