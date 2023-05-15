@@ -44,6 +44,9 @@ export const PatientTracePage = ({ nextPage }) => {
         } catch (e) {
             if (e.response?.status) {
                 setStatusCode(e.response?.status);
+                if (e.response?.status == 403) {
+                    navigate("/");
+                }
                 if (e.response?.status < 500) {
                     setInputError("Enter a valid patient NHS number");
                 }
