@@ -65,7 +65,6 @@ public class DocumentReferenceSearchHandler
                     new NHSNumberSearchParameterForm(requestEvent.getQueryStringParameters());
             var nhsNumber = nhsNumberSearchParameterForm.getNhsNumber();
             var documents = searchService.findMetadataByNhsNumber(nhsNumber);
-            LOGGER.debug("{documents:" + documents.toString() + "}");
             LOGGER.debug("Generating response contents");
             bundle = bundleMapper.toBundle(documents);
         } catch (Exception e) {
