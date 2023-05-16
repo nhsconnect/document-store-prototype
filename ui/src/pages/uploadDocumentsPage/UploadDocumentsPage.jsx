@@ -37,7 +37,6 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
             await Promise.all(data.documents.map(uploadDocument));
         } catch (e) {
             if (e.response?.status) {
-                setStatusCode(e.response?.status);
                 if (e.response?.status == 403) {
                     navigate("/");
                 }
