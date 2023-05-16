@@ -61,7 +61,9 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
         ) {
             return documentUploadSteps.COMPLETE;
         }
-
+        if (documents.every((document) => document.state === stateNames.UNAUTHORISED)) {
+            navigate(routes.ROOT);
+        }
         return documentUploadSteps.UPLOADING;
     };
 
