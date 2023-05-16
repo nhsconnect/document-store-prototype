@@ -117,6 +117,46 @@ describe("<PatientTracePage/>", () => {
         });
     });
 
+    describe("validation", () => {
+        it("allows NHS number with spaces to be submitted", async () => {
+            const nhsNumberWithSpaces = "123 456 7891";
+            const nhsNumber = "1234567891";
+            const patientDetails = buildPatientDetails({ nhsNumber });
+            const patientDetailsResponse = { result: { patientDetails } };
+            const mockNavigate = jest.fn();
+            const expectedNextPage = "test/submit";
+
+            useNavigate.mockImplementation(() => mockNavigate);
+            getPatientDetailsMock.mockResolvedValue(patientDetailsResponse);
+
+            renderPatientTracePage({ nextPage: expectedNextPage });
+            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), nhsNumberWithSpaces);
+            userEvent.click(screen.getByRole("button", { name: "Search" }));
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+            });
+        });
+
+        it("allows NHS number with dashes to be submitted", async () => {
+            const nhsNumberWithDashes = "123-456-7891";
+            const nhsNumber = "1234567891";
+            const patientDetails = buildPatientDetails({ nhsNumber });
+            const patientDetailsResponse = { result: { patientDetails } };
+            const mockNavigate = jest.fn();
+            const expectedNextPage = "test/submit";
+
+            useNavigate.mockImplementation(() => mockNavigate);
+            getPatientDetailsMock.mockResolvedValue(patientDetailsResponse);
+
+            renderPatientTracePage({ nextPage: expectedNextPage });
+            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), nhsNumberWithDashes);
+            userEvent.click(screen.getByRole("button", { name: "Search" }));
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+            });
+        });
+    });
+
     describe("errors", () => {
         it("displays an error message when the form is submitted and the NHS number is missing", async () => {
             renderPatientTracePage();
