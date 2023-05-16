@@ -40,18 +40,6 @@ module authoriser_alarms {
   environment                = var.environment
 }
 
-# resource "aws_api_gateway_authorizer" "cognito_authorizer" {
-#   name          = "cognito-authorizer"
-#   type          = "COGNITO_USER_POOLS"
-#   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-#   provider_arns = var.cloud_only_service_instances > 0 ? [
-#     for pool_arn in aws_cognito_user_pool.pool[*].arn :pool_arn
-#   ] : [
-#     ""
-#   ]
-#   authorizer_credentials = aws_iam_role.lambda_execution_role.arn
-# }
-
 resource "aws_api_gateway_authorizer" "cis2_authoriser" {
   name                   = "cis2-authoriser"
   type                   = "REQUEST"
@@ -59,6 +47,7 @@ resource "aws_api_gateway_authorizer" "cis2_authoriser" {
   rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
   authorizer_uri         = aws_lambda_function.authoriser_lambda.invoke_arn
   authorizer_credentials = aws_iam_role.authoriser_execution.arn
+  authorizer_result_ttl_in_seconds = 0
 }
 
 resource "aws_lambda_function" "authoriser_lambda" {
