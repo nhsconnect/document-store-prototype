@@ -22,7 +22,7 @@ export const PatientTracePage = ({ nextPage }) => {
     const { ref: nhsNumberRef, ...nhsNumberProps } = register("nhsNumber", {
         required: "Enter patient's 10 digit NHS number",
         pattern: {
-            value: /^[0-9]{10}$/,
+            value: /(^[0-9]{10}$|^[0-9]{3}\s[0-9]{3}\s[0-9]{4}$|^[0-9]{3}-[0-9]{3}-[0-9]{4}$)/,
             message: "Enter patient's 10 digit NHS number",
         },
     });
@@ -36,8 +36,11 @@ export const PatientTracePage = ({ nextPage }) => {
         try {
             setInputError(null);
             setStatusCode(null);
+
+            const nhsNumber = data.nhsNumber.replace(/[-\s]/gi, "");
+
             setSubmissionState(states.SEARCHING);
-            const response = await documentStore.getPatientDetails(data.nhsNumber);
+            const response = await documentStore.getPatientDetails(nhsNumber);
             setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
             navigate(nextPage);
