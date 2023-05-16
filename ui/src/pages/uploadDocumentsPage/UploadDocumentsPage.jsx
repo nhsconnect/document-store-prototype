@@ -33,19 +33,7 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
     }, [patientDetails, navigate]);
 
     const uploadDocuments = async (data) => {
-        console.log("About to send request");
-        try {
-            await Promise.all(data.documents.map(uploadDocument));
-        } catch (e) {
-            console.log("Error caught");
-            if (e.response?.status) {
-                console.log("Error has status" + e.response.status);
-                if (e.response?.status == 403) {
-                    console.log("403 error, navigating to home");
-                    navigate("/");
-                }
-            }
-        }
+        await Promise.all(data.documents.map(uploadDocument));
     };
 
     const uploadDocument = async (document) => {
