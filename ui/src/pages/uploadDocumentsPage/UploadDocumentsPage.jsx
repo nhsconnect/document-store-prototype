@@ -33,7 +33,16 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
     }, [patientDetails, navigate]);
 
     const uploadDocuments = async (data) => {
-        await Promise.all(data.documents.map(uploadDocument));
+        try {
+            await Promise.all(data.documents.map(uploadDocument));
+        } catch (e) {
+            if (e.response?.status) {
+                setStatusCode(e.response?.status);
+                if (e.response?.status == 403) {
+                    navigate("/");
+                }
+            }
+        }
     };
 
     const uploadDocument = async (document) => {
