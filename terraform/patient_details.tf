@@ -50,16 +50,6 @@ data "aws_ssm_parameter" "pds_fhir_kid" {
   count = var.cloud_only_service_instances
 }
 
-resource "aws_kms_key" "test_kms_key" {
-  description = "test kms key"
-  is_enabled  = true
-}
-
-data "aws_kms_ciphertext" "encrypted_test_key" {
-  key_id = aws_kms_key.test_kms_key.key_id
-  plaintext = "test api key"
-}
-
 resource "aws_lambda_function" "search_patient_details_lambda" {
   handler          = "uk.nhs.digital.docstore.handlers.SearchPatientDetailsHandler::handleRequest"
   function_name    = "SearchPatientDetailsHandler"
