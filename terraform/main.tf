@@ -65,9 +65,9 @@ resource "aws_api_gateway_rest_api" "lambda_api" {
 # Testing stuff
 data "aws_iam_policy_document" "lambda_kms_decryption_document" {
   statement {
-    effect: "Allow",
-    actions: ["kms:Decrypt"],
-    resources: [aws_kms_key.test_kms_key.arn]
+    effect = "Allow"
+    actions = ["kms:Decrypt"]
+    resources = [aws_kms_key.test_kms_key.arn]
   }
 }
 
@@ -93,7 +93,6 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       module.patient_details_collection_preflight,
       module.doc_ref_collection_preflight,
       module.document_manifest_preflight,
-      # aws_api_gateway_authorizer.cognito_authorizer,
       aws_api_gateway_authorizer.cis2_authoriser,
       aws_api_gateway_resource.doc_ref_collection_resource,
       aws_api_gateway_resource.patient_details_collection_resource,
