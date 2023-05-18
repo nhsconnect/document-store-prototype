@@ -78,6 +78,11 @@ resource "aws_kms_key" "document_store_encryption_key" {
   policy              = data.aws_iam_policy_document.document_encryption_key_policy.json
 }
 
+resource "aws_kms_key" "test_kms_key" {
+  description = "test kms key"
+  is_enabled  = true
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "document_store_encryption" {
   bucket = aws_s3_bucket.document_store.id
   rule {

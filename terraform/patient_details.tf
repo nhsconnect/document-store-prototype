@@ -108,11 +108,6 @@ resource "aws_iam_role_policy" "lambda_get_parameter_policy" {
         ],
         "Resource" : "arn:aws:ssm:*:*:parameter/prs/*/pds-fhir-access-token"
       },
-      {
-        "Effect": "Allow",
-        "Action": "kms:Decrypt",
-        "Resource": "arn:aws:kms:eu-west-2:533825906475:key/63f103e6-8dca-42b2-bb0e-9f821887482c"
-      }
     ]
   })
 }

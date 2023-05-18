@@ -17,11 +17,6 @@ module create_document_reference_alarms {
   environment                = var.environment
 }
 
-resource "aws_kms_key" "test_kms_key" {
-  description = "test kms key"
-  is_enabled  = true
-}
-
 data "aws_kms_ciphertext" "encrypted_test_key" {
   key_id = aws_kms_key.test_kms_key.key_id
   plaintext = "test api key"
