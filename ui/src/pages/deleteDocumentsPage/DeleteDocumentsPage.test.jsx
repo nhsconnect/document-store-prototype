@@ -120,4 +120,26 @@ describe("DeleteDocumentsPage", () => {
 
         expect(await screen.queryByText("Download electronic health records and attachments")).not.toBeInTheDocument();
     });
+
+    xit("navigates to the start page when API call to delete docs is made without a valid backend session", async () => {
+        const errorResponse = {
+            response: {
+                status: 403,
+                message: "404 Forbidden",
+            },
+        };
+
+        const deleteAllDocumentsMock = jest.fn();
+        const navigateMock = jest.fn();
+
+        useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
+        deleteAllDocumentsMock.mockRejectedValue(errorResponse);
+
+        render(<DeleteDocumentsPage />);
+        userEvent.click(screen.getByRole("radio", { name: "Yes" }));
+        userEvent.click(screen.getByRole("button", { name: "Continue" }));
+
+        //expect(navigateMock).toHaveBeenCalled();
+        expect(await screen.findByText("Before You Start")).toBeInTheDocument();
+    });
 });

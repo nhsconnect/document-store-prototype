@@ -41,6 +41,9 @@ const SearchResultsPage = () => {
                 setNumberOfCleanFiles(results.filter((doc) => doc.virusScanResult === "Clean").length);
                 setSubmissionState(states.SUCCEEDED);
             } catch (error) {
+                if (error.response?.status == 403) {
+                    navigate(routes.ROOT);
+                }
                 setSubmissionState(states.FAILED);
             }
         };
