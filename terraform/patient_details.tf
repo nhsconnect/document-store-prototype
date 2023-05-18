@@ -50,6 +50,16 @@ data "aws_ssm_parameter" "pds_fhir_kid" {
   count = var.cloud_only_service_instances
 }
 
+resource "aws_kms_key" "test_kms_key" {
+  description = "test kms key"
+  is_enabled  = true
+}
+
+resource "aws_kms_ciphertext" "encrypted_test_key" {
+  key_id = aws_kms_key.test_kms_key.key_id
+  plaintext = "test api key"
+}
+
 resource "aws_lambda_function" "search_patient_details_lambda" {
   handler          = "uk.nhs.digital.docstore.handlers.SearchPatientDetailsHandler::handleRequest"
   function_name    = "SearchPatientDetailsHandler"
@@ -74,6 +84,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
       AMPLIFY_BASE_URL     = local.amplify_base_url
       SQS_ENDPOINT         = var.sqs_endpoint
       SQS_AUDIT_QUEUE_URL  = aws_sqs_queue.sensitive_audit.url
+      TEST_API_KEY         = aws_kms_ciphertext.encrypted_test_key.ciphertext_blob
     }
   }
 }
@@ -107,6 +118,11 @@ resource "aws_iam_role_policy" "lambda_get_parameter_policy" {
           "ssm:PutParameter"
         ],
         "Resource" : "arn:aws:ssm:*:*:parameter/prs/*/pds-fhir-access-token"
+      },
+      {
+        "Effect": "Allow",
+        "Action": "kms:Decrypt",
+        "Resource": "arn:aws:kms:eu-west-2:533825906475:key/63f103e6-8dca-42b2-bb0e-9f821887482c"
       }
     ]
   })
