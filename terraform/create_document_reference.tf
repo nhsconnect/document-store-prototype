@@ -23,10 +23,10 @@ data "aws_kms_ciphertext" "encrypted_test_key" {
   plaintext = "test api key"
 }
 
-resource "aws_iam_role_policy" "lambda_kms_decrypt_policy" {
+resource "aws_iam_role_policy" "lambda_kms_decrypt_role_policy" {
   name   = "lambda_decrypt_from_kms"
   role   = aws_iam_role.lambda_execution_role.id
-  policy = aws_iam_policy.lambda_kms_decryption_policy
+  policy = aws_iam_policy.lambda_kms_decryption_policy.policy
 }
 
 #######################################
