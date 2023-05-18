@@ -8,6 +8,7 @@ import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import ErrorBox from "../../components/errorBox/ErrorBox";
 import { useNavigate } from "react-router";
+import routes from "../../enums/routes";
 
 const states = {
     IDLE: "idle",
@@ -48,7 +49,7 @@ export const PatientTracePage = ({ nextPage }) => {
             if (e.response?.status) {
                 setStatusCode(e.response?.status);
                 if (e.response?.status == 403) {
-                    navigate("/");
+                    navigate(routes.ROOT);
                 }
                 if (e.response?.status < 500) {
                     setInputError("Enter a valid patient NHS number");

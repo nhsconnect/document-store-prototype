@@ -57,6 +57,9 @@ const SearchResultsPage = () => {
 
             setDownloadState(states.SUCCEEDED);
         } catch (e) {
+            if (e.response?.status == 403) {
+                navigate(routes.ROOT);
+            }
             setDownloadState(states.FAILED);
         }
     };
