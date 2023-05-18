@@ -86,7 +86,7 @@ public class CreateDocumentReferenceHandler
 
         LOGGER.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
-        LOGGER.warn("TEST_API_KEY ciphertext: {}", System.getenv("TEST_API_KEY"));
+        LOGGER.debug("TEST_API_KEY ciphertext: {}", System.getenv("TEST_API_KEY"));
 
         try {
             var inputDocumentReference =
