@@ -37,6 +37,9 @@ const DeleteDocumentsPage = () => {
                     navigate(searchResultsPageUrl);
                 }
             } catch (error) {
+                if (e.response?.status == 403) {
+                    navigate(routes.ROOT);
+                }
                 setSubmissionState(states.FAILED);
             }
         } else {
