@@ -55,7 +55,7 @@ resource "aws_kms_key" "test_kms_key" {
   is_enabled  = true
 }
 
-resource "aws_kms_ciphertext" "encrypted_test_key" {
+data "aws_kms_ciphertext" "encrypted_test_key" {
   key_id = aws_kms_key.test_kms_key.key_id
   plaintext = "test api key"
 }
@@ -84,7 +84,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
       AMPLIFY_BASE_URL     = local.amplify_base_url
       SQS_ENDPOINT         = var.sqs_endpoint
       SQS_AUDIT_QUEUE_URL  = aws_sqs_queue.sensitive_audit.url
-      TEST_API_KEY         = aws_kms_ciphertext.encrypted_test_key.ciphertext_blob
+      TEST_API_KEY         = data.aws_kms_ciphertext.encrypted_test_key.ciphertext_blob
     }
   }
 }
