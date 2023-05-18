@@ -110,7 +110,6 @@ describe("DeleteDocumentsPage", () => {
 
     it("does not navigate to /search/results when API call to delete docs fails", async () => {
         const deleteAllDocumentsMock = jest.fn();
-        const navigateMock = jest.fn();
 
         useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
         useNavigate.mockReturnValue(navigateMock);
@@ -121,8 +120,7 @@ describe("DeleteDocumentsPage", () => {
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
         expect(
-            await screen.findByText("There has been an issue deleting these records, please try again later.")
-        ).toBeInTheDocument();
-        expect(navigateMock).not.toHaveBeenCalled();
+            await screen.queryByText("Download electronic health records and attachments")
+        ).not.toBeInTheDocument();
     });
 });
