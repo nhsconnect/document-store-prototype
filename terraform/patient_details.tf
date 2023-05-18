@@ -84,7 +84,6 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
       AMPLIFY_BASE_URL     = local.amplify_base_url
       SQS_ENDPOINT         = var.sqs_endpoint
       SQS_AUDIT_QUEUE_URL  = aws_sqs_queue.sensitive_audit.url
-      //TEST_API_KEY         = data.aws_kms_ciphertext.encrypted_test_key.ciphertext_blob
     }
   }
 }
