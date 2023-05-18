@@ -102,10 +102,6 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                     if (e.response?.status === 403) {
                         onUploadStateChange(documentUploadStates.UNAUTHORISED, 0);
                     }
-                    console.log(e.code);
-                    console.log(e.response);
-                    console.log(e.response?.code);
-                    console.log(e);
                 }
             },
         }),
