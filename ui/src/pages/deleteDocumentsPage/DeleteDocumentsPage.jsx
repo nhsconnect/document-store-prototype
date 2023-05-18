@@ -36,7 +36,7 @@ const DeleteDocumentsPage = () => {
                     setSubmissionState(states.SUCCEEDED);
                     navigate(searchResultsPageUrl);
                 }
-            } catch (error) {
+            } catch (e) {
                 if (e.response?.status == 403) {
                     navigate(routes.ROOT);
                 }

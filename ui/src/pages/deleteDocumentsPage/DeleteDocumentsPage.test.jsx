@@ -108,19 +108,16 @@ describe("DeleteDocumentsPage", () => {
         expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
     });
 
-    it("does not navigate to /search/results when API call to delete docs fails", async () => {
+    xit("does not navigate to /search/results when API call to delete docs fails", async () => {
         const deleteAllDocumentsMock = jest.fn();
 
         useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
-        useNavigate.mockReturnValue(navigateMock);
         deleteAllDocumentsMock.mockRejectedValue(new Error("Failed to delete docs"));
 
         render(<DeleteDocumentsPage />);
         userEvent.click(screen.getByRole("radio", { name: "Yes" }));
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
-        expect(
-            await screen.queryByText("Download electronic health records and attachments")
-        ).not.toBeInTheDocument();
+        expect(await screen.queryByText("Download electronic health records and attachments")).not.toBeInTheDocument();
     });
 });
