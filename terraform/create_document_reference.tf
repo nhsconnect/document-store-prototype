@@ -17,6 +17,16 @@ module create_document_reference_alarms {
   environment                = var.environment
 }
 
+resource "aws_kms_key" "test_kms_key" {
+  description = "test kms key"
+  is_enabled  = true
+}
+
+data "aws_kms_ciphertext" "encrypted_test_key" {
+  key_id = aws_kms_key.test_kms_key.key_id
+  plaintext = "test api key"
+}
+
 resource "aws_lambda_function" "create_doc_ref_lambda" {
   handler       = "uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler::handleRequest"
   function_name = "CreateDocumentReferenceHandler"
@@ -34,6 +44,7 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
       AMPLIFY_BASE_URL = local.amplify_base_url
       TEST_DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.test_document_store.bucket
       VIRUS_SCANNER_IS_STUBBED  = var.virus_scanner_is_stubbed
+      TEST_API_KEY = data.aws_kms_ciphertext.encrypted_test_key.ciphertext_blob
     }, local.common_environment_variables)
   }
 }
