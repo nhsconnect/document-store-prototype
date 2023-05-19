@@ -9,17 +9,14 @@ import ca.uhn.fhir.context.PerformanceOptionsEnum;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.DecryptRequest;
+import com.amazonaws.services.kms.model.DecryptResult;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.amazonaws.util.Base64;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -165,9 +162,10 @@ public class CreateDocumentReferenceHandler
 
     private static String decryptKey() {
         try {
+            AWSKMS kmsClient = AWSKMSClientBuilder.standard().build();
             /*LOGGER.debug("Beginning key decrypt process...");
 
-            AWSKMS kmsClient = AWSKMSClientBuilder.standard().build();
+
 
             var kms_key_arn = System.getenv("KMS_KEY_ARN");
             LOGGER.debug("kms_key_arn: {}", kms_key_arn);
@@ -187,7 +185,7 @@ public class CreateDocumentReferenceHandler
 
             return new String(plainText.array(), StandardCharsets.UTF_8);*/
 
-            System.out.println("Decrypting key");
+            /*System.out.println("Decrypting key");
             byte[] encryptedKey = Base64.decode(System.getenv("TEST_API_KEY"));
             Map<String, String> encryptionContext = new HashMap<>();
             encryptionContext.put("LambdaFunctionName", System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
@@ -200,12 +198,36 @@ public class CreateDocumentReferenceHandler
                             .withEncryptionContext(encryptionContext);
 
             ByteBuffer plainTextKey = client.decrypt(request).getPlaintext();
-            return new String(plainTextKey.array(), Charset.forName("UTF-8"));
+            return new String(plainTextKey.array(), Charset.forName("UTF-8"));*/
+
+            String ciphertext = System.getenv("TEST_API_KEY");
+            LOGGER.debug("ciphertext: {}", ciphertext);
+
+            ByteBuffer buffer = getByteBuffer(ciphertext);
+            DecryptRequest decryptRequest = new DecryptRequest().withCiphertextBlob(buffer);
+            DecryptResult decryptResult = kmsClient.decrypt(decryptRequest);
+
+            return getString(decryptResult.getPlaintext());
 
         } catch (Exception e) {
             LOGGER.debug(e.toString());
             LOGGER.debug(Arrays.toString(e.getStackTrace()));
             return "Failed";
         }
+    }
+
+    private static String getString(ByteBuffer byteBuffer) {
+        byte[] bytes = new byte[byteBuffer.remaining()];
+        byteBuffer.get(bytes);
+        return new String(bytes);
+    }
+
+    private static ByteBuffer getByteBuffer(String string) {
+        byte[] bytes = java.util.Base64.getDecoder().decode(string);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
+        byteBuffer.put(bytes);
+        byteBuffer.flip();
+
+        return byteBuffer;
     }
 }
