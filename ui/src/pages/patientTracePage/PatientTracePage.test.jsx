@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import PatientDetailsProvider from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
+import routes from "../../enums/routes";
 
 jest.mock("react-router");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
@@ -177,6 +178,30 @@ describe("<PatientTracePage/>", () => {
                 expect(await screen.findAllByText("Enter patient's 10 digit NHS number")).toHaveLength(2);
             }
         );
+    });
+
+    describe("without a valid backend session", () => {
+        it("navigates to the start page when API call to search patient is made without a valid backend session", async () => {
+            const errorResponse = {
+                response: {
+                    status: 403,
+                    message: "Unauthorised",
+                },
+            };
+
+            const navigateMock = jest.fn();
+
+            useNavigate.mockReturnValue(navigateMock);
+            getPatientDetailsMock.mockRejectedValue(errorResponse);
+
+            renderPatientTracePage();
+            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "0987654321");
+            userEvent.click(screen.getByRole("button", { name: "Search" }));
+
+            await waitFor(() => {
+                expect(navigateMock).toHaveBeenCalledWith(routes.ROOT);
+            });
+        });
     });
 });
 
