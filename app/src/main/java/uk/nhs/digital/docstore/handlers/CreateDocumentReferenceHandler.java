@@ -16,6 +16,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -161,9 +162,9 @@ public class CreateDocumentReferenceHandler
 
     private static String decryptKey() {
         try {
-            LOGGER.debug("Beggining key decrypt process");
+            LOGGER.debug("Beginning key decrypt process...");
 
-            AWSKMS client = AWSKMSClientBuilder.defaultClient();
+            AWSKMS kmsClient = AWSKMSClientBuilder.standard().build();
 
             var kms_key_arn = System.getenv("KMS_KEY_ARN");
             LOGGER.debug("kms_key_arn: {}", kms_key_arn);
@@ -175,14 +176,16 @@ public class CreateDocumentReferenceHandler
             LOGGER.debug("Creating decrypt request....");
             DecryptRequest req =
                     new DecryptRequest().withCiphertextBlob(ciphertextBlob).withKeyId(kms_key_arn);
-            LOGGER.debug("Decrypting key");
-            ByteBuffer plainText = client.decrypt(req).getPlaintext();
+            LOGGER.debug("Request: {}", req);
 
+            LOGGER.debug("Decrypting key");
+            ByteBuffer plainText = kmsClient.decrypt(req).getPlaintext();
             LOGGER.debug("plainText: {}", plainText);
 
             return new String(plainText.array(), StandardCharsets.UTF_8);
         } catch (Exception e) {
             LOGGER.debug(e.toString());
+            LOGGER.debug(Arrays.toString(e.getStackTrace()));
             return "Failed";
         }
     }

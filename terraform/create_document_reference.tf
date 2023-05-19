@@ -50,7 +50,7 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
       #######################################
       # Testing
       TEST_API_KEY = data.aws_kms_ciphertext.encrypted_test_key.ciphertext_blob
-      KMS_KEY_ARN = aws_kms_key.document_store_lambda_kms_key.arn
+      KMS_KEY_ARN = aws_kms_key.lambda_kms_key.arn
       #######################################
     }, local.common_environment_variables)
   }

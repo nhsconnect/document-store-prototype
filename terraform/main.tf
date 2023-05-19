@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "lambda_kms_decryption_document" {
   statement {
     effect = "Allow"
     actions = ["kms:Decrypt"]
-    resources = [aws_kms_key.document_store_lambda_kms_key.arn]
+    resources = [aws_kms_key.lambda_kms_key.arn]
   }
 }
 
