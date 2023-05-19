@@ -16,6 +16,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -176,11 +177,12 @@ public class CreateDocumentReferenceHandler
             DecryptResult decryptResult = kmsClient.decrypt(decryptRequest);
 
             ByteBuffer decryptedByteBuffer = decryptResult.getPlaintext();
-            byte[] decryptedBytes = new byte[decryptedByteBuffer.remaining()];
+            String plainText = StandardCharsets.UTF_8.decode(decryptedByteBuffer).toString();
+            /*byte[] decryptedBytes = new byte[decryptedByteBuffer.remaining()];
             decryptedByteBuffer.get(decryptedBytes);
-            String plainText = new String(decryptedBytes);
-
-            return getString(decryptResult.getPlaintext());
+            String plainText = new String(decryptedBytes);*/
+            LOGGER.debug("Decrypted cyphertext: {}", plainText);
+            return plainText;
 
         } catch (Exception e) {
             LOGGER.debug(e.toString());
@@ -189,7 +191,7 @@ public class CreateDocumentReferenceHandler
         }
     }
 
-    private static String getString(ByteBuffer byteBuffer) {
+    /*private static String getString(ByteBuffer byteBuffer) {
         byte[] bytes = new byte[byteBuffer.remaining()];
         byteBuffer.get(bytes);
         return new String(bytes);
@@ -202,5 +204,5 @@ public class CreateDocumentReferenceHandler
         byteBuffer.flip();
 
         return byteBuffer;
-    }
+    }*/
 }
