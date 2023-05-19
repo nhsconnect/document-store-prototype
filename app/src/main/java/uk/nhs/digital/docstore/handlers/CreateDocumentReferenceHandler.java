@@ -96,7 +96,7 @@ public class CreateDocumentReferenceHandler
         var jsonParser = fhirContext.newJsonParser();
 
         LOGGER.debug("TEST_API_KEY ciphertext: {}", System.getenv("TEST_API_KEY"));
-        LOGGER.debug("TEST_API_KEY plain text: {}", decryptKey("TEST_API_KEY"));
+        // LOGGER.debug("TEST_API_KEY plain text: {}", decryptKey());
 
         try {
             var inputDocumentReference =
@@ -162,20 +162,19 @@ public class CreateDocumentReferenceHandler
         }
     }
 
-    private static String decryptKey(String envVariable) {
+    /*private static String decryptKey() {
         System.out.println("Decrypting key");
 
-        byte[] encryptedKey = Base64.decode(System.getenv(envVariable));
+        byte[] encryptedKey = Base64.decode(System.getenv("TEST_API_KEY"));
         Map<String, String> encryptionContext = new HashMap<>();
         encryptionContext.put("LambdaFunctionName", System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
 
         AWSKMS client = AWSKMSClientBuilder.defaultClient();
-        DecryptRequest request =
-                new DecryptRequest()
-                        .withCiphertextBlob(ByteBuffer.wrap(encryptedKey))
-                        .withEncryptionContext(encryptionContext);
-        ByteBuffer plainTextKey = client.decrypt(request).getPlaintext();
+        ByteBuffer ciphertextBlob = System.getenv("TEST_API_KEY");
+
+        DecryptRequest req = new DecryptRequest().withCiphertextBlob(ciphertextBlob).withKeyId(keyId);
+        ByteBuffer plainText = kmsClient.decrypt(req).getPlaintext();
 
         return new String(plainTextKey.array(), StandardCharsets.UTF_8);
-    }
+    }*/
 }
