@@ -171,27 +171,27 @@ public class CreateDocumentReferenceHandler
             LOGGER.debug("encryptedKey: {}", encryptedKey);
 
             Map<String, String> encryptionContext = new HashMap<>();
-            encryptionContext.put("LambdaFunctionName",
-                    System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
+            encryptionContext.put("LambdaFunctionName", System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
 
             LOGGER.debug("encryptionContext: {}", encryptionContext);
 
             AWSKMS client = AWSKMSClientBuilder.defaultClient();
-            ByteBuffer ciphertextBlob = ByteBuffer
-                    .wrap(System.getenv("TEST_API_KEY").getBytes(StandardCharsets.UTF_8));
+            ByteBuffer ciphertextBlob =
+                    ByteBuffer.wrap(System.getenv("TEST_API_KEY").getBytes(StandardCharsets.UTF_8));
 
             LOGGER.debug("ciphertextBlob: {}", ciphertextBlob);
 
-            DecryptRequest req = new DecryptRequest()
-                    .withCiphertextBlob(ciphertextBlob)
-                    .withEncryptionContext(encryptionContext);
+            DecryptRequest req =
+                    new DecryptRequest()
+                            .withCiphertextBlob(ciphertextBlob)
+                            .withEncryptionContext(encryptionContext);
 
             ByteBuffer plainText = client.decrypt(req).getPlaintext();
 
             LOGGER.debug("plainText: {}", plainText);
 
             return new String(plainText.array(), StandardCharsets.UTF_8);
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.debug(e.toString());
             return "Failed";
         }
