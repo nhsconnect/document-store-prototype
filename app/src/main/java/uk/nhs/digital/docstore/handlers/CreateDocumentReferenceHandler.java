@@ -161,7 +161,7 @@ public class CreateDocumentReferenceHandler
 
     private static String decryptKey() {
         try {
-            LOGGER.debug("Decrypting key");
+            LOGGER.debug("Beggining key decrypt process");
 
             AWSKMS client = AWSKMSClientBuilder.defaultClient();
 
@@ -170,12 +170,12 @@ public class CreateDocumentReferenceHandler
 
             ByteBuffer ciphertextBlob =
                     ByteBuffer.wrap(System.getenv("TEST_API_KEY").getBytes(StandardCharsets.UTF_8));
-
             LOGGER.debug("ciphertextBlob: {}", ciphertextBlob);
 
+            LOGGER.debug("Creating decrypt request....");
             DecryptRequest req =
                     new DecryptRequest().withCiphertextBlob(ciphertextBlob).withKeyId(kms_key_arn);
-
+            LOGGER.debug("Decrypting key");
             ByteBuffer plainText = client.decrypt(req).getPlaintext();
 
             LOGGER.debug("plainText: {}", plainText);
