@@ -15,8 +15,13 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.amazonaws.util.Base64;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -162,7 +167,7 @@ public class CreateDocumentReferenceHandler
 
     private static String decryptKey() {
         try {
-            LOGGER.debug("Beginning key decrypt process...");
+            /*LOGGER.debug("Beginning key decrypt process...");
 
             AWSKMS kmsClient = AWSKMSClientBuilder.standard().build();
 
@@ -182,7 +187,23 @@ public class CreateDocumentReferenceHandler
             ByteBuffer plainText = kmsClient.decrypt(req).getPlaintext();
             LOGGER.debug("plainText: {}", plainText);
 
-            return new String(plainText.array(), StandardCharsets.UTF_8);
+            return new String(plainText.array(), StandardCharsets.UTF_8);*/
+
+            System.out.println("Decrypting key");
+            byte[] encryptedKey = Base64.decode(System.getenv("TEST_API_KEY"));
+            Map<String, String> encryptionContext = new HashMap<>();
+            encryptionContext.put("LambdaFunctionName",
+                    System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
+
+            AWSKMS client = AWSKMSClientBuilder.defaultClient();
+
+            DecryptRequest request = new DecryptRequest()
+                    .withCiphertextBlob(ByteBuffer.wrap(encryptedKey))
+                    .withEncryptionContext(encryptionContext);
+
+            ByteBuffer plainTextKey = client.decrypt(request).getPlaintext();
+            return new String(plainTextKey.array(), Charset.forName("UTF-8"));
+
         } catch (Exception e) {
             LOGGER.debug(e.toString());
             LOGGER.debug(Arrays.toString(e.getStackTrace()));
