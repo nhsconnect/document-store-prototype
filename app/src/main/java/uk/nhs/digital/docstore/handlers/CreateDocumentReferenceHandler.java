@@ -96,7 +96,7 @@ public class CreateDocumentReferenceHandler
         var jsonParser = fhirContext.newJsonParser();
 
         LOGGER.debug("TEST_API_KEY ciphertext: {}", System.getenv("TEST_API_KEY"));
-        // LOGGER.debug("TEST_API_KEY plain text: {}", decryptKey());
+        LOGGER.debug("TEST_API_KEY plain text: {}", decryptKey());
 
         try {
             var inputDocumentReference =
