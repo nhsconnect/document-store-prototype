@@ -19,7 +19,7 @@ module create_document_reference_alarms {
 #######################################
 # Testing
 data "aws_kms_ciphertext" "encrypted_test_key" {
-  key_id = aws_kms_key.document_store_lambda_kms_key.key_id
+  key_id = aws_kms_key.lambda_kms_key.key_id
   plaintext = "test api key"
 }
 
