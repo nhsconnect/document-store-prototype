@@ -61,6 +61,22 @@ resource "aws_iam_role_policy_attachment" "lambda_insights_policy" {
 resource "aws_api_gateway_rest_api" "lambda_api" {
   name = "DocStoreAPI"
 }
+#######################################
+# Testing stuff
+data "aws_iam_policy_document" "lambda_kms_decryption_document" {
+  statement {
+    effect = "Allow"
+    actions = ["kms:Decrypt"]
+    resources = [aws_kms_key.document_store_lambda_kms_key.arn]
+  }
+}
+
+resource "aws_iam_policy" "lambda_kms_decryption_policy" {
+  name = "KMSDecryptionAccess"
+  policy = data.aws_iam_policy_document.lambda_kms_decryption_document.json
+}
+
+#######################################
 
 resource "aws_api_gateway_deployment" "api_deploy" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
