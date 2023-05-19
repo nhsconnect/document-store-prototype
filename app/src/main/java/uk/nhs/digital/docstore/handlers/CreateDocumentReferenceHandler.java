@@ -10,7 +10,17 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.kms.AWSKMS;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
+import com.amazonaws.services.kms.model.DecryptRequest;
+import com.amazonaws.util.Base64;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -86,7 +96,9 @@ public class CreateDocumentReferenceHandler
 
         LOGGER.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
+
         LOGGER.debug("TEST_API_KEY ciphertext: {}", System.getenv("TEST_API_KEY"));
+        LOGGER.debug("TEST_API_KEY plain text: {}", decryptKey("TEST_API_KEY"));
 
         try {
             var inputDocumentReference =
@@ -150,5 +162,22 @@ public class CreateDocumentReferenceHandler
         } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);
         }
+    }
+
+    private static String decryptKey(String envVariable) {
+        System.out.println("Decrypting key");
+
+        byte[] encryptedKey = Base64.decode(System.getenv(envVariable));
+        Map<String, String> encryptionContext = new HashMap<>();
+        encryptionContext.put("LambdaFunctionName",
+                System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
+
+        AWSKMS client = AWSKMSClientBuilder.defaultClient();
+        DecryptRequest request = new DecryptRequest()
+                .withCiphertextBlob(ByteBuffer.wrap(encryptedKey))
+                .withEncryptionContext(encryptionContext);
+        ByteBuffer plainTextKey = client.decrypt(request).getPlaintext();
+
+        return new String(plainTextKey.array(), StandardCharsets.UTF_8);
     }
 }
