@@ -162,19 +162,38 @@ public class CreateDocumentReferenceHandler
         }
     }
 
-    /*private static String decryptKey() {
-        System.out.println("Decrypting key");
+    private static String decryptKey() {
+        try {
+            LOGGER.debug("Decrypting key");
 
-        byte[] encryptedKey = Base64.decode(System.getenv("TEST_API_KEY"));
-        Map<String, String> encryptionContext = new HashMap<>();
-        encryptionContext.put("LambdaFunctionName", System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
+            byte[] encryptedKey = Base64.decode(System.getenv("TEST_API_KEY"));
 
-        AWSKMS client = AWSKMSClientBuilder.defaultClient();
-        ByteBuffer ciphertextBlob = System.getenv("TEST_API_KEY");
+            LOGGER.debug("encryptedKey: {}", encryptedKey);
 
-        DecryptRequest req = new DecryptRequest().withCiphertextBlob(ciphertextBlob).withKeyId(keyId);
-        ByteBuffer plainText = kmsClient.decrypt(req).getPlaintext();
+            Map<String, String> encryptionContext = new HashMap<>();
+            encryptionContext.put("LambdaFunctionName",
+                    System.getenv("AWS_LAMBDA_FUNCTION_NAME"));
 
-        return new String(plainTextKey.array(), StandardCharsets.UTF_8);
-    }*/
+            LOGGER.debug("encryptionContext: {}", encryptionContext);
+
+            AWSKMS client = AWSKMSClientBuilder.defaultClient();
+            ByteBuffer ciphertextBlob = ByteBuffer
+                    .wrap(System.getenv("TEST_API_KEY").getBytes(StandardCharsets.UTF_8));
+
+            LOGGER.debug("ciphertextBlob: {}", ciphertextBlob);
+
+            DecryptRequest req = new DecryptRequest()
+                    .withCiphertextBlob(ciphertextBlob)
+                    .withEncryptionContext(encryptionContext);
+
+            ByteBuffer plainText = client.decrypt(req).getPlaintext();
+
+            LOGGER.debug("plainText: {}", plainText);
+
+            return new String(plainText.array(), StandardCharsets.UTF_8);
+        }catch (Exception e){
+            LOGGER.debug(e.toString());
+            return "Failed";
+        }
+    }
 }
