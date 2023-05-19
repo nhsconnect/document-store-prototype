@@ -13,12 +13,9 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.amazonaws.util.Base64;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -169,6 +166,7 @@ public class CreateDocumentReferenceHandler
             AWSKMS client = AWSKMSClientBuilder.defaultClient();
 
             var kms_key_arn = System.getenv("KMS_KEY_ARN");
+            LOGGER.debug("kms_key_arn: {}", kms_key_arn);
 
             ByteBuffer ciphertextBlob =
                     ByteBuffer.wrap(System.getenv("TEST_API_KEY").getBytes(StandardCharsets.UTF_8));
@@ -176,9 +174,7 @@ public class CreateDocumentReferenceHandler
             LOGGER.debug("ciphertextBlob: {}", ciphertextBlob);
 
             DecryptRequest req =
-                    new DecryptRequest()
-                            .withCiphertextBlob(ciphertextBlob)
-                            .withKeyId(kms_key_arn);
+                    new DecryptRequest().withCiphertextBlob(ciphertextBlob).withKeyId(kms_key_arn);
 
             ByteBuffer plainText = client.decrypt(req).getPlaintext();
 
