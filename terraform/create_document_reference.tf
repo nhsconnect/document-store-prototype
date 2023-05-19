@@ -19,14 +19,14 @@ module create_document_reference_alarms {
 #######################################
 # Testing
 data "aws_kms_ciphertext" "encrypted_test_key" {
-  key_id = aws_kms_key.test_kms_key.key_id
+  key_id = aws_kms_key.document_store_lambda_kms_key.key_id
   plaintext = "test api key"
 }
 
 resource "aws_iam_role_policy" "lambda_kms_decrypt_role_policy" {
   name   = "lambda_decrypt_from_kms"
   role   = aws_iam_role.lambda_execution_role.id
-  policy = aws_iam_policy.lambda_kms_decryption_policy.policy
+  policy = aws_kms_key.document_store_lambda_kms_key.policy
 }
 
 #######################################
@@ -50,6 +50,7 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
       #######################################
       # Testing
       TEST_API_KEY = data.aws_kms_ciphertext.encrypted_test_key.ciphertext_blob
+      KMS_KEY_ARN = aws_kms_key.document_store_lambda_kms_key.arn
       #######################################
     }, local.common_environment_variables)
   }
