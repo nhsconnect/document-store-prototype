@@ -21,6 +21,10 @@ describe("<PatientTracePage/>", () => {
 
     describe("initial rendering", () => {
         it("renders the page", () => {
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
+
+            useSessionContext.mockReturnValue([session, setSessionMock]);
             renderPatientTracePage();
 
             expect(screen.getByRole("heading", { name: "Search for patient" })).toBeInTheDocument();
@@ -31,7 +35,7 @@ describe("<PatientTracePage/>", () => {
     });
 
     describe("patient details search", () => {
-        it.only("displays a loading spinner when the patients details are being requested", async () => {
+        it("displays a loading spinner when the patients details are being requested", async () => {
             getPatientDetailsMock.mockResolvedValue([]);
             const session = { isLoggedIn: true };
             const setSessionMock = jest.fn();
@@ -84,11 +88,11 @@ describe("<PatientTracePage/>", () => {
             // expect(await screen.findByText("Enter patient's 10 digit NHS number")).not.toBeInTheDocument();
         });
 
-        it("displays a message when NHS number is invalid", async () => {
+        it("displays a message when service isn't found", async () => {
             const errorResponse = {
                 response: {
                     status: 400,
-                    message: "400 Invalid NHS number.",
+                    message: "400 Bad request.",
                 },
             };
 
@@ -98,8 +102,7 @@ describe("<PatientTracePage/>", () => {
             userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "9000000000");
             userEvent.click(screen.getByRole("button", { name: "Search" }));
 
-            expect(await screen.findByText("There is a problem")).toBeInTheDocument();
-            expect(await screen.findAllByText("Enter a valid patient NHS number")).toHaveLength(2);
+            expect(await screen.findByText("Sorry, the service is currently unavailable.")).toBeInTheDocument();
         });
     });
 

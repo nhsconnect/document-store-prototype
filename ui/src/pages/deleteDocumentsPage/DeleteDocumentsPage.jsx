@@ -42,7 +42,7 @@ const DeleteDocumentsPage = () => {
                 if (e.response?.status == 403) {
                     setSession({
                         ...session,
-                        isLoggedIn: "false",
+                        isLoggedIn: false,
                     });
                     navigate(routes.ROOT);
                 }

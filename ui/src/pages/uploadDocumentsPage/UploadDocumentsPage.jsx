@@ -66,7 +66,7 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
         if (documents.every((document) => document.state === stateNames.UNAUTHORISED)) {
             setSession({
                 ...session,
-                isLoggedIn: "false",
+                isLoggedIn: false,
             });
             navigate(routes.ROOT);
         }
