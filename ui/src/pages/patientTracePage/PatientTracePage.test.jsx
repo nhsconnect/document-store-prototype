@@ -119,6 +119,31 @@ describe("<PatientTracePage/>", () => {
                 expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
             });
         });
+
+        it("navigates to start page when user is unauthorized to make request", async () => {
+            const errorResponse = {
+                response: {
+                    status: 403,
+                    message: "403 Unauthorized.",
+                },
+            };
+
+            getPatientDetailsMock.mockRejectedValue(errorResponse);
+            const homePage = routes.ROOT;
+            const mockNavigate = jest.fn();
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
+
+            useSessionContext.mockReturnValue([session, setSessionMock]);
+            useNavigate.mockImplementation(() => mockNavigate);
+
+            renderPatientTracePage();
+            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "9000000000");
+            userEvent.click(screen.getByRole("button", { name: "Search" }));
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith(homePage);
+            });
+        });
     });
 
     describe("validation", () => {

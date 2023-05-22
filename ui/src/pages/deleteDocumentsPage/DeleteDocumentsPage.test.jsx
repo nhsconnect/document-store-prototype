@@ -133,7 +133,7 @@ describe("DeleteDocumentsPage", () => {
         const errorResponse = {
             response: {
                 status: 403,
-                message: "Unauthorised",
+                message: "Unauthorized",
             },
         };
 
