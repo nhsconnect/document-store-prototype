@@ -9,6 +9,7 @@ import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvide
 import ErrorBox from "../../components/errorBox/ErrorBox";
 import { useNavigate } from "react-router";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
 const states = {
     IDLE: "idle",
@@ -28,32 +29,30 @@ export const PatientTracePage = ({ nextPage }) => {
         },
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
-    const [statusCode, setStatusCode] = useState(null);
     const setPatientDetails = usePatientDetailsContext()[1];
+    const [session, setSession] = useSessionContext();
     const [inputError, setInputError] = useState(null);
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
             setInputError(null);
-            setStatusCode(null);
+            setSubmissionState(states.SEARCHING);
 
             const nhsNumber = data.nhsNumber.replace(/[-\s]/gi, "");
-
-            setSubmissionState(states.SEARCHING);
             const response = await documentStore.getPatientDetails(nhsNumber);
             setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
             navigate(nextPage);
         } catch (e) {
-            if (e.response?.status) {
-                setStatusCode(e.response?.status);
-                if (e.response?.status == 403) {
-                    navigate(routes.ROOT);
-                }
-                if (e.response?.status < 500) {
-                    setInputError("Enter a valid patient NHS number");
-                }
+            if (e.response?.status === 403) {
+                setSession({
+                    ...session,
+                    isLoggedIn: "false",
+                });
+                navigate(routes.ROOT);
+            } else if (e.response?.status === 404) {
+                setInputError("Enter a valid patient NHS number");
             }
             setSubmissionState(states.FAILED);
         }
@@ -61,7 +60,6 @@ export const PatientTracePage = ({ nextPage }) => {
 
     const onError = async () => {
         setSubmissionState(states.FAILED);
-        setStatusCode(null);
         setInputError("Enter patient's 10 digit NHS number");
     };
 
@@ -71,7 +69,7 @@ export const PatientTracePage = ({ nextPage }) => {
             <>
                 {submissionState === states.FAILED && (
                     <>
-                        {statusCode >= 500 || !inputError ? (
+                        {!inputError ? (
                             <ServiceError />
                         ) : (
                             <ErrorBox

@@ -11,12 +11,14 @@ import UploadSummary from "../../components/uploadSummary/UploadSummary";
 import PatientSummary from "../../components/patientSummary/PatientSummary";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
 const UploadDocumentsPage = ({ nextPagePath }) => {
     const documentStore = useAuthorisedDocumentStore();
     const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
     const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
+    const [session, setSession] = useSessionContext();
 
     const documents = watch("documents");
     const uploadStateMessages = {
@@ -62,6 +64,10 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
             return documentUploadSteps.COMPLETE;
         }
         if (documents.every((document) => document.state === stateNames.UNAUTHORISED)) {
+            setSession({
+                ...session,
+                isLoggedIn: "false",
+            });
             navigate(routes.ROOT);
         }
         return documentUploadSteps.UPLOADING;

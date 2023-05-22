@@ -7,6 +7,7 @@ import ServiceError from "../../components/serviceError/ServiceError";
 import ProgressBar from "../../components/progressBar/ProgressBar";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
 const states = {
     IDLE: "idle",
@@ -21,6 +22,7 @@ const DeleteDocumentsPage = () => {
     const navigate = useNavigate();
     const [{ nhsNumber, givenName, familyName }] = usePatientDetailsContext();
     const [submissionState, setSubmissionState] = useState(states.IDLE);
+    const [session, setSession] = useSessionContext();
 
     const { ref: shouldDeleteAllDocsRef, ...shouldDeleteAllDocsProps } = register("shouldDeleteAllDocs");
 
@@ -38,6 +40,10 @@ const DeleteDocumentsPage = () => {
                 }
             } catch (e) {
                 if (e.response?.status == 403) {
+                    setSession({
+                        ...session,
+                        isLoggedIn: "false",
+                    });
                     navigate(routes.ROOT);
                 }
                 setSubmissionState(states.FAILED);

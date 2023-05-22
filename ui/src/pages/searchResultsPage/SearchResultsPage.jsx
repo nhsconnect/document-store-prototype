@@ -9,6 +9,7 @@ import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
 const states = {
     INITIAL: "initial",
@@ -25,6 +26,7 @@ const SearchResultsPage = () => {
     const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
     const [numberOfCleanFiles, setNumberOfCleanFiles] = useState(0);
+    const [session, setSession] = useSessionContext();
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
@@ -42,6 +44,10 @@ const SearchResultsPage = () => {
                 setSubmissionState(states.SUCCEEDED);
             } catch (e) {
                 if (e.response?.status === 403) {
+                    setSession({
+                        ...session,
+                        isLoggedIn: "false",
+                    });
                     navigate(routes.ROOT);
                 }
                 setSubmissionState(states.FAILED);
@@ -49,7 +55,7 @@ const SearchResultsPage = () => {
         };
 
         void search();
-    }, [documentStore, patientDetails, navigate, setSubmissionState, setSearchResults]);
+    }, [documentStore, patientDetails, navigate, setSubmissionState, setSearchResults, setSession, session]);
 
     const downloadAll = async () => {
         setDownloadState(states.PENDING);
@@ -61,6 +67,10 @@ const SearchResultsPage = () => {
             setDownloadState(states.SUCCEEDED);
         } catch (e) {
             if (e.response?.status === 403) {
+                setSession({
+                    ...session,
+                    isLoggedIn: "false",
+                });
                 navigate(routes.ROOT);
             }
             setDownloadState(states.FAILED);
