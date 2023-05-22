@@ -49,14 +49,16 @@ export const PatientTracePage = ({ nextPage }) => {
             navigate(nextPage);
         } catch (e) {
             setStatusCode(e.response?.status ?? null);
-            if (e.response?.status === 403) {
+            if (e.response?.status === 400) {
+                setInputError("Enter a valid patient NHS number.");
+            } else if (e.response?.status === 403) {
                 setSession({
                     ...session,
                     isLoggedIn: false,
                 });
                 navigate(routes.ROOT);
-            } else if (e.response?.status === 400) {
-                setInputError("Enter a valid patient NHS number");
+            } else if (e.response?.status === 404) {
+                setInputError("Sorry, patient data not found.");
             }
             setSubmissionState(states.FAILED);
         }

@@ -64,8 +64,7 @@ describe("<PatientTracePage/>", () => {
             renderPatientTracePage();
             userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "0987654321");
             userEvent.click(screen.getByRole("button", { name: "Search" }));
-
-            expect(await screen.findByText("There is a problem")).toBeInTheDocument();
+            expect(await screen.findAllByText("Enter a valid patient NHS number.")).toHaveLength(2);
         });
 
         it("displays server error message when server is down", async () => {
@@ -83,9 +82,6 @@ describe("<PatientTracePage/>", () => {
             userEvent.click(screen.getByRole("button", { name: "Search" }));
 
             expect(await screen.findByText("Sorry, the service is currently unavailable.")).toBeInTheDocument();
-            expect(await screen.queryByText("There is a problem")).not.toBeInTheDocument();
-            expect(await screen.queryByText("Enter a valid patient NHS number")).not.toBeInTheDocument();
-            // expect(await screen.findByText("Enter patient's 10 digit NHS number")).not.toBeInTheDocument();
         });
 
         it("displays a message when patient data not found", async () => {
@@ -101,8 +97,7 @@ describe("<PatientTracePage/>", () => {
             renderPatientTracePage();
             userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "9000000000");
             userEvent.click(screen.getByRole("button", { name: "Search" }));
-
-            expect(await screen.findByText("Sorry, the service is currently unavailable.")).toBeInTheDocument();
+            expect(await screen.findAllByText("Sorry, patient data not found.")).toHaveLength(2);
         });
     });
 
