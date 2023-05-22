@@ -51,11 +51,11 @@ describe("<PatientTracePage/>", () => {
             expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
         });
 
-        it("displays a message when no patient details are found", async () => {
+        it("displays a message when invalid NHS number provided", async () => {
             const errorResponse = {
                 response: {
-                    status: 404,
-                    message: "404 Patient not found.",
+                    status: 400,
+                    message: "400 Patient not found.",
                 },
             };
 
@@ -88,11 +88,11 @@ describe("<PatientTracePage/>", () => {
             // expect(await screen.findByText("Enter patient's 10 digit NHS number")).not.toBeInTheDocument();
         });
 
-        it("displays a message when service isn't found", async () => {
+        it("displays a message when patient data not found", async () => {
             const errorResponse = {
                 response: {
-                    status: 400,
-                    message: "400 Bad request.",
+                    status: 404,
+                    message: "404 Not found.",
                 },
             };
 

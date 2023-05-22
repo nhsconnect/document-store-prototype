@@ -55,7 +55,7 @@ export const PatientTracePage = ({ nextPage }) => {
                     isLoggedIn: false,
                 });
                 navigate(routes.ROOT);
-            } else if (e.response?.status === 404) {
+            } else if (e.response?.status === 400) {
                 setInputError("Enter a valid patient NHS number");
             }
             setSubmissionState(states.FAILED);

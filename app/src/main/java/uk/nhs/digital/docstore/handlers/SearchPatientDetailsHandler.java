@@ -15,6 +15,7 @@ import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.config.ApiConfig;
 import uk.nhs.digital.docstore.config.Tracer;
+import uk.nhs.digital.docstore.exceptions.InvalidResourceIdException;
 import uk.nhs.digital.docstore.exceptions.PatientNotFoundException;
 import uk.nhs.digital.docstore.model.PatientDetails;
 import uk.nhs.digital.docstore.patientdetails.ClientPatientDetailsDto;
@@ -84,7 +85,12 @@ public class SearchPatientDetailsHandler
         } catch (PatientNotFoundException e) {
             LOGGER.debug("Patient not found - error: " + e.getMessage());
             return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
-        } catch (Exception exception) {
+        }
+        catch(InvalidResourceIdException e) {
+            LOGGER.debug("Invalid NHS number - error: " + e.getMessage());
+            return apiConfig.getApiGatewayResponse(400, getBodyWithError(e), "GET", null);
+        }
+        catch (Exception exception) {
             LOGGER.debug("OH NO IT'S ALL ON FIRE - error: " + exception.getMessage());
             return errorResponseGenerator.errorResponse(exception);
         }
