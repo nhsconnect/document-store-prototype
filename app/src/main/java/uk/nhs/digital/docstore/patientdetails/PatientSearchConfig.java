@@ -1,5 +1,7 @@
 package uk.nhs.digital.docstore.patientdetails;
 
+import static uk.nhs.digital.docstore.utils.KmsKeyDecrypt.decryptCiphertextWithKey;
+
 import com.auth0.jwt.algorithms.Algorithm;
 import uk.nhs.digital.docstore.config.Environment;
 import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
@@ -23,8 +25,8 @@ public class PatientSearchConfig {
     }
 
     public String nhsApiKey() throws MissingEnvironmentVariableException {
-        // return decryptCiphertextWithKey(environment.getEnvVar("NHS_API_KEY"));
-        return environment.getEnvVar("NHS_API_KEY");
+        return decryptCiphertextWithKey(environment.getEnvVar("NHS_API_KEY"));
+        //        return environment.getEnvVar("NHS_API_KEY");
     }
 
     public String nhsOauthEndpoint() throws MissingEnvironmentVariableException {
