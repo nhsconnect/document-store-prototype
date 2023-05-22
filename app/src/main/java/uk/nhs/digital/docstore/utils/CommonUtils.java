@@ -32,9 +32,8 @@ public class CommonUtils {
         return clientBuilder.build();
     }
 
-    public static String decryptKey(String envVariable) {
+    public static String decryptCiphertextWithKey(String ciphertext) {
         AWSKMS kmsClient = AWSKMSClientBuilder.standard().build();
-        String ciphertext = System.getenv(envVariable);
 
         byte[] encryptedBytes = java.util.Base64.getDecoder().decode(ciphertext);
         ByteBuffer byteBuffer = ByteBuffer.allocate(encryptedBytes.length);

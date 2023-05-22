@@ -3,7 +3,6 @@ package uk.nhs.digital.docstore.handlers;
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
-import static uk.nhs.digital.docstore.utils.CommonUtils.decryptKey;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
@@ -87,14 +86,6 @@ public class CreateDocumentReferenceHandler
 
         LOGGER.debug("API Gateway event received - processing starts");
         var jsonParser = fhirContext.newJsonParser();
-
-        LOGGER.debug("TEST_API_KEY ciphertext: {}", System.getenv("TEST_API_KEY"));
-        try {
-            LOGGER.debug("TEST_API_KEY plain text: {}", decryptKey("TEST_API_KEY"));
-        } catch (Exception e) {
-            LOGGER.debug("TEST_API_KEY plain text: Failed");
-            LOGGER.debug(e.toString());
-        }
 
         try {
             var inputDocumentReference =

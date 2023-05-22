@@ -28,8 +28,8 @@ resource "aws_iam_role_policy" "lambda_kms_decrypt_role_policy" {
   role   = aws_iam_role.lambda_execution_role.id
   policy = aws_iam_policy.lambda_kms_decryption_policy.policy
 }
-
 #######################################
+
 resource "aws_lambda_function" "create_doc_ref_lambda" {
   handler       = "uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler::handleRequest"
   function_name = "CreateDocumentReferenceHandler"
@@ -47,11 +47,6 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
       AMPLIFY_BASE_URL = local.amplify_base_url
       TEST_DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.test_document_store.bucket
       VIRUS_SCANNER_IS_STUBBED  = var.virus_scanner_is_stubbed
-      #######################################
-      # Testing
-      TEST_API_KEY = data.aws_kms_ciphertext.encrypted_test_key.ciphertext_blob
-      KMS_KEY_ARN = aws_kms_key.lambda_kms_key.arn
-      #######################################
     }, local.common_environment_variables)
   }
 }

@@ -1,5 +1,7 @@
 package uk.nhs.digital.docstore.patientdetails.auth;
 
+import static uk.nhs.digital.docstore.utils.CommonUtils.decryptCiphertextWithKey;
+
 import com.amazonaws.util.Base64;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import java.nio.charset.StandardCharsets;
@@ -26,9 +28,10 @@ public class SigningKeyProvider implements RSAKeyProvider {
     @Override
     public RSAPrivateKey getPrivateKey() {
         try {
+            String decryptedPrivateKeyAsString =
+                    decryptCiphertextWithKey(environment.getEnvVar("PDS_FHIR_PRIVATE_KEY"));
             String privateKeyAsString =
-                    environment
-                            .getEnvVar("PDS_FHIR_PRIVATE_KEY")
+                    decryptedPrivateKeyAsString
                             .replace("-----BEGIN PRIVATE KEY-----", "")
                             .replaceAll("\\n", "")
                             .replace("-----END PRIVATE KEY-----", "");
