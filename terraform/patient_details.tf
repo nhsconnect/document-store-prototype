@@ -104,7 +104,7 @@ resource "aws_lambda_permission" "api_gateway_permission_for_search_patient_deta
   source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
-resource "aws_iam_role_policy" "lambda_kms_decrypt_role_policy" {
+resource "aws_iam_role_policy" "search_patient_details_lambda_kms_policy" {
   name   = "lambda_decrypt_from_kms"
   role   = aws_iam_role.lambda_execution_role.id
   policy = aws_iam_policy.lambda_kms_decryption_policy.policy
