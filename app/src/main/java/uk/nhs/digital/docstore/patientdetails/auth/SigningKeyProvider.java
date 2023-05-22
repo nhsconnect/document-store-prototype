@@ -29,14 +29,14 @@ public class SigningKeyProvider implements RSAKeyProvider {
     public RSAPrivateKey getPrivateKey() {
         try {
 
-            String decryptedPrivateKeyAsString =
-                    decryptCiphertextWithKey(environment.getEnvVar("PDS_FHIR_PRIVATE_KEY"));
-            String privateKeyAsString =
-                    decryptedPrivateKeyAsString
-                            .replace("-----BEGIN PRIVATE KEY-----", "")
-                            .replaceAll("\\n", "")
-                            .replace("-----END PRIVATE KEY-----", "");
-            /*
+//            String decryptedPrivateKeyAsString =
+//                    decryptCiphertextWithKey(environment.getEnvVar("PDS_FHIR_PRIVATE_KEY"));
+//            String privateKeyAsString =
+//                    decryptedPrivateKeyAsString
+//                            .replace("-----BEGIN PRIVATE KEY-----", "")
+//                            .replaceAll("\\n", "")
+//                            .replace("-----END PRIVATE KEY-----", "");
+
             String privateKeyAsString =
                     environment
                             .getEnvVar("PDS_FHIR_PRIVATE_KEY")
@@ -44,7 +44,6 @@ public class SigningKeyProvider implements RSAKeyProvider {
                             .replaceAll("\\n", "")
                             .replace("-----END PRIVATE KEY-----", "");
 
-             */
 
             byte[] keyBytes = Base64.decode(privateKeyAsString.getBytes(StandardCharsets.UTF_8));
 
