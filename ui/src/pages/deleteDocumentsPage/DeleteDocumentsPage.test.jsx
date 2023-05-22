@@ -5,8 +5,11 @@ import userEvent from "@testing-library/user-event";
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useNavigate } from "react-router";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+
 import routes from "../../enums/routes";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("react-router");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
 jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider");
@@ -21,7 +24,10 @@ describe("DeleteDocumentsPage", () => {
         const givenName = ["Bill"];
         const familyName = "Jobs";
         const patientDetails = buildPatientDetails({ nhsNumber, givenName, familyName });
+        const session = { isLoggedIn: true };
+        const setSessionMock = jest.fn();
 
+        useSessionContext.mockReturnValue([session, setSessionMock]);
         usePatientDetailsContext.mockReturnValue([patientDetails]);
 
         render(<DeleteDocumentsPage />);

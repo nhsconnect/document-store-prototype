@@ -8,7 +8,9 @@ import { useNavigate } from "react-router";
 import { buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
 jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider");
 jest.mock("react-router");
@@ -19,7 +21,10 @@ describe("<UploadDocumentsPage />", () => {
             const navigateMock = jest.fn();
             const nhsNumber = "9000000009";
             const patientDetails = buildPatientDetails({ nhsNumber });
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
 
+            useSessionContext.mockReturnValue([session, setSessionMock]);
             useNavigate.mockImplementation(() => navigateMock);
             usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
 

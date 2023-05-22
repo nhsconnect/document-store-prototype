@@ -7,7 +7,9 @@ import { MemoryRouter, useNavigate } from "react-router";
 import { buildPatientDetails, buildSearchResult } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
 jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider");
 jest.mock("react-router", () => ({
@@ -33,7 +35,10 @@ describe("<SearchResultsPage />", () => {
             const nhsNumber = "9000000001";
             const familyName = "Smith";
             const patientDetails = buildPatientDetails({ nhsNumber, familyName });
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
 
+            useSessionContext.mockReturnValue([session, setSessionMock]);
             usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
             useNavigate.mockReturnValue(navigateMock);
 

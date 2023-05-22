@@ -6,7 +6,9 @@ import PatientDetailsProvider from "../../providers/patientDetailsProvider/Patie
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("react-router");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
 
@@ -29,9 +31,12 @@ describe("<PatientTracePage/>", () => {
     });
 
     describe("patient details search", () => {
-        it("displays a loading spinner when the patients details are being requested", async () => {
+        it.only("displays a loading spinner when the patients details are being requested", async () => {
             getPatientDetailsMock.mockResolvedValue([]);
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
 
+            useSessionContext.mockReturnValue([session, setSessionMock]);
             renderPatientTracePage();
             userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "9000000009");
             userEvent.click(screen.getByRole("button", { name: "Search" }));

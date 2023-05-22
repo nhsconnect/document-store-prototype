@@ -32,11 +32,14 @@ export const PatientTracePage = ({ nextPage }) => {
     const setPatientDetails = usePatientDetailsContext()[1];
     const [session, setSession] = useSessionContext();
     const [inputError, setInputError] = useState(null);
+    const [statusCode, setStatusCode] = useState(null);
+
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
             setInputError(null);
+            setStatusCode(null);
             setSubmissionState(states.SEARCHING);
 
             const nhsNumber = data.nhsNumber.replace(/[-\s]/gi, "");
@@ -45,6 +48,7 @@ export const PatientTracePage = ({ nextPage }) => {
             setSubmissionState(states.SUCCEEDED);
             navigate(nextPage);
         } catch (e) {
+            setStatusCode(e.response?.status ?? null);
             if (e.response?.status === 403) {
                 setSession({
                     ...session,
@@ -69,7 +73,7 @@ export const PatientTracePage = ({ nextPage }) => {
             <>
                 {submissionState === states.FAILED && (
                     <>
-                        {!inputError ? (
+                        {statusCode >= 500 || !inputError ? (
                             <ServiceError />
                         ) : (
                             <ErrorBox
