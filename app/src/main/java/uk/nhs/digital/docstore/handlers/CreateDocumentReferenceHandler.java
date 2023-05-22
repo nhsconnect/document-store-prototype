@@ -7,17 +7,11 @@ import static uk.nhs.digital.docstore.utils.CommonUtils.decryptKey;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
-import com.amazonaws.services.kms.AWSKMS;
-import com.amazonaws.services.kms.AWSKMSClientBuilder;
-import com.amazonaws.services.kms.model.DecryptRequest;
-import com.amazonaws.services.kms.model.DecryptResult;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
