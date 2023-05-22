@@ -55,10 +55,11 @@ data "aws_kms_ciphertext" "encrypted_pds_fhir_private_key" {
   plaintext = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key[0].value : ""
 }
 
+/*
 data "aws_kms_ciphertext" "encrypted_nhs_api_key" {
   key_id = aws_kms_key.lambda_kms_key.key_id
   plaintext = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_key[0].value : ""
-}
+}*/
 
 resource "aws_lambda_function" "search_patient_details_lambda" {
   handler          = "uk.nhs.digital.docstore.handlers.SearchPatientDetailsHandler::handleRequest"
@@ -79,7 +80,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
       PDS_FHIR_IS_STUBBED  = var.pds_fhir_is_stubbed
       PDS_FHIR_PRIVATE_KEY = data.aws_kms_ciphertext.encrypted_pds_fhir_private_key.ciphertext_blob
       PDS_FHIR_KID         = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_kid[0].value : ""
-      NHS_API_KEY          = data.aws_kms_ciphertext.encrypted_nhs_api_key.ciphertext_blob
+      NHS_API_KEY          = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_key[0].value : ""
       NHS_OAUTH_ENDPOINT   = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_oauth_endpoint[0].value : ""
       AMPLIFY_BASE_URL     = local.amplify_base_url
       SQS_ENDPOINT         = var.sqs_endpoint
