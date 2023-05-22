@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.handlers;
 import static java.util.stream.Collectors.toList;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
 import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
+import static uk.nhs.digital.docstore.utils.CommonUtils.decryptKey;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
@@ -94,7 +95,12 @@ public class CreateDocumentReferenceHandler
         var jsonParser = fhirContext.newJsonParser();
 
         LOGGER.debug("TEST_API_KEY ciphertext: {}", System.getenv("TEST_API_KEY"));
-        LOGGER.debug("TEST_API_KEY plain text: {}", decryptKey("TEST_API_KEY"));
+        try {
+            LOGGER.debug("TEST_API_KEY plain text: {}", decryptKey("TEST_API_KEY"));
+        } catch (Exception e) {
+            LOGGER.debug("TEST_API_KEY plain text: Failed");
+            LOGGER.debug(e.toString());
+        }
 
         try {
             var inputDocumentReference =
@@ -157,30 +163,6 @@ public class CreateDocumentReferenceHandler
 
         } catch (Exception e) {
             return errorResponseGenerator.errorResponse(e);
-        }
-    }
-
-    private static String decryptKey(String envVariable) {
-        try {
-            LOGGER.debug("Beginning key decrypt process...");
-
-            AWSKMS kmsClient = AWSKMSClientBuilder.standard().build();
-            String ciphertext = System.getenv(envVariable);
-
-            byte[] encryptedBytes = java.util.Base64.getDecoder().decode(ciphertext);
-            ByteBuffer byteBuffer = ByteBuffer.allocate(encryptedBytes.length);
-            byteBuffer.put(encryptedBytes);
-            byteBuffer.flip();
-
-            DecryptRequest decryptRequest = new DecryptRequest().withCiphertextBlob(byteBuffer);
-            DecryptResult decryptResult = kmsClient.decrypt(decryptRequest);
-
-            ByteBuffer decryptedByteBuffer = decryptResult.getPlaintext();
-            return StandardCharsets.UTF_8.decode(decryptedByteBuffer).toString();
-
-        } catch (Exception e) {
-            LOGGER.debug(e.toString());
-            return "Failed";
         }
     }
 }
