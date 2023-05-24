@@ -17,7 +17,7 @@ describe("AuthCallbackRouter", () => {
         const allQueryParams = `?${codeAndStateQueryParams}&client_id=some-client-id`;
         const baseUiUrl = "http://localhost:3000";
         const baseAPIUrl = "https://api.url";
-        const tokenRequestHandlerUrl = `${baseAPIUrl}/Auth/TokenRequest?${codeAndStateQueryParams}&redirect_uri=${baseUiUrl}${routes.AUTH_SUCCESS}`;
+        const tokenRequestHandlerUrl = `${baseAPIUrl}/Auth/TokenRequest?${codeAndStateQueryParams}&redirect_uri=${baseUiUrl}${routes.AUTH_SUCCESS}&error_uri=${baseUiUrl}${routes.AUTH_ERROR}`;
         const windowLocationProperties = {
             search: { value: allQueryParams },
             replace: { value: jest.fn() },
