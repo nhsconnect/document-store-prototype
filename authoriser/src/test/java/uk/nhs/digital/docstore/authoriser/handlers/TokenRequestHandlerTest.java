@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.OIDCClient;
@@ -22,12 +21,15 @@ class TokenRequestHandlerTest {
     void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws Exception {
         var request = new TokenRequestEvent();
         var redirectUrl = "some-url";
+        var errorRedirectUrl = "some-error-url";
         var authCode = new AuthorizationCode();
         var state = new State();
         request.setQueryStringParameters(
                 Map.of(
                         "redirect_uri",
                         redirectUrl,
+                        "error_uri",
+                        errorRedirectUrl,
                         "code",
                         authCode.getValue(),
                         "state",
@@ -68,18 +70,25 @@ class TokenRequestHandlerTest {
                                 + "; SameSite=None; Secure; Path=/; Max-Age="
                                 + maxCookieAgeInSeconds
                                 + "; HttpOnly");
+        assertThat(response.getHeaders().get("Location")).contains(redirectUrl);
     }
 
     @Test
-    @Disabled
-    void handleRequestReturnsBadRequestResponseWhenTheRequestStateIsInvalid() throws Exception {
+    void handleRequestReturnsBadRequestUrlWhenTheRequestStateIsInvalid() throws Exception {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
+        var errorRedirectUrl = "https://errorRedirect.uri";
+        var redirectUrl = "https://redirect.uri";
         request.setQueryStringParameters(
                 Map.of(
-                        "redirect_uri", "https://redirect.uri",
-                        "code", authCode.getValue(),
-                        "state", new State().getValue()));
+                        "redirect_uri",
+                        redirectUrl,
+                        "error_uri",
+                        errorRedirectUrl,
+                        "code",
+                        authCode.getValue(),
+                        "state",
+                        new State().getValue()));
         request.setHeaders(Map.of("Cookie", "State=" + new State().getValue()));
         var session = new Session();
         session.setRole("some-role");
@@ -90,21 +99,24 @@ class TokenRequestHandlerTest {
         var handler = new TokenRequestHandler(oidcClient);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
-        assertThat(response.getStatusCode()).isEqualTo(400);
+        assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
+        assertThat(response.getHeaders().get("Location")).contains(errorRedirectUrl);
     }
 
     @Test
-    @Disabled
     void handleRequestReturnsBadRequestResponseWhenTheStateCookieIsMissing() throws Exception {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
+        var errorRedirectUrl = "https://errorRedirect.uri";
+        var redirectUrl = "https://redirect.uri";
         request.setQueryStringParameters(
                 Map.of(
-                        "redirect_uri", "https://redirect.uri",
-                        "code", authCode.getValue(),
-                        "state", new State().getValue()));
+                        "redirect_uri", redirectUrl,
+                        "error_uri",
+                        errorRedirectUrl,
+                        "code", authCode.getValue()));
         var session = new Session();
         session.setRole("some-role");
 
@@ -114,10 +126,9 @@ class TokenRequestHandlerTest {
         var handler = new TokenRequestHandler(oidcClient);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
-        assertThat(response.getStatusCode()).isEqualTo(400);
+        assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
+        assertThat(response.getHeaders().get("Location")).contains(errorRedirectUrl);
     }
-
-    // Todo New test for when there is a 403 Unauthorized
 }
