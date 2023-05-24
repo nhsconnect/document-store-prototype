@@ -113,10 +113,12 @@ class TokenRequestHandlerTest {
         var redirectUrl = "https://redirect.uri";
         request.setQueryStringParameters(
                 Map.of(
-                        "redirect_uri", redirectUrl,
+                        "redirect_uri",
+                        redirectUrl,
                         "error_uri",
                         errorRedirectUrl,
-                        "code", authCode.getValue()));
+                        "code",
+                        authCode.getValue()));
         var session = new Session();
         session.setRole("some-role");
 
