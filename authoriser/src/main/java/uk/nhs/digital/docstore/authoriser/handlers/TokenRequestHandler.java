@@ -78,7 +78,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             headers.put("Access-Control-Allow-Credentials", "true");
             return new APIGatewayProxyResponseEvent()
                     .withIsBase64Encoded(false)
-                    .withStatusCode(400)
+                    .withStatusCode(SEE_OTHER_STATUS_CODE)
                     .withHeaders(headers)
                     .withBody("");
         }
@@ -96,7 +96,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             headers.put("Access-Control-Allow-Credentials", "true");
             return new APIGatewayProxyResponseEvent()
                     .withIsBase64Encoded(false)
-                    .withStatusCode(400)
+                    .withStatusCode(SEE_OTHER_STATUS_CODE)
                     .withHeaders(headers)
                     .withBody("");
         }
@@ -115,7 +115,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             headers.put("Access-Control-Allow-Credentials", "true");
             return new APIGatewayProxyResponseEvent()
                     .withIsBase64Encoded(false)
-                    .withStatusCode(403)
+                    .withStatusCode(SEE_OTHER_STATUS_CODE)
                     .withHeaders(headers)
                     .withBody("");
         }
