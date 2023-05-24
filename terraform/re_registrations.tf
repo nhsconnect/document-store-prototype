@@ -3,18 +3,18 @@ data "aws_ssm_parameter" "re_registration_sns_topic_arn" {
   count = var.cloud_only_service_instances
 }
 
-module re_registration_alarms {
+module "re_registration_alarms" {
   source                     = "./modules/lambda_alarms"
   lambda_function_name       = aws_lambda_function.re_registration_lambda.function_name
   lambda_timeout             = aws_lambda_function.re_registration_lambda.timeout
   lambda_short_name          = "re_registration_event_handler"
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-  environment                = var.environment
+  environment                = terraform.workspace
 }
 
 resource "aws_lambda_function" "re_registration_lambda" {
   handler          = "uk.nhs.digital.docstore.handlers.ReRegistrationEventHandler::handleRequest"
-  function_name    = "ReRegistrationEventHandler"
+  function_name    = "${terraform.workspace}_ReRegistrationEventHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn
   timeout          = 15
@@ -32,31 +32,31 @@ resource "aws_lambda_function" "re_registration_lambda" {
 }
 
 resource "aws_lambda_event_source_mapping" "event_source_mapping" {
-  event_source_arn = aws_sqs_queue.re_registration.arn
-  function_name    = aws_lambda_function.re_registration_lambda.arn
-  batch_size       = 10
+  event_source_arn        = aws_sqs_queue.re_registration.arn
+  function_name           = aws_lambda_function.re_registration_lambda.arn
+  batch_size              = 10
   function_response_types = ["ReportBatchItemFailures"]
 }
 
 resource "aws_sqs_queue" "re_registration" {
-  name                    = "${var.environment}-re-registration"
+  name                    = "${terraform.workspace}-re-registration"
   sqs_managed_sse_enabled = true
 }
 
 resource "aws_sqs_queue" "re_registration_dlq" {
-  name                    = "${var.environment}-re-registration-dlq"
+  name                    = "${terraform.workspace}-re-registration-dlq"
   sqs_managed_sse_enabled = true
 }
 
 resource "aws_sns_topic_subscription" "subscription_to_re_registration_sns_topic" {
-topic_arn = data.aws_ssm_parameter.re_registration_sns_topic_arn[0].value
-protocol  = "sqs"
-endpoint  = aws_sqs_queue.re_registration.arn
-count     = var.cloud_only_service_instances
+  topic_arn = data.aws_ssm_parameter.re_registration_sns_topic_arn[0].value
+  protocol  = "sqs"
+  endpoint  = aws_sqs_queue.re_registration.arn
+  count     = var.cloud_only_service_instances
 }
 
 resource "aws_sqs_queue_redrive_policy" "re_registration_redrive_policy" {
-  queue_url      = aws_sqs_queue.re_registration.id
+  queue_url = aws_sqs_queue.re_registration.id
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.re_registration_dlq.arn
     maxReceiveCount     = 5
@@ -64,7 +64,7 @@ resource "aws_sqs_queue_redrive_policy" "re_registration_redrive_policy" {
 }
 
 resource "aws_sqs_queue_redrive_allow_policy" "re_registration_redrive_allow_policy" {
-  queue_url            = aws_sqs_queue.re_registration_dlq.id
+  queue_url = aws_sqs_queue.re_registration_dlq.id
   redrive_allow_policy = jsonencode({
     sourceQueueArns   = [aws_sqs_queue.re_registration.arn]
     redrivePermission = "byQueue"
@@ -73,14 +73,14 @@ resource "aws_sqs_queue_redrive_allow_policy" "re_registration_redrive_allow_pol
 
 resource "aws_sqs_queue_policy" "re_registration_queue_policy" {
   queue_url = aws_sqs_queue.re_registration.id
-  policy    = jsonencode({
+  policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
       {
         "Sid" : "SendMessageToReRegistrationQueue"
         "Effect" : "Allow",
         "Principal" : {
-          "Service": "sns.amazonaws.com"
+          "Service" : "sns.amazonaws.com"
         },
         "Action" : "sqs:SendMessage",
         "Resource" : aws_sqs_queue.re_registration.arn,
@@ -119,10 +119,10 @@ resource "aws_iam_role_policy" "sqs_to_lambda_policy" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "re_registration_age_of_oldest_message" {
-  alarm_name        = "prs_${var.environment}_re_registration_age_of_oldest_message"
+  alarm_name        = "prs_${terraform.workspace}_re_registration_age_of_oldest_message"
   alarm_description = "Triggers when a message has been in the ${aws_sqs_queue.re_registration.name} queue for more than 10 minutes."
   namespace         = "AWS/SQS"
-  dimensions        = {
+  dimensions = {
     QueueName = aws_sqs_queue.re_registration.name
   }
   metric_name         = "ApproximateAgeOfOldestMessage"
@@ -137,10 +137,10 @@ resource "aws_cloudwatch_metric_alarm" "re_registration_age_of_oldest_message" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "re_registration_dlq_number_of_messages_visible" {
-  alarm_name        = "prs_${var.environment}_re_registration_dlq_number_of_messages_visible"
+  alarm_name        = "prs_${terraform.workspace}_re_registration_dlq_number_of_messages_visible"
   alarm_description = "Triggers when the number of messages visible in the ${aws_sqs_queue.re_registration_dlq.name} queue is greater than 0."
   namespace         = "AWS/SQS"
-  dimensions        = {
+  dimensions = {
     QueueName = aws_sqs_queue.re_registration_dlq.name
   }
   metric_name         = "ApproximateNumberOfMessagesVisible"
