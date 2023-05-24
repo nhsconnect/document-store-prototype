@@ -10,7 +10,6 @@ repositories {
 }
 
 dependencies {
-
     implementation project(path: ':app')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
@@ -34,6 +33,24 @@ dependencies {
     testImplementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+jar {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}
+
 test {
     useJUnitPlatform()
+}
+
+task wrapper(type: Wrapper){
+    gradleVersion = 7.5
 }

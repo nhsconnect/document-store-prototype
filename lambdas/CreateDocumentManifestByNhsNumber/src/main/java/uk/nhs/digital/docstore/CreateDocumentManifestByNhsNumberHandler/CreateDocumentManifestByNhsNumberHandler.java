@@ -1,4 +1,4 @@
-package CreateDocumentManifestByNhsNumberHandler;
+package uk.nhs.digital.docstore.CreateDocumentManifestByNhsNumberHandler;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
