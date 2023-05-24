@@ -301,7 +301,30 @@ describe("<SearchResultsPage />", () => {
             });
         });
 
-        //TODO: Bad download request
+        it("navigates to start page when user is unauthorized to make download request", async () => {
+            const errorResponse = {
+                response: {
+                    status: 403,
+                    message: "403 Unauthorized.",
+                },
+            };
+            const navigateMock = jest.fn();
+            const setSessionMock = jest.fn();
+            const session = { isLoggedIn: true };
+            useNavigate.mockReturnValue(navigateMock);
+            useSessionContext.mockReturnValue([session, setSessionMock]);
+
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            findByNhsNumberMock.mockResolvedValue([buildSearchResult()]);
+            getPresignedUrlForZipMock.mockRejectedValue(errorResponse);
+
+            renderSearchResultsPage();
+            userEvent.click(await screen.findByRole("button", { name: "Download All Documents" }));
+
+            await waitFor(() => {
+                expect(navigateMock).toHaveBeenCalledWith(routes.ROOT);
+            });
+        });
     });
 });
 
