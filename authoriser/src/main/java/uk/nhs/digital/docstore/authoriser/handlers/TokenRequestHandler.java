@@ -68,71 +68,73 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             TokenRequestEvent requestEvent, Context context) {
         var authCode = requestEvent.getAuthCode();
 
+        throw new RuntimeException();
+
         // TODO: [PRMT-2779] Add identifier such as a redacted state
-        LOGGER.debug("Handling token request");
-
-        if (authCode.isEmpty()) {
-            throw new RuntimeException("Auth code is empty");
-        }
-
-        if (!requestEvent.hasMatchingStateValues()) {
-            // TODO: [PRMT-2779] Add redaction if required
-            LOGGER.debug(
-                    "Mismatching state values. Cookie state: "
-                            + requestEvent.getCookieState().orElse(null)
-                            + " and query parameter state: "
-                            + requestEvent.getQueryParameterState().orElse(null));
-
-            return new APIGatewayProxyResponseEvent()
-                    .withStatusCode(400)
-                    .withIsBase64Encoded(false)
-                    .withBody("");
-        }
-
-        // TODO: [PRMT-2779] Add redaction if required
-        LOGGER.debug(
-                "Authorising session for state: " + requestEvent.getCookieState().orElse(null));
-
-        Session session;
-
-        try {
-            session = OIDCClient.authoriseSession(authCode.get());
-        } catch (AuthorisationException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        // TODO: [PRMT-2779] Add redaction if required
-        LOGGER.debug(
-                "Successfully authorised session with state: "
-                        + requestEvent.getCookieState().orElse(null));
-
-        var headers = new HashMap<String, String>();
-        headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
-        headers.put("Access-Control-Allow-Credentials", "true");
-        var maxCookieAgeInSeconds =
-                Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
-        var sessionId = session.getId().toString();
-        var stateCookie =
-                httpOnlyCookieBuilder(
-                        "State", requestEvent.getCookieState().orElseThrow().getValue(), 0L);
-        var subjectClaimCookie =
-                httpOnlyCookieBuilder(
-                        "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
-        var sessionIdCookie = httpOnlyCookieBuilder("SessionId", sessionId, maxCookieAgeInSeconds);
-        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie);
-        var multiValueHeaders = Map.of("Set-Cookie", cookies);
-
-        // TODO: [PRMT-2779] Add or improve redaction if required
-        LOGGER.debug(
-                "Responding with auth cookies for session with ID ending in: "
-                        + sessionId.substring(sessionId.length() - 4));
-
-        return new APIGatewayProxyResponseEvent()
-                .withIsBase64Encoded(false)
-                .withStatusCode(SEE_OTHER_STATUS_CODE)
-                .withHeaders(headers)
-                .withBody("")
-                .withMultiValueHeaders(multiValueHeaders);
+//        LOGGER.debug("Handling token request");
+//
+//        if (authCode.isEmpty()) {
+//            throw new RuntimeException("Auth code is empty");
+//        }
+//
+//        if (!requestEvent.hasMatchingStateValues()) {
+//            // TODO: [PRMT-2779] Add redaction if required
+//            LOGGER.debug(
+//                    "Mismatching state values. Cookie state: "
+//                            + requestEvent.getCookieState().orElse(null)
+//                            + " and query parameter state: "
+//                            + requestEvent.getQueryParameterState().orElse(null));
+//
+//            return new APIGatewayProxyResponseEvent()
+//                    .withStatusCode(400)
+//                    .withIsBase64Encoded(false)
+//                    .withBody("");
+//        }
+//
+//        // TODO: [PRMT-2779] Add redaction if required
+//        LOGGER.debug(
+//                "Authorising session for state: " + requestEvent.getCookieState().orElse(null));
+//
+//        Session session;
+//
+//        try {
+//            session = OIDCClient.authoriseSession(authCode.get());
+//        } catch (AuthorisationException exception) {
+//            throw new RuntimeException(exception);
+//        }
+//
+//        // TODO: [PRMT-2779] Add redaction if required
+//        LOGGER.debug(
+//                "Successfully authorised session with state: "
+//                        + requestEvent.getCookieState().orElse(null));
+//
+//        var headers = new HashMap<String, String>();
+//        headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
+//        headers.put("Access-Control-Allow-Credentials", "true");
+//        var maxCookieAgeInSeconds =
+//                Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
+//        var sessionId = session.getId().toString();
+//        var stateCookie =
+//                httpOnlyCookieBuilder(
+//                        "State", requestEvent.getCookieState().orElseThrow().getValue(), 0L);
+//        var subjectClaimCookie =
+//                httpOnlyCookieBuilder(
+//                        "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
+//        var sessionIdCookie = httpOnlyCookieBuilder("SessionId", sessionId, maxCookieAgeInSeconds);
+//        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie);
+//        var multiValueHeaders = Map.of("Set-Cookie", cookies);
+//
+//        // TODO: [PRMT-2779] Add or improve redaction if required
+//        LOGGER.debug(
+//                "Responding with auth cookies for session with ID ending in: "
+//                        + sessionId.substring(sessionId.length() - 4));
+//
+//        return new APIGatewayProxyResponseEvent()
+//                .withIsBase64Encoded(false)
+//                .withStatusCode(SEE_OTHER_STATUS_CODE)
+//                .withHeaders(headers)
+//                .withBody("")
+//                .withMultiValueHeaders(multiValueHeaders);
     }
 
     private static IDTokenValidator makeIDTokenValidator() {
