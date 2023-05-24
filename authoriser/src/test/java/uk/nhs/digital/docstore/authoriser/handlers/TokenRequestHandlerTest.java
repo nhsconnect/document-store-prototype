@@ -19,7 +19,6 @@ import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 class TokenRequestHandlerTest {
     @Test
-    @Disabled
     void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws Exception {
         var request = new TokenRequestEvent();
         var redirectUrl = "some-url";
@@ -119,4 +118,6 @@ class TokenRequestHandlerTest {
         assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
+
+    // Todo New test for when there is a 403 Unauthorized
 }
