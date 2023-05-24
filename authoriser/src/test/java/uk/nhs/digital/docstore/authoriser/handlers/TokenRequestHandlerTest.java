@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.OIDCClient;
@@ -19,7 +18,6 @@ import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 class TokenRequestHandlerTest {
     @Test
-    @Disabled
     void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws Exception {
         var request = new TokenRequestEvent();
         var redirectUrl = "some-url";
@@ -76,7 +74,6 @@ class TokenRequestHandlerTest {
     }
 
     @Test
-    @Disabled
     void handleRequestReturnsBadRequestUrlWhenTheRequestStateIsInvalid() throws Exception {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
@@ -109,7 +106,6 @@ class TokenRequestHandlerTest {
     }
 
     @Test
-    @Disabled
     void handleRequestReturnsBadRequestResponseWhenTheStateCookieIsMissing() throws Exception {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
