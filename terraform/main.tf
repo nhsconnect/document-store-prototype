@@ -31,7 +31,7 @@ provider "aws" {
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
-  name = "LambdaExecution"
+  name = "${terraform.workspace}_LambdaExecution"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -59,7 +59,7 @@ resource "aws_iam_role_policy_attachment" "lambda_insights_policy" {
 }
 
 resource "aws_api_gateway_rest_api" "lambda_api" {
-  name = "DocStoreAPI"
+  name = "${terraform.workspace}_DocStoreAPI"
 }
 
 resource "aws_api_gateway_deployment" "api_deploy" {
@@ -131,7 +131,7 @@ resource "aws_api_gateway_gateway_response" "doc_store_bad_gateway_response" {
 }
 
 resource "aws_iam_policy" "dynamodb_table_access_policy" {
-  name   = "DynamoDBTableAccess"
+  name   = "${terraform.workspace}_DynamoDBTableAccess"
   policy = data.aws_iam_policy_document.dynamodb_table_access_policy_doc.json
 }
 

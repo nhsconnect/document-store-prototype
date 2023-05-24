@@ -5,21 +5,21 @@ module "search_doc_ref_endpoint" {
   lambda_arn     = aws_lambda_function.doc_ref_search_lambda.invoke_arn
   http_method    = "GET"
   authorization  = "CUSTOM" //TODO
-authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
+  authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
 }
 
-module document_reference_search_alarms {
+module "document_reference_search_alarms" {
   source                     = "./modules/lambda_alarms"
   lambda_function_name       = aws_lambda_function.doc_ref_search_lambda.function_name
   lambda_timeout             = aws_lambda_function.doc_ref_search_lambda.timeout
   lambda_short_name          = "document_reference_search_handler"
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-  environment                = var.environment
+  environment                = terraform.workspace
 }
 
 resource "aws_lambda_function" "doc_ref_search_lambda" {
   handler          = "uk.nhs.digital.docstore.lambdas.DocumentReferenceSearchHandler::handleRequest"
-  function_name    = "DocumentReferenceSearchHandler"
+  function_name    = "${terraform.workspace}_DocumentReferenceSearchHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn
   timeout          = 15
@@ -44,7 +44,7 @@ resource "aws_lambda_permission" "api_gateway_permission_for_doc_ref_search" {
   principal     = "apigateway.amazonaws.com"
   # The "/*/*" portion grants access from any method on any resource
   # within the API Gateway REST API.
-  source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
+  source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
 locals {
