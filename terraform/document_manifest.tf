@@ -24,7 +24,7 @@ resource "aws_lambda_function" "document_manifest_lambda" {
   timeout          = 60
   memory_size      = 1000
   filename         = var.lambda_CreateDocumentManifestByNhsNumberHandler_jar_filename
-  source_code_hash = filebase64sha256(var.lambda_CreateDocumentManifestByNhsNumberHandler_jar_filename)
+#  source_code_hash = filebase64sha256(var.lambda_CreateDocumentManifestByNhsNumberHandler_jar_filename)
   layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
     aws_lambda_layer_version.lambda_document_store_layer.arn
