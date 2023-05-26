@@ -1,4 +1,4 @@
-package org.example;
+package uk.nhs.digital.docstore;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
@@ -21,10 +21,10 @@ import uk.nhs.digital.docstore.services.DocumentManifestService;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.utils.ZipService;
 
-public class testlambdaHandler
+public class CreateDocumentManifestByNhsNumber
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(testlambdaHandler.class);
+            LoggerFactory.getLogger(CreateDocumentManifestByNhsNumber.class);
 
     private final ApiConfig apiConfig;
     private final DocumentMetadataSearchService metadataSearchService;
@@ -33,7 +33,7 @@ public class testlambdaHandler
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     @SuppressWarnings("unused")
-    public testlambdaHandler() {
+    public CreateDocumentManifestByNhsNumber() {
         this(
                 new ApiConfig(),
                 new DocumentMetadataStore(),
@@ -44,7 +44,7 @@ public class testlambdaHandler
                 System.getenv("DOCUMENT_ZIP_TRACE_TTL_IN_DAYS"));
     }
 
-    public testlambdaHandler(
+    public CreateDocumentManifestByNhsNumber(
             ApiConfig apiConfig,
             DocumentMetadataStore metadataStore,
             DocumentZipTraceStore zipTraceStore,
