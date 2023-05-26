@@ -13,6 +13,16 @@ common:
           command: dojo
           arguments:
             - "./gradlew app:build"
+  lambdas: &build_lambdas
+    artifacts:
+      - build:
+          source: lambdas/CreateDocumentManifestByNhsNumber/build/libs
+          destination: jars
+    tasks:
+      - exec:
+          command: dojo
+          arguments:
+            - "./gradlew lambdas:CreateDocumentManifestByNhsNumber:build"
   authoriser: &authoriser
     artifacts:
       - build:
@@ -37,6 +47,10 @@ common:
           stage: build
           job: authoriser
           source: jars
+      - fetch:
+          stage: build
+          job: lambdas
+          source: jars
       - exec:
           command: dojo
           arguments:
@@ -52,6 +66,10 @@ common:
       - fetch:
           stage: build
           job: backend
+          source: jars
+      - fetch:
+          stage: build
+          job: lambdas
           source: jars
       - fetch:
           stage: build
@@ -130,6 +148,7 @@ pipelines:
           jobs:
             backend: *build_backend
             authoriser: *authoriser
+            lambdas: *build_lambdas
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: dev
