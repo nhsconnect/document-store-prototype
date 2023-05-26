@@ -39,7 +39,7 @@ variable "lambda_jar_filename" {
 
 variable "lambda_CreateDocumentManifestByNhsNumberHandler_jar_filename" {
   type    = string
-  default = "../lambdas/CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
+  default = "../CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
 }
 
 variable "authoriser_lambda_jar_filename" {
