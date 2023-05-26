@@ -16,13 +16,13 @@ common:
   lambdas: &build_lambdas
     artifacts:
       - build:
-          source: testlambdaHandler/build/libs
+          source: testLambda/build/libs
           destination: jars
     tasks:
       - exec:
           command: dojo
           arguments:
-            - "./gradlew testlambdaHandler:build"
+            - "./gradlew testLambda:build"
   authoriser: &authoriser
     artifacts:
       - build:
