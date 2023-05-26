@@ -17,7 +17,7 @@ module "document_manifest_preflight" {
 }
 
 resource "aws_lambda_function" "document_manifest_lambda" {
-  handler          = "uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumber::handleRequest"
+  handler          = "uk.nhs.digital.docstore.CreateDocumentManifestByNhsNumber::handleRequest"
   function_name    = "CreateDocumentManifestByNhsNumber"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn
