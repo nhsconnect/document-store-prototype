@@ -16,13 +16,13 @@ common:
   lambdas: &build_lambdas
     artifacts:
       - build:
-          source: lambdas/CreateDocumentManifestByNhsNumber/build/libs
+          source: testlambdaHandler/build/libs
           destination: jars
     tasks:
       - exec:
           command: dojo
           arguments:
-            - "./gradlew lambdas:CreateDocumentManifestByNhsNumber:build"
+            - "./gradlew testlambdaHandler:build"
   authoriser: &authoriser
     artifacts:
       - build:
