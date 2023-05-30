@@ -28,15 +28,15 @@ public class AuthoriserHandler extends BaseAuthRequestHandler
 
     @Override
     public IamPolicyResponse handleRequest(AuthoriserRequestEvent requestEvent, Context context) {
+        // Todo: Send allow or deny response based on user role, see getPolicyDocument
 
-        LOGGER.debug("AUTHORISER LAMBDA HIT");
         var sessionId = requestEvent.getSessionId();
         var subject = requestEvent.getSubject();
         var policyDocumentBuilder = IamPolicyResponse.PolicyDocument.builder();
         var iamPolicyResponse = new IamPolicyResponse();
 
         // TODO: [PRMT-2779] Add identifier such as a redacted session ID
-        LOGGER.debug("Auth request:" + requestEvent);
+        LOGGER.debug("/////// AUTH REQUEST //////" + requestEvent);
 
         if (sessionId.isPresent() && subject.isPresent()) {
             // TODO: [PRMT-2779] Remove/improve this redaction if it is insufficient
@@ -56,6 +56,7 @@ public class AuthoriserHandler extends BaseAuthRequestHandler
                         policyDocumentBuilder.withStatement(List.of(allowStatement)).build();
 
                 iamPolicyResponse.setPolicyDocument(policyDocument);
+
 
                 return iamPolicyResponse;
             }
