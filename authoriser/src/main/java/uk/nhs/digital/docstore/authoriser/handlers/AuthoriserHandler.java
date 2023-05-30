@@ -28,7 +28,6 @@ public class AuthoriserHandler extends BaseAuthRequestHandler
 
     @Override
     public IamPolicyResponse handleRequest(AuthoriserRequestEvent requestEvent, Context context) {
-        // Todo: Send allow or deny response based on user role, see getPolicyDocument
 
         var sessionId = requestEvent.getSessionId();
         var subject = requestEvent.getSubject();
@@ -36,7 +35,7 @@ public class AuthoriserHandler extends BaseAuthRequestHandler
         var iamPolicyResponse = new IamPolicyResponse();
 
         // TODO: [PRMT-2779] Add identifier such as a redacted session ID
-        LOGGER.debug("/////// AUTH REQUEST //////" + requestEvent);
+        LOGGER.debug("Request event: " + requestEvent);
 
         if (sessionId.isPresent() && subject.isPresent()) {
             // TODO: [PRMT-2779] Remove/improve this redaction if it is insufficient

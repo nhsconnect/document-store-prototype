@@ -27,13 +27,11 @@ public class LoginRedirectHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent requestEvent, Context context) {
-        // Todo: Check user organisation / role to send on correct user journey
 
         var authRequest = authenticationRequestFactory.build();
         var resources = authRequest.getResources();
 
-        LOGGER.debug("///// REQUEST EVENT LOGG ////" + authRequest);
-        LOGGER.debug("///// RESOURCES EVENT LOGG ////" + resources);
+        LOGGER.debug("Request event:" + authRequest);
 
         var authRequestUri = authRequest.toURI().toString();
         var authRequestState = authRequest.getState().getValue();

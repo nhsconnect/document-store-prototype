@@ -132,6 +132,14 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
         var sessionId = session.getId().toString();
+
+        // Todo [PRMT-2806] Before success response is sent, make a UserInfo request with sessionId
+        // as bearer to get the role information
+
+        // Relay to the client admin or user role
+        // If userInfo fails return auth error response
+        // Write tests for
+
         var stateCookie =
                 httpOnlyCookieBuilder(
                         "State", requestEvent.getCookieState().orElseThrow().getValue(), 0L);
@@ -139,7 +147,9 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 httpOnlyCookieBuilder(
                         "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
         var sessionIdCookie = httpOnlyCookieBuilder("SessionId", sessionId, maxCookieAgeInSeconds);
-        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie);
+        var isAdmin = true ? "ADMIN" : "USER";
+        var roleCookie = httpOnlyCookieBuilder("RoleId", isAdmin, maxCookieAgeInSeconds);
+        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie, roleCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
         // TODO: [PRMT-2779] Add or improve redaction if required
