@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 @SuppressWarnings("unused")
@@ -26,8 +25,7 @@ public class DocumentMetadataBuilder {
     private final String fileName;
     private final String type = "SNOMED";
     private final String virusScanResult;
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentMetadataBuilder.class);
 
     public static DocumentMetadataBuilder theMetadata() throws IllFormedPatientDetailsException {
         var nhsNumber = randomNumeric(10);
