@@ -29,9 +29,12 @@ public class LoginRedirectHandler extends BaseAuthRequestHandler
             APIGatewayProxyRequestEvent requestEvent, Context context) {
         // Todo: Check user organisation / role to send on correct user journey
 
-        LOGGER.debug("///// REQUEST EVENT LOGG ////" + requestEvent.toString());
-
         var authRequest = authenticationRequestFactory.build();
+        var resources = authRequest.getResources();
+
+        LOGGER.debug("///// REQUEST EVENT LOGG ////" + authRequest);
+        LOGGER.debug("///// RESOURCES EVENT LOGG ////" + resources);
+
         var authRequestUri = authRequest.toURI().toString();
         var authRequestState = authRequest.getState().getValue();
         var cookieState = httpOnlyCookieBuilder("State", authRequestState, 300L);
