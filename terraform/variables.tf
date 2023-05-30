@@ -42,6 +42,11 @@ variable "lambda_testlambdaHandler_jar_filename" {
   default = "../CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
 }
 
+variable "lambda_layers_filename" {
+  type    = string
+  default = "../app/build/distributions/app.zip"
+}
+
 variable "authoriser_lambda_jar_filename" {
   type    = string
   default = "../authoriser/build/libs/authoriser.jar"

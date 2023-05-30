@@ -13,6 +13,7 @@ common:
           command: dojo
           arguments:
             - "./gradlew app:build"
+            - "./gradlew app:buildZip"
   lambdas: &build_lambdas
     artifacts:
       - build:
