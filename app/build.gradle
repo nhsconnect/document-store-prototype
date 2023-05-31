@@ -78,9 +78,7 @@ java {
 jar {
 	from compileJava
 	from processResources
-	into('lib') {
-		from configurations.runtimeClasspath
-	}
+	from configurations.runtimeClasspath
 }
 
 dependencyCheck {
@@ -103,6 +101,14 @@ task integrationTest(type: Test) {
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
 }
+task buildZip(type: Zip) {
+	dependsOn jar
+	into('java/lib') {
+		from(jar)
+//		from(configurations.runtimeClasspath)
+	}
+}
+tasks.register('bulidZip', Zip)
 
 spotless {
 	format 'misc', {
