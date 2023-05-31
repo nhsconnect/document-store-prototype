@@ -78,7 +78,9 @@ java {
 jar {
 	from compileJava
 	from processResources
-	from configurations.runtimeClasspath
+	into('lib') {
+		from configurations.runtimeClasspath
+	}
 }
 
 dependencyCheck {
@@ -108,7 +110,6 @@ task buildZip(type: Zip) {
 //		from(configurations.runtimeClasspath)
 	}
 }
-tasks.register('bulidZip', Zip)
 
 spotless {
 	format 'misc', {
