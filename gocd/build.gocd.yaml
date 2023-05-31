@@ -28,6 +28,9 @@ common:
       - build:
           source: lambdas/DeleteDocumentReference/build/libs
           destination: jars
+      - build:
+          source: lambdas/DocumentReferenceSearch/build/libs
+          destination: jars
     tasks:
       - exec:
           command: dojo
@@ -35,6 +38,7 @@ common:
             - ./gradlew lambdas:CreateDocumentManifestByNhsNumber:build;
               ./gradlew lambdas:CreateDocumentReferenceHandler:build;
               ./gradlew lambdas:DeleteDocumentReference:build;
+              ./gradlew lambdas:DocumentReferenceSearch:build;
   authoriser: &authoriser
     artifacts:
       - build:

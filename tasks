@@ -245,6 +245,7 @@ tf_plan)
     -var lambda_manifest_jar_filename=../jars/libs/CreateDocumentManifestByNhsNumber.jar \
     -var create_doc_ref_lambda_jar_filename=../jars/libs/CreateDocumentReferenceHandler.jar \
     -var delete_doc_ref_lambda_jar_filename=../jars/libs/DeleteDocumentReference.jar \
+    -var doc_ref_search_lambda_jar_filename=../jars/libs/DocumentReferenceSearch.jar \
     -var authoriser_lambda_jar_filename=../jars/libs/authoriser.jar \
     -var lambda_layers_filename=../jars/distributions/app.zip \
     -out=tfplan
