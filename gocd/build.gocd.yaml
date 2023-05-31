@@ -8,7 +8,7 @@ common:
       - test:
           source: app/build/test-results
           destination: test-reports
-      - buildZip:
+      - external:
           source: app/build/distributions
           destination: jars
     tasks:
