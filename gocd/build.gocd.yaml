@@ -31,6 +31,18 @@ common:
       - build:
           source: lambdas/DocumentReferenceSearch/build/libs
           destination: jars
+      - build:
+          source: lambdas/FakeVirusScannedEvent/build/libs
+          destination: jars
+      - build:
+          source: lambdas/ReRegistrationEvent/build/libs
+          destination: jars
+      - build:
+          source: lambdas/SearchPatientDetails/build/libs
+          destination: jars
+      - build:
+          source: lambdas/VirusScannedEvent/build/libs
+          destination: jars
     tasks:
       - exec:
           command: dojo
@@ -39,6 +51,10 @@ common:
               ./gradlew lambdas:CreateDocumentReference:build;
               ./gradlew lambdas:DeleteDocumentReference:build;
               ./gradlew lambdas:DocumentReferenceSearch:build;
+              ./gradlew lambdas:FakeVirusScannedEvent:build;
+              ./gradlew lambdas:ReRegistrationEvent:build;
+              ./gradlew lambdas:SearchPatientDetails:build;
+              ./gradlew lambdas:VirusScannedEvent:build;
   authoriser: &authoriser
     artifacts:
       - build:
