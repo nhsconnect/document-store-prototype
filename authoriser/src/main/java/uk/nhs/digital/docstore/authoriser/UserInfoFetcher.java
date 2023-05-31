@@ -1,46 +1,43 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
+import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.TokenErrorResponse;
-import com.nimbusds.oauth2.sdk.TokenRequest;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretPost;
 import com.nimbusds.oauth2.sdk.client.ClientInformation;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
+import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
+import com.nimbusds.openid.connect.sdk.UserInfoRequest;
+import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import net.minidev.json.JSONObject;
-import uk.nhs.digital.docstore.authoriser.TokenRequestClient;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
+import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 
 public class UserInfoFetcher {
     private final ClientInformation clientInfo;
-    private final TokenRequestClient oidcClient;
+    private final UserInfoRequestClient userInfoClient;
     private final OIDCProviderMetadata providerMetadata;
 
     public UserInfoFetcher(
             ClientInformation clientInfo,
-            TokenRequestClient oidcClient,
+            UserInfoRequestClient oidcClient,
             OIDCProviderMetadata providerMetadata) {
         this.clientInfo = clientInfo;
-        this.oidcClient = oidcClient;
+        this.userInfoClient = oidcClient;
         this.providerMetadata = providerMetadata;
     }
 
-    public JSONObject fetchUserInfo(AuthorizationCode authCode) throws TokenFetchingException {
+    public JSONObject fetchUserInfo(AccessToken authCode) throws UserInfoFetchingException, ParseException {
         var userInfoEndpoint = providerMetadata.getUserInfoEndpointURI();
-        var clientAuth = new ClientSecretPost(clientInfo.getID(), clientInfo.getSecret());
-        var codeGrant =
-                new AuthorizationCodeGrant(authCode, clientInfo.getMetadata().getRedirectionURI());
-        TokenRequest tokenRequest = new TokenRequest(userInfoEndpoint, clientAuth, codeGrant);
-        var tokenResponse = oidcClient.getResponse(tokenRequest);
+        UserInfoRequest userInfoRequest = new UserInfoRequest(userInfoEndpoint, authCode);
+        var userInfoResponse = userInfoClient.getResponse(userInfoRequest);
 
-        if (!tokenResponse.indicatesSuccess()) {
+        if (!userInfoResponse.indicatesSuccess()) {
             // We got an error response...
-            TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
-            throw new TokenFetchingException(errorResponse.getErrorObject().getDescription());
+            UserInfoErrorResponse errorResponse = userInfoResponse.toErrorResponse();
+            throw new UserInfoFetchingException(errorResponse.getErrorObject().getDescription());
         }
-        var successResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
-        return successResponse.getOIDCTokens().getIDToken();
+        var successResponse = (UserInfoResponse) userInfoResponse.toSuccessResponse();
+        return successResponse.toHTTPResponse().getContentAsJSONObject();
     }
 }
