@@ -26,7 +26,7 @@ common:
       - exec:
           command: dojo
           arguments:
-            - "./gradlew CreateDocumentManifestByNhsNumber:build"
+            - "./gradlew lambdas:CreateDocumentManifestByNhsNumber:build"
   authoriser: &authoriser
     artifacts:
       - build:
