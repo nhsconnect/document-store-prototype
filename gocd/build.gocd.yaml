@@ -12,7 +12,11 @@ common:
       - exec:
           command: dojo
           arguments:
-            - "./gradlew app:build && ./gradlew app:buildZip"
+            - "./gradlew app:build"
+      - exec:
+          command: dojo
+          arguments:
+            - "./gradlew app:buildZip"
   lambdas: &build_lambdas
     artifacts:
       - build:
