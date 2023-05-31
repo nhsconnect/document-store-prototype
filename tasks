@@ -243,6 +243,7 @@ tf_plan)
     -var basic_auth_password="$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/basic-auth-password)" \
     -var lambda_jar_filename=../jars/libs/app.jar \
     -var lambda_manifest_jar_filename=../jars/libs/CreateDocumentManifestByNhsNumber.jar \
+    -var create_doc_ref_lambda_jar_filename=../jars/libs/CreateDocumentReferenceHandler.jar \
     -var authoriser_lambda_jar_filename=../jars/libs/authoriser.jar \
     -var lambda_layers_filename=../jars/distributions/app.zip \
     -out=tfplan

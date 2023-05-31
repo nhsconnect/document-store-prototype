@@ -42,6 +42,11 @@ variable "lambda_manifest_jar_filename" {
   default = "..lambdas/CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
 }
 
+variable "create_doc_ref_lambda_jar_filename" {
+  type    = string
+  default = "..lambdas/CreateDocumentReferenceHandler/build/libs/CreateDocumentReferenceHandler.jar"
+}
+
 variable "lambda_layers_filename" {
   type    = string
   default = "../app/build/distributions/app.zip"

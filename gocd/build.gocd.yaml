@@ -22,11 +22,15 @@ common:
       - build:
           source: lambdas/CreateDocumentManifestByNhsNumber/build/libs
           destination: jars
+      - build:
+          source: lambdas/CreateDocumentReferenceHandler/build/libs
+          destination: jars
     tasks:
       - exec:
           command: dojo
           arguments:
-            - "./gradlew lambdas:CreateDocumentManifestByNhsNumber:build"
+            - ./gradlew lambdas:CreateDocumentManifestByNhsNumber:build;
+              ./gradlew lambdas:CreateDocumentReferenceHandler:build;
   authoriser: &authoriser
     artifacts:
       - build:

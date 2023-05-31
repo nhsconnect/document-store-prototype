@@ -3,5 +3,5 @@ include('app')
 include('authoriser')
 include('virusScanner')
 include('lambdas:CreateDocumentManifestByNhsNumber')
-include ('CreateDocumentManifestByNhsNumber')
+include ('lambdas:CreateDocumentReferenceHandler')
 
