@@ -244,7 +244,7 @@ tf_plan)
     -var lambda_jar_filename=../jars/libs/app.jar \
     -var lambda_testlambdaHandler_jar_filename=../jars/libs/CreateDocumentManifestByNhsNumber.jar \
     -var authoriser_lambda_jar_filename=../jars/libs/authoriser.jar \
-    -var lambda_layers_filename=../jars/libs/app.zip \
+    -var lambda_layers_filename=../jars/distributions/app.zip \
     -out=tfplan
   clear_assumed_iam_role
   ;;
