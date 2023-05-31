@@ -8,6 +8,7 @@ cis2_provider_authorize_url  = "https://prod-doc-store-user-pool.auth.eu-west-2.
 cis2_provider_token_url      = "https://prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/token"
 cis2_provider_attributes_url = "https://prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/userInfo"
 cis2_provider_jwks_uri       = "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_IeQo9ubVl/.well-known/jwks.json"
+cis2_provider_user_info_url  = "https://api.service.nhs.uk/oauth2/userinfo"
 cis2_client_callback_urls    = []
 cis2_client_signout_urls     = []
 cognito_key_id               = "cQxrtAvRbEfCQ71CNv4rNtdYQdO8fiTvFpypj4h+gj8="
