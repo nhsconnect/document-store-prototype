@@ -23,7 +23,7 @@ common:
           source: lambdas/CreateDocumentManifestByNhsNumber/build/libs
           destination: jars
       - build:
-          source: lambdas/CreateDocumentReferenceHandler/build/libs
+          source: lambdas/CreateDocumentReference/build/libs
           destination: jars
       - build:
           source: lambdas/DeleteDocumentReference/build/libs
