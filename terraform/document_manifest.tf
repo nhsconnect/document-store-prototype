@@ -39,7 +39,7 @@ resource "aws_lambda_function" "document_manifest_lambda" {
 }
 
 resource "aws_lambda_layer_version" "lambda_document_store_layer" {
-  filename   = var.lambda_jar_filename
+  filename   = var.lambda_layers_filename
   layer_name = "document_store_layer"
 
   compatible_runtimes = ["java11"]
