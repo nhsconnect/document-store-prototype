@@ -47,6 +47,11 @@ variable "create_doc_ref_lambda_jar_filename" {
   default = "..lambdas/CreateDocumentReferenceHandler/build/libs/CreateDocumentReferenceHandler.jar"
 }
 
+variable "delete_doc_ref_lambda_jar_filename" {
+  type    = string
+  default = "..lambdas/DeleteDocumentReference/build/libs/DeleteDocumentReference.jar"
+}
+
 variable "lambda_layers_filename" {
   type    = string
   default = "../app/build/distributions/app.zip"

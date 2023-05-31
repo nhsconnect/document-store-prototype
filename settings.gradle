@@ -4,4 +4,4 @@ include('authoriser')
 include('virusScanner')
 include('lambdas:CreateDocumentManifestByNhsNumber')
 include ('lambdas:CreateDocumentReferenceHandler')
-
+include('lambdas:DeleteDocumentReference')

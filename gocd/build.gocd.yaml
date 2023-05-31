@@ -25,12 +25,16 @@ common:
       - build:
           source: lambdas/CreateDocumentReferenceHandler/build/libs
           destination: jars
+      - build:
+          source: lambdas/DeleteDocumentReference/build/libs
+          destination: jars
     tasks:
       - exec:
           command: dojo
           arguments:
             - ./gradlew lambdas:CreateDocumentManifestByNhsNumber:build;
               ./gradlew lambdas:CreateDocumentReferenceHandler:build;
+              ./gradlew lambdas:DeleteDocumentReference:build;
   authoriser: &authoriser
     artifacts:
       - build:
