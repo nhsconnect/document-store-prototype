@@ -79,16 +79,16 @@ jar {
 	from compileJava
 	from processResources
 	// TODO: [PRMT-3344] remove after separating all of the lambdas to avoid duplicating the library
-	into('lib') {
-		from configurations.runtimeClasspath
-	}
+//	into('lib') {
+//		from configurations.runtimeClasspath
+//	}
 }
 
 task buildZip(type: Zip) {
 	dependsOn jar
 	into('java/lib') {
 		from(jar)
-//		from(configurations.runtimeClasspath)
+		from(configurations.runtimeClasspath)
 	}
 }
 

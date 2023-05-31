@@ -6,3 +6,8 @@ include('lambdas:CreateDocumentManifestByNhsNumber')
 include('lambdas:CreateDocumentReference')
 include('lambdas:DeleteDocumentReference')
 include('lambdas:DocumentReferenceSearch')
+include('lambdas:FakeVirusScannedEvent')
+include('lambdas:ReRegistrationEvent')
+include('lambdas:SearchPatientDetails')
+include('lambdas:VirusScannedEvent')
+

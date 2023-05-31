@@ -16,10 +16,10 @@ import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.services.DocumentDeletionService;
 
-public class DeleteDocumentReference
+public class DeleteDocumentReferenceHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(DeleteDocumentReference.class);
+            LoggerFactory.getLogger(DeleteDocumentReferenceHandler.class);
 
     private final ApiConfig apiConfig;
     private final DocumentDeletionService documentDeletionService;
@@ -27,7 +27,7 @@ public class DeleteDocumentReference
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     @SuppressWarnings("unused")
-    public DeleteDocumentReference() {
+    public DeleteDocumentReferenceHandler() {
         this(
                 new ApiConfig(),
                 new DocumentDeletionService(
@@ -37,7 +37,7 @@ public class DeleteDocumentReference
                         new DocumentMetadataSerialiser()));
     }
 
-    public DeleteDocumentReference(
+    public DeleteDocumentReferenceHandler(
             ApiConfig apiConfig, DocumentDeletionService documentDeletionService) {
         this.apiConfig = apiConfig;
         this.documentDeletionService = documentDeletionService;

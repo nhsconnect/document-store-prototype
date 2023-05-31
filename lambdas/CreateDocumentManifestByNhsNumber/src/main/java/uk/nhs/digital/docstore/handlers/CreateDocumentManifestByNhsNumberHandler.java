@@ -21,10 +21,10 @@ import uk.nhs.digital.docstore.services.DocumentManifestService;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 import uk.nhs.digital.docstore.utils.ZipService;
 
-public class CreateDocumentManifestByNhsNumber
+public class CreateDocumentManifestByNhsNumberHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(CreateDocumentManifestByNhsNumber.class);
+            LoggerFactory.getLogger(CreateDocumentManifestByNhsNumberHandler.class);
 
     private final ApiConfig apiConfig;
     private final DocumentMetadataSearchService metadataSearchService;
@@ -33,7 +33,7 @@ public class CreateDocumentManifestByNhsNumber
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
     @SuppressWarnings("unused")
-    public CreateDocumentManifestByNhsNumber() {
+    public CreateDocumentManifestByNhsNumberHandler() {
         this(
                 new ApiConfig(),
                 new DocumentMetadataStore(),
@@ -44,7 +44,7 @@ public class CreateDocumentManifestByNhsNumber
                 System.getenv("DOCUMENT_ZIP_TRACE_TTL_IN_DAYS"));
     }
 
-    public CreateDocumentManifestByNhsNumber(
+    public CreateDocumentManifestByNhsNumberHandler(
             ApiConfig apiConfig,
             DocumentMetadataStore metadataStore,
             DocumentZipTraceStore zipTraceStore,

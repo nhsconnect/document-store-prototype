@@ -1,7 +1,5 @@
 package uk.nhs.digital.docstore.handlers;
 
-import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
-
 import ca.uhn.fhir.context.FhirContext;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -21,12 +19,14 @@ import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 
+import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
+
 @SuppressWarnings("unused")
-public class DocumentReferenceSearch
+public class DocumentReferenceSearchHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(DocumentReferenceSearch.class);
+            LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
     private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
@@ -36,13 +36,13 @@ public class DocumentReferenceSearch
     private final FhirContext fhirContext;
     private final ApiConfig apiConfig;
 
-    public DocumentReferenceSearch() {
+    public DocumentReferenceSearchHandler() {
         this(
                 new DocumentMetadataSearchService(
                         new DocumentMetadataStore(), new DocumentMetadataSerialiser()));
     }
 
-    public DocumentReferenceSearch(DocumentMetadataSearchService searchService) {
+    public DocumentReferenceSearchHandler(DocumentMetadataSearchService searchService) {
         this.apiConfig = new ApiConfig();
         this.fhirContext = FhirContext.forR4();
         this.fhirContext.setPerformanceOptions(DEFERRED_MODEL_SCANNING);
