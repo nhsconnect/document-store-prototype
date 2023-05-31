@@ -37,14 +37,14 @@ variable "lambda_jar_filename" {
   default = "../app/build/libs/app.jar"
 }
 
-variable "lambda_manifest_jar_filename" {
+variable "create_doc_manifest_lambda_jar_filename" {
   type    = string
   default = "..lambdas/CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
 }
 
 variable "create_doc_ref_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/CreateDocumentReferenceHandler/build/libs/CreateDocumentReferenceHandler.jar"
+  default = "..lambdas/CreateDocumentReference/build/libs/CreateDocumentReference.jar"
 }
 
 variable "delete_doc_ref_lambda_jar_filename" {

@@ -84,6 +84,14 @@ jar {
 	}
 }
 
+task buildZip(type: Zip) {
+	dependsOn jar
+	into('java/lib') {
+		from(jar)
+//		from(configurations.runtimeClasspath)
+	}
+}
+
 dependencyCheck {
 	failBuildOnCVSS = 7
 	suppressionFile = './dependency-checks-suppression.xml'
@@ -103,13 +111,6 @@ task integrationTest(type: Test) {
 	testClassesDirs = sourceSets.integrationTest.output.classesDirs
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
-}
-task buildZip(type: Zip) {
-	dependsOn jar
-	into('java/lib') {
-		from(jar)
-//		from(configurations.runtimeClasspath)
-	}
 }
 
 spotless {

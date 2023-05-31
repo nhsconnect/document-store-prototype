@@ -33,10 +33,10 @@ import uk.nhs.digital.docstore.services.DocumentReferenceService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
 @SuppressWarnings("unused")
-public class CreateDocumentReferenceHandler
+public class CreateDocumentReference
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
+            LoggerFactory.getLogger(CreateDocumentReference.class);
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
     private static final String SUBJECT_ID_CODING_SYSTEM = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String AWS_REGION = "eu-west-2";
@@ -52,7 +52,7 @@ public class CreateDocumentReferenceHandler
     private final CreateDocumentReferenceRequestValidator requestValidator =
             new CreateDocumentReferenceRequestValidator();
 
-    public CreateDocumentReferenceHandler() {
+    public CreateDocumentReference() {
         this(
                 new ApiConfig(),
                 new DocumentReferenceService(
@@ -63,7 +63,7 @@ public class CreateDocumentReferenceHandler
                 new VirusScannerConfig());
     }
 
-    public CreateDocumentReferenceHandler(
+    public CreateDocumentReference(
             ApiConfig apiConfig,
             DocumentReferenceService documentReferenceService,
             DocumentStore documentStore,

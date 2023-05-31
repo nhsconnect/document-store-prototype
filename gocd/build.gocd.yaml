@@ -36,7 +36,7 @@ common:
           command: dojo
           arguments:
             - ./gradlew lambdas:CreateDocumentManifestByNhsNumber:build;
-              ./gradlew lambdas:CreateDocumentReferenceHandler:build;
+              ./gradlew lambdas:CreateDocumentReference:build;
               ./gradlew lambdas:DeleteDocumentReference:build;
               ./gradlew lambdas:DocumentReferenceSearch:build;
   authoriser: &authoriser
