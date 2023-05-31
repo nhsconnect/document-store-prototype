@@ -37,9 +37,9 @@ variable "lambda_jar_filename" {
   default = "../app/build/libs/app.jar"
 }
 
-variable "lambda_testlambdaHandler_jar_filename" {
+variable "lambda_manifest_jar_filename" {
   type    = string
-  default = "../CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
+  default = "..lambdas/CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
 }
 
 variable "lambda_layers_filename" {

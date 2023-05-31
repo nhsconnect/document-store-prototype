@@ -2,27 +2,28 @@ plugins {
     id 'java'
 }
 
-group 'uk.nhs.digital.docstore'
-version 'unspecified'
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
     implementation project(path: ':app')
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
-
+    implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
+    implementation 'com.auth0:java-jwt:4.2.1'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
     implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.96'
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+    runtimeOnly 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1'
 
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testImplementation 'org.json:json:20220924'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
     testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
@@ -33,24 +34,6 @@ dependencies {
     testImplementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
-}
-
-jar {
-    from compileJava
-    from processResources
-    into('lib') {
-        from configurations.runtimeClasspath
-    }
-}
-
 test {
     useJUnitPlatform()
-}
-
-task wrapper(type: Wrapper){
-    gradleVersion = 7.5
 }

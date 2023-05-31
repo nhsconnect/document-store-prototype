@@ -20,7 +20,7 @@ common:
   lambdas: &build_lambdas
     artifacts:
       - build:
-          source: CreateDocumentManifestByNhsNumber/build/libs
+          source: lambdas/CreateDocumentManifestByNhsNumber/build/libs
           destination: jars
     tasks:
       - exec:

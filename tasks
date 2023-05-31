@@ -242,7 +242,7 @@ tf_plan)
     -var cis2_provider_client_secret=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \
     -var basic_auth_password="$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/basic-auth-password)" \
     -var lambda_jar_filename=../jars/libs/app.jar \
-    -var lambda_testlambdaHandler_jar_filename=../jars/libs/CreateDocumentManifestByNhsNumber.jar \
+    -var lambda_manifest_jar_filename=../jars/libs/CreateDocumentManifestByNhsNumber.jar \
     -var authoriser_lambda_jar_filename=../jars/libs/authoriser.jar \
     -var lambda_layers_filename=../jars/distributions/app.zip \
     -out=tfplan
