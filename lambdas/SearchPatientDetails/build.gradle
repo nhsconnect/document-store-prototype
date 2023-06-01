@@ -19,6 +19,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
     implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.96'
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
+
     implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
     implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
     runtimeOnly 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1'
