@@ -1,4 +1,5 @@
 environment                           = "dev"
+NHS_CIS2_ENVIRONMENT                  = "development"
 account_id                            = "533825906475"
 enable_session_auth                   = true
 oidc_providers                        = ["cis2devoidc", "COGNITO"]
