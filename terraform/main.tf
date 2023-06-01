@@ -135,6 +135,13 @@ resource "aws_iam_policy" "dynamodb_table_access_policy" {
   name   = "${terraform.workspace}_DynamoDBTableAccess"
   policy = data.aws_iam_policy_document.dynamodb_table_access_policy_doc.json
 }
+data "aws_ssm_parameter" "cis2_provider_client_id" {
+  name = "/${var.NHS_CIS2_ENVIRONMENT}/cis2/client_id"
+}
+
+data "aws_ssm_parameter" "cis2_provider_client_secret" {
+  name = "/${var.NHS_CIS2_ENVIRONMENT}/cis2/client_secret"
+}
 
 data "aws_iam_policy_document" "dynamodb_table_access_policy_doc" {
   statement {
@@ -182,14 +189,15 @@ locals {
     SQS_ENDPOINT               = var.sqs_endpoint
     SQS_AUDIT_QUEUE_URL        = aws_sqs_queue.sensitive_audit.url
   }
+
   authoriser_environment_variables = {
     DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
     OIDC_ISSUER_URL    = var.cis2_provider_oidc_issuer
     OIDC_AUTHORIZE_URL = var.cis2_provider_authorize_url
     OIDC_JWKS_URL      = var.cis2_provider_jwks_uri
     OIDC_CALLBACK_URL  = var.cloud_only_service_instances > 0 ? "${local.amplify_base_url}/auth-callback" : var.cis2_client_callback_urls[0]
-    OIDC_CLIENT_ID     = var.cis2_provider_client_id
-    OIDC_CLIENT_SECRET = var.cis2_provider_client_secret
+    OIDC_CLIENT_ID     = data.aws_ssm_parameter.cis2_provider_client_id.value
+    OIDC_CLIENT_SECRET = data.aws_ssm_parameter.cis2_provider_client_secret.value
     OIDC_TOKEN_URL     = var.cis2_provider_token_url
   }
   amplify_base_url = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""

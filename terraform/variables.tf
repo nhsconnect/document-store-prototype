@@ -108,6 +108,11 @@ variable "cis2_provider_oidc_issuer" {
   default = ""
 }
 
+variable "NHS_CIS2_ENVIRONMENT" {
+  type    = string
+  default = ""
+}
+
 variable "cis2_provider_authorize_url" {
   type    = string
   default = ""
