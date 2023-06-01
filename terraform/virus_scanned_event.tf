@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "virus_scanned_event_lambda" {
-  function_name    = "VirusScannedEvent"
+  function_name    = "VirusScannedEventHandler"
   role             = aws_iam_role.lambda_execution_role.arn
-  handler          = "uk.nhs.digital.docstore.handlers.VirusScannedEvent::handleRequest"
+  handler          = "uk.nhs.digital.docstore.handlers.VirusScannedEventHandler::handleRequest"
   runtime          = "java11"
   filename         = var.virus_scanner_event_lambda_jar_filename
   source_code_hash = filebase64sha256(var.virus_scanner_event_lambda_jar_filename)
@@ -61,8 +61,8 @@ module fake_virus_scanned_event_alarms {
 }
 
 resource "aws_lambda_function" "fake_virus_scanned_event_lambda" {
-  handler       = "uk.nhs.digital.docstore.handlers.FakeVirusScannedEvent::handleRequest"
-  function_name = "FakeVirusScannedEvent"
+  handler       = "uk.nhs.digital.docstore.handlers.FakeVirusScannedEventHandler::handleRequest"
+  function_name = "FakeVirusScannedEventHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
 

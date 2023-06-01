@@ -31,8 +31,8 @@ resource "aws_iam_role_policy" "create_doc_ref_lambda_kms_policy" {
 #######################################
 
 resource "aws_lambda_function" "create_doc_ref_lambda" {
-  handler       = "uk.nhs.digital.docstore.handlers.CreateDocumentReference::handleRequest"
-  function_name = "CreateDocumentReference"
+  handler       = "uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler::handleRequest"
+  function_name = "CreateDocumentReferenceHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
   timeout     = 15

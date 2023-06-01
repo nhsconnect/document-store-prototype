@@ -13,8 +13,8 @@ module re_registration_alarms {
 }
 
 resource "aws_lambda_function" "re_registration_lambda" {
-  handler          = "uk.nhs.digital.docstore.handlers.ReRegistrationEvent::handleRequest"
-  function_name    = "ReRegistrationEvent"
+  handler          = "uk.nhs.digital.docstore.handlers.ReRegistrationEventHandler::handleRequest"
+  function_name    = "ReRegistrationEventHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn
   timeout          = 15
