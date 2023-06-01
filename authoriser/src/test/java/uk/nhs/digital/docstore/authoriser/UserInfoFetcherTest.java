@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.authoriser;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.id.Issuer;
@@ -14,7 +15,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
+import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 
 class UserInfoFetcherTest {
 
@@ -63,28 +64,24 @@ class UserInfoFetcherTest {
     }
 
     @Test
-    void shouldThrowTokenFetchingExceptionWhenGettingErrorResponse()
-            throws URISyntaxException, TokenFetchingException {
-        //        var clientID = new ClientID("client-id");
-        //        var secret = new Secret("some-secret");
-        //        var redirectURI = new URI("http://some-redirect.uri");
-        //        var tokenURI = new URI("http://token.uri");
-        //        var oidcClient = new FakeUserInfoRequestClient(null);
-        //        var clientMetadata = new ClientMetadata();
-        //        clientMetadata.setRedirectionURI(redirectURI);
-        //        var clientInfo = new ClientInformation(clientID, null, clientMetadata, secret);
-        //        var providerMetadata =
-        //                new OIDCProviderMetadata(
-        //                        new Issuer("test"),
-        //                        List.of(SubjectType.PUBLIC),
-        //                        new URI("http://uri.jwks"));
-        //        providerMetadata.setTokenEndpointURI(tokenURI);
-        //
-        //        var fetcher = new OIDCTokenFetcher(clientInfo, oidcClient, providerMetadata);
-        //
-        //        assertThrows(
-        //                TokenFetchingException.class,
-        //                () -> fetcher.fetchToken(new AuthorizationCode("some-code")));
+    void shouldThrowUserInfoFetchingExceptionWhenGettingErrorResponse()
+            throws URISyntaxException {
+                var userInfoEndpoint = new FakeUserInfoRequestClient(null);
+
+                var userInfoURI = new URI("http://user-info.uri");
+
+                var providerMetadata =
+                        new OIDCProviderMetadata(
+                                new Issuer("test"),
+                                List.of(SubjectType.PUBLIC),
+                                new URI("http://uri.jwks"));
+                providerMetadata.setUserInfoEndpointURI(userInfoURI);
+
+                var fetcher = new UserInfoFetcher(userInfoEndpoint, providerMetadata);
+
+                assertThrows(
+                                UserInfoFetchingException.class,
+                                () -> fetcher.fetchUserInfo(new BearerAccessToken("some-code")));
     }
 
     private static class FakeUserInfoRequestClient implements UserInfoRequestClient {
