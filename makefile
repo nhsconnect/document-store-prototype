@@ -116,3 +116,7 @@ help: ## Show help
 .PHONY: plan-and-deploy-workspace
 plan-and-deploy-workspace:
 	./tasks deploy_workspace_amplify_app
+
+.PHONY: tf-test
+tf-test:
+	./tasks tf_test

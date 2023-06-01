@@ -113,9 +113,49 @@ function export_cypress_base_url() {
   echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com" >e2eTest/cypress.sh
 }
 
+function tf_test() {
+    ENVIRONMENT="dev"
+    check_env
+    deploy_workspace() {
+      terraform destroy
+      NAME=$1
+      cd ./terraform
+      terraform workspace new $NAME
+      terraform plan -var-file="dev.tfvars" -out tfplan
+      terraform apply tfplan
+      terraform output -json >"../terraform_output.json"
+      cd ..
+      create_ui_config_file terraform_output.json
+      cat ui/src/config.js
+      REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
+      cd ui/build
+      zip -r ../../ui.zip *
+      cd ../..
+      deploy_workspace_ui terraform_output.json ui.zip 
+  }
+PS3='Select sandbox: '
+options=("sandbox1" "sandbox2" "exit")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "sandbox1")
+            deploy_workspace $opt
+            ;;
+        "sandbox2")
+            deploy_workspace $opt
+            ;;
+        "exit")
+            exit;
+            ;;
+        *) echo "invalid option $REPLY";;
+    esac
+done
+}
+
 
 function deploy_workspace_amplify_app() {
-  echo "Using Workspace ${WORKSPACE_NAME}"
+
+  # echo "Using Workspace ${WORKSPACE_NAME}"
   ENVIRONMENT="dev"
   check_env
   cd terraform
@@ -401,8 +441,12 @@ virus-scanner-tf-apply)
 deploy_workspace_amplify_app)
   deploy_workspace_amplify_app
   ;;
+tf_test)
+  tf_test
+  ;;
 *)
   echo "make $@"
   make "$@"
   ;;
 esac
+
