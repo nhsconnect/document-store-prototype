@@ -18,7 +18,7 @@ module delete_document_reference_alarms {
 }
 
 resource "aws_lambda_function" "delete_doc_ref_lambda" {
-  handler          = "uk.nhs.digital.docstore.handlers.DeleteDocumentReferenceHandler::handleRequest"
+  handler          = "uk.nhs.digital.docstore.lambdas.DeleteDocumentReferenceHandler::handleRequest"
   function_name    = "DeleteDocumentReferenceHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn

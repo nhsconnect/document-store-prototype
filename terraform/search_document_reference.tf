@@ -18,7 +18,7 @@ module document_reference_search_alarms {
 }
 
 resource "aws_lambda_function" "doc_ref_search_lambda" {
-  handler          = "uk.nhs.digital.docstore.handlers.DocumentReferenceSearchHandler::handleRequest"
+  handler          = "uk.nhs.digital.docstore.lambdas.DocumentReferenceSearchHandler::handleRequest"
   function_name    = "DocumentReferenceSearchHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn

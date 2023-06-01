@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.handlers;
+package uk.nhs.digital.docstore.lambdas;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
@@ -24,7 +24,7 @@ import uk.nhs.digital.docstore.utils.ZipService;
 public class CreateDocumentManifestByNhsNumberHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(CreateDocumentManifestByNhsNumberHandler.class);
+            LoggerFactory.getLogger(uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler.class);
 
     private final ApiConfig apiConfig;
     private final DocumentMetadataSearchService metadataSearchService;

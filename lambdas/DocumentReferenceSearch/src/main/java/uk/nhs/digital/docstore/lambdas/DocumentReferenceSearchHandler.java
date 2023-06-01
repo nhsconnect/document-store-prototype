@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.handlers;
+package uk.nhs.digital.docstore.lambdas;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -26,7 +26,7 @@ public class DocumentReferenceSearchHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(DocumentReferenceSearchHandler.class);
+            LoggerFactory.getLogger(uk.nhs.digital.docstore.handlers.DocumentReferenceSearchHandler.class);
     private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();

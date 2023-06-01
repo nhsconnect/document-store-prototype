@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.handlers;
+package uk.nhs.digital.docstore.lambdas;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;

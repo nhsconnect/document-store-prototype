@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.handlers;
+package uk.nhs.digital.docstore.lambdas;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -19,7 +19,7 @@ import uk.nhs.digital.docstore.services.DocumentDeletionService;
 public class DeleteDocumentReferenceHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(DeleteDocumentReferenceHandler.class);
+            LoggerFactory.getLogger(uk.nhs.digital.docstore.handlers.DeleteDocumentReferenceHandler.class);
 
     private final ApiConfig apiConfig;
     private final DocumentDeletionService documentDeletionService;

@@ -62,7 +62,7 @@ data "aws_ssm_parameter" "pds_fhir_kid" {
 #}
 
 resource "aws_lambda_function" "search_patient_details_lambda" {
-  handler          = "uk.nhs.digital.docstore.handlers.SearchPatientDetailsHandler::handleRequest"
+  handler          = "uk.nhs.digital.docstore.lambdas.SearchPatientDetailsHandler::handleRequest"
   function_name    = "SearchPatientDetailsHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn

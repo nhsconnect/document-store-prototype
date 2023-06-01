@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.handlers;
+package uk.nhs.digital.docstore.lambdas;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
@@ -37,7 +37,7 @@ import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRE
 public class CreateDocumentReferenceHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(CreateDocumentReferenceHandler.class);
+            LoggerFactory.getLogger(uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler.class);
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
     private static final String SUBJECT_ID_CODING_SYSTEM = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String AWS_REGION = "eu-west-2";

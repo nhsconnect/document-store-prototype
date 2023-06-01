@@ -32,11 +32,6 @@ variable "basic_auth_password" {
   default = ""
 }
 
-variable "lambda_jar_filename" {
-  type    = string
-  default = "../app/build/libs/app.jar"
-}
-
 variable "create_doc_manifest_lambda_jar_filename" {
   type    = string
   default = "..lambdas/CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
