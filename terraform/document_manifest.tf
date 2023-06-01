@@ -27,7 +27,7 @@ resource "aws_lambda_function" "document_manifest_lambda" {
   source_code_hash = filebase64sha256(var.create_doc_manifest_lambda_jar_filename)
   layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
-    aws_lambda_layer_version.lambda_document_store_layer.arn
+    aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
   environment {
     variables = merge({
@@ -35,13 +35,6 @@ resource "aws_lambda_function" "document_manifest_lambda" {
       DOCUMENT_ZIP_TRACE_TTL_IN_DAYS = var.document_zip_trace_ttl_in_days,
     }, local.common_environment_variables)
   }
-}
-
-resource "aws_lambda_layer_version" "lambda_document_store_layer" {
-  filename   = var.lambda_layers_filename
-  layer_name = "app_lambda_layer"
-
-  compatible_runtimes = ["java11"]
 }
 
 

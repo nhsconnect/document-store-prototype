@@ -9,7 +9,7 @@ resource "aws_lambda_function" "virus_scanned_event_lambda" {
   memory_size = 256
   layers = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
-    aws_lambda_layer_version.lambda_document_store_layer.arn
+    aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
   environment {
     variables = {
@@ -75,7 +75,7 @@ resource "aws_lambda_function" "fake_virus_scanned_event_lambda" {
 
   layers = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
-    aws_lambda_layer_version.lambda_document_store_layer.arn
+    aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
 
   environment {

@@ -72,7 +72,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
   source_code_hash = filebase64sha256(var.search_patient_details_lambda_jar_filename)
   layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
-    aws_lambda_layer_version.lambda_document_store_layer.arn
+    aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
   environment {
     variables = {
