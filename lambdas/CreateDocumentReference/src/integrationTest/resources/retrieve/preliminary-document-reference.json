@@ -1,0 +1,19 @@
+{
+  "resourceType": "DocumentReference",
+  "id": "3456",
+  "subject": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "56789"
+    }
+  },
+  "type": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "185361000000102"
+      }
+    ]
+  },
+  "docStatus": "preliminary"
+}
