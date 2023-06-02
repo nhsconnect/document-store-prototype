@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.net.MalformedURLException;
 import java.time.Clock;
@@ -15,10 +16,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.authoriser.HTTPTokenRequestClient;
-import uk.nhs.digital.docstore.authoriser.OIDCClient;
-import uk.nhs.digital.docstore.authoriser.OIDCHttpClient;
-import uk.nhs.digital.docstore.authoriser.OIDCTokenFetcher;
+import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
@@ -51,6 +49,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                                 getClientInformation(),
                                 new HTTPTokenRequestClient(),
                                 getProviderMetadata()),
+                        new UserInfoFetcher(new HTTPUserInfoRequestClient(), getProviderMetadata()),
                         makeIDTokenValidator()));
     }
 
@@ -107,9 +106,11 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 "Authorising session for state: " + requestEvent.getCookieState().orElse(null));
 
         Session session;
+        UserInfo userInfo;
 
         try {
             session = OIDCClient.authoriseSession(authCode.get());
+            userInfo = OIDCClient.fetchUserInfo(session.getOidcSessionID());
         } catch (AuthorisationException exception) {
             var headers = new HashMap<String, String>();
             headers.put("Location", requestEvent.getErrorUri().orElseThrow());

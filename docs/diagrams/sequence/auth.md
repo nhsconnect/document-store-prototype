@@ -51,7 +51,7 @@ sequenceDiagram
     ARF API ->> Session Storage : Create session
     ARF API ->> CIS2 User Info : Request user info with ID Token
     CIS2 User Info ->> ARF API : Return user info
-    ARF API ->> ODS API : Search for ODS Code
+    ARF API ->> ODS API : Search for ODS Codes
     ODS API -->> ARF API : Return ODS code information
     ARF API -->> Session Storage : Cache user's role 
     ARF API -->> Browser : Redirect with session cookie

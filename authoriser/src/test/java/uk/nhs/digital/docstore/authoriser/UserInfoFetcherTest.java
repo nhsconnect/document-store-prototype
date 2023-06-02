@@ -47,8 +47,8 @@ class UserInfoFetcherTest {
         var latestRequest = userInfoEndpoint.getLatestRequest();
         assertThat(latestRequest).isNotNull();
 
-        assertThat(returnedInfo.get(roleCodeKey)).isEqualTo(roleCode);
-        assertThat(returnedInfo.get(orgCodeKey)).isEqualTo(orgCode);
+        assertThat(returnedInfo.getClaim(roleCodeKey)).isEqualTo(roleCode);
+        assertThat(returnedInfo.getClaim(orgCodeKey)).isEqualTo(orgCode);
 
         // Assert that token request has correct token endpoint configured
         assertThat(latestRequest.getEndpointURI()).isEqualTo(userInfoURI);
@@ -64,24 +64,23 @@ class UserInfoFetcherTest {
     }
 
     @Test
-    void shouldThrowUserInfoFetchingExceptionWhenGettingErrorResponse()
-            throws URISyntaxException {
-                var userInfoEndpoint = new FakeUserInfoRequestClient(null);
+    void shouldThrowUserInfoFetchingExceptionWhenGettingErrorResponse() throws URISyntaxException {
+        var userInfoEndpoint = new FakeUserInfoRequestClient(null);
 
-                var userInfoURI = new URI("http://user-info.uri");
+        var userInfoURI = new URI("http://user-info.uri");
 
-                var providerMetadata =
-                        new OIDCProviderMetadata(
-                                new Issuer("test"),
-                                List.of(SubjectType.PUBLIC),
-                                new URI("http://uri.jwks"));
-                providerMetadata.setUserInfoEndpointURI(userInfoURI);
+        var providerMetadata =
+                new OIDCProviderMetadata(
+                        new Issuer("test"),
+                        List.of(SubjectType.PUBLIC),
+                        new URI("http://uri.jwks"));
+        providerMetadata.setUserInfoEndpointURI(userInfoURI);
 
-                var fetcher = new UserInfoFetcher(userInfoEndpoint, providerMetadata);
+        var fetcher = new UserInfoFetcher(userInfoEndpoint, providerMetadata);
 
-                assertThrows(
-                                UserInfoFetchingException.class,
-                                () -> fetcher.fetchUserInfo(new BearerAccessToken("some-code")));
+        assertThrows(
+                UserInfoFetchingException.class,
+                () -> fetcher.fetchUserInfo(new BearerAccessToken("some-code")));
     }
 
     private static class FakeUserInfoRequestClient implements UserInfoRequestClient {

@@ -1,12 +1,10 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoRequest;
-import com.nimbusds.openid.connect.sdk.UserInfoResponse;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
-import net.minidev.json.JSONObject;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 
 public class UserInfoFetcher {
@@ -19,8 +17,7 @@ public class UserInfoFetcher {
         this.providerMetadata = providerMetadata;
     }
 
-    public JSONObject fetchUserInfo(AccessToken authCode)
-            throws UserInfoFetchingException, ParseException {
+    public UserInfo fetchUserInfo(AccessToken authCode) throws UserInfoFetchingException {
         var userInfoEndpoint = providerMetadata.getUserInfoEndpointURI();
         UserInfoRequest userInfoRequest = new UserInfoRequest(userInfoEndpoint, authCode);
         var userInfoResponse = userInfoClient.getResponse(userInfoRequest);
@@ -30,7 +27,6 @@ public class UserInfoFetcher {
             UserInfoErrorResponse errorResponse = userInfoResponse.toErrorResponse();
             throw new UserInfoFetchingException(errorResponse.getErrorObject().getDescription());
         }
-        var successResponse = (UserInfoResponse) userInfoResponse.toSuccessResponse();
-        return successResponse.toHTTPResponse().getContentAsJSONObject();
+        return userInfoResponse.toSuccessResponse().getUserInfo();
     }
 }
