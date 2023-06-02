@@ -6,8 +6,9 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.ErrorResponseGenerator;
 import uk.nhs.digital.docstore.NHSNumberSearchParameterForm;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
@@ -24,12 +25,10 @@ import uk.nhs.digital.docstore.patientdetails.RealPdsFhirService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthServiceHttpClient;
 
-import java.util.Map;
-
 @SuppressWarnings("unused")
 public class SearchPatientDetailsHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-//    private static final Logger LOGGER = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchPatientDetailsHandler.class);
 
     private final ApiConfig apiConfig;
     private final PatientSearchConfig patientSearchConfig;
@@ -59,10 +58,10 @@ public class SearchPatientDetailsHandler
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent requestEvent, Context context) {
         Tracer.setMDCContext(context);
-//        LOGGER.debug("PATIENT DETAILS LAMBDA HIT");
-//        LOGGER.debug("Patient request:" + requestEvent);
-//
-//        LOGGER.debug("API Gateway event received - processing starts");
+        LOGGER.debug("PATIENT DETAILS LAMBDA HIT");
+        LOGGER.debug("Patient request:" + requestEvent);
+
+        LOGGER.debug("API Gateway event received - processing starts");
         var searchParameters = queryParametersFrom(requestEvent);
 
         try {
@@ -75,22 +74,22 @@ public class SearchPatientDetailsHandler
                                     patientSearchConfig, sensitiveIndex, authService);
             var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
-//            LOGGER.debug("Generating response body");
+            LOGGER.debug("Generating response body");
             var json = convertToJson(patientDetails);
             var body = getBody(json);
 
-//            LOGGER.debug("Processing finished - about to return the response: \n " + body);
+            LOGGER.debug("Processing finished - about to return the response: \n " + body);
             var apiGatewayResponse = apiConfig.getApiGatewayResponse(200, body, "GET", null);
-//            LOGGER.debug("Response: " + apiGatewayResponse);
+            LOGGER.debug("Response: " + apiGatewayResponse);
             return apiGatewayResponse;
         } catch (PatientNotFoundException e) {
-//            LOGGER.debug("Patient not found - error: " + e.getMessage());
+            LOGGER.debug("Patient not found - error: " + e.getMessage());
             return apiConfig.getApiGatewayResponse(404, getBodyWithError(e), "GET", null);
         } catch (InvalidResourceIdException e) {
-//            LOGGER.debug("Invalid NHS number - error: " + e.getMessage());
+            LOGGER.debug("Invalid NHS number - error: " + e.getMessage());
             return apiConfig.getApiGatewayResponse(400, getBodyWithError(e), "GET", null);
         } catch (Exception exception) {
-//            LOGGER.debug("OH NO IT'S ALL ON FIRE - error: " + exception.getMessage());
+            LOGGER.debug("OH NO IT'S ALL ON FIRE - error: " + exception.getMessage());
             return errorResponseGenerator.errorResponse(exception);
         }
     }

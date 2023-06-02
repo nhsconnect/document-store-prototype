@@ -19,7 +19,8 @@ import uk.nhs.digital.docstore.services.DocumentDeletionService;
 public class DeleteDocumentReferenceHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(uk.nhs.digital.docstore.handlers.DeleteDocumentReferenceHandler.class);
+            LoggerFactory.getLogger(
+                    uk.nhs.digital.docstore.handlers.DeleteDocumentReferenceHandler.class);
 
     private final ApiConfig apiConfig;
     private final DocumentDeletionService documentDeletionService;

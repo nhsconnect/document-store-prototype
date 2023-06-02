@@ -1,5 +1,7 @@
 package uk.nhs.digital.docstore.lambdas;
 
+import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
+
 import ca.uhn.fhir.context.FhirContext;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -19,14 +21,13 @@ import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.services.DocumentMetadataSearchService;
 
-import static ca.uhn.fhir.context.PerformanceOptionsEnum.DEFERRED_MODEL_SCANNING;
-
 @SuppressWarnings("unused")
 public class DocumentReferenceSearchHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(uk.nhs.digital.docstore.handlers.DocumentReferenceSearchHandler.class);
+            LoggerFactory.getLogger(
+                    uk.nhs.digital.docstore.handlers.DocumentReferenceSearchHandler.class);
     private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();

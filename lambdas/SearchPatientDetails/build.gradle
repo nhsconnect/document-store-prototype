@@ -1,24 +1,108 @@
 plugins {
-    id 'java'
+	id 'java'
+	id "com.diffplug.spotless" version "6.14.0"
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
+}
+
+sourceSets {
+	integrationTest {
+		compileClasspath += sourceSets.main.output
+		compileClasspath += sourceSets.test.output
+		runtimeClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.test.output
+		java {
+			srcDirs 'src/e2eTest'
+		}
+	}
+}
+
+configurations {
+	integrationTestImplementation.extendsFrom testImplementation
+	integrationTestRuntime.extendsFrom testRuntime
+}
+
+tasks.withType(Test) {
+	useJUnitPlatform()
 }
 
 dependencies {
-    implementation project(path: ':app')
-    implementation 'com.amazonaws:aws-lambda-java-core:1.2.2'
-    implementation 'com.amazonaws:aws-lambda-java-events:3.11.1'
-    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
-    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
-    runtimeOnly 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1'
-    runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
+	implementation project(path: ':app')
+	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
+	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+	implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
+	implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+	implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+	runtimeOnly 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1'
+
+	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.96'
+	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
+
+	implementation 'com.auth0:java-jwt:4.2.1'
+
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
+
+	testImplementation 'org.json:json:20220924'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+	testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
+	testImplementation 'org.mockito:mockito-core:4.0.0'
+	testImplementation 'uk.org.webcompere:system-stubs-jupiter:2.0.1'
+	testImplementation 'org.assertj:assertj-core:3.21.0'
+	testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
+	testImplementation 'org.apache.commons:commons-lang3:3.12.0'
+
+	integrationTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
+	integrationTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
+	integrationTestImplementation 'org.awaitility:awaitility:4.1.1'
+	integrationTestImplementation 'ch.qos.logback:logback-classic:1.4.5'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(11)
+	}
 }
 
 test {
-    useJUnitPlatform()
+	useJUnitPlatform()
+}
+
+tasks.withType(Test) {
+	useJUnitPlatform()
+}
+
+jar {
+	from compileJava
+	from processResources
+	into('lib') {
+		from configurations.runtimeClasspath
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+task integrationTest(type: Test) {
+	group 'verification'
+	description 'Run all end-to-end tests against LocalStack.'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+}
+
+spotless {
+	format 'misc', {
+		target '*.gradle'
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
+	java {
+		googleJavaFormat('1.15.0').aosp().reflowLongStrings()
+	}
 }

@@ -15,15 +15,41 @@ format-app: ## Format /app files
 	./gradlew :app:spotlessApply
 
 .PHONY: format-lambdas
-format-app: format-createDocumentManifestByNhsNumber format-createDocumentReference ## Format /lambdas files
+format-lambdas: format-CreateDocumentManifestByNhsNumber format-CreateDocumentReference format-DeleteDocumentReference \
+format-DocumentReferenceSearch format-FakeVirusScannedEvent format-ReRegistrationEvent format-SearchPatientDetails \
+format-VirusScannedEvent ## Format /lambdas files
 
-.PHONY: format-createDocumentManifestByNhsNumber
-format-createDocumentManifestByNhsNumber: ## Format CreateDocumentManifestByNhsNumber
+.PHONY: format-CreateDocumentManifestByNhsNumber
+format-CreateDocumentManifestByNhsNumber: ## Format CreateDocumentManifestByNhsNumber
 	./gradlew :lambdas:CreateDocumentManifestByNhsNumber:spotlessApply
 
-.PHONY: format-createDocumentReference
-format-createDocumentReference: ## Format CreateDocumentReference
+.PHONY: format-CreateDocumentReference
+format-CreateDocumentReference: ## Format CreateDocumentReference
 	./gradlew :lambdas:CreateDocumentReference:spotlessApply
+
+.PHONY: format-DeleteDocumentReference
+format-DeleteDocumentReference: ## Format DeleteDocumentReference
+	./gradlew :lambdas:DeleteDocumentReference:spotlessApply
+
+.PHONY: format-DocumentReferenceSearch
+format-DocumentReferenceSearch: ## Format DocumentReferenceSearch
+	./gradlew :lambdas:DocumentReferenceSearch:spotlessApply
+
+.PHONY: format-FakeVirusScannedEvent
+format-FakeVirusScannedEvent: ## Format FakeVirusScannedEvent
+	./gradlew :lambdas:FakeVirusScannedEvent:spotlessApply
+
+.PHONY: format-ReRegistrationEvent
+format-ReRegistrationEvent: ## Format ReRegistrationEvent
+	./gradlew :lambdas:ReRegistrationEvent:spotlessApply
+
+.PHONY: format-SearchPatientDetails
+format-SearchPatientDetails: ## Format SearchPatientDetails
+	./gradlew :lambdas:SearchPatientDetails:spotlessApply
+
+.PHONY: format-VirusScannedEvent
+format-VirusScannedEvent: ## Format VirusScannedEvent
+	./gradlew :lambdas:VirusScannedEvent:spotlessApply
 
 .PHONY: format-auth
 format-auth: ## Format /authoriser files
