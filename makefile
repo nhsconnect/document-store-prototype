@@ -4,7 +4,7 @@ default: help
 pre-push: format lint test-ui test-app test-e2e ## Format, lint, & test
 
 .PHONY: format
-format: format-ui format-app format-auth format-e2e-test ## Format files
+format: format-ui format-app format-lambdas format-auth format-e2e-test ## Format files
 
 .PHONY: format-ui
 format-ui: ## Format /ui files
@@ -13,6 +13,17 @@ format-ui: ## Format /ui files
 .PHONY: format-app
 format-app: ## Format /app files
 	./gradlew :app:spotlessApply
+
+.PHONY: format-lambdas
+format-app: format-createDocumentManifestByNhsNumber format-createDocumentReference ## Format /lambdas files
+
+.PHONY: format-createDocumentManifestByNhsNumber
+format-createDocumentManifestByNhsNumber: ## Format CreateDocumentManifestByNhsNumber
+	./gradlew :lambdas:CreateDocumentManifestByNhsNumber:spotlessApply
+
+.PHONY: format-createDocumentReference
+format-createDocumentReference: ## Format CreateDocumentReference
+	./gradlew :lambdas:CreateDocumentReference:spotlessApply
 
 .PHONY: format-auth
 format-auth: ## Format /authoriser files

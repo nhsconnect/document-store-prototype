@@ -24,7 +24,9 @@ import uk.nhs.digital.docstore.utils.ZipService;
 public class CreateDocumentManifestByNhsNumberHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler.class);
+            LoggerFactory.getLogger(
+                    uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler
+                            .class);
 
     private final ApiConfig apiConfig;
     private final DocumentMetadataSearchService metadataSearchService;

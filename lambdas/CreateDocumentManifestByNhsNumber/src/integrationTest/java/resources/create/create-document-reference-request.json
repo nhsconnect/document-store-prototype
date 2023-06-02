@@ -1,0 +1,26 @@
+{
+  "resourceType": "DocumentReference",
+  "subject": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "1234567890"
+    }
+  },
+  "type": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "22151000087106"
+      }
+    ]
+  },
+  "content": [
+    {
+      "attachment": {
+        "contentType": "text/plain"
+      }
+    }
+  ],
+  "description": "uploaded document",
+  "created": "2021-11-03T15:57:30Z"
+}

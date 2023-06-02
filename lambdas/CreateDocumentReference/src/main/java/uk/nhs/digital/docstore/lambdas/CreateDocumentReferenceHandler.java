@@ -1,11 +1,16 @@
 package uk.nhs.digital.docstore.lambdas;
 
+import static java.util.stream.Collectors.toList;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
+import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.PerformanceOptionsEnum;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import java.net.URL;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -27,17 +32,12 @@ import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 import uk.nhs.digital.docstore.utils.CommonUtils;
 
-import java.net.URL;
-
-import static java.util.stream.Collectors.toList;
-import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.FINAL;
-import static org.hl7.fhir.r4.model.DocumentReference.ReferredDocumentStatus.PRELIMINARY;
-
 @SuppressWarnings("unused")
 public class CreateDocumentReferenceHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler.class);
+            LoggerFactory.getLogger(
+                    uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler.class);
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
     private static final String SUBJECT_ID_CODING_SYSTEM = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String AWS_REGION = "eu-west-2";
