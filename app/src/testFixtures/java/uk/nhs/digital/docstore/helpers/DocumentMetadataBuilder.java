@@ -1,11 +1,9 @@
 package uk.nhs.digital.docstore.helpers;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
@@ -28,8 +26,12 @@ public class DocumentMetadataBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentMetadataBuilder.class);
 
     public static DocumentMetadataBuilder theMetadata() throws IllFormedPatientDetailsException {
-        var nhsNumber = randomNumeric(10);
-        var location = String.format("s3://%s/%s", randomAlphabetic(6), randomAlphabetic(10));
+        var nhsNumber = RandomStringUtils.randomNumeric(10);
+        var location =
+                String.format(
+                        "s3://%s/%s",
+                        RandomStringUtils.randomAlphabetic(6),
+                        RandomStringUtils.randomAlphabetic(10));
         var created = Instant.now().minus(10, ChronoUnit.DAYS);
 
         return new DocumentMetadataBuilder(
@@ -188,7 +190,7 @@ public class DocumentMetadataBuilder {
 
     public DocumentMetadata build() {
         var metadata = new DocumentMetadata();
-        metadata.setId(randomAlphabetic(10));
+        metadata.setId(RandomStringUtils.randomAlphabetic(10));
         metadata.setNhsNumber(nhsNumber.getValue());
         metadata.setLocation(location);
         metadata.setContentType(contentType);
