@@ -214,6 +214,9 @@ pipelines:
                 - test:
                     source: app/build/test-results
                     destination: test-reports
+                - test:
+                    source: lambdas/CreateDocumentManifestByNhsNumber/build/test-results
+                    destination: test-reports
               tasks:
                 - exec:
                     command: dojo
