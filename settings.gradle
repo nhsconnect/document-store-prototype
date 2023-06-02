@@ -10,4 +10,3 @@ include('lambdas:FakeVirusScannedEvent')
 include('lambdas:ReRegistrationEvent')
 include('lambdas:SearchPatientDetails')
 include('lambdas:VirusScannedEvent')
-

@@ -212,10 +212,28 @@ pipelines:
             test:
               artifacts:
                 - test:
-                    source: app/build/test-results
+                    source: lambdas/CreateDocumentManifestByNhsNumber/build/test-results
                     destination: test-reports
                 - test:
-                    source: lambdas/CreateDocumentManifestByNhsNumber/build/test-results
+                    source: lambdas/CreateDocumentReference/build/test-results
+                    destination: test-reports
+                - test:
+                    source: lambdas/DeleteDocumentReference/build/test-results
+                    destination: test-reports
+                - test:
+                    source: lambdas/DocumentReferenceSearch/build/test-results
+                    destination: test-reports
+                - test:
+                    source: lambdas/FakeVirusScannedEvent/build/test-results
+                    destination: test-reports
+                - test:
+                    source: lambdas/ReRegistrationEvent/build/test-results
+                    destination: test-reports
+                - test:
+                    source: lambdas/SearchPatientDetails/build/test-results
+                    destination: test-reports
+                - test:
+                    source: lambdas/VirusScannedEvent/build/test-results
                     destination: test-reports
               tasks:
                 - exec:
