@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import routes from "../../enums/routes";
 import { useEffect } from "react";
 import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import UserRoles from "../../enums/userRoles";
 
 const AuthSuccessRouter = () => {
     const navigate = useNavigate();
@@ -9,7 +10,7 @@ const AuthSuccessRouter = () => {
 
     useEffect(() => {
         setSession({
-            ...session,
+            userRole: UserRoles.user,
             isLoggedIn: true,
         });
 

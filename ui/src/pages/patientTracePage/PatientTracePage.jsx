@@ -30,7 +30,7 @@ export const PatientTracePage = ({ nextPage }) => {
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
     const setPatientDetails = usePatientDetailsContext()[1];
-    const [session, setSession] = useSessionContext();
+    const [, , deleteSession] = useSessionContext();
     const [inputError, setInputError] = useState(null);
     const [statusCode, setStatusCode] = useState(null);
 
@@ -52,10 +52,7 @@ export const PatientTracePage = ({ nextPage }) => {
             if (e.response?.status === 400) {
                 setInputError("Enter a valid patient NHS number.");
             } else if (e.response?.status === 403) {
-                setSession({
-                    ...session,
-                    isLoggedIn: false,
-                });
+                deleteSession();
                 navigate(routes.ROOT);
             } else if (e.response?.status === 404) {
                 setInputError("Sorry, patient data not found.");

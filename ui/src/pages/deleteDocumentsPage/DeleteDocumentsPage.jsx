@@ -22,7 +22,7 @@ const DeleteDocumentsPage = () => {
     const navigate = useNavigate();
     const [{ nhsNumber, givenName, familyName }] = usePatientDetailsContext();
     const [submissionState, setSubmissionState] = useState(states.IDLE);
-    const [session, setSession] = useSessionContext();
+    const [, , deleteSession] = useSessionContext();
 
     const { ref: shouldDeleteAllDocsRef, ...shouldDeleteAllDocsProps } = register("shouldDeleteAllDocs");
 
@@ -40,10 +40,7 @@ const DeleteDocumentsPage = () => {
                 }
             } catch (e) {
                 if (e.response?.status == 403) {
-                    setSession({
-                        ...session,
-                        isLoggedIn: false,
-                    });
+                    deleteSession();
                     navigate(routes.ROOT);
                 }
                 setSubmissionState(states.FAILED);

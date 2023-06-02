@@ -18,7 +18,7 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
     const { handleSubmit, control, watch, getValues, formState, setValue } = useForm();
     const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
-    const [session, setSession] = useSessionContext();
+    const [, , deleteSession] = useSessionContext();
 
     const documents = watch("documents");
     const uploadStateMessages = {
@@ -64,10 +64,7 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
             return documentUploadSteps.COMPLETE;
         }
         if (documents.every((document) => document.state === stateNames.UNAUTHORISED)) {
-            setSession({
-                ...session,
-                isLoggedIn: false,
-            });
+            deleteSession();
             navigate(routes.ROOT);
         }
         return documentUploadSteps.UPLOADING;

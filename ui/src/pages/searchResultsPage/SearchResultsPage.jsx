@@ -26,7 +26,7 @@ const SearchResultsPage = () => {
     const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
     const [numberOfCleanFiles, setNumberOfCleanFiles] = useState(0);
-    const [session, setSession] = useSessionContext();
+    const [, , deleteSession] = useSessionContext();
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
@@ -44,10 +44,7 @@ const SearchResultsPage = () => {
                 setSubmissionState(states.SUCCEEDED);
             } catch (e) {
                 if (e.response?.status === 403) {
-                    setSession({
-                        ...session,
-                        isLoggedIn: false,
-                    });
+                    deleteSession();
                     navigate(routes.ROOT);
                 }
                 setSubmissionState(states.FAILED);
@@ -55,7 +52,7 @@ const SearchResultsPage = () => {
         };
 
         void search();
-    }, [documentStore, patientDetails, navigate, setSubmissionState, setSearchResults, setSession, session]);
+    }, [documentStore, patientDetails, navigate, setSubmissionState, setSearchResults, deleteSession]);
 
     const downloadAll = async () => {
         setDownloadState(states.PENDING);
@@ -67,10 +64,7 @@ const SearchResultsPage = () => {
             setDownloadState(states.SUCCEEDED);
         } catch (e) {
             if (e.response?.status === 403) {
-                setSession({
-                    ...session,
-                    isLoggedIn: false,
-                });
+                deleteSession();
                 navigate(routes.ROOT);
             }
             setDownloadState(states.FAILED);

@@ -1,6 +1,7 @@
 import SessionProvider, { useSessionContext } from "./SessionProvider";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import UserRoles from "../../enums/userRoles";
 
 describe("SessionProvider", () => {
     afterEach(() => {
@@ -67,7 +68,7 @@ const TestComponent = () => {
     const isLoggedInText = session.isLoggedIn ? "Is Logged In" : "Is Not Logged In";
 
     const handleLogIn = () => {
-        setSession({ userRole: "USER", isLoggedIn: true });
+        setSession({ userRole: UserRoles.user, isLoggedIn: true });
     };
 
     return (

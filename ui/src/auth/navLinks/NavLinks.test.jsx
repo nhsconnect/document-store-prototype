@@ -4,6 +4,7 @@ import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import routes from "../../enums/routes";
 import userEvent from "@testing-library/user-event";
 import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import UserRoles from "../../enums/userRoles";
 
 jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("../../providers/configProvider/ConfigProvider");
@@ -40,7 +41,7 @@ describe("NavLinks", () => {
     it.each([false, null, undefined])("does not render the nav links if isLoggedIn is: %s", (loggedInValue) => {
         const session = {
             isLoggedIn: loggedInValue,
-            role: "USER",
+            role: UserRoles.user,
         };
 
         useSessionContext.mockReturnValue([session, jest.fn()]);
@@ -61,7 +62,7 @@ describe("NavLinks", () => {
     it("change isLoggedIn in session context to false when logging out", () => {
         const session = {
             isLoggedIn: true,
-            role: "USER",
+            role: UserRoles.user,
         };
         const setSessionMock = jest.fn();
         const deleteSessionMock = jest.fn();

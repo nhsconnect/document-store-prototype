@@ -3,6 +3,7 @@ import { MemoryRouter, useNavigate } from "react-router";
 import AuthSuccessRouter from "./AuthSuccessRouter";
 import routes from "../../enums/routes";
 import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import UserRoles from "../../enums/userRoles";
 
 jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("react-router", () => ({
@@ -25,7 +26,7 @@ describe("AuthSuccessRouter", () => {
         renderAuthSuccessRouter();
 
         expect(setSessionMock).toHaveBeenCalledWith({
-            ...session,
+            userRoles: UserRoles.user,
             isLoggedIn: true,
         });
     });
