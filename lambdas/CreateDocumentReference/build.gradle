@@ -1,6 +1,7 @@
 plugins {
 	id 'java'
 	id "com.diffplug.spotless" version "6.14.0"
+	id "org.owasp.dependencycheck" version "8.1.0"
 }
 
 repositories {
@@ -56,8 +57,12 @@ java {
 	}
 }
 
-test {
-	useJUnitPlatform()
+dependencyCheck {
+	failBuildOnCVSS = 7
+	suppressionFile = './dependency-checks-suppression.xml'
+	analyzers {
+		assemblyEnabled = false
+	}
 }
 
 tasks.withType(Test) {

@@ -60,6 +60,9 @@ common:
       - build:
           source: authoriser/build/libs
           destination: jars
+      - test:
+            source: authoriser/build/test-results
+            destination: test-reports
     tasks:
       - exec:
           command: dojo
@@ -213,28 +216,31 @@ pipelines:
               artifacts:
                 - test:
                     source: lambdas/CreateDocumentManifestByNhsNumber/build/test-results
-                    destination: test-reports
+                    destination: test-reports/lambdas
                 - test:
                     source: lambdas/CreateDocumentReference/build/test-results
-                    destination: test-reports
+                    destination: test-reports/lambdas
                 - test:
                     source: lambdas/DeleteDocumentReference/build/test-results
-                    destination: test-reports
+                    destination: test-reports/lambdas
                 - test:
                     source: lambdas/DocumentReferenceSearch/build/test-results
-                    destination: test-reports
+                    destination: test-reports/lambdas
                 - test:
                     source: lambdas/FakeVirusScannedEvent/build/test-results
-                    destination: test-reports
+                    destination: test-reports/lambdas
                 - test:
                     source: lambdas/ReRegistrationEvent/build/test-results
-                    destination: test-reports
+                    destination: test-reports/lambdas
                 - test:
                     source: lambdas/SearchPatientDetails/build/test-results
-                    destination: test-reports
+                    destination: test-reports/lambdas
                 - test:
                     source: lambdas/VirusScannedEvent/build/test-results
-                    destination: test-reports
+                    destination: test-reports/lambdas
+                - test:
+                    source: authoriser/build/test-results
+                    destination: test-reports/authoriser
               tasks:
                 - exec:
                     command: dojo
