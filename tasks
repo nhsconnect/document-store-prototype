@@ -276,7 +276,6 @@ extract-json-terraform-output)
   ;;
 run-integration-test)
   assume_test_runner_role
-  gradle processIntegrationTestResources
   gradle integrationTest
   clear_assumed_iam_role
   ;;
