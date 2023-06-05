@@ -119,7 +119,7 @@ function tf_test() {
     deploy_workspace() {
       WORKSPACE=$1
       cd ./terraform
-      terraform init -backend-config="workspace.s3.tfbackend"
+      terraform init -backend-config workspace.s3.tfbackend
       # terraform init \
       #   -backend-config="bucket=prs-workspace-terraform-state" \
       #   -backend-config="dynamodb_table=prs-workspace-terraform-state-locking" \
