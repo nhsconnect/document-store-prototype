@@ -26,7 +26,7 @@ describe("AuthSuccessRouter", () => {
         renderAuthSuccessRouter();
 
         expect(setSessionMock).toHaveBeenCalledWith({
-            userRoles: UserRoles.user,
+            userRole: UserRoles.user,
             isLoggedIn: true,
         });
     });

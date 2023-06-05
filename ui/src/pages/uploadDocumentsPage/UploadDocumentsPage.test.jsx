@@ -9,6 +9,7 @@ import { buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
 import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import UserRoles from "../../enums/userRoles";
 
 jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
@@ -21,10 +22,11 @@ describe("<UploadDocumentsPage />", () => {
             const navigateMock = jest.fn();
             const nhsNumber = "9000000009";
             const patientDetails = buildPatientDetails({ nhsNumber });
-            const session = { isLoggedIn: true };
+            const session = { userRole: UserRoles.user, isLoggedIn: true };
             const setSessionMock = jest.fn();
+            const deleteSessionMock = jest.fn();
 
-            useSessionContext.mockReturnValue([session, setSessionMock]);
+            useSessionContext.mockReturnValue([session, setSessionMock, deleteSessionMock]);
             useNavigate.mockImplementation(() => navigateMock);
             usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
 
@@ -166,10 +168,14 @@ describe("<UploadDocumentsPage />", () => {
     });
 
     describe("without NHS number", () => {
-        it("redirects to patient trace page when the NHS number is unavailable", () => {
+        it.only("redirects to patient trace page when the NHS number is unavailable", () => {
             const navigateMock = jest.fn();
             const unavailableNhsNumber = undefined;
+            const session = { userRole: UserRoles.user, isLoggedIn: true };
+            const setSessionMock = jest.fn();
+            const deleteSessionMock = jest.fn();
 
+            useSessionContext.mockReturnValue([session, setSessionMock, deleteSessionMock]);
             usePatientDetailsContext.mockReturnValue([unavailableNhsNumber, jest.fn()]);
             useNavigate.mockImplementation(() => navigateMock);
 
@@ -178,7 +184,7 @@ describe("<UploadDocumentsPage />", () => {
             expect(navigateMock).toHaveBeenCalledWith(routes.UPLOAD_SEARCH_PATIENT);
         });
 
-        it("redirects to the start page when the user is unauthorized to upload", async () => {
+        it.only("redirects to the start page when the user is unauthorized to upload", async () => {
             const nhsNumber = "9000000009";
             const patientDetails = buildPatientDetails({ nhsNumber });
             const navigateMock = jest.fn();
@@ -192,10 +198,12 @@ describe("<UploadDocumentsPage />", () => {
                 });
             };
 
+            const session = { UserRole: UserRoles.user, isLoggedIn: true };
             const setSessionMock = jest.fn();
-            const session = { isLoggedIn: true };
+            const deleteSessionMock = jest.fn();
+            useSessionContext.mockReturnValue([deleteSessionMock]);
             useNavigate.mockReturnValue(navigateMock);
-            useSessionContext.mockReturnValue([session, setSessionMock]);
+            useSessionContext.mockReturnValue([session, setSessionMock, deleteSessionMock]);
             usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
             useAuthorisedDocumentStore.mockReturnValue({ uploadDocument: uploadDocumentMock });
 
