@@ -7,6 +7,7 @@ import { buildPatientDetails } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
 import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import UserRoles from "../../enums/userRoles";
 
 jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("react-router");
@@ -131,10 +132,11 @@ describe("<PatientTracePage/>", () => {
             getPatientDetailsMock.mockRejectedValue(errorResponse);
             const homePage = routes.ROOT;
             const mockNavigate = jest.fn();
-            const session = { isLoggedIn: true };
+            const session = { userRole: UserRoles.user, isLoggedIn: true };
             const setSessionMock = jest.fn();
+            const deleteSessionMock = jest.fn();
 
-            useSessionContext.mockReturnValue([session, setSessionMock]);
+            useSessionContext.mockReturnValue([session, setSessionMock, deleteSessionMock]);
             useNavigate.mockImplementation(() => mockNavigate);
 
             renderPatientTracePage();
@@ -218,7 +220,11 @@ describe("<PatientTracePage/>", () => {
             };
 
             const navigateMock = jest.fn();
+            const session = { userRole: UserRoles.user, isLoggedIn: true };
+            const setSessionMock = jest.fn();
+            const deleteSessionMock = jest.fn();
 
+            useSessionContext.mockReturnValue([session, setSessionMock, deleteSessionMock]);
             useNavigate.mockReturnValue(navigateMock);
             getPatientDetailsMock.mockRejectedValue(errorResponse);
 

@@ -8,6 +8,7 @@ import { buildPatientDetails, buildSearchResult } from "../../utils/testBuilders
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
 import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import UserRoles from "../../enums/userRoles";
 
 jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
@@ -288,9 +289,11 @@ describe("<SearchResultsPage />", () => {
 
             const navigateMock = jest.fn();
             const setSessionMock = jest.fn();
-            const session = { isLoggedIn: true };
+            const deleteSessionMock = jest.fn();
+            const session = { userRole: UserRoles.user, isLoggedIn: true };
             useNavigate.mockReturnValue(navigateMock);
-            useSessionContext.mockReturnValue([session, setSessionMock]);
+            useSessionContext.mockReturnValue([session, setSessionMock, deleteSessionMock]);
+            useNavigate.mockReturnValue(navigateMock);
 
             findByNhsNumberMock.mockRejectedValue(errorResponse);
 
@@ -310,9 +313,10 @@ describe("<SearchResultsPage />", () => {
             };
             const navigateMock = jest.fn();
             const setSessionMock = jest.fn();
-            const session = { isLoggedIn: true };
+            const deleteSessionMock = jest.fn();
+            const session = { userRole: UserRoles.user, isLoggedIn: true };
             useNavigate.mockReturnValue(navigateMock);
-            useSessionContext.mockReturnValue([session, setSessionMock]);
+            useSessionContext.mockReturnValue([session, setSessionMock, deleteSessionMock]);
 
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             findByNhsNumberMock.mockResolvedValue([buildSearchResult()]);
