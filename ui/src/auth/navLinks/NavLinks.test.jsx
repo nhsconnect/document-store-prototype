@@ -40,6 +40,7 @@ describe("NavLinks", () => {
     it.each([false, null, undefined])("does not render the nav links if isLoggedIn is: %s", (loggedInValue) => {
         const session = {
             isLoggedIn: loggedInValue,
+            role: "USER",
         };
 
         useSessionContext.mockReturnValue([session, jest.fn()]);
@@ -60,18 +61,17 @@ describe("NavLinks", () => {
     it("change isLoggedIn in session context to false when logging out", () => {
         const session = {
             isLoggedIn: true,
+            role: "USER",
         };
         const setSessionMock = jest.fn();
+        const deleteSessionMock = jest.fn();
 
-        useSessionContext.mockReturnValue([session, setSessionMock]);
+        useSessionContext.mockReturnValue([session, setSessionMock, deleteSessionMock]);
 
         render(<NavLinks />);
 
         userEvent.click(screen.getByRole("link", { name: "Log Out" }));
 
-        expect(setSessionMock).toHaveBeenCalledWith({
-            ...session,
-            isLoggedIn: false,
-        });
+        expect(deleteSessionMock).toHaveBeenCalled();
     });
 });

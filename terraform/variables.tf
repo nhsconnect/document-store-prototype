@@ -32,24 +32,44 @@ variable "basic_auth_password" {
   default = ""
 }
 
-variable "lambda_jar_filename" {
-  type    = string
-  default = "../app/build/libs/app.jar"
-}
-
-variable "lambda_manifest_jar_filename" {
+variable "create_doc_manifest_lambda_jar_filename" {
   type    = string
   default = "..lambdas/CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
 }
 
 variable "create_doc_ref_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/CreateDocumentReferenceHandler/build/libs/CreateDocumentReferenceHandler.jar"
+  default = "..lambdas/CreateDocumentReference/build/libs/CreateDocumentReference.jar"
 }
 
 variable "delete_doc_ref_lambda_jar_filename" {
   type    = string
   default = "..lambdas/DeleteDocumentReference/build/libs/DeleteDocumentReference.jar"
+}
+
+variable "doc_ref_search_lambda_jar_filename" {
+  type    = string
+  default = "..lambdas/DocumentReferenceSearch/build/libs/DocumentReferenceSearch.jar"
+}
+
+variable "fake_virus_scanner_event_lambda_jar_filename" {
+  type    = string
+  default = "..lambdas/FakeVirusScannedEvent/build/libs/FakeVirusScannedEvent.jar"
+}
+
+variable "reregistration_event_lambda_jar_filename" {
+  type    = string
+  default = "..lambdas/ReRegistrationEvent/build/libs/ReRegistrationEvent.jar"
+}
+
+variable "search_patient_details_lambda_jar_filename" {
+  type    = string
+  default = "..lambdas/SearchPatientDetails/build/libs/SearchPatientDetails.jar"
+}
+
+variable "virus_scanner_event_lambda_jar_filename" {
+  type    = string
+  default = "..lambdas/VirusScannedEvent/build/libs/VirusScannedEvent.jar"
 }
 
 variable "lambda_layers_filename" {

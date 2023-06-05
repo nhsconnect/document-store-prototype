@@ -241,10 +241,14 @@ tf_plan)
     -var cis2_provider_client_id=$(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id) \
     -var cis2_provider_client_secret=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \
     -var basic_auth_password="$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/basic-auth-password)" \
-    -var lambda_jar_filename=../jars/libs/app.jar \
-    -var lambda_manifest_jar_filename=../jars/libs/CreateDocumentManifestByNhsNumber.jar \
-    -var create_doc_ref_lambda_jar_filename=../jars/libs/CreateDocumentReferenceHandler.jar \
+    -var create_doc_manifest_lambda_jar_filename=../jars/libs/CreateDocumentManifestByNhsNumber.jar \
+    -var create_doc_ref_lambda_jar_filename=../jars/libs/CreateDocumentReference.jar \
     -var delete_doc_ref_lambda_jar_filename=../jars/libs/DeleteDocumentReference.jar \
+    -var doc_ref_search_lambda_jar_filename=../jars/libs/DocumentReferenceSearch.jar \
+    -var fake_virus_scanner_event_lambda_jar_filename=../jars/libs/FakeVirusScannedEvent.jar \
+    -var reregistration_event_lambda_jar_filename=../jars/libs/ReRegistrationEvent.jar \
+    -var search_patient_details_lambda_jar_filename=../jars/libs/SearchPatientDetails.jar \
+    -var virus_scanner_event_lambda_jar_filename=../jars/libs/VirusScannedEvent.jar \
     -var authoriser_lambda_jar_filename=../jars/libs/authoriser.jar \
     -var lambda_layers_filename=../jars/distributions/app.zip \
     -out=tfplan

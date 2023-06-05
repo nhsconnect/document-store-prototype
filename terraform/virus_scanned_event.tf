@@ -1,14 +1,15 @@
 resource "aws_lambda_function" "virus_scanned_event_lambda" {
   function_name    = "VirusScannedEventHandler"
   role             = aws_iam_role.lambda_execution_role.arn
-  handler          = "uk.nhs.digital.docstore.handlers.VirusScannedEventHandler::handleRequest"
+  handler          = "uk.nhs.digital.docstore.lambdas.VirusScannedEventHandler::handleRequest"
   runtime          = "java11"
-  filename         = var.lambda_jar_filename
-  source_code_hash = filebase64sha256(var.lambda_jar_filename)
+  filename         = var.virus_scanner_event_lambda_jar_filename
+  source_code_hash = filebase64sha256(var.virus_scanner_event_lambda_jar_filename)
   timeout = 15
   memory_size = 256
   layers = [
-    "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
+    "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
+    aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
   environment {
     variables = {
@@ -60,7 +61,7 @@ module fake_virus_scanned_event_alarms {
 }
 
 resource "aws_lambda_function" "fake_virus_scanned_event_lambda" {
-  handler       = "uk.nhs.digital.docstore.handlers.FakeVirusScannedEventHandler::handleRequest"
+  handler       = "uk.nhs.digital.docstore.lambdas.FakeVirusScannedEventHandler::handleRequest"
   function_name = "FakeVirusScannedEventHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
@@ -68,12 +69,13 @@ resource "aws_lambda_function" "fake_virus_scanned_event_lambda" {
   timeout     = 15
   memory_size = 256
 
-  filename = var.lambda_jar_filename
+  filename = var.fake_virus_scanner_event_lambda_jar_filename
 
-  source_code_hash = filebase64sha256(var.lambda_jar_filename)
+  source_code_hash = filebase64sha256(var.fake_virus_scanner_event_lambda_jar_filename)
 
   layers = [
-    "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
+    "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
+    aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
 
   environment {

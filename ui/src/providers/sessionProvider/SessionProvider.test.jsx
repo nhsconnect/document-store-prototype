@@ -62,16 +62,12 @@ const renderSessionProvider = (children) => {
 };
 
 const TestComponent = () => {
-    const [session, setSession] = useSessionContext();
+    const [session, setSession, deleteSession] = useSessionContext();
 
     const isLoggedInText = session.isLoggedIn ? "Is Logged In" : "Is Not Logged In";
 
     const handleLogIn = () => {
-        setSession({ ...session, isLoggedIn: true });
-    };
-
-    const handleLogOut = () => {
-        setSession({ ...session, isLoggedIn: false });
+        setSession({ userRole: "USER", isLoggedIn: true });
     };
 
     return (
@@ -79,7 +75,7 @@ const TestComponent = () => {
             <p>
                 {isLoggedInText}
                 <button onClick={handleLogIn}>Log In</button>
-                <button onClick={handleLogOut}>Log Out</button>
+                <button onClick={deleteSession}>Log Out</button>
             </p>
         </>
     );

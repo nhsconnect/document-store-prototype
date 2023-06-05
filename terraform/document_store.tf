@@ -320,3 +320,11 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 
   depends_on = [aws_lambda_permission.s3_permission_for_fake_virus_scanned_event]
 }
+
+
+resource "aws_lambda_layer_version" "document_store_lambda_layer" {
+  filename   = var.lambda_layers_filename
+  layer_name = "app_lambda_layer"
+
+  compatible_runtimes = ["java11"]
+}
