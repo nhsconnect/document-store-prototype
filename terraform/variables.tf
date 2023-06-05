@@ -5,6 +5,10 @@ variable "region" {
   type    = string
   default = "eu-west-2"
 }
+variable "workspace" {
+  type    = string
+  default = "default"
+}
 
 variable "account_id" {
   type = string

@@ -5,7 +5,13 @@ terraform {
       version = "4.52.0"
     }
   }
-  backend "s3" {}
+  backend "s3" {
+    bucket     = "prs-${ENVIRONMENT}-terraform-state"
+    dynamodb_table = "prs-${ENVIRONMENT}-${WORKSPACE}-terraform-state-locking"
+    region     = "eu-west-2"
+    key        = "prs/${WORKSPACE}/terraform.tfstate"
+    encrypt    = true
+  }
 }
 
 provider "aws" {

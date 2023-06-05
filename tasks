@@ -117,10 +117,18 @@ function tf_test() {
     ENVIRONMENT="dev"
     check_env
     deploy_workspace() {
-      NAME=$1
+      WORKSPACE=$1
       cd ./terraform
-      terraform workspace new $NAME || (terraform workspace delete --force $NAME && terraform workspace new $NAME)
-      terraform plan -var-file="dev.tfvars" -out tfplan
+      terraform workspace new $WORKSPACE || (terraform workspace delete --force $WORKSPACE && terraform workspace new $WORKSPACE)
+      terraform plan -var-file="dev.tfvars" \
+        -var environment = ${ENVIRONMENT} \
+        -var workspace = ${WORKSPACE} \
+        -var cis2_provider_client_id=$(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id) \
+        -var cis2_provider_client_secret=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \
+        -var basic_auth_password="$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/basic-auth-password)" \
+        -var lambda_jar_filename=../jars/libs/app.jar \
+        -var authoriser_lambda_jar_filename=../jars/libs/authoriser.jar \
+        -out tfplan
       terraform apply tfplan
       terraform output -json >"../terraform_output.json"
       cd ..
@@ -133,23 +141,30 @@ function tf_test() {
       deploy_workspace_ui terraform_output.json ui.zip $NAME
       exit;
   }
-PS3='Select sandbox: '
-options=("sandbox1" "sandbox2" "exit")
-select opt in "${options[@]}"
-do
-    case $opt in
-        "sandbox1")
-            deploy_workspace $opt
-            ;;
-        "sandbox2")
-            deploy_workspace $opt
-            ;;
-        "exit")
-            exit;
-            ;;
-        *) echo "invalid option $REPLY";;
-    esac
-done
+  # Here!
+  WORKSPACE= $(terraform workspace show)
+  if [[ -z $WORKSPACE ]]; then
+    PS3='Select sandbox: '
+    options=("sanda" "sandb" "exit")
+    select opt in "${options[@]}"
+    do
+        case $opt in
+            "sanda")
+                WORKSPACE="sanda"
+                ;;
+            "sandb")
+                WORKSPACE="sandb"
+                ;;
+            "exit")
+                exit;
+                ;;
+            *)
+                WORKSPACE="default"
+                ;;
+        esac
+    done
+  fi
+  deploy_workspace $WORKSPACE
 }
 
 function deploy_workspace_ui() {
