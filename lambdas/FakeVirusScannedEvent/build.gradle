@@ -15,12 +15,6 @@ sourceSets {
 	}
 }
 
-configurations {
-	integrationTestImplementation
-	integrationTestRuntime
-}
-
-
 dependencies {
 	implementation project(path: ':app')
 	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
