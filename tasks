@@ -118,13 +118,16 @@ function tf_test() {
     deploy_workspace() {
       WORKSPACE=$1
       cd ./terraform
-      terraform workspace new $WORKSPACE || (terraform workspace delete --force $WORKSPACE && terraform workspace new $WORKSPACE)
+      terraform init -backend-config="workspace.s3.tfbackend"
+      # terraform init \
+      #   -backend-config="bucket=prs-workspace-terraform-state" \
+      #   -backend-config="dynamodb_table=prs-workspace-terraform-state-locking" \
+      #   -backend-config="region=eu-west-2" \
+      #   -backend-config="key=prs/workspace/terraform.tfstate" \
+      #   -backend-config="encrypt=true"
+      terraform workspace select $WORKSPACE
+      # terraform workspace new $WORKSPACE || (terraform workspace delete --force $WORKSPACE && terraform workspace new $WORKSPACE)
       terraform plan -var-file="dev.tfvars" \
-        -var environment = ${ENVIRONMENT} \
-        -var workspace = ${WORKSPACE} \
-        -var cis2_provider_client_id=$(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id) \
-        -var cis2_provider_client_secret=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \
-        -var basic_auth_password="$(get_encrypted_ssm_parameter /prs/${ENVIRONMENT}/user-input/basic-auth-password)" \
         -var lambda_jar_filename=../jars/libs/app.jar \
         -var authoriser_lambda_jar_filename=../jars/libs/authoriser.jar \
         -out tfplan
@@ -140,30 +143,27 @@ function tf_test() {
       deploy_workspace_ui terraform_output.json ui.zip $NAME
       exit;
   }
-  # Here!
-  WORKSPACE= $(terraform workspace show)
-  if [[ -z $WORKSPACE ]]; then
-    PS3='Select sandbox: '
-    options=("sanda" "sandb" "exit")
-    select opt in "${options[@]}"
+  PS3='Select option: '
+  options=("Sandbox A" "Sandbox B" "Exit")
+  select opt in "${options[@]}"
     do
         case $opt in
-            "sanda")
-                WORKSPACE="sanda"
+            "Sandbox A")
+                WORKSPACE="sandbox-a"
                 ;;
-            "sandb")
-                WORKSPACE="sandb"
+            "Sandbox B")
+                WORKSPACE="sandbox-b"
                 ;;
-            "exit")
+            "Exit")
                 exit;
                 ;;
             *)
                 WORKSPACE="default"
                 ;;
         esac
+    deploy_workspace $WORKSPACE
     done
-  fi
-  deploy_workspace $WORKSPACE
+  
 }
 
 function deploy_workspace_ui() {
