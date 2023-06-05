@@ -15,12 +15,8 @@ sourceSets {
 }
 
 configurations {
-	integrationTestImplementation.extendsFrom testImplementation
-	integrationTestRuntime.extendsFrom testRuntime
-}
-
-jar {
-	from processIntegrationTestResources
+	integrationTestImplementation.extendsFrom implementation
+	integrationTestRuntime.extendsFrom runtimeOnly
 }
 
 dependencies {
