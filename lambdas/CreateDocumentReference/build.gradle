@@ -60,6 +60,11 @@ tasks.withType(Test) {
 	useJUnitPlatform()
 }
 
+jar {
+	from compileJava
+	from processResources
+}
+
 task integrationTest(type: Test) {
 	group 'verification'
 	description 'Run all end-to-end tests against LocalStack.'
