@@ -1,9 +1,20 @@
 package uk.nhs.digital.docstore;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.jayway.jsonpath.JsonPath;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,18 +29,6 @@ import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-
-import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateDocumentReferenceTest extends BaseDocumentStoreTest {
@@ -56,7 +55,7 @@ public class CreateDocumentReferenceTest extends BaseDocumentStoreTest {
     @Test
     void createsDocumentReference() throws IOException {
         var requestContent =
-                getContentFromResource("/create/create-document-reference-request.json");
+                getContentFromResource("create/create-document-reference-request.json");
         var request = requestBuilder.addBody(requestContent).build();
 
         var responseEvent = handler.handleRequest(request, context);
@@ -74,7 +73,7 @@ public class CreateDocumentReferenceTest extends BaseDocumentStoreTest {
                 });
         assertThatJson(responseEvent.getBody())
                 .whenIgnoringPaths("$.id", "$.meta", "$.content[*].attachment.url")
-                .isEqualTo(getContentFromResource("/create/created-document-reference.json"));
+                .isEqualTo(getContentFromResource("create/created-document-reference.json"));
 
         verify(auditPublisher).publish(any(CreateDocumentMetadataAuditMessage.class));
     }
@@ -82,9 +81,9 @@ public class CreateDocumentReferenceTest extends BaseDocumentStoreTest {
     @Test
     void returnsBadRequestIfCodingSystemIsNotSupported() throws IOException {
         var expectedErrorResponse =
-                getContentFromResource("/create/unsupported-coding-system-response.json");
+                getContentFromResource("create/unsupported-coding-system-response.json");
         var requestContent =
-                getContentFromResource("/create/unsupported-coding-system-request.json");
+                getContentFromResource("create/unsupported-coding-system-request.json");
         var request = requestBuilder.addBody(requestContent).build();
         var responseEvent = handler.handleRequest(request, context);
 

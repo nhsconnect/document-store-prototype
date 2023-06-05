@@ -19,6 +19,9 @@ configurations {
 	integrationTestRuntime.extendsFrom testRuntime
 }
 
+jar {
+	from processIntegrationTestResources
+}
 
 dependencies {
 	implementation project(path: ':app')
@@ -59,11 +62,6 @@ test {
 
 tasks.withType(Test) {
 	useJUnitPlatform()
-}
-
-jar {
-	from compileJava
-	from processResources
 }
 
 task integrationTest(type: Test) {

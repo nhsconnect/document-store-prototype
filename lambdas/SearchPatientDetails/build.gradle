@@ -64,8 +64,7 @@ tasks.withType(Test) {
 }
 
 jar {
-	from compileJava
-	from processResources
+	from processIntegrationTestResources
 }
 
 task integrationTest(type: Test) {
