@@ -63,10 +63,6 @@ tasks.withType(Test) {
 	useJUnitPlatform()
 }
 
-jar {
-	from processIntegrationTestResources
-}
-
 task integrationTest(type: Test) {
 	group 'verification'
 	description 'Run all end-to-end tests against LocalStack.'
@@ -86,3 +82,5 @@ spotless {
 		googleJavaFormat('1.15.0').aosp().reflowLongStrings()
 	}
 }
+
+check.dependsOn integrationTest
