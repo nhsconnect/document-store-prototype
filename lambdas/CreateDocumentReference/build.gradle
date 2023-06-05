@@ -44,6 +44,7 @@ dependencies {
 	integrationTestImplementation 'org.mockito:mockito-core:4.0.0'
 	integrationTestImplementation 'org.assertj:assertj-core:3.21.0'
 	integrationTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
+	integrationTestImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
 }
 
 java {
