@@ -15,6 +15,7 @@ cis2_provider_authorize_url  = "https://am.nhsdev.auth-ptl.cis2.spineservices.nh
 cis2_provider_token_url      = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/access_token"
 cis2_provider_attributes_url = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/userinfo"
 cis2_provider_jwks_uri       = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/connect/jwk_uri"
+cis2_provider_user_info_url  = "https://int.api.service.nhs.uk/oauth2-mock"
 cis2_client_callback_urls    = ["http://localhost:3000/auth-callback"]
 cis2_client_signout_urls     = ["http://localhost:3000"]
 virus_scanner_is_stubbed     = "true"

@@ -159,6 +159,11 @@ variable "cis2_provider_token_url" {
   default = ""
 }
 
+variable "cis2_provider_user_info_url" {
+  type    = string
+  default = ""
+}
+
 variable "cis2_provider_attributes_url" {
   type    = string
   default = ""

@@ -5,6 +5,8 @@ import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.id.Subject;
+import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.time.Instant;
 import org.assertj.core.api.Assertions;
@@ -22,6 +24,7 @@ class OIDCHttpClientTest {
         var authCode = new AuthorizationCode();
         var sessionStore = new InMemorySessionStore();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
+        var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
         var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
@@ -31,7 +34,8 @@ class OIDCHttpClientTest {
                 new IDTokenValidator(
                         claimsSet.getIssuer(), new ClientID(claimsSet.getAudience().get(0)));
 
-        var client = new OIDCHttpClient(sessionStore, tokenFetcher, tokenValidator);
+        var client =
+                new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
 
         Session result;
         try {
@@ -59,6 +63,7 @@ class OIDCHttpClientTest {
         var authCode = new AuthorizationCode();
         var sessionStore = new InMemorySessionStore();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
+        var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
         var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
@@ -67,7 +72,8 @@ class OIDCHttpClientTest {
         ClientID clientID = new ClientID("test");
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
 
-        var client = new OIDCHttpClient(sessionStore, tokenFetcher, tokenValidator);
+        var client =
+                new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
 
         Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode))
                 .isInstanceOf(AuthorisationException.class);
@@ -78,6 +84,7 @@ class OIDCHttpClientTest {
         var authCode = new AuthorizationCode();
         var sessionStore = new InMemorySessionStore();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
+        var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
 
         Mockito.when(tokenFetcher.fetchToken(authCode))
                 .thenThrow(new TokenFetchingException("error"));
@@ -85,9 +92,30 @@ class OIDCHttpClientTest {
         ClientID clientID = new ClientID("test");
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
 
-        var client = new OIDCHttpClient(sessionStore, tokenFetcher, tokenValidator);
+        var client =
+                new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
 
         Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode))
                 .isInstanceOf(AuthorisationException.class);
+    }
+
+    @Test
+    public void returnsUserInfoWhenGivenAValidSessionId() throws Exception {
+        var sessionStore = new InMemorySessionStore();
+        var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
+        var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
+        var clientID = new ClientID("test");
+        var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
+
+        var sessionId = "sessionId";
+        var expectedUserInfo = new UserInfo(new Subject());
+        Mockito.when(userInfoFetcher.fetchUserInfo(new BearerAccessToken(sessionId)))
+                .thenReturn(expectedUserInfo);
+        var client =
+                new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
+
+        var result = client.fetchUserInfo(sessionId);
+
+        assert (result).equals(expectedUserInfo);
     }
 }
