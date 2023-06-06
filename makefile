@@ -154,6 +154,10 @@ help: ## Show help
 plan-and-deploy-workspace:
 	./tasks deploy_workspace_amplify_app
 
-.PHONY: tf-test
-tf-test:
-	./tasks tf_test
+.PHONY: deploy-sanda
+deploy-sanda:
+	./tasks deploy-sanda
+
+.PHONY: deploy-sandb
+deploy-sandb:
+	./tasks deploy-sandb
