@@ -117,10 +117,29 @@ help: ## Show help
 plan-and-deploy-workspace:
 	./tasks deploy_workspace_amplify_app
 
-.PHONY: deploy-sanda
-deploy-sanda:
-	./tasks deploy-sanda
+# Deploy both UI and Terraform for Sandbox A
+.PHONY: deploy-app-sanda
+deploy-app-sanda:
+	./tasks deploy-app-sanda
+# Deploy both UI and Terraform for Sandbox B
+.PHONY: deploy-app-sandb
+deploy-app-sandb:
+	./tasks deploy-app-sandb
+	
+# Deploy only UI for Sandbox A
+.PHONY: deploy-ui-sanda
+deploy-ui-sanda:
+	./tasks deploy-ui-sanda
+# Deploy only UI for Sandbox B
+.PHONY: deploy-ui-sandb
+deploy-ui-sandb:
+	./tasks deploy-ui-sandb
 
-.PHONY: deploy-sandb
-deploy-sandb:
+# Destroy terraform Sandbox A
+.PHONY: destroy-sanda
+destroy-sanda:
+	./tasks destroy-sanda
+# Destroy terraform Sandbox B
+.PHONY: destroy-sandb
+destroy-sandb:
 	./tasks deploy-sandb
