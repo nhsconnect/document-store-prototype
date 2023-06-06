@@ -113,58 +113,24 @@ function export_cypress_base_url() {
   echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com" >e2eTest/cypress.sh
 }
 
-function tf_test() {
-    ENVIRONMENT="sanda"
-    check_env
-    deploy_workspace() {
-      WORKSPACE=$1
-      cd ./terraform
-      terraform init
-      # terraform init \
-      #   -backend-config="bucket=prs-workspace-terraform-state" \
-      #   -backend-config="dynamodb_table=prs-workspace-terraform-state-locking" \
-      #   -backend-config="region=eu-west-2" \
-      #   -backend-config="key=prs/workspace/terraform.tfstate" \
-      #   -backend-config="encrypt=true"
-      terraform workspace select $WORKSPACE
-      # terraform workspace new $WORKSPACE || (terraform workspace delete --force $WORKSPACE && terraform workspace new $WORKSPACE)
-      terraform plan -var-file="dev.tfvars" \
-        -var lambda_jar_filename=../jars/libs/app.jar \
-        -var authoriser_lambda_jar_filename=../jars/libs/authoriser.jar \
-        -out tfplan
-      terraform apply tfplan
-      terraform output -json >"../terraform_output.json"
-      cd ..
-      create_ui_config_file terraform_output.json
-      cat ui/src/config.js
-      REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
-      cd ui/build
-      zip -r ../../ui.zip *
-      cd ../..
-      deploy_workspace_ui terraform_output.json ui.zip $NAME
-      exit;
-  }
-  PS3='Select option: '
-  options=("Sandbox A" "Sandbox B" "Exit")
-  select opt in "${options[@]}"
-    do
-        case $opt in
-            "Sandbox A")
-                WORKSPACE="sandbox-a"
-                ;;
-            "Sandbox B")
-                WORKSPACE="sandbox-b"
-                ;;
-            "Exit")
-                exit;
-                ;;
-            *)
-                WORKSPACE="default"
-                ;;
-        esac
-    deploy_workspace $WORKSPACE
-    done
-  
+function deploy_app() {
+    WORKSPACE=$1
+    ENVIRONMENT="dev"
+    cd ./terraform
+    terraform workspace select ${WORKSPACE}
+    terraform refresh -var-file="dev.tfvars"
+    terraform plan -var-file="dev.tfvars" -out tfplan
+    terraform apply tfplan
+    terraform output -json >"../terraform_output.json"
+    cd ..
+    create_ui_config_file terraform_output.json
+    cat ui/src/config.js
+    REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
+    cd ui/build
+    zip -r ../../ui.zip *
+    cd ../..
+    deploy_workspace_ui terraform_output.json ui.zip ${WORKSPACE}
+    exit;
 }
 
 function deploy_workspace_ui() {
@@ -425,11 +391,11 @@ virus-scanner-tf-apply)
   terraform apply virus-scanner-tfplan
   clear_assumed_iam_role
   ;;
-# deploy_workspace_amplify_app)
-#   deploy_workspace_amplify_app
-#   ;;
-tf_test)
-  tf_test
+deploy-sanda)
+  deploy_app "sanda"
+  ;;
+deploy-sandb)
+  deploy_app "sandb"
   ;;
 *)
   echo "make $@"
