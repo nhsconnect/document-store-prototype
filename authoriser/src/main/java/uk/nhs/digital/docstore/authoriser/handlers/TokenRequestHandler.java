@@ -106,12 +106,26 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 "Authorising session for state: " + requestEvent.getCookieState().orElse(null));
 
         Session session;
-        UserInfo userInfo;
 
         try {
             session = OIDCClient.authoriseSession(authCode.get());
+        } catch (AuthorisationException exception) {
+            var headers = new HashMap<String, String>();
+            headers.put("Location", requestEvent.getErrorUri().orElseThrow());
+            headers.put("Access-Control-Allow-Credentials", "true");
+            return new APIGatewayProxyResponseEvent()
+                    .withIsBase64Encoded(false)
+                    .withStatusCode(SEE_OTHER_STATUS_CODE)
+                    .withHeaders(headers)
+                    .withBody("");
+        }
+
+        UserInfo userInfo;
+
+        try {
             userInfo = OIDCClient.fetchUserInfo(session.getOidcSessionID());
         } catch (AuthorisationException exception) {
+            LOGGER.debug(exception.toString());
             var headers = new HashMap<String, String>();
             headers.put("Location", requestEvent.getErrorUri().orElseThrow());
             headers.put("Access-Control-Allow-Credentials", "true");
