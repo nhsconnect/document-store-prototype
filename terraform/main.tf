@@ -6,6 +6,11 @@ terraform {
     }
   }
   backend "s3" {
+    bucket     = "prs-dev-sanda-terraform-state-locking"
+    dynamodb_table = "prs-dev-sanda-terraform-state-locking"
+    region     = "eu-west-2"
+    key        = "prs/terraform.tfstate"
+    encrypt    = true
   }
 }
 
