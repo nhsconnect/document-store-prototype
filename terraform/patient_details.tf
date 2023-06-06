@@ -124,7 +124,7 @@ resource "aws_iam_role_policy" "lambda_get_parameter_policy" {
           "ssm:GetParameter",
           "ssm:PutParameter"
         ],
-        "Resources" : [
+        "Resource" : [
           "arn:aws:ssm:*:*:parameter/prs/*/pds-fhir-access-token",
           "arn:aws:ssm:*:*:parameter/prs/*/pds-fhir-private-key",
           "arn:aws:ssm:*:*:parameter/prs/*/nhs-api-key"
