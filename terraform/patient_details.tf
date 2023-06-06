@@ -26,7 +26,7 @@ module search_patient_details_alarms {
 }
 
 data "aws_ssm_parameter" "pds_fhir_private_key" {
-  name  = "/prs/${var.environment}/user-input/pds-fhir-private-key"
+  name  = "/prs/${var.environment}/user-input/pds-fhir-test-key"
   count = var.cloud_only_service_instances
 }
 
@@ -50,11 +50,10 @@ data "aws_ssm_parameter" "pds_fhir_kid" {
   count = var.cloud_only_service_instances
 }
 
-#data "aws_kms_ciphertext" "encrypted_pds_fhir_private_key" {
-#  key_id = aws_kms_key.lambda_kms_key.key_id
-#  plaintext = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key[0].value : ""
-#}
-
+data "aws_kms_ciphertext" "encrypted_pds_fhir_private_key" {
+  key_id = aws_kms_key.lambda_kms_key.key_id
+  plaintext = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key[0].value : ""
+}
 
 data "aws_kms_ciphertext" "encrypted_nhs_api_key" {
   key_id = aws_kms_key.lambda_kms_key.key_id
@@ -79,7 +78,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
       PDS_FHIR_TOKEN_NAME  = "/prs/${var.environment}/pds-fhir-access-token"
       PDS_FHIR_ENDPOINT    = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_endpoint[0].value : var.pds_fhir_sandbox_url
       PDS_FHIR_IS_STUBBED  = var.pds_fhir_is_stubbed
-      PDS_FHIR_PRIVATE_KEY = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key[0].value : ""
+      PDS_FHIR_TEST_KEY = data.aws_kms_ciphertext.encrypted_pds_fhir_private_key.ciphertext_blob
       PDS_FHIR_KID         = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_kid[0].value : ""
       NHS_API_KEY          = data.aws_kms_ciphertext.encrypted_nhs_api_key.ciphertext_blob
       NHS_OAUTH_ENDPOINT   = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_oauth_endpoint[0].value : ""

@@ -85,9 +85,9 @@ resource "aws_kms_alias" "lambda_kms_key_alias" {
 }
 
 resource "aws_kms_key" "lambda_kms_key" {
-  description = "Encryption key for document store so the lambdas can encrypt/decrypt env variables"
-  is_enabled  = true
-  policy      = data.aws_iam_policy_document.document_encryption_key_policy.json
+  description         = "Encryption key for document store so the lambdas can encrypt/decrypt env variables"
+  enable_key_rotation = true
+  policy              = data.aws_iam_policy_document.document_encryption_key_policy.json
 }
 ############
 
