@@ -114,22 +114,29 @@ function export_cypress_base_url() {
 }
 
 function deploy_app() {
+    blue=$(tput setaf 4)
+    normal=$(tput sgr0)
     WORKSPACE=$1
     ENVIRONMENT="dev"
     cd ./terraform
-    terraform workspace select ${WORKSPACE}
+    printf "${blue}\nFinding workspace...\n\n${normal}"
+    terraform workspace select ${WORKSPACE} || (echo "\nWorkspace not found, initialising local state...\n" && terraform init && terraform workspace select ${WORKSPACE})
+    printf "${blue}\nRefreshing local plan...\n\n${normal}"
     terraform refresh -var-file="dev.tfvars"
     terraform plan -var-file="dev.tfvars" -out tfplan
     terraform apply tfplan
     terraform output -json >"../terraform_output.json"
     cd ..
+    printf "${blue}\nCreating UI...\n\n${normal}"
     create_ui_config_file terraform_output.json
     cat ui/src/config.js
     REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
     cd ui/build
     zip -r ../../ui.zip *
     cd ../..
+    printf "${blue}\nDeploying UI...\n\n${normal}"
     deploy_workspace_ui terraform_output.json ui.zip ${WORKSPACE}
+    printf "${blue}\nFinished deployment process.\n\n${normal}"
     exit;
 }
 
