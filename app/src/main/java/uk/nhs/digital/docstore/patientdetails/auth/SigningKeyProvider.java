@@ -30,7 +30,9 @@ public class SigningKeyProvider implements RSAKeyProvider {
         try {
 
             String decryptedPrivateKeyAsString =
-                    decryptCiphertextWithKey(environment.getEnvVar("PDS_FHIR_TEST_KEY"));
+                    decryptCiphertextWithKey(environment.getEnvVar("PDS_FHIR_TEST_KEY_1"))
+                            + decryptCiphertextWithKey(
+                                    environment.getEnvVar("PDS_FHIR_TEST_KEY_2"));
             String privateKeyAsString = decryptedPrivateKeyAsString;
 
             //            String privateKeyAsString =
