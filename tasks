@@ -112,31 +112,54 @@ function export_cypress_base_url() {
   echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com" >e2eTest/cypress.sh
 }
 
-function deploy_app() {
+function run_sandbox() {
     blue=$(tput setaf 4)
     normal=$(tput sgr0)
     WORKSPACE=$1
     ENVIRONMENT="dev"
+    MODE=$2
     cd ./terraform
-    printf "${blue}\nFinding workspace...\n\n${normal}"
-    terraform workspace select ${WORKSPACE} || (printf "${blue}\nWorkspace not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE})
-    printf "${blue}\nRefreshing local plan...\n\n${normal}"
-    terraform refresh -var-file="dev.tfvars"
-    terraform plan -var-file="dev.tfvars" -out tfplan
-    terraform apply tfplan
-    terraform output -json >"../terraform_output.json"
-    cd ..
-    printf "${blue}\nCreating UI...\n\n${normal}"
-    create_ui_config_file terraform_output.json
-    cat ui/src/config.js
-    REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
-    cd ui/build
-    zip -r ../../ui.zip *
-    cd ../..
-    printf "${blue}\nDeploying UI...\n\n${normal}"
-    deploy_workspace_ui terraform_output.json ui.zip ${WORKSPACE}
-    printf "${blue}\nFinished deployment process.\n\n${normal}"
-    exit;
+    if [ $MODE == --destroy ]; then
+      printf "${blue}\nFinding workspace...\n\n${normal}"
+      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, exiting...\n\n${normal}" && exit 1)
+      terraform destroy -var-file="dev.tfvars"
+      printf "${blue}\nFinished destroy process for ${WORKSPACE}.\n\n${normal}"
+    elif [ $MODE == --deploy-app ]; then
+      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE})
+      printf "${blue}\nRefreshing local plan...\n\n${normal}"
+      terraform refresh -var-file="dev.tfvars"
+      terraform plan -var-file="dev.tfvars" -out tfplan
+      terraform apply tfplan
+      terraform output -json >"../terraform_output.json"
+      cd ..
+      printf "${blue}\nCreating UI...\n\n${normal}"
+      create_ui_config_file terraform_output.json
+      cat ui/src/config.js
+      REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
+      cd ui/build
+      zip -r ../../ui.zip *
+      cd ../..
+      printf "${blue}\nDeploying UI...\n\n${normal}"
+      deploy_workspace_ui terraform_output.json ui.zip ${WORKSPACE}
+      printf "${blue}\nFinished deployment process.\n\n${normal}"
+    elif [ $MODE == --deploy-ui ]; then
+      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE})
+      printf "${blue}\nRefreshing local plan...\n\n${normal}"
+      terraform refresh -var-file="dev.tfvars"
+      terraform output -json >"../terraform_output.json"
+      cd ..
+      printf "${blue}\nCreating UI...\n\n${normal}"
+      create_ui_config_file terraform_output.json
+      cat ui/src/config.js
+      REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
+      cd ui/build
+      zip -r ../../ui.zip *
+      cd ../..
+      printf "${blue}\nDeploying UI...\n\n${normal}"
+      deploy_workspace_ui terraform_output.json ui.zip ${WORKSPACE}
+      printf "${blue}\nFinished deployment process.\n\n${normal}"
+    fi
+    exit 1;
 }
 
 function deploy_workspace_ui() {
@@ -405,11 +428,23 @@ virus-scanner-tf-apply)
   terraform apply virus-scanner-tfplan
   clear_assumed_iam_role
   ;;
-deploy-sanda)
-  deploy_app "sanda"
+deploy-app-sanda)
+  run_sandbox "sanda" --deploy-app
   ;;
-deploy-sandb)
-  deploy_app "sandb"
+deploy-app-sandb)
+  run_sandbox "sandb" --deploy-app
+  ;;
+deploy-ui-sanda)
+run_sandbox "sanda" --deploy-ui
+;;
+deploy-ui-sandb)
+run_sandbox "sandb" --deploy-ui
+;;
+destroy-sanda)
+  run_sandbox "sanda" --destroy
+  ;;
+destroy-sandb)
+  run_sandbox "sandb" --destroy
   ;;
 *)
   echo "make $@"
