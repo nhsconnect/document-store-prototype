@@ -26,16 +26,6 @@ public class SigningKeyProvider implements RSAKeyProvider {
     @Override
     public RSAPrivateKey getPrivateKey() {
         try {
-
-            //            String decryptedPrivateKeyAsString =
-            //
-            // decryptCiphertextWithKey(environment.getEnvVar("PDS_FHIR_PRIVATE_KEY"));
-            //            String privateKeyAsString =
-            //                    decryptedPrivateKeyAsString
-            //                            .replace("-----BEGIN PRIVATE KEY-----", "")
-            //                            .replaceAll("\\n", "")
-            //                            .replace("-----END PRIVATE KEY-----", "");
-
             String privateKeyAsString =
                     environment
                             .getEnvVar("PDS_FHIR_PRIVATE_KEY")

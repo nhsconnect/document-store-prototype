@@ -16,19 +16,6 @@ module create_document_reference_alarms {
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
   environment                = var.environment
 }
-#######################################
-# Testing
-data "aws_kms_ciphertext" "encrypted_test_key" {
-  key_id = aws_kms_key.lambda_kms_key.key_id
-  plaintext = "test api key"
-}
-
-resource "aws_iam_role_policy" "create_doc_ref_lambda_kms_policy" {
-  name   = "lambda_decrypt_from_kms"
-  role   = aws_iam_role.lambda_execution_role.id
-  policy = aws_iam_policy.lambda_kms_decryption_policy.policy
-}
-#######################################
 
 resource "aws_lambda_function" "create_doc_ref_lambda" {
   handler       = "uk.nhs.digital.docstore.lambdas.CreateDocumentReferenceHandler::handleRequest"

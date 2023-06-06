@@ -25,7 +25,7 @@ public class PatientSearchConfig {
     }
 
     public String nhsApiKey() throws MissingEnvironmentVariableException {
-        return decryptCiphertextWithKey(environment.getEnvVar("NHS_API_KEY"));
+        return environment.getEnvVar("NHS_API_KEY");
     }
 
     public String nhsOauthEndpoint() throws MissingEnvironmentVariableException {

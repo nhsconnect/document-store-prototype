@@ -78,19 +78,6 @@ resource "aws_kms_key" "document_store_encryption_key" {
   policy              = data.aws_iam_policy_document.document_encryption_key_policy.json
 }
 
-############ Testing
-resource "aws_kms_alias" "lambda_kms_key_alias" {
-  name = "alias/lambda-kms-key"
-  target_key_id = aws_kms_key.lambda_kms_key.id
-}
-
-resource "aws_kms_key" "lambda_kms_key" {
-  description         = "Encryption key for document store so the lambdas can encrypt/decrypt env variables"
-  enable_key_rotation = true
-  policy              = data.aws_iam_policy_document.document_encryption_key_policy.json
-}
-############
-
 resource "aws_s3_bucket_server_side_encryption_configuration" "document_store_encryption" {
   bucket = aws_s3_bucket.document_store.id
   rule {

@@ -50,16 +50,6 @@ data "aws_ssm_parameter" "pds_fhir_kid" {
   count = var.cloud_only_service_instances
 }
 
-data "aws_kms_ciphertext" "encrypted_pds_fhir_private_key" {
-  key_id = aws_kms_key.lambda_kms_key.key_id
-  plaintext = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key[0].value : ""
-}
-
-data "aws_kms_ciphertext" "encrypted_nhs_api_key" {
-  key_id = aws_kms_key.lambda_kms_key.key_id
-  plaintext = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_key[0].value : ""
-}
-
 resource "aws_lambda_function" "search_patient_details_lambda" {
   handler          = "uk.nhs.digital.docstore.lambdas.SearchPatientDetailsHandler::handleRequest"
   function_name    = "SearchPatientDetailsHandler"
@@ -78,9 +68,9 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
       PDS_FHIR_TOKEN_NAME  = "/prs/${var.environment}/pds-fhir-access-token"
       PDS_FHIR_ENDPOINT    = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_endpoint[0].value : var.pds_fhir_sandbox_url
       PDS_FHIR_IS_STUBBED  = var.pds_fhir_is_stubbed
-      PDS_FHIR_PRIVATE_KEY = data.aws_kms_ciphertext.encrypted_pds_fhir_private_key.plaintext
+      PDS_FHIR_PRIVATE_KEY = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key[0].value : ""
       PDS_FHIR_KID         = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_kid[0].value : ""
-      NHS_API_KEY          = data.aws_kms_ciphertext.encrypted_nhs_api_key.ciphertext_blob
+      NHS_API_KEY          = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_key[0].value : ""
       NHS_OAUTH_ENDPOINT   = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_oauth_endpoint[0].value : ""
       AMPLIFY_BASE_URL     = local.amplify_base_url
       SQS_ENDPOINT         = var.sqs_endpoint
@@ -105,10 +95,21 @@ resource "aws_lambda_permission" "api_gateway_permission_for_search_patient_deta
   source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
-resource "aws_iam_role_policy" "search_patient_details_lambda_kms_policy" {
+resource "aws_iam_role_policy" "lambda_kms_policy" {
   name   = "lambda_decrypt_from_kms"
   role   = aws_iam_role.lambda_execution_role.id
-  policy = aws_iam_policy.lambda_kms_decryption_policy.policy
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "kms:Decrypt"
+        ],
+        "Resource" : "arn:aws:kms:*:*:key/69f6093c-d0b9-4fee-b84d-96f8799ec71c"
+      },
+    ]
+  })
 }
 
 resource "aws_iam_role_policy" "lambda_get_parameter_policy" {
@@ -123,7 +124,11 @@ resource "aws_iam_role_policy" "lambda_get_parameter_policy" {
           "ssm:GetParameter",
           "ssm:PutParameter"
         ],
-        "Resource" : "arn:aws:ssm:*:*:parameter/prs/*/pds-fhir-access-token"
+        "Resources" : [
+          "arn:aws:ssm:*:*:parameter/prs/*/pds-fhir-access-token",
+          "arn:aws:ssm:*:*:parameter/prs/*/pds-fhir-private-key",
+          "arn:aws:ssm:*:*:parameter/prs/*/nhs-api-key"
+        ]
       },
     ]
   })
