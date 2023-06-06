@@ -58,19 +58,16 @@ data "aws_ssm_parameter" "pds_fhir_kid" {
 data "aws_kms_ciphertext" "encrypted_pds_fhir_private_key_1" {
   key_id = aws_kms_key.lambda_kms_key.key_id
   plaintext = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key_1[0].value : ""
-  sensitive   = true
 }
 
 data "aws_kms_ciphertext" "encrypted_pds_fhir_private_key_2" {
   key_id    = aws_kms_key.lambda_kms_key.key_id
   plaintext = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key_2[0].value : ""
-  sensitive   = true
 }
 
 data "aws_kms_ciphertext" "encrypted_nhs_api_key" {
   key_id = aws_kms_key.lambda_kms_key.key_id
   plaintext = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_key[0].value : ""
-  sensitive   = true
 }
 
 resource "aws_lambda_function" "search_patient_details_lambda" {
