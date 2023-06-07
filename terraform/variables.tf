@@ -164,11 +164,6 @@ variable "cis2_provider_user_info_url" {
   default = ""
 }
 
-variable "cis2_provider_attributes_url" {
-  type    = string
-  default = ""
-}
-
 variable "cis2_provider_jwks_uri" {
   type    = string
   default = ""
