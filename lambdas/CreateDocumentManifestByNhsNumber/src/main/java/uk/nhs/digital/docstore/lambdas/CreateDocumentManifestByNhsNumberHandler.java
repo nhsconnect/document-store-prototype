@@ -25,8 +25,7 @@ public class CreateDocumentManifestByNhsNumberHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(
-                    uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler
-                            .class);
+                    uk.nhs.digital.docstore.lambdas.CreateDocumentManifestByNhsNumberHandler.class);
 
     private final ApiConfig apiConfig;
     private final DocumentMetadataSearchService metadataSearchService;

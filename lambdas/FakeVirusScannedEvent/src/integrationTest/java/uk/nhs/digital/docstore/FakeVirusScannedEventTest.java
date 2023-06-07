@@ -23,8 +23,8 @@ import uk.nhs.digital.docstore.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.handlers.FakeVirusScannedEventHandler;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
+import uk.nhs.digital.docstore.lambdas.FakeVirusScannedEventHandler;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.services.VirusScannedEventService;
 

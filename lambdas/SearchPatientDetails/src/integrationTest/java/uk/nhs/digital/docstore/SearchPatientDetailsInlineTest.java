@@ -21,7 +21,7 @@ import uk.nhs.digital.docstore.audit.message.SearchPatientDetailsAuditMessage;
 import uk.nhs.digital.docstore.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.config.StubbedApiConfig;
 import uk.nhs.digital.docstore.config.StubbedPatientSearchConfig;
-import uk.nhs.digital.docstore.handlers.SearchPatientDetailsHandler;
+import uk.nhs.digital.docstore.lambdas.SearchPatientDetailsHandler;
 
 @ExtendWith(MockitoExtension.class)
 public class SearchPatientDetailsInlineTest {

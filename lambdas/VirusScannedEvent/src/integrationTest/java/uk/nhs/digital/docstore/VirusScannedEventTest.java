@@ -18,8 +18,8 @@ import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.handlers.VirusScannedEventHandler;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
+import uk.nhs.digital.docstore.lambdas.VirusScannedEventHandler;
 import uk.nhs.digital.docstore.services.VirusScannedEventService;
 
 @ExtendWith(MockitoExtension.class)

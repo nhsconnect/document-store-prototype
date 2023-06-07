@@ -37,7 +37,7 @@ public class CreateDocumentReferenceHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(
-                    uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler.class);
+                    uk.nhs.digital.docstore.lambdas.CreateDocumentReferenceHandler.class);
     private static final String DOCUMENT_TYPE_CODING_SYSTEM = "http://snomed.info/sct";
     private static final String SUBJECT_ID_CODING_SYSTEM = "https://fhir.nhs.uk/Id/nhs-number";
     private static final String AWS_REGION = "eu-west-2";

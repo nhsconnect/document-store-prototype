@@ -26,8 +26,8 @@ import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.repository.DocumentZipTraceStore;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler;
 import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
+import uk.nhs.digital.docstore.lambdas.CreateDocumentManifestByNhsNumberHandler;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
 

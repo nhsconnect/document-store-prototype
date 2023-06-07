@@ -27,7 +27,7 @@ import uk.nhs.digital.docstore.config.VirusScannerConfig;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.repository.DocumentStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
-import uk.nhs.digital.docstore.handlers.CreateDocumentReferenceHandler;
+import uk.nhs.digital.docstore.lambdas.CreateDocumentReferenceHandler;
 import uk.nhs.digital.docstore.services.DocumentReferenceService;
 
 @ExtendWith(MockitoExtension.class)

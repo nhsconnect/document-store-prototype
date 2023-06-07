@@ -27,7 +27,7 @@ public class DocumentReferenceSearchHandler
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(
-                    uk.nhs.digital.docstore.handlers.DocumentReferenceSearchHandler.class);
+                    uk.nhs.digital.docstore.lambdas.DocumentReferenceSearchHandler.class);
     private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
 
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
