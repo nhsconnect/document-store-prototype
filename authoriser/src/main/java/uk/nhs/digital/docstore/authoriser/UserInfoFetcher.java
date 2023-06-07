@@ -25,7 +25,7 @@ public class UserInfoFetcher {
         if (!userInfoResponse.indicatesSuccess()) {
             // We got an error response...
             UserInfoErrorResponse errorResponse = userInfoResponse.toErrorResponse();
-            throw new UserInfoFetchingException(errorResponse.getErrorObject().getDescription());
+            throw new UserInfoFetchingException(errorResponse.getErrorObject().getDescription() + errorResponse.getErrorObject().getHTTPStatusCode());
         }
         return userInfoResponse.toSuccessResponse().getUserInfo();
     }
