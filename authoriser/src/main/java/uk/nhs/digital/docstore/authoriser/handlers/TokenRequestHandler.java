@@ -126,14 +126,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             userInfo = OIDCClient.fetchUserInfo(session.getOidcSessionID());
         } catch (AuthorisationException exception) {
             LOGGER.debug(exception.toString());
-            var headers = new HashMap<String, String>();
-            headers.put("Location", requestEvent.getErrorUri().orElseThrow());
-            headers.put("Access-Control-Allow-Credentials", "true");
-            return new APIGatewayProxyResponseEvent()
-                    .withIsBase64Encoded(false)
-                    .withStatusCode(SEE_OTHER_STATUS_CODE)
-                    .withHeaders(headers)
-                    .withBody("");
         }
 
         // TODO: [PRMT-2779] Add redaction if required
