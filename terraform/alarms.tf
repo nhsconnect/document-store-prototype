@@ -45,7 +45,7 @@ resource "aws_kms_key" "alarm_notification_encryption_key" {
 }
 
 resource "aws_kms_alias" "alarm_notification_encryption_key_alias" {
-  name          = "alias/alarm-notification-encryption-kms-key-${terraform.workspace}"
+  name          = "alias/alarm-notification-encryption-key-kms-${terraform.workspace}"
   target_key_id = aws_kms_key.alarm_notification_encryption_key.id
 }
 

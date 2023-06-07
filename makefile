@@ -142,4 +142,4 @@ destroy-sanda:
 # Destroy terraform Sandbox B
 .PHONY: destroy-sandb
 destroy-sandb:
-	./tasks deploy-sandb
+	./tasks destroy-sandb
