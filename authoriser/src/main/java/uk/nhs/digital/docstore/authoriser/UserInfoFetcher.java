@@ -25,9 +25,9 @@ public class UserInfoFetcher {
         if (!userInfoResponse.indicatesSuccess()) {
             // We got an error response...
             UserInfoErrorResponse errorResponse = userInfoResponse.toErrorResponse();
+            var error = errorResponse.getErrorObject();
             throw new UserInfoFetchingException(
-                    errorResponse.getErrorObject().getDescription()
-                            + errorResponse.getErrorObject().getHTTPStatusCode());
+                    "Status Code: " + error.getHTTPStatusCode() + " " + error.getDescription());
         }
         return userInfoResponse.toSuccessResponse().getUserInfo();
     }

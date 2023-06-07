@@ -123,7 +123,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         UserInfo userInfo;
 
         try {
-            userInfo = OIDCClient.fetchUserInfo(session.getOidcSessionID());
+            userInfo = OIDCClient.fetchUserInfo(authCode.get().toString());
         } catch (AuthorisationException exception) {
             LOGGER.debug(exception.toString());
         }
