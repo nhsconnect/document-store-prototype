@@ -61,6 +61,7 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
   source_code_hash = filebase64sha256(var.search_patient_details_lambda_jar_filename)
   layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
+    "arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4",
     aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
   environment {
