@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
 }
 
 resource "aws_kms_alias" "document_store_encryption_key_alias" {
-  name          = "alias/${terraform.workspace}-document-store-bucket-encryption-key"
+  name          = "alias/document-store-bucket-key-ncryption-${terraform.workspace}"
   target_key_id = aws_kms_key.document_store_encryption_key.id
 }
 

@@ -125,7 +125,7 @@ function run_sandbox() {
       terraform destroy -var-file="dev.tfvars"
       printf "${blue}\nFinished destroy process for ${WORKSPACE}.\n\n${normal}"
     elif [ $MODE == --deploy-app ]; then
-      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE})
+      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select -or-create ${WORKSPACE})
       printf "${blue}\nRefreshing local plan...\n\n${normal}"
       terraform refresh -var-file="dev.tfvars"
       terraform plan -var-file="dev.tfvars" -out tfplan
@@ -143,7 +143,7 @@ function run_sandbox() {
       deploy_workspace_ui terraform_output.json ui.zip ${WORKSPACE}
       printf "${blue}\nFinished deployment process.\n\n${normal}"
     elif [ $MODE == --deploy-ui ]; then
-      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE})
+      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE}) || (printf "${blue}\n Remote state for ${WORKSPACE} not found. \n Initialise remote state by running deploy for the first time...\n\n${normal}" && rm -rf ./.terraform && rm .terraform.lock.hcl && exit 1);
       printf "${blue}\nRefreshing local plan...\n\n${normal}"
       terraform refresh -var-file="dev.tfvars"
       terraform output -json >"../terraform_output.json"
