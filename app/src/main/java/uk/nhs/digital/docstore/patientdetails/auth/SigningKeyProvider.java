@@ -10,12 +10,15 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import uk.nhs.digital.docstore.config.Environment;
 import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
+import uk.nhs.digital.docstore.utils.SSMService;
 
 public class SigningKeyProvider implements RSAKeyProvider {
     private final Environment environment;
+    private final SSMService ssmService;
 
-    public SigningKeyProvider(Environment environment) {
+    public SigningKeyProvider(Environment environment, SSMService ssmService) {
         this.environment = environment;
+        this.ssmService = ssmService;
     }
 
     @Override
@@ -26,9 +29,12 @@ public class SigningKeyProvider implements RSAKeyProvider {
     @Override
     public RSAPrivateKey getPrivateKey() {
         try {
+            String privateKeySSMValue =
+                    ssmService.retrieveParameterStoreValue(
+                            environment.getEnvVar("PDS_FHIR_PRIVATE_KEY"));
+
             String privateKeyAsString =
-                    environment
-                            .getEnvVar("PDS_FHIR_PRIVATE_KEY")
+                    privateKeySSMValue
                             .replace("-----BEGIN PRIVATE KEY-----", "")
                             .replaceAll("\\n", "")
                             .replace("-----END PRIVATE KEY-----", "");

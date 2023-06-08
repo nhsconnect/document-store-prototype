@@ -61,7 +61,6 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
   source_code_hash = filebase64sha256(var.search_patient_details_lambda_jar_filename)
   layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
-    "arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4",
     aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
   environment {
@@ -69,9 +68,9 @@ resource "aws_lambda_function" "search_patient_details_lambda" {
       PDS_FHIR_TOKEN_NAME  = "/prs/${var.environment}/pds-fhir-access-token"
       PDS_FHIR_ENDPOINT    = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_endpoint[0].value : var.pds_fhir_sandbox_url
       PDS_FHIR_IS_STUBBED  = var.pds_fhir_is_stubbed
-      PDS_FHIR_PRIVATE_KEY = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key[0].value : ""
+      PDS_FHIR_PRIVATE_KEY = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_private_key[0].name : ""
       PDS_FHIR_KID         = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.pds_fhir_kid[0].value : ""
-      NHS_API_KEY          = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_key[0].value : ""
+      NHS_API_KEY          = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_api_key[0].name : ""
       NHS_OAUTH_ENDPOINT   = var.cloud_only_service_instances > 0 ? data.aws_ssm_parameter.nhs_oauth_endpoint[0].value : ""
       AMPLIFY_BASE_URL     = local.amplify_base_url
       SQS_ENDPOINT         = var.sqs_endpoint

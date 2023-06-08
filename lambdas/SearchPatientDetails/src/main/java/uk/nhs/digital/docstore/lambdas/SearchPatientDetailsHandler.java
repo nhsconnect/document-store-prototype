@@ -24,6 +24,7 @@ import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 import uk.nhs.digital.docstore.patientdetails.RealPdsFhirService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthService;
 import uk.nhs.digital.docstore.patientdetails.auth.AuthServiceHttpClient;
+import uk.nhs.digital.docstore.utils.SSMService;
 
 @SuppressWarnings("unused")
 public class SearchPatientDetailsHandler
@@ -33,7 +34,6 @@ public class SearchPatientDetailsHandler
     private final ApiConfig apiConfig;
     private final PatientSearchConfig patientSearchConfig;
     private final AuditPublisher sensitiveIndex;
-
     private final AuthService authService;
     private final ErrorResponseGenerator errorResponseGenerator = new ErrorResponseGenerator();
 
@@ -51,7 +51,8 @@ public class SearchPatientDetailsHandler
         this.apiConfig = apiConfig;
         this.patientSearchConfig = patientSearchConfig;
         this.sensitiveIndex = sensitiveIndex;
-        this.authService = new AuthService(new AuthServiceHttpClient(), patientSearchConfig);
+        this.authService =
+                new AuthService(new AuthServiceHttpClient(), patientSearchConfig, new SSMService());
     }
 
     @Override
