@@ -182,6 +182,53 @@ function create_workspace_ui_config_file() {
   sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
   sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
 }
+
+function deploy_workspace_amplify_app() {
+  echo "Using Workspace ${WORKSPACE_NAME}"
+  ENVIRONMENT="dev"
+  check_env
+  cd terraform
+  terraform workspace select ${WORKSPACE_NAME}
+  echo "Selected workspace: "
+  terraform workspace show
+  terraform output -json >"../terraform_output.json"
+  cd ..
+  echo "Creating UI Config file"
+  create_ui_config_file terraform_output.json
+  cat ui/src/config.js
+  echo "Building App"
+  cd ui
+  REACT_APP_ENV=${ENVIRONMENT} npm run build
+  cd ..
+  echo "Zipping UI"
+  cd ui/build
+  zip -r ../../ui.zip *
+  cd ../..
+  echo "Deploying UI"
+  deploy_workspace_ui terraform_output.json ui.zip
+
+}
+
+function deploy_workspace_ui() {
+  app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
+  aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name ${WORKSPACE_NAME} >deployment.output
+  jobId="$(jq -r .jobId deployment.output)"
+  zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
+  rm -f deployment.output
+
+  curl -XPUT --data-binary "@$2" "$zipUploadUrl"
+  aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name ${WORKSPACE_NAME} --job-id "${jobId}"
+}
+
+function create_workspace_ui_config_file() {
+  cp ui/src/config.js.example ui/src/config.js
+  api_endpoint="$(jq -r '.api_gateway_url.value' "$1")"
+  amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
+  sed -i "" "s/%region%/${aws_region}/" ui/src/config.js
+  sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
+  sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
+  sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
+}
 function get_terraform_output() {
   tf_init
   terraform output -json >"../$1"
@@ -445,6 +492,9 @@ destroy-sanda)
   ;;
 destroy-sandb)
   run_sandbox "sandb" --destroy
+  ;;
+deploy_workspace_amplify_app)
+  deploy_workspace_amplify_app
   ;;
 *)
   echo "make $@"
