@@ -36,11 +36,6 @@ resource "aws_s3_bucket_policy" "document_store_bucket_policy" {
                   })
 }
 
-resource "aws_s3_bucket_acl" "document_store_acl" {
-  bucket = aws_s3_bucket.document_store.id
-  acl    = "private"
-}
-
 data "aws_iam_policy_document" "document_encryption_key_policy" {
   statement {
     effect  = "Allow"
@@ -261,9 +256,18 @@ resource "aws_s3_bucket_policy" "test_document_store_bucket_policy" {
                   })
 }
 
-resource "aws_s3_bucket_acl" "test_document_store_acl" {
-  bucket = aws_s3_bucket.test_document_store.id
-  acl    = "private"
+resource "aws_s3_bucket_acl" "document_store_acl" {
+  bucket     = aws_s3_bucket.document_store.id
+  acl        = "private"
+  depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership_document_store]
+
+}
+# Resource to avoid error "AccessControlListNotSupported: The bucket does not allow ACLs"
+resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership_document_store" {
+  bucket = aws_s3_bucket.document_store.id
+  rule {
+    object_ownership = "ObjectWriter"
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "test_document_store_encryption" {

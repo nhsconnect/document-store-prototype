@@ -4,15 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import uk.nhs.digital.docstore.config.Environment;
+import uk.nhs.digital.docstore.utils.SSMService;
 
 class PatientSearchConfigTest {
 
     @Test
     void shouldTurnOffPdsFhirStubbingIfEnvironmentVarSetToFalse() {
         var stubEnvironment = new StubEnvironment().withVariable("PDS_FHIR_IS_STUBBED", "false");
+        var mockSsm = Mockito.mock(SSMService.class);
 
-        var config = new PatientSearchConfig(stubEnvironment);
+        var config = new PatientSearchConfig(stubEnvironment, mockSsm);
 
         assertThat(config.pdsFhirIsStubbed()).isFalse();
     }
@@ -20,8 +23,9 @@ class PatientSearchConfigTest {
     @Test
     void shouldTurnOnPdsFhirStubbingIfEnvironmentVarIsNotSet() {
         var stubEnvironment = new StubEnvironment().withoutVariable("PDS_FHIR_IS_STUBBED");
+        var mockSsm = Mockito.mock(SSMService.class);
 
-        var config = new PatientSearchConfig(stubEnvironment);
+        var config = new PatientSearchConfig(stubEnvironment, mockSsm);
 
         assertThat(config.pdsFhirIsStubbed()).isTrue();
     }
@@ -29,8 +33,9 @@ class PatientSearchConfigTest {
     @Test
     void shouldTurnOnPdsFhirStubbingIfEnvironmentVarIsSetToTrue() {
         var stubEnvironment = new StubEnvironment().withVariable("PDS_FHIR_IS_STUBBED", "true");
+        var mockSsm = Mockito.mock(SSMService.class);
 
-        var config = new PatientSearchConfig(stubEnvironment);
+        var config = new PatientSearchConfig(stubEnvironment, mockSsm);
 
         assertThat(config.pdsFhirIsStubbed()).isTrue();
     }

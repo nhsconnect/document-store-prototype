@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.patientdetails.auth;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,6 +19,7 @@ import org.mockito.Mockito;
 import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
 import uk.nhs.digital.docstore.utils.CommonUtils;
+import uk.nhs.digital.docstore.utils.SSMService;
 
 class SignedJwtBuilderTest {
 
@@ -30,7 +32,9 @@ class SignedJwtBuilderTest {
         var oauthEndpoint = "oauth-endpoint";
         var algorithm = Algorithm.none();
         var patientSearchConfig = mock(PatientSearchConfig.class);
+        var mockSsmService = Mockito.mock(SSMService.class);
 
+        when(mockSsmService.retrieveParameterStoreValue(any())).thenReturn(nhsApiKey);
         when(patientSearchConfig.nhsApiKey()).thenReturn(nhsApiKey);
         when(patientSearchConfig.nhsOauthEndpoint()).thenReturn(oauthEndpoint);
         when(patientSearchConfig.pdsFhirAuthPrivateTokenSigningAlgorithm()).thenReturn(algorithm);

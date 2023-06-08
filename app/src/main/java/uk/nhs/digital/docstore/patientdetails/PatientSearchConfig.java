@@ -4,18 +4,21 @@ import com.auth0.jwt.algorithms.Algorithm;
 import uk.nhs.digital.docstore.config.Environment;
 import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.auth.SigningKeyProvider;
+import uk.nhs.digital.docstore.utils.SSMService;
 
 public class PatientSearchConfig {
 
     public static final String TRUE = "true";
     private final Environment environment;
+    private final SSMService ssmService;
 
     public PatientSearchConfig() {
-        this(new Environment());
+        this(new Environment(), new SSMService());
     }
 
-    public PatientSearchConfig(Environment environment) {
+    public PatientSearchConfig(Environment environment, SSMService ssmService) {
         this.environment = environment;
+        this.ssmService = ssmService;
     }
 
     public String pdsFhirRootUri() throws MissingEnvironmentVariableException {
@@ -23,7 +26,7 @@ public class PatientSearchConfig {
     }
 
     public String nhsApiKey() throws MissingEnvironmentVariableException {
-        return environment.getEnvVar("NHS_API_KEY");
+        return ssmService.retrieveParameterStoreValue(environment.getEnvVar("NHS_API_KEY"));
     }
 
     public String nhsOauthEndpoint() throws MissingEnvironmentVariableException {
@@ -39,6 +42,6 @@ public class PatientSearchConfig {
     }
 
     public Algorithm pdsFhirAuthPrivateTokenSigningAlgorithm() {
-        return Algorithm.RSA512(new SigningKeyProvider(environment));
+        return Algorithm.RSA512(new SigningKeyProvider(environment, ssmService));
     }
 }

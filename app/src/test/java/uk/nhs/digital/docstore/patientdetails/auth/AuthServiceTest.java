@@ -6,13 +6,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement;
-import com.amazonaws.services.simplesystemsmanagement.model.GetParameterResult;
-import com.amazonaws.services.simplesystemsmanagement.model.Parameter;
 import com.amazonaws.services.simplesystemsmanagement.model.PutParameterRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.exceptions.MissingEnvironmentVariableException;
 import uk.nhs.digital.docstore.patientdetails.PatientSearchConfig;
+import uk.nhs.digital.docstore.utils.SSMService;
 
 class AuthServiceTest {
 
@@ -22,6 +21,7 @@ class AuthServiceTest {
         var mockHttpClient = Mockito.mock(AuthServiceHttpClient.class);
         var mockPatientSearchConfig = Mockito.mock(PatientSearchConfig.class);
         var mockJwtBuilder = Mockito.mock(SignedJwtBuilder.class);
+        var mockSsmService = Mockito.mock(SSMService.class);
         var mockSsm = Mockito.mock(AWSSimpleSystemsManagement.class);
 
         var accessToken = new AccessToken("testtoken", "500", "bearer", "some-date-time");
@@ -37,28 +37,28 @@ class AuthServiceTest {
         when(mockPatientSearchConfig.nhsOauthEndpoint()).thenReturn(nhsOauthEndpoint);
         when(mockHttpClient.fetchAccessToken(signedJwt, nhsOauthEndpoint)).thenReturn(accessToken);
         when(mockPatientSearchConfig.pdsFhirTokenName()).thenReturn(parameterName);
+        when(mockSsmService.getClient()).thenReturn(mockSsm);
 
         AuthService authService =
-                new AuthService(mockHttpClient, mockPatientSearchConfig, mockJwtBuilder, mockSsm);
+                new AuthService(
+                        mockHttpClient, mockPatientSearchConfig, mockJwtBuilder, mockSsmService);
         assertThat(authService.getNewAccessToken()).isEqualTo(accessToken.getAccessToken());
         verify(mockSsm).putParameter(putParameterRequest);
     }
 
     @Test
-    void retrieveAccessTokenFromParameterStore() {
+    void retrieveAccessToken() {
         var mockHttpClient = Mockito.mock(AuthServiceHttpClient.class);
         var mockPatientSearchConfig = Mockito.mock(PatientSearchConfig.class);
         var mockJwtBuilder = Mockito.mock(SignedJwtBuilder.class);
-        var mockSsm = Mockito.mock(AWSSimpleSystemsManagement.class);
+        var mockSsmService = Mockito.mock(SSMService.class);
         var accessToken = "token";
 
-        when(mockSsm.getParameter(any()))
-                .thenReturn(
-                        new GetParameterResult()
-                                .withParameter(new Parameter().withValue(accessToken)));
+        when(mockSsmService.retrieveParameterStoreValue(any())).thenReturn(accessToken);
 
         AuthService authService =
-                new AuthService(mockHttpClient, mockPatientSearchConfig, mockJwtBuilder, mockSsm);
+                new AuthService(
+                        mockHttpClient, mockPatientSearchConfig, mockJwtBuilder, mockSsmService);
         assertThat(authService.retrieveAccessToken()).isEqualTo(accessToken);
     }
 }
