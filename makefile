@@ -125,7 +125,7 @@ deploy-app-sanda:
 .PHONY: deploy-app-sandb
 deploy-app-sandb:
 	./tasks deploy-app-sandb
-	
+
 # Deploy only UI for Sandbox A
 .PHONY: deploy-ui-sanda
 deploy-ui-sanda:
@@ -143,3 +143,8 @@ destroy-sanda:
 .PHONY: destroy-sandb
 destroy-sandb:
 	./tasks destroy-sandb
+
+
+.PHONY: plan-and-deploy-workspace
+plan-and-deploy-workspace:
+	./tasks deploy_workspace_amplify_app
