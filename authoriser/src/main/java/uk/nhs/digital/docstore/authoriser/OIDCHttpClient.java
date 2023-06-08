@@ -55,7 +55,8 @@ public class OIDCHttpClient implements OIDCClient {
                         UUID.randomUUID(),
                         Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()),
                         claimsSet.getSubject(),
-                        claimsSet.getSessionID());
+                        claimsSet.getSessionID(),
+                        claimsSet.getAccessTokenHash());
         sessionStore.save(session);
         return session;
     }

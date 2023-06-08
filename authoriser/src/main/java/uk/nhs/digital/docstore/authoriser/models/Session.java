@@ -2,6 +2,8 @@ package uk.nhs.digital.docstore.authoriser.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nimbusds.oauth2.sdk.id.Subject;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.openid.connect.sdk.claims.AccessTokenHash;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.time.Instant;
 import java.util.UUID;
@@ -16,8 +18,23 @@ public class Session {
     private String oidcSubject;
 
     private String oidcSessionID;
+    private String accessTokenHash;
     public static final String PARTITION_KEY_PREFIX = "OIDCSUBJECT#";
     public static final String SORT_KEY_PREFIX = "SESSION#";
+
+    public static Session create(
+            UUID id, Instant timeToExist, Subject subject, SessionID sessionID, AccessTokenHash accessTokenHash) {
+        var session = new Session();
+        session.setId(id);
+        session.setPK(PARTITION_KEY_PREFIX + subject.getValue());
+        session.setSK(SORT_KEY_PREFIX + id);
+        session.setTimeToExist(timeToExist);
+        session.setOIDCSubject(subject.getValue());
+        session.setOidcSessionID(sessionID.getValue());
+        session.setAccessTokenHash(accessTokenHash.getValue());
+
+        return session;
+    }
 
     public static Session create(
             UUID id, Instant timeToExist, Subject subject, SessionID sessionID) {
@@ -28,9 +45,16 @@ public class Session {
         session.setTimeToExist(timeToExist);
         session.setOIDCSubject(subject.getValue());
         session.setOidcSessionID(sessionID.getValue());
+        session.setAccessTokenHash(accessTokenHash.getValue());
 
         return session;
     }
+
+    public void setAccessTokenHash(String accessTokenHash) {
+        this.accessTokenHash = accessTokenHash;
+    }
+
+    public String getAccessTokenHash() { return accessTokenHash; }
 
     @DynamoDBHashKey(attributeName = "PK")
     public String getPK() {
