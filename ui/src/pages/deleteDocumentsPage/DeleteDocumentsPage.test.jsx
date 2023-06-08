@@ -5,8 +5,11 @@ import userEvent from "@testing-library/user-event";
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useNavigate } from "react-router";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+
 import routes from "../../enums/routes";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("react-router");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
 jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider");
@@ -21,7 +24,10 @@ describe("DeleteDocumentsPage", () => {
         const givenName = ["Bill"];
         const familyName = "Jobs";
         const patientDetails = buildPatientDetails({ nhsNumber, givenName, familyName });
+        const session = { isLoggedIn: true };
+        const setSessionMock = jest.fn();
 
+        useSessionContext.mockReturnValue([session, setSessionMock]);
         usePatientDetailsContext.mockReturnValue([patientDetails]);
 
         render(<DeleteDocumentsPage />);
@@ -110,19 +116,55 @@ describe("DeleteDocumentsPage", () => {
 
     it("does not navigate to /search/results when API call to delete docs fails", async () => {
         const deleteAllDocumentsMock = jest.fn();
-        const navigateMock = jest.fn();
 
         useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
-        useNavigate.mockReturnValue(navigateMock);
         deleteAllDocumentsMock.mockRejectedValue(new Error("Failed to delete docs"));
+
+        render(<DeleteDocumentsPage />);
+        await waitFor(() => {
+            userEvent.click(screen.getByRole("radio", { name: "Yes" }));
+            userEvent.click(screen.getByRole("button", { name: "Continue" }));
+        });
+
+        expect(await screen.queryByText("Download electronic health records and attachments")).not.toBeInTheDocument();
+    });
+
+    it("navigates to the start page when API call to delete docs is made without a valid backend session", async () => {
+        const errorResponse = {
+            response: {
+                status: 403,
+                message: "Unauthorized",
+            },
+        };
+
+        const deleteAllDocumentsMock = jest.fn();
+        const navigateMock = jest.fn();
+
+        useNavigate.mockReturnValue(navigateMock);
+        useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
+        deleteAllDocumentsMock.mockRejectedValue(errorResponse);
 
         render(<DeleteDocumentsPage />);
         userEvent.click(screen.getByRole("radio", { name: "Yes" }));
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
-        expect(
-            await screen.findByText("There has been an issue deleting these records, please try again later.")
-        ).toBeInTheDocument();
-        expect(navigateMock).not.toHaveBeenCalled();
+        await waitFor(() => {
+            expect(navigateMock).toHaveBeenCalledWith(routes.ROOT);
+        });
+    });
+
+    it("does not navigate to /search/results when API call to delete docs fails when selecting no", async () => {
+        const deleteAllDocumentsMock = jest.fn();
+
+        useAuthorisedDocumentStore.mockReturnValue({ deleteAllDocuments: deleteAllDocumentsMock });
+        deleteAllDocumentsMock.mockRejectedValue(new Error("Failed to delete docs"));
+
+        render(<DeleteDocumentsPage />);
+        await waitFor(() => {
+            userEvent.click(screen.getByRole("radio", { name: "No" }));
+            userEvent.click(screen.getByRole("button", { name: "Continue" }));
+        });
+
+        expect(await screen.queryByText("Download electronic health records and attachments")).not.toBeInTheDocument();
     });
 });

@@ -8,6 +8,8 @@ import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import ErrorBox from "../../components/errorBox/ErrorBox";
 import { useNavigate } from "react-router";
+import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
 const states = {
     IDLE: "idle",
@@ -27,32 +29,36 @@ export const PatientTracePage = ({ nextPage }) => {
         },
     });
     const [submissionState, setSubmissionState] = useState(states.IDLE);
-    const [statusCode, setStatusCode] = useState(null);
     const setPatientDetails = usePatientDetailsContext()[1];
+    const [session, setSession] = useSessionContext();
     const [inputError, setInputError] = useState(null);
+    const [statusCode, setStatusCode] = useState(null);
+
     const navigate = useNavigate();
 
     const doSubmit = async (data) => {
         try {
             setInputError(null);
             setStatusCode(null);
+            setSubmissionState(states.SEARCHING);
 
             const nhsNumber = data.nhsNumber.replace(/[-\s]/gi, "");
-
-            setSubmissionState(states.SEARCHING);
             const response = await documentStore.getPatientDetails(nhsNumber);
             setPatientDetails(response.result.patientDetails);
             setSubmissionState(states.SUCCEEDED);
             navigate(nextPage);
         } catch (e) {
-            if (e.response?.status) {
-                setStatusCode(e.response?.status);
-                if (e.response?.status == 403) {
-                    navigate("/");
-                }
-                if (e.response?.status < 500) {
-                    setInputError("Enter a valid patient NHS number");
-                }
+            setStatusCode(e.response?.status ?? null);
+            if (e.response?.status === 400) {
+                setInputError("Enter a valid patient NHS number.");
+            } else if (e.response?.status === 403) {
+                setSession({
+                    ...session,
+                    isLoggedIn: false,
+                });
+                navigate(routes.ROOT);
+            } else if (e.response?.status === 404) {
+                setInputError("Sorry, patient data not found.");
             }
             setSubmissionState(states.FAILED);
         }
@@ -60,7 +66,6 @@ export const PatientTracePage = ({ nextPage }) => {
 
     const onError = async () => {
         setSubmissionState(states.FAILED);
-        setStatusCode(null);
         setInputError("Enter patient's 10 digit NHS number");
     };
 

@@ -27,7 +27,12 @@ public class LoginRedirectHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent requestEvent, Context context) {
+
         var authRequest = authenticationRequestFactory.build();
+        var resources = authRequest.getResources();
+
+        LOGGER.debug("Request event:" + authRequest);
+
         var authRequestUri = authRequest.toURI().toString();
         var authRequestState = authRequest.getState().getValue();
         var cookieState = httpOnlyCookieBuilder("State", authRequestState, 300L);

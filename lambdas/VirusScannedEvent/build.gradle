@@ -1,0 +1,91 @@
+plugins {
+	id 'java'
+	id "com.diffplug.spotless" version "6.14.0"
+	id "org.owasp.dependencycheck" version "8.1.0"
+}
+
+repositories {
+	mavenCentral()
+}
+
+sourceSets {
+	integrationTest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
+}
+
+configurations {
+	integrationTestImplementation.extendsFrom implementation
+	integrationTestRuntime.extendsFrom runtimeOnly
+}
+
+dependencies {
+	implementation project(path: ':app')
+	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
+	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+	implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
+
+	implementation 'ch.qos.logback:logback-classic:1.4.5'
+	implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
+	implementation 'net.logstash.logback:logstash-logback-encoder:7.0'
+
+	implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+	implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+	runtimeOnly 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1'
+
+	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.96'
+	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
+
+	implementation 'com.auth0:java-jwt:4.2.1'
+
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
+
+	integrationTestImplementation(testFixtures(project(":app")))
+	integrationTestImplementation 'org.json:json:20220924'
+	integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+	integrationTestImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
+	integrationTestImplementation 'org.mockito:mockito-core:4.0.0'
+	integrationTestImplementation 'org.assertj:assertj-core:3.21.0'
+	integrationTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
+
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(11)
+	}
+}
+
+tasks.withType(Test) {
+	useJUnitPlatform()
+}
+
+task integrationTest(type: Test) {
+	group 'verification'
+	description 'Run all end-to-end tests against LocalStack.'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+}
+
+spotless {
+	format 'misc', {
+		target '*.gradle'
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
+	java {
+		googleJavaFormat('1.15.0').aosp().reflowLongStrings()
+	}
+}
+
+dependencyCheck {
+	failBuildOnCVSS = 7
+	suppressionFile = './dependency-checks-suppression.xml'
+	analyzers {
+		assemblyEnabled = false
+	}
+}

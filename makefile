@@ -4,7 +4,7 @@ default: help
 pre-push: format lint test-ui test-app test-e2e ## Format, lint, & test
 
 .PHONY: format
-format: format-ui format-app format-auth format-e2e-test ## Format files
+format: format-ui format-app format-lambdas format-auth format-e2e-test ## Format files
 
 .PHONY: format-ui
 format-ui: ## Format /ui files
@@ -13,6 +13,43 @@ format-ui: ## Format /ui files
 .PHONY: format-app
 format-app: ## Format /app files
 	./gradlew :app:spotlessApply
+
+.PHONY: format-lambdas
+format-lambdas: format-CreateDocumentManifestByNhsNumber format-CreateDocumentReference format-DeleteDocumentReference \
+format-DocumentReferenceSearch format-FakeVirusScannedEvent format-ReRegistrationEvent format-SearchPatientDetails \
+format-VirusScannedEvent ## Format /lambdas files
+
+.PHONY: format-CreateDocumentManifestByNhsNumber
+format-CreateDocumentManifestByNhsNumber: ## Format CreateDocumentManifestByNhsNumber
+	./gradlew :lambdas:CreateDocumentManifestByNhsNumber:spotlessApply
+
+.PHONY: format-CreateDocumentReference
+format-CreateDocumentReference: ## Format CreateDocumentReference
+	./gradlew :lambdas:CreateDocumentReference:spotlessApply
+
+.PHONY: format-DeleteDocumentReference
+format-DeleteDocumentReference: ## Format DeleteDocumentReference
+	./gradlew :lambdas:DeleteDocumentReference:spotlessApply
+
+.PHONY: format-DocumentReferenceSearch
+format-DocumentReferenceSearch: ## Format DocumentReferenceSearch
+	./gradlew :lambdas:DocumentReferenceSearch:spotlessApply
+
+.PHONY: format-FakeVirusScannedEvent
+format-FakeVirusScannedEvent: ## Format FakeVirusScannedEvent
+	./gradlew :lambdas:FakeVirusScannedEvent:spotlessApply
+
+.PHONY: format-ReRegistrationEvent
+format-ReRegistrationEvent: ## Format ReRegistrationEvent
+	./gradlew :lambdas:ReRegistrationEvent:spotlessApply
+
+.PHONY: format-SearchPatientDetails
+format-SearchPatientDetails: ## Format SearchPatientDetails
+	./gradlew :lambdas:SearchPatientDetails:spotlessApply
+
+.PHONY: format-VirusScannedEvent
+format-VirusScannedEvent: ## Format VirusScannedEvent
+	./gradlew :lambdas:VirusScannedEvent:spotlessApply
 
 .PHONY: format-auth
 format-auth: ## Format /authoriser files

@@ -7,7 +7,9 @@ import { MemoryRouter, useNavigate } from "react-router";
 import { buildPatientDetails, buildSearchResult } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
 jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider");
 jest.mock("react-router", () => ({
@@ -17,10 +19,12 @@ jest.mock("react-router", () => ({
 jest.mock("../../utils/utils");
 
 describe("<SearchResultsPage />", () => {
+    const getPatientDetailsMock = jest.fn();
     const findByNhsNumberMock = jest.fn();
     const getPresignedUrlForZipMock = jest.fn();
 
     beforeEach(() => {
+        useAuthorisedDocumentStore.mockReturnValue({ getPatientDetails: getPatientDetailsMock });
         useAuthorisedDocumentStore.mockReturnValue({
             findByNhsNumber: findByNhsNumberMock,
             getPresignedUrlForZip: getPresignedUrlForZipMock,
@@ -33,7 +37,10 @@ describe("<SearchResultsPage />", () => {
             const nhsNumber = "9000000001";
             const familyName = "Smith";
             const patientDetails = buildPatientDetails({ nhsNumber, familyName });
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
 
+            useSessionContext.mockReturnValue([session, setSessionMock]);
             usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
             useNavigate.mockReturnValue(navigateMock);
 
@@ -261,6 +268,61 @@ describe("<SearchResultsPage />", () => {
 
             await waitFor(() => {
                 expect(navigateMock).toHaveBeenCalledWith(routes.SEARCH_PATIENT);
+            });
+        });
+    });
+
+    describe("navigation", () => {
+        it("navigates to start page when user is unauthorized to make search request", async () => {
+            const nhsNumber = "9000000001";
+            const familyName = "Smith";
+            const patientDetails = buildPatientDetails({ nhsNumber, familyName });
+            usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
+
+            const errorResponse = {
+                response: {
+                    status: 403,
+                    message: "403 Unauthorized.",
+                },
+            };
+
+            const navigateMock = jest.fn();
+            const setSessionMock = jest.fn();
+            const session = { isLoggedIn: true };
+            useNavigate.mockReturnValue(navigateMock);
+            useSessionContext.mockReturnValue([session, setSessionMock]);
+
+            findByNhsNumberMock.mockRejectedValue(errorResponse);
+
+            renderSearchResultsPage();
+
+            await waitFor(() => {
+                expect(navigateMock).toHaveBeenCalledWith(routes.ROOT);
+            });
+        });
+
+        it("navigates to start page when user is unauthorized to make download request", async () => {
+            const errorResponse = {
+                response: {
+                    status: 403,
+                    message: "403 Unauthorized.",
+                },
+            };
+            const navigateMock = jest.fn();
+            const setSessionMock = jest.fn();
+            const session = { isLoggedIn: true };
+            useNavigate.mockReturnValue(navigateMock);
+            useSessionContext.mockReturnValue([session, setSessionMock]);
+
+            usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
+            findByNhsNumberMock.mockResolvedValue([buildSearchResult()]);
+            getPresignedUrlForZipMock.mockRejectedValue(errorResponse);
+
+            renderSearchResultsPage();
+            userEvent.click(await screen.findByRole("button", { name: "Download All Documents" }));
+
+            await waitFor(() => {
+                expect(navigateMock).toHaveBeenCalledWith(routes.ROOT);
             });
         });
     });

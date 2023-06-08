@@ -99,6 +99,9 @@ export const useDocumentStore = (bearerToken, interceptor) => {
                     onUploadStateChange(documentUploadStates.SUCCEEDED, 100);
                 } catch (e) {
                     onUploadStateChange(documentUploadStates.FAILED, 0);
+                    if (e.response?.status === 403) {
+                        onUploadStateChange(documentUploadStates.UNAUTHORISED, 0);
+                    }
                 }
             },
         }),

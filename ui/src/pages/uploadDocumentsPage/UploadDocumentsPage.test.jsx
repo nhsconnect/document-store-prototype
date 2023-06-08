@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 import { documentUploadStates } from "../../enums/documentUploads";
@@ -8,7 +8,9 @@ import { useNavigate } from "react-router";
 import { buildPatientDetails, buildTextFile } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
 jest.mock("../../providers/patientDetailsProvider/PatientDetailsProvider");
 jest.mock("react-router");
@@ -19,7 +21,10 @@ describe("<UploadDocumentsPage />", () => {
             const navigateMock = jest.fn();
             const nhsNumber = "9000000009";
             const patientDetails = buildPatientDetails({ nhsNumber });
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
 
+            useSessionContext.mockReturnValue([session, setSessionMock]);
             useNavigate.mockImplementation(() => navigateMock);
             usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
 
@@ -171,6 +176,48 @@ describe("<UploadDocumentsPage />", () => {
             renderUploadDocumentsPage();
 
             expect(navigateMock).toHaveBeenCalledWith(routes.UPLOAD_SEARCH_PATIENT);
+        });
+
+        it("redirects to the start page when the user is unauthorized to upload", async () => {
+            const nhsNumber = "9000000009";
+            const patientDetails = buildPatientDetails({ nhsNumber });
+            const navigateMock = jest.fn();
+            const uploadDocumentMock = jest.fn();
+            const documentOne = buildTextFile("one", 100);
+            const uploadStateChangeTriggers = {};
+            const resolvers = {};
+            const triggerUploadStateChange = (document, state, progress) => {
+                act(() => {
+                    uploadStateChangeTriggers[document.name](state, progress);
+                });
+            };
+
+            const setSessionMock = jest.fn();
+            const session = { isLoggedIn: true };
+            useNavigate.mockReturnValue(navigateMock);
+            useSessionContext.mockReturnValue([session, setSessionMock]);
+            usePatientDetailsContext.mockReturnValue([patientDetails, jest.fn()]);
+            useAuthorisedDocumentStore.mockReturnValue({ uploadDocument: uploadDocumentMock });
+
+            uploadDocumentMock.mockImplementation(async (document, uploadNhsNumber, onUploadStateChange) => {
+                expect(uploadNhsNumber).toBe(nhsNumber);
+                uploadStateChangeTriggers[document.name] = onUploadStateChange;
+
+                return new Promise((resolve) => {
+                    resolvers[document.name] = resolve;
+                });
+            });
+
+            renderUploadDocumentsPage({ nextPagePath: "/next" });
+            userEvent.upload(screen.getByLabelText("Select file(s)"), [documentOne]);
+            userEvent.click(screen.getByRole("button", { name: "Upload" }));
+
+            expect(await screen.findByRole("button", { name: "Upload" })).toBeDisabled();
+
+            triggerUploadStateChange(documentOne, documentUploadStates.UNAUTHORISED, 0);
+            await waitFor(() => {
+                expect(navigateMock).toHaveBeenCalledWith(routes.ROOT);
+            });
         });
     });
 });

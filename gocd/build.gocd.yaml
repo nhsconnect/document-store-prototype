@@ -8,16 +8,61 @@ common:
       - test:
           source: app/build/test-results
           destination: test-reports
+      - build:
+          source: app/build/distributions
+          destination: jars
     tasks:
       - exec:
           command: dojo
           arguments:
-            - "./gradlew app:build"
+            - ./gradlew app:build;
+              ./gradlew app:buildZip;
+  lambdas: &build_lambdas
+    artifacts:
+      - build:
+          source: lambdas/CreateDocumentManifestByNhsNumber/build/libs
+          destination: jars
+      - build:
+          source: lambdas/CreateDocumentReference/build/libs
+          destination: jars
+      - build:
+          source: lambdas/DeleteDocumentReference/build/libs
+          destination: jars
+      - build:
+          source: lambdas/DocumentReferenceSearch/build/libs
+          destination: jars
+      - build:
+          source: lambdas/FakeVirusScannedEvent/build/libs
+          destination: jars
+      - build:
+          source: lambdas/ReRegistrationEvent/build/libs
+          destination: jars
+      - build:
+          source: lambdas/SearchPatientDetails/build/libs
+          destination: jars
+      - build:
+          source: lambdas/VirusScannedEvent/build/libs
+          destination: jars
+    tasks:
+      - exec:
+          command: dojo
+          arguments:
+            - ./gradlew lambdas:CreateDocumentManifestByNhsNumber:build;
+              ./gradlew lambdas:CreateDocumentReference:build;
+              ./gradlew lambdas:DeleteDocumentReference:build;
+              ./gradlew lambdas:DocumentReferenceSearch:build;
+              ./gradlew lambdas:FakeVirusScannedEvent:build;
+              ./gradlew lambdas:ReRegistrationEvent:build;
+              ./gradlew lambdas:SearchPatientDetails:build;
+              ./gradlew lambdas:VirusScannedEvent:build;
   authoriser: &authoriser
     artifacts:
       - build:
           source: authoriser/build/libs
           destination: jars
+      - test:
+            source: authoriser/build/test-results
+            destination: test-reports
     tasks:
       - exec:
           command: dojo
@@ -37,6 +82,10 @@ common:
           stage: build
           job: authoriser
           source: jars
+      - fetch:
+          stage: build
+          job: lambdas
+          source: jars
       - exec:
           command: dojo
           arguments:
@@ -52,6 +101,10 @@ common:
       - fetch:
           stage: build
           job: backend
+          source: jars
+      - fetch:
+          stage: build
+          job: lambdas
           source: jars
       - fetch:
           stage: build
@@ -130,6 +183,7 @@ pipelines:
           jobs:
             backend: *build_backend
             authoriser: *authoriser
+            lambdas: *build_lambdas
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: dev
@@ -161,8 +215,32 @@ pipelines:
             test:
               artifacts:
                 - test:
-                    source: app/build/test-results
-                    destination: test-reports
+                    source: lambdas/CreateDocumentManifestByNhsNumber/build/test-results
+                    destination: test-reports/lambdas
+                - test:
+                    source: lambdas/CreateDocumentReference/build/test-results
+                    destination: test-reports/lambdas
+                - test:
+                    source: lambdas/DeleteDocumentReference/build/test-results
+                    destination: test-reports/lambdas
+                - test:
+                    source: lambdas/DocumentReferenceSearch/build/test-results
+                    destination: test-reports/lambdas
+                - test:
+                    source: lambdas/FakeVirusScannedEvent/build/test-results
+                    destination: test-reports/lambdas
+                - test:
+                    source: lambdas/ReRegistrationEvent/build/test-results
+                    destination: test-reports/lambdas
+                - test:
+                    source: lambdas/SearchPatientDetails/build/test-results
+                    destination: test-reports/lambdas
+                - test:
+                    source: lambdas/VirusScannedEvent/build/test-results
+                    destination: test-reports/lambdas
+                - test:
+                    source: authoriser/build/test-results
+                    destination: test-reports/authoriser
               tasks:
                 - exec:
                     command: dojo
@@ -201,6 +279,7 @@ pipelines:
           jobs:
             backend: *build_backend
             authoriser: *authoriser
+            lambdas: *build_lambdas
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: pre-prod
@@ -259,6 +338,7 @@ pipelines:
           jobs:
             backend: *build_backend
             authoriser: *authoriser
+            lambdas: *build_lambdas
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: prod

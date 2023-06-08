@@ -5,7 +5,10 @@ import { useNavigate } from "react-router";
 import PatientDetailsProvider from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import { buildPatientDetails } from "../../utils/testBuilders";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
+import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
+jest.mock("../../providers/sessionProvider/SessionProvider");
 jest.mock("react-router");
 jest.mock("../../providers/documentStoreProvider/DocumentStoreProvider");
 
@@ -18,6 +21,10 @@ describe("<PatientTracePage/>", () => {
 
     describe("initial rendering", () => {
         it("renders the page", () => {
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
+
+            useSessionContext.mockReturnValue([session, setSessionMock]);
             renderPatientTracePage();
 
             expect(screen.getByRole("heading", { name: "Search for patient" })).toBeInTheDocument();
@@ -30,7 +37,10 @@ describe("<PatientTracePage/>", () => {
     describe("patient details search", () => {
         it("displays a loading spinner when the patients details are being requested", async () => {
             getPatientDetailsMock.mockResolvedValue([]);
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
 
+            useSessionContext.mockReturnValue([session, setSessionMock]);
             renderPatientTracePage();
             userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "9000000009");
             userEvent.click(screen.getByRole("button", { name: "Search" }));
@@ -41,11 +51,11 @@ describe("<PatientTracePage/>", () => {
             expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
         });
 
-        it("displays a message when no patient details are found", async () => {
+        it("displays a message when invalid NHS number provided", async () => {
             const errorResponse = {
                 response: {
-                    status: 404,
-                    message: "404 Patient not found.",
+                    status: 400,
+                    message: "400 Patient not found.",
                 },
             };
 
@@ -54,8 +64,7 @@ describe("<PatientTracePage/>", () => {
             renderPatientTracePage();
             userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "0987654321");
             userEvent.click(screen.getByRole("button", { name: "Search" }));
-
-            expect(await screen.findByText("There is a problem")).toBeInTheDocument();
+            expect(await screen.findAllByText("Enter a valid patient NHS number.")).toHaveLength(2);
         });
 
         it("displays server error message when server is down", async () => {
@@ -73,16 +82,13 @@ describe("<PatientTracePage/>", () => {
             userEvent.click(screen.getByRole("button", { name: "Search" }));
 
             expect(await screen.findByText("Sorry, the service is currently unavailable.")).toBeInTheDocument();
-            expect(await screen.queryByText("There is a problem")).not.toBeInTheDocument();
-            expect(await screen.queryByText("Enter a valid patient NHS number")).not.toBeInTheDocument();
-            // expect(await screen.findByText("Enter patient's 10 digit NHS number")).not.toBeInTheDocument();
         });
 
-        it("displays a message when NHS number is invalid", async () => {
+        it("displays a message when patient data not found", async () => {
             const errorResponse = {
                 response: {
-                    status: 400,
-                    message: "400 Invalid NHS number.",
+                    status: 404,
+                    message: "404 Not found.",
                 },
             };
 
@@ -91,9 +97,7 @@ describe("<PatientTracePage/>", () => {
             renderPatientTracePage();
             userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "9000000000");
             userEvent.click(screen.getByRole("button", { name: "Search" }));
-
-            expect(await screen.findByText("There is a problem")).toBeInTheDocument();
-            expect(await screen.findAllByText("Enter a valid patient NHS number")).toHaveLength(2);
+            expect(await screen.findAllByText("Sorry, patient data not found.")).toHaveLength(2);
         });
     });
 
@@ -113,6 +117,31 @@ describe("<PatientTracePage/>", () => {
             userEvent.click(screen.getByRole("button", { name: "Search" }));
             await waitFor(() => {
                 expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
+            });
+        });
+
+        it("navigates to start page when user is unauthorized to make request", async () => {
+            const errorResponse = {
+                response: {
+                    status: 403,
+                    message: "403 Unauthorized.",
+                },
+            };
+
+            getPatientDetailsMock.mockRejectedValue(errorResponse);
+            const homePage = routes.ROOT;
+            const mockNavigate = jest.fn();
+            const session = { isLoggedIn: true };
+            const setSessionMock = jest.fn();
+
+            useSessionContext.mockReturnValue([session, setSessionMock]);
+            useNavigate.mockImplementation(() => mockNavigate);
+
+            renderPatientTracePage();
+            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "9000000000");
+            userEvent.click(screen.getByRole("button", { name: "Search" }));
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith(homePage);
             });
         });
     });
@@ -177,6 +206,30 @@ describe("<PatientTracePage/>", () => {
                 expect(await screen.findAllByText("Enter patient's 10 digit NHS number")).toHaveLength(2);
             }
         );
+    });
+
+    describe("without a valid backend session", () => {
+        it("navigates to the start page when API call to search patient is made without a valid backend session", async () => {
+            const errorResponse = {
+                response: {
+                    status: 403,
+                    message: "Unauthorised",
+                },
+            };
+
+            const navigateMock = jest.fn();
+
+            useNavigate.mockReturnValue(navigateMock);
+            getPatientDetailsMock.mockRejectedValue(errorResponse);
+
+            renderPatientTracePage();
+            userEvent.type(screen.getByRole("textbox", { name: "Enter NHS number" }), "0987654321");
+            userEvent.click(screen.getByRole("button", { name: "Search" }));
+
+            await waitFor(() => {
+                expect(navigateMock).toHaveBeenCalledWith(routes.ROOT);
+            });
+        });
     });
 });
 

@@ -9,6 +9,7 @@ import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
 const states = {
     INITIAL: "initial",
@@ -25,6 +26,7 @@ const SearchResultsPage = () => {
     const [patientDetails] = usePatientDetailsContext();
     const navigate = useNavigate();
     const [numberOfCleanFiles, setNumberOfCleanFiles] = useState(0);
+    const [session, setSession] = useSessionContext();
 
     useEffect(() => {
         if (!patientDetails?.nhsNumber) {
@@ -40,13 +42,20 @@ const SearchResultsPage = () => {
                 setSearchResults(results);
                 setNumberOfCleanFiles(results.filter((doc) => doc.virusScanResult === "Clean").length);
                 setSubmissionState(states.SUCCEEDED);
-            } catch (error) {
+            } catch (e) {
+                if (e.response?.status === 403) {
+                    setSession({
+                        ...session,
+                        isLoggedIn: false,
+                    });
+                    navigate(routes.ROOT);
+                }
                 setSubmissionState(states.FAILED);
             }
         };
 
         void search();
-    }, [documentStore, patientDetails, navigate, setSubmissionState, setSearchResults]);
+    }, [documentStore, patientDetails, navigate, setSubmissionState, setSearchResults, setSession, session]);
 
     const downloadAll = async () => {
         setDownloadState(states.PENDING);
@@ -57,6 +66,13 @@ const SearchResultsPage = () => {
 
             setDownloadState(states.SUCCEEDED);
         } catch (e) {
+            if (e.response?.status === 403) {
+                setSession({
+                    ...session,
+                    isLoggedIn: false,
+                });
+                navigate(routes.ROOT);
+            }
             setDownloadState(states.FAILED);
         }
     };

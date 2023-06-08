@@ -8,13 +8,12 @@ import uk.nhs.digital.docstore.data.entity.DocumentMetadata;
 import uk.nhs.digital.docstore.data.repository.DocumentMetadataStore;
 import uk.nhs.digital.docstore.data.serialiser.DocumentMetadataSerialiser;
 import uk.nhs.digital.docstore.exceptions.IllFormedPatientDetailsException;
-import uk.nhs.digital.docstore.handlers.CreateDocumentManifestByNhsNumberHandler;
 import uk.nhs.digital.docstore.model.Document;
 import uk.nhs.digital.docstore.model.NhsNumber;
 
 public class DocumentMetadataSearchService {
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(CreateDocumentManifestByNhsNumberHandler.class);
+            LoggerFactory.getLogger(DocumentMetadataSearchService.class);
     private final DocumentMetadataStore metadataStore;
     private final DocumentMetadataSerialiser serialiser;
 

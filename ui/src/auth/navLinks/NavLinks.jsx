@@ -5,22 +5,15 @@ import { useSessionContext } from "../../providers/sessionProvider/SessionProvid
 
 const NavLinks = () => {
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
-    const [session, setSession] = useSessionContext();
+    const [session, , deleteSession] = useSessionContext();
     const { isLoggedIn } = session;
     const redirectUri = new URL(routes.ROOT, window.location.href);
     const logoutUrl = `${baseAPIUrl}/Auth/Logout?redirect_uri=${redirectUri}`;
 
-    const handleLogOut = () => {
-        setSession({
-            ...session,
-            isLoggedIn: false,
-        });
-    };
-
     return isLoggedIn ? (
         <>
             <Header.NavItem href={routes.ROOT}>Home</Header.NavItem>
-            <Header.NavItem href={logoutUrl} onClick={handleLogOut}>
+            <Header.NavItem href={logoutUrl} onClick={deleteSession}>
                 Log Out
             </Header.NavItem>
         </>

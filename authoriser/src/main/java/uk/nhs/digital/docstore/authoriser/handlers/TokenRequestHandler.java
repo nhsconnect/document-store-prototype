@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.net.MalformedURLException;
 import java.time.Clock;
@@ -15,10 +16,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.nhs.digital.docstore.authoriser.HTTPTokenRequestClient;
-import uk.nhs.digital.docstore.authoriser.OIDCClient;
-import uk.nhs.digital.docstore.authoriser.OIDCHttpClient;
-import uk.nhs.digital.docstore.authoriser.OIDCTokenFetcher;
+import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
@@ -51,6 +49,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                                 getClientInformation(),
                                 new HTTPTokenRequestClient(),
                                 getProviderMetadata()),
+                        new UserInfoFetcher(new HTTPUserInfoRequestClient(), getProviderMetadata()),
                         makeIDTokenValidator()));
     }
 
@@ -66,13 +65,22 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             TokenRequestEvent requestEvent, Context context) {
+
         var authCode = requestEvent.getAuthCode();
 
-        // TODO: [PRMT-2779] Add identifier such as a redacted state
+        //         TODO: [PRMT-2779] Add identifier such as a redacted state
         LOGGER.debug("Handling token request");
 
         if (authCode.isEmpty()) {
-            throw new RuntimeException("Auth code is empty");
+            LOGGER.debug("Auth code is empty");
+            var headers = new HashMap<String, String>();
+            headers.put("Location", requestEvent.getErrorUri().orElseThrow());
+            headers.put("Access-Control-Allow-Credentials", "true");
+            return new APIGatewayProxyResponseEvent()
+                    .withIsBase64Encoded(false)
+                    .withStatusCode(SEE_OTHER_STATUS_CODE)
+                    .withHeaders(headers)
+                    .withBody("");
         }
 
         if (!requestEvent.hasMatchingStateValues()) {
@@ -83,9 +91,13 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                             + " and query parameter state: "
                             + requestEvent.getQueryParameterState().orElse(null));
 
+            var headers = new HashMap<String, String>();
+            headers.put("Location", requestEvent.getErrorUri().orElseThrow());
+            headers.put("Access-Control-Allow-Credentials", "true");
             return new APIGatewayProxyResponseEvent()
-                    .withStatusCode(400)
                     .withIsBase64Encoded(false)
+                    .withStatusCode(SEE_OTHER_STATUS_CODE)
+                    .withHeaders(headers)
                     .withBody("");
         }
 
@@ -98,7 +110,22 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         try {
             session = OIDCClient.authoriseSession(authCode.get());
         } catch (AuthorisationException exception) {
-            throw new RuntimeException(exception);
+            var headers = new HashMap<String, String>();
+            headers.put("Location", requestEvent.getErrorUri().orElseThrow());
+            headers.put("Access-Control-Allow-Credentials", "true");
+            return new APIGatewayProxyResponseEvent()
+                    .withIsBase64Encoded(false)
+                    .withStatusCode(SEE_OTHER_STATUS_CODE)
+                    .withHeaders(headers)
+                    .withBody("");
+        }
+
+        UserInfo userInfo;
+
+        try {
+            userInfo = OIDCClient.fetchUserInfo(session.getOidcSessionID());
+        } catch (AuthorisationException exception) {
+            LOGGER.debug(exception.toString());
         }
 
         // TODO: [PRMT-2779] Add redaction if required
@@ -112,6 +139,14 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
         var sessionId = session.getId().toString();
+
+        // Todo [PRMT-2806] Before success response is sent, make a UserInfo request with sessionId
+        // as bearer to get the role information
+
+        // Relay to the client admin or user role
+        // If userInfo fails return auth error response
+        // Write tests for
+
         var stateCookie =
                 httpOnlyCookieBuilder(
                         "State", requestEvent.getCookieState().orElseThrow().getValue(), 0L);
@@ -119,7 +154,9 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 httpOnlyCookieBuilder(
                         "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
         var sessionIdCookie = httpOnlyCookieBuilder("SessionId", sessionId, maxCookieAgeInSeconds);
-        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie);
+        var isAdmin = true ? "ADMIN" : "USER";
+        var roleCookie = httpOnlyCookieBuilder("RoleId", isAdmin, maxCookieAgeInSeconds);
+        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie, roleCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
         // TODO: [PRMT-2779] Add or improve redaction if required

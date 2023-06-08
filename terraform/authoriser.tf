@@ -47,6 +47,7 @@ resource "aws_api_gateway_authorizer" "cis2_authoriser" {
   rest_api_id            = aws_api_gateway_rest_api.lambda_api.id
   authorizer_uri         = aws_lambda_function.authoriser_lambda.invoke_arn
   authorizer_credentials = aws_iam_role.authoriser_execution.arn
+  authorizer_result_ttl_in_seconds = 0
 }
 
 resource "aws_lambda_function" "authoriser_lambda" {
@@ -76,8 +77,6 @@ resource "aws_lambda_function" "authoriser_lambda" {
           local.create_document_reference_invocation_arn,
         ]
       })
-      # COGNITO_PUBLIC_KEY_URL = var.cloud_only_service_instances > 0 ? "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.pool[0].id}" : ""
-      # COGNITO_KEY_ID         = var.cognito_key_id
     }
   }
 }
