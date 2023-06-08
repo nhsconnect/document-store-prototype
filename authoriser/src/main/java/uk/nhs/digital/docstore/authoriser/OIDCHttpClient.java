@@ -66,6 +66,7 @@ public class OIDCHttpClient implements OIDCClient {
         try {
             userInfo = userInfoFetcher.fetchUserInfo(new BearerAccessToken(sessionID));
         } catch (UserInfoFetchingException e) {
+            System.out.println("sessionID: " + sessionID);
             throw new AuthorisationException(e);
         }
 
