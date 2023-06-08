@@ -1,5 +1,0 @@
-bucket     = "prs-workspace-terraform-state"
-dynamodb_table = "prs-workspace-terraform-state-locking"
-region     = "eu-west-2"
-key        = "prs/workspace/terraform.tfstate"
-encrypt    = true

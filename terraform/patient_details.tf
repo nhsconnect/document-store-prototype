@@ -5,7 +5,7 @@ module "patient_details_endpoint" {
   lambda_arn     = aws_lambda_function.search_patient_details_lambda.invoke_arn
   http_method    = "GET"
   authorization  = "CUSTOM"
-  authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
+  authorizer_id  =  aws_api_gateway_authorizer.cis2_authoriser.id
 }
 
 module "patient_details_collection_preflight" {
@@ -16,13 +16,13 @@ module "patient_details_collection_preflight" {
   methods        = "'GET,OPTIONS,POST'"
 }
 
-module "search_patient_details_alarms" {
+module search_patient_details_alarms {
   source                     = "./modules/lambda_alarms"
   lambda_function_name       = aws_lambda_function.search_patient_details_lambda.function_name
   lambda_timeout             = aws_lambda_function.search_patient_details_lambda.timeout
   lambda_short_name          = "search_patient_details_handler"
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-  environment                = terraform.workspace
+  environment                = var.environment
 }
 
 data "aws_ssm_parameter" "pds_fhir_private_key" {
@@ -52,14 +52,14 @@ data "aws_ssm_parameter" "pds_fhir_kid" {
 
 resource "aws_lambda_function" "search_patient_details_lambda" {
   handler          = "uk.nhs.digital.docstore.lambdas.SearchPatientDetailsHandler::handleRequest"
-  function_name    = "${terraform.workspace}_SearchPatientDetailsHandler"
+  function_name    = "SearchPatientDetailsHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn
   timeout          = 15
   memory_size      = 448
   filename         = var.search_patient_details_lambda_jar_filename
   source_code_hash = filebase64sha256(var.search_patient_details_lambda_jar_filename)
-  layers = [
+  layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
     "arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4",
     aws_lambda_layer_version.document_store_lambda_layer.arn
@@ -93,7 +93,7 @@ resource "aws_lambda_permission" "api_gateway_permission_for_search_patient_deta
   principal     = "apigateway.amazonaws.com"
   # The "/*/*" portion grants access from any method on any resource
   # within the API Gateway REST API.
-  source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
 resource "aws_iam_role_policy" "lambda_kms_policy" {
@@ -114,8 +114,8 @@ resource "aws_iam_role_policy" "lambda_kms_policy" {
 }
 
 resource "aws_iam_role_policy" "lambda_get_parameter_policy" {
-  name = "lambda_get_parameter_from_ssm_policy"
-  role = aws_iam_role.lambda_execution_role.id
+  name   = "lambda_get_parameter_from_ssm_policy"
+  role   = aws_iam_role.lambda_execution_role.id
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [

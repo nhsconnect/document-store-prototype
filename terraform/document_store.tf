@@ -12,46 +12,38 @@ resource "aws_s3_bucket" "document_store" {
 resource "aws_s3_bucket_policy" "document_store_bucket_policy" {
   bucket = aws_s3_bucket.document_store.id
   policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Principal" : {
-          "AWS" : "*"
-        },
-        "Action" : [
-          "s3:*"
-        ],
-        "Resource" : [
-          "${aws_s3_bucket.document_store.arn}/*",
-          "${aws_s3_bucket.document_store.arn}"
-        ],
-        "Effect" : "Deny",
-        "Condition" : {
-          "Bool" : {
-            "aws:SecureTransport" : "false"
-          }
-        }
-      }
-    ]
-  })
+                  "Version": "2012-10-17",
+                      "Statement": [
+                          {
+                              "Principal": {
+                                  "AWS": "*"
+                              },
+                              "Action": [
+                                  "s3:*"
+                              ],
+                              "Resource": [
+                                  "${aws_s3_bucket.document_store.arn}/*",
+                                  "${aws_s3_bucket.document_store.arn}"
+                              ],
+                              "Effect": "Deny",
+                              "Condition": {
+                                  "Bool": {
+                                      "aws:SecureTransport": "false"
+                                  }
+                              }
+                          }
+                      ]
+                  })
 }
 
 resource "aws_s3_bucket_acl" "document_store_acl" {
-  bucket     = aws_s3_bucket.document_store.id
-  acl        = "private"
-  depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership_document_store]
-
-}
-# Resource to avoid error "AccessControlListNotSupported: The bucket does not allow ACLs"
-resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership_document_store" {
   bucket = aws_s3_bucket.document_store.id
-  rule {
-    object_ownership = "ObjectWriter"
-  }
+  acl    = "private"
 }
+
 data "aws_iam_policy_document" "document_encryption_key_policy" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     principals {
       identifiers = [var.cloud_storage_security_agent_role_arn]
       type        = "AWS"
@@ -76,7 +68,7 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
 }
 
 resource "aws_kms_alias" "document_store_encryption_key_alias" {
-  name          = "alias/document-store-bucket-key-ncryption-${terraform.workspace}"
+  name = "alias/document-store-bucket-encryption-key"
   target_key_id = aws_kms_key.document_store_encryption_key.id
 }
 
@@ -96,7 +88,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "document_store_en
   }
 }
 
-resource "aws_s3_bucket_versioning" "document_store_versioning" {
+resource aws_s3_bucket_versioning "document_store_versioning" {
   bucket = aws_s3_bucket.document_store.id
   versioning_configuration {
     status = "Enabled"
@@ -180,14 +172,14 @@ resource "aws_iam_role_policy" "s3_get_document_data_policy" {
   })
 }
 
-resource "aws_iam_policy" "s3_object_access_policy" {
-  name   = "${terraform.workspace}_S3ObjectAccess"
+resource aws_iam_policy "s3_object_access_policy" {
+  name   = "S3ObjectAccess"
   policy = data.aws_iam_policy_document.s3_object_access_policy_doc.json
 }
 
-data "aws_iam_policy_document" "s3_object_access_policy_doc" {
+data aws_iam_policy_document "s3_object_access_policy_doc" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "s3:ListBucketMultipartUploads",
       "s3:ListBucketVersions",
@@ -196,14 +188,14 @@ data "aws_iam_policy_document" "s3_object_access_policy_doc" {
     resources = ["arn:aws:s3:::*"]
   }
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "s3:ListAllMyBuckets"
     ]
     resources = ["*"]
   }
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "s3:DeleteObjectTagging",
       "s3:GetObjectRetention",
@@ -233,7 +225,7 @@ output "document-store-bucket" {
 }
 
 resource "aws_s3_bucket" "test_document_store" {
-  bucket_prefix = "${terraform.workspace}-test-document-store"
+  bucket_prefix = "test-document-store-"
 
   lifecycle {
     ignore_changes = [
@@ -245,42 +237,33 @@ resource "aws_s3_bucket" "test_document_store" {
 resource "aws_s3_bucket_policy" "test_document_store_bucket_policy" {
   bucket = aws_s3_bucket.test_document_store.id
   policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Principal" : {
-          "AWS" : "*"
-        },
-        "Action" : [
-          "s3:*"
-        ],
-        "Resource" : [
-          "${aws_s3_bucket.test_document_store.arn}/*",
-          "${aws_s3_bucket.test_document_store.arn}"
-        ],
-        "Effect" : "Deny",
-        "Condition" : {
-          "Bool" : {
-            "aws:SecureTransport" : "false"
-          }
-        }
-      }
-    ]
-  })
+                  "Version": "2012-10-17",
+                      "Statement": [
+                          {
+                              "Principal": {
+                                  "AWS": "*"
+                              },
+                              "Action": [
+                                  "s3:*"
+                              ],
+                              "Resource": [
+                                  "${aws_s3_bucket.test_document_store.arn}/*",
+                                  "${aws_s3_bucket.test_document_store.arn}"
+                              ],
+                              "Effect": "Deny",
+                              "Condition": {
+                                  "Bool": {
+                                      "aws:SecureTransport": "false"
+                                  }
+                              }
+                          }
+                      ]
+                  })
 }
 
 resource "aws_s3_bucket_acl" "test_document_store_acl" {
-  bucket     = aws_s3_bucket.test_document_store.id
-  acl        = "private"
-  depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownershi_test_document_store]
-}
-
-# Resource to avoid error "AccessControlListNotSupported: The bucket does not allow ACLs"
-resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownershi_test_document_store" {
   bucket = aws_s3_bucket.test_document_store.id
-  rule {
-    object_ownership = "ObjectWriter"
-  }
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "test_document_store_encryption" {
@@ -328,7 +311,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 
 resource "aws_lambda_layer_version" "document_store_lambda_layer" {
   filename   = var.lambda_layers_filename
-  layer_name = "${terraform.workspace}_app_lambda_layer"
+  layer_name = "app_lambda_layer"
 
   compatible_runtimes = ["java11"]
 }

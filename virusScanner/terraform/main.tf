@@ -21,8 +21,8 @@ resource "aws_vpc" "virus_scanning_vpc" {
 
 resource "aws_subnet" "virus_scanning_subnet1" {
   availability_zone = "eu-west-2a"
-  vpc_id            = aws_vpc.virus_scanning_vpc.id
-  cidr_block        = "10.0.1.0/24"
+  vpc_id = aws_vpc.virus_scanning_vpc.id
+  cidr_block = "10.0.1.0/24"
 
   tags = {
     Name = "Virus scanning subnet for eu-west-2a"
@@ -31,8 +31,8 @@ resource "aws_subnet" "virus_scanning_subnet1" {
 
 resource "aws_subnet" "virus_scanning_subnet2" {
   availability_zone = "eu-west-2b"
-  vpc_id            = aws_vpc.virus_scanning_vpc.id
-  cidr_block        = "10.0.2.0/24"
+  vpc_id = aws_vpc.virus_scanning_vpc.id
+  cidr_block = "10.0.2.0/24"
 
   tags = {
     Name = "Virus scanning subnet for eu-west-2b"
@@ -71,21 +71,21 @@ resource "aws_route_table_association" "virus_scanning_subnet2_route_table_assoc
 }
 
 data "aws_ssm_parameter" "cloud_security_admin_email" {
-  name = "/prs/${terraform.workspace}/user-input/cloud-security-admin-email"
+  name = "/prs/${var.environment}/user-input/cloud-security-admin-email"
 }
 
 resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
   name = "s3-virus-scanning-cloudformation-stack"
   parameters = {
-    VPC                                = aws_vpc.virus_scanning_vpc.id
-    SubnetA                            = aws_subnet.virus_scanning_subnet1.id
-    SubnetB                            = aws_subnet.virus_scanning_subnet2.id
-    ConsoleSecurityGroupCidrBlock      = var.black_hole_address
-    Email                              = data.aws_ssm_parameter.cloud_security_admin_email.value
+    VPC = aws_vpc.virus_scanning_vpc.id
+    SubnetA = aws_subnet.virus_scanning_subnet1.id
+    SubnetB = aws_subnet.virus_scanning_subnet2.id
+    ConsoleSecurityGroupCidrBlock = var.black_hole_address
+    Email = data.aws_ssm_parameter.cloud_security_admin_email.value
     OnlyScanWhenQueueThresholdExceeded = "Yes"
-    MinRunningAgents                   = 0
+    MinRunningAgents = 0
     NumMessagesInQueueScalingThreshold = 1
-    AllowAccessToAllKmsKeys            = "No"
+    AllowAccessToAllKmsKeys = "No"
   }
   timeouts {
     create = "60m"

@@ -130,5 +130,4 @@ PDS_FHIR_AUTH_KEY.*
 # Misc
 .DS_Store
 
-#terraform Output for Workspace deployments
-terraform_output.json
+

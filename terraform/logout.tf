@@ -1,13 +1,13 @@
 resource "aws_lambda_function" "logout_lambda" {
   handler          = "uk.nhs.digital.docstore.authoriser.handlers.LogoutHandler::handleRequest"
-  function_name    = "${terraform.workspace}_LogoutHandler"
+  function_name    = "LogoutHandler"
   runtime          = "java11"
   role             = aws_iam_role.authoriser_execution_role.arn
   timeout          = 15
   memory_size      = 256
   filename         = var.authoriser_lambda_jar_filename
   source_code_hash = filebase64sha256(var.authoriser_lambda_jar_filename)
-  layers = [
+  layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {

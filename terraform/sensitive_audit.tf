@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "splunk_trust_policy" {
 
 data "aws_iam_policy_document" "splunk_access_policy_document" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "sqs:GetQueueAttributes",
       "sqs:ListQueues",
@@ -37,37 +37,37 @@ data "aws_iam_policy_document" "splunk_access_policy_document" {
 }
 
 resource "aws_sqs_queue" "sensitive_audit" {
-  name                      = "${terraform.workspace}-sensitive-audit"
+  name                      = "${var.environment}-sensitive-audit"
   message_retention_seconds = 1209600
   sqs_managed_sse_enabled   = true
   tags = {
-    Environment = terraform.workspace
+    Environment = var.environment
   }
 }
 
 resource "aws_sqs_queue" "sensitive_nems_audit" {
-  name                      = "${terraform.workspace}-sensitive-nems-audit"
+  name                      = "${var.environment}-sensitive-nems-audit"
   message_retention_seconds = 1209600
   sqs_managed_sse_enabled   = true
   tags = {
-    Environment = terraform.workspace
+    Environment = var.environment
   }
 }
 
 resource "aws_iam_role" "splunk_sqs_forwarder" {
-  name               = "${terraform.workspace}_SplunkSqsForwarder"
+  name               = "SplunkSqsForwarder"
   description        = "Role to allow ARF to integrate with Splunk"
   assume_role_policy = data.aws_iam_policy_document.splunk_trust_policy.json
 }
 
 resource "aws_iam_policy" "splunk_access_policy" {
-  name   = "${terraform.workspace}_splunk_access_policy"
+  name   = "splunk_access_policy"
   policy = data.aws_iam_policy_document.splunk_access_policy_document.json
 }
 
 resource "aws_iam_role_policy" "sqs_policy" {
-  name = "send_audit_messages_policy"
-  role = aws_iam_role.lambda_execution_role.id
+  name   = "send_audit_messages_policy"
+  role   = aws_iam_role.lambda_execution_role.id
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -99,10 +99,10 @@ resource "aws_iam_role_policy_attachment" "splunk_access_policy_attachment" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "sensitive_index_age_of_oldest_message" {
-  alarm_name        = "prs_${terraform.workspace}_sensitive_index_age_of_oldest_message"
+  alarm_name        = "prs_${var.environment}_sensitive_index_age_of_oldest_message"
   alarm_description = "Triggers when a message has been in the ${aws_sqs_queue.sensitive_audit.name} queue for more than 10 minutes."
   namespace         = "AWS/SQS"
-  dimensions = {
+  dimensions        = {
     QueueName = aws_sqs_queue.sensitive_audit.name
   }
   metric_name         = "ApproximateAgeOfOldestMessage"
@@ -117,10 +117,10 @@ resource "aws_cloudwatch_metric_alarm" "sensitive_index_age_of_oldest_message" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "sensitive_nems_index_age_of_oldest_message" {
-  alarm_name        = "prs_${terraform.workspace}_sensitive_nems_index_age_of_oldest_message"
+  alarm_name        = "prs_${var.environment}_sensitive_nems_index_age_of_oldest_message"
   alarm_description = "Triggers when a message has been in the ${aws_sqs_queue.sensitive_nems_audit.name} queue for more than 10 minutes."
   namespace         = "AWS/SQS"
-  dimensions = {
+  dimensions        = {
     QueueName = aws_sqs_queue.sensitive_nems_audit.name
   }
   metric_name         = "ApproximateAgeOfOldestMessage"

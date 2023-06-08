@@ -149,39 +149,3 @@ view-localstack-logs: ## View LocalStack logs
 .PHONY: help
 help: ## Show help
 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'
-
-.PHONY: plan-and-deploy-workspace
-plan-and-deploy-workspace:
-	./tasks deploy_workspace_amplify_app
-
-# Deploy both UI and Terraform for Sandbox A
-.PHONY: deploy-app-sanda
-deploy-app-sanda:
-	./tasks deploy-app-sanda
-# Deploy both UI and Terraform for Sandbox B
-.PHONY: deploy-app-sandb
-deploy-app-sandb:
-	./tasks deploy-app-sandb
-
-# Deploy only UI for Sandbox A
-.PHONY: deploy-ui-sanda
-deploy-ui-sanda:
-	./tasks deploy-ui-sanda
-# Deploy only UI for Sandbox B
-.PHONY: deploy-ui-sandb
-deploy-ui-sandb:
-	./tasks deploy-ui-sandb
-
-# Destroy terraform Sandbox A
-.PHONY: destroy-sanda
-destroy-sanda:
-	./tasks destroy-sanda
-# Destroy terraform Sandbox B
-.PHONY: destroy-sandb
-destroy-sandb:
-	./tasks destroy-sandb
-
-
-.PHONY: plan-and-deploy-workspace
-plan-and-deploy-workspace:
-	./tasks deploy_workspace_amplify_app

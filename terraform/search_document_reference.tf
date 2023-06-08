@@ -5,28 +5,28 @@ module "search_doc_ref_endpoint" {
   lambda_arn     = aws_lambda_function.doc_ref_search_lambda.invoke_arn
   http_method    = "GET"
   authorization  = "CUSTOM" //TODO
-  authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
+authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
 }
 
-module "document_reference_search_alarms" {
+module document_reference_search_alarms {
   source                     = "./modules/lambda_alarms"
   lambda_function_name       = aws_lambda_function.doc_ref_search_lambda.function_name
   lambda_timeout             = aws_lambda_function.doc_ref_search_lambda.timeout
   lambda_short_name          = "document_reference_search_handler"
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-  environment                = terraform.workspace
+  environment                = var.environment
 }
 
 resource "aws_lambda_function" "doc_ref_search_lambda" {
   handler          = "uk.nhs.digital.docstore.lambdas.DocumentReferenceSearchHandler::handleRequest"
-  function_name    = "${terraform.workspace}_DocumentReferenceSearchHandler"
+  function_name    = "DocumentReferenceSearchHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn
   timeout          = 15
   memory_size      = 448
   filename         = var.doc_ref_search_lambda_jar_filename
   source_code_hash = filebase64sha256(var.doc_ref_search_lambda_jar_filename)
-  layers = [
+  layers           = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
     aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
@@ -44,7 +44,7 @@ resource "aws_lambda_permission" "api_gateway_permission_for_doc_ref_search" {
   principal     = "apigateway.amazonaws.com"
   # The "/*/*" portion grants access from any method on any resource
   # within the API Gateway REST API.
-  source_arn = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
 locals {
