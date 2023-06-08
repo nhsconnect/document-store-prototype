@@ -39,7 +39,6 @@ public class OIDCHttpClient implements OIDCClient {
         JWT token;
         try {
             token = tokenFetcher.fetchToken(authCode);
-            System.out.println("jwt token: " + token);
         } catch (TokenFetchingException e) {
             throw new AuthorisationException(e);
         }
@@ -47,7 +46,6 @@ public class OIDCHttpClient implements OIDCClient {
         IDTokenClaimsSet claimsSet;
         try {
             claimsSet = tokenValidator.validate(token, null);
-            System.out.println("claims set: " + claimsSet);
         } catch (BadJOSEException | JOSEException e) {
             throw new AuthorisationException(e);
         }
