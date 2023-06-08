@@ -1,22 +1,22 @@
-module login_redirect_alarms {
+module "login_redirect_alarms" {
   source                     = "./modules/lambda_alarms"
   lambda_function_name       = aws_lambda_function.login_redirect_lambda.function_name
   lambda_timeout             = aws_lambda_function.login_redirect_lambda.timeout
   lambda_short_name          = "login_redirect_handler"
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-  environment                = var.environment
+  environment                = terraform.workspace
 }
 
 resource "aws_lambda_function" "login_redirect_lambda" {
   handler          = "uk.nhs.digital.docstore.authoriser.handlers.LoginRedirectHandler::handleRequest"
-  function_name    = "LoginRedirectHandler"
+  function_name    = "${terraform.workspace}_LoginRedirectHandler"
   runtime          = "java11"
   role             = aws_iam_role.authoriser_execution_role.arn
   timeout          = 15
   memory_size      = 256
   filename         = var.authoriser_lambda_jar_filename
   source_code_hash = filebase64sha256(var.authoriser_lambda_jar_filename)
-  layers           = [
+  layers = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {

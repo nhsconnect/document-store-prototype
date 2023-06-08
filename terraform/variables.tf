@@ -1,10 +1,13 @@
 variable "environment" {
   type = string
 }
-
 variable "region" {
   type    = string
   default = "eu-west-2"
+}
+variable "workspace" {
+  type    = string
+  default = "default"
 }
 
 variable "account_id" {
@@ -145,6 +148,11 @@ variable "cis2_provider_client_secret" {
 }
 
 variable "cis2_provider_oidc_issuer" {
+  type    = string
+  default = ""
+}
+
+variable "NHS_CIS2_ENVIRONMENT" {
   type    = string
   default = ""
 }
