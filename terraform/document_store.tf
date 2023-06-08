@@ -36,11 +36,6 @@ resource "aws_s3_bucket_policy" "document_store_bucket_policy" {
                   })
 }
 
-resource "aws_s3_bucket_acl" "document_store_acl" {
-  bucket = aws_s3_bucket.document_store.id
-  acl    = "private"
-}
-
 data "aws_iam_policy_document" "document_encryption_key_policy" {
   statement {
     effect  = "Allow"
