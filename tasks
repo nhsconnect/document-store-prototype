@@ -159,7 +159,7 @@ function run_sandbox() {
       deploy_workspace_ui terraform_output.json ui.zip ${WORKSPACE}
       printf "${blue}\nFinished deployment process.\n\n${normal}"
     fi
-    exit 1;
+    exit 0;
 }
 
 function deploy_workspace_ui() {
