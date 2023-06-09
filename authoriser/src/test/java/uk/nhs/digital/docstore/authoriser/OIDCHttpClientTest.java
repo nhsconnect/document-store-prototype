@@ -13,7 +13,6 @@ import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.time.Instant;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
@@ -23,7 +22,6 @@ import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 
 class OIDCHttpClientTest {
-    @Disabled("Disabled until fixed")
     @Test
     void createsAUserSessionWhenTheAuthCodeCanBeExchangedForAValidIdToken() throws Exception {
         var authCode = new AuthorizationCode();
