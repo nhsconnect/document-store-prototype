@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.net.MalformedURLException;
 import java.time.Clock;
@@ -120,15 +119,14 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                     .withBody("");
         }
 
-        UserInfo userInfo = null;
-
         try {
-            userInfo = OIDCClient.fetchUserInfo(session.getAccessTokenHash());
+            var userInfo = OIDCClient.fetchUserInfo(session.getAccessTokenHash());
+            if (userInfo != null) {
+                LOGGER.debug(userInfo.toJSONString());
+            }
         } catch (AuthorisationException exception) {
             LOGGER.debug(exception.toString());
         }
-
-        LOGGER.debug(userInfo.toJSONString());
 
         // TODO: [PRMT-2779] Add redaction if required
         LOGGER.debug(

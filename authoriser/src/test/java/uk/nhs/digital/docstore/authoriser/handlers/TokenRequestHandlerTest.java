@@ -47,6 +47,7 @@ class TokenRequestHandlerTest {
         session.setOIDCSubject("subject");
         session.setTimeToExist(cookieExpiryTime);
         session.setId(UUID.randomUUID());
+        session.setAccessTokenHash("AccesstokenHash");
 
         var oidcClient = Mockito.mock(OIDCClient.class);
         Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
