@@ -7,6 +7,7 @@ import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.time.Instant;
 import java.util.UUID;
@@ -36,16 +37,18 @@ public class OIDCHttpClient implements OIDCClient {
 
     @Override
     public Session authoriseSession(AuthorizationCode authCode) throws AuthorisationException {
-        JWT token;
+        OIDCTokens oidcAuthResponse;
         try {
-            token = tokenFetcher.fetchToken(authCode);
+            oidcAuthResponse = tokenFetcher.fetchToken(authCode);
         } catch (TokenFetchingException e) {
             throw new AuthorisationException(e);
         }
 
+        JWT IDToken = oidcAuthResponse.getIDToken();
         IDTokenClaimsSet claimsSet;
+
         try {
-            claimsSet = tokenValidator.validate(token, null);
+            claimsSet = tokenValidator.validate(IDToken, null);
         } catch (BadJOSEException | JOSEException e) {
             throw new AuthorisationException(e);
         }
@@ -56,7 +59,7 @@ public class OIDCHttpClient implements OIDCClient {
                         Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()),
                         claimsSet.getSubject(),
                         claimsSet.getSessionID(),
-                        claimsSet.getAccessTokenHash());
+                        oidcAuthResponse.getAccessToken());
         sessionStore.save(session);
         return session;
     }
