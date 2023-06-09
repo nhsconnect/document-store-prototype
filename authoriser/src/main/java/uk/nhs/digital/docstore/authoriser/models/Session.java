@@ -22,7 +22,11 @@ public class Session {
     public static final String SORT_KEY_PREFIX = "SESSION#";
 
     public static Session create(
-            UUID id, Instant timeToExist, Subject subject, SessionID sessionID, AccessTokenHash accessTokenHash) {
+            UUID id,
+            Instant timeToExist,
+            Subject subject,
+            SessionID sessionID,
+            AccessTokenHash accessTokenHash) {
         var session = new Session();
         session.setId(id);
         session.setPK(PARTITION_KEY_PREFIX + subject.getValue());
@@ -52,7 +56,9 @@ public class Session {
         this.accessTokenHash = accessTokenHash;
     }
 
-    public String getAccessTokenHash() { return accessTokenHash; }
+    public String getAccessTokenHash() {
+        return accessTokenHash;
+    }
 
     @DynamoDBHashKey(attributeName = "PK")
     public String getPK() {
