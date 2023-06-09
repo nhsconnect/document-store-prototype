@@ -28,7 +28,3 @@ resource "aws_amplify_branch" "main" {
 
   count = var.cloud_only_service_instances
 }
-
-output "amplify_app_ids" {
-  value = aws_amplify_app.doc-store-ui[*].id
-}
