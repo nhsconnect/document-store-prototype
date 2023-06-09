@@ -42,8 +42,6 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
 	implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
 
-	implementation 'ch.qos.logback:logback-classic:1.4.5'
-
 	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.96'
 	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
 
@@ -54,8 +52,6 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
 
-	implementation 'commons-io:commons-io:2.11'
-
 	testImplementation 'org.json:json:20220924'
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 	testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
@@ -64,6 +60,8 @@ dependencies {
 	testImplementation 'org.assertj:assertj-core:3.21.0'
 	testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
 	testImplementation 'org.apache.commons:commons-lang3:3.12.0'
+	testImplementation 'ch.qos.logback:logback-classic:1.4.5'
+
 
 	testFixturesImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
 	testFixturesImplementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
