@@ -42,6 +42,10 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
 	implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
 
+	implementation 'ch.qos.logback:logback-classic:1.4.5'
+	implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
+	implementation 'net.logstash.logback:logstash-logback-encoder:7.0'
+
 	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.96'
 	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
 
@@ -61,7 +65,6 @@ dependencies {
 	testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
 	testImplementation 'org.apache.commons:commons-lang3:3.12.0'
 	testImplementation 'ch.qos.logback:logback-classic:1.4.5'
-
 
 	testFixturesImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
 	testFixturesImplementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
