@@ -70,8 +70,7 @@ class OIDCTokenFetcherTest {
     }
 
     @Test
-    void shouldThrowTokenFetchingExceptionWhenGettingErrorResponse()
-            throws URISyntaxException{
+    void shouldThrowTokenFetchingExceptionWhenGettingErrorResponse() throws URISyntaxException {
         var clientID = new ClientID("client-id");
         var secret = new Secret("some-secret");
         var redirectURI = new URI("http://some-redirect.uri");
