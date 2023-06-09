@@ -120,13 +120,15 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                     .withBody("");
         }
 
-        UserInfo userInfo;
+        UserInfo userInfo = null;
 
         try {
             userInfo = OIDCClient.fetchUserInfo(session.getAccessTokenHash());
         } catch (AuthorisationException exception) {
             LOGGER.debug(exception.toString());
         }
+
+        LOGGER.debug(userInfo.toJSONString());
 
         // TODO: [PRMT-2779] Add redaction if required
         LOGGER.debug(
