@@ -2,7 +2,6 @@ package uk.nhs.digital.docstore.authoriser.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nimbusds.oauth2.sdk.id.Subject;
-import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.openid.connect.sdk.claims.AccessTokenHash;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.time.Instant;
@@ -45,7 +44,6 @@ public class Session {
         session.setTimeToExist(timeToExist);
         session.setOIDCSubject(subject.getValue());
         session.setOidcSessionID(sessionID.getValue());
-        session.setAccessTokenHash(accessTokenHash.getValue());
 
         return session;
     }
