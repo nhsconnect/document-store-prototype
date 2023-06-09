@@ -10,8 +10,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.UUID;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.OIDCClient;
@@ -19,7 +17,6 @@ import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 class TokenRequestHandlerTest {
-    @Disabled
     @Test
     void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws Exception {
         var request = new TokenRequestEvent();
