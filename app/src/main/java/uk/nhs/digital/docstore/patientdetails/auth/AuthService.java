@@ -16,10 +16,7 @@ public class AuthService {
     private final SignedJwtBuilder jwtBuilder;
     private final SSMService ssmService;
 
-    public AuthService(
-            AuthServiceHttpClient httpClient,
-            PatientSearchConfig patientSearchConfig,
-            SSMService ssmService) {
+    public AuthService(AuthServiceHttpClient httpClient, PatientSearchConfig patientSearchConfig) {
         this(
                 httpClient,
                 patientSearchConfig,
