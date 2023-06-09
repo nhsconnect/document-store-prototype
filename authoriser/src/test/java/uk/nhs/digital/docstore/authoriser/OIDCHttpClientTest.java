@@ -10,7 +10,6 @@ import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.time.Instant;
 import org.assertj.core.api.Assertions;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
