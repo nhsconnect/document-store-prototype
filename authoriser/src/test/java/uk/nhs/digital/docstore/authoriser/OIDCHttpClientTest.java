@@ -7,7 +7,6 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
-import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
@@ -32,8 +31,7 @@ class OIDCHttpClientTest {
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
         var idToken = new PlainJWT(new PlainHeader(), claimsSet.toJWTClaimsSet());
         var accessToken = new BearerAccessToken();
-        var refreshToken = new RefreshToken();
-        var oidcAuthResponse = new OIDCTokens(idToken, accessToken, refreshToken);
+        var oidcAuthResponse = new OIDCTokens(idToken, accessToken, null);
         Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(oidcAuthResponse);
 
         var tokenValidator =
@@ -74,8 +72,7 @@ class OIDCHttpClientTest {
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
         var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
         var accessToken = new BearerAccessToken();
-        var refreshToken = new RefreshToken();
-        var oidcAuthResponse = new OIDCTokens(idToken, accessToken, refreshToken);
+        var oidcAuthResponse = new OIDCTokens(idToken, accessToken, null);
         Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(oidcAuthResponse);
 
         ClientID clientID = new ClientID("test");
