@@ -22,14 +22,13 @@ sourceSets {
 }
 
 configurations {
+	compileClasspath.exclude group: 'commons-logging', module: 'commons-logging'
 	runtimeClasspath.exclude group: 'commons-logging', module: 'commons-logging'
 
 	integrationTestImplementation.extendsFrom testImplementation
 	integrationTestRuntime.extendsFrom testRuntime
 	testFixturesImplementation.extendsFrom implementation
 	testFixturesRuntime.extendsFrom runtimeOnly
-
-
 }
 
 tasks.withType(Test) {
