@@ -22,6 +22,8 @@ sourceSets {
 }
 
 configurations {
+	runtimeClasspath.exclude group: 'commons-logging', module: 'commons-logging'
+
 	integrationTestImplementation.extendsFrom testImplementation
 	integrationTestRuntime.extendsFrom testRuntime
 	testFixturesImplementation.extendsFrom implementation
@@ -35,23 +37,15 @@ tasks.withType(Test) {
 }
 
 dependencies {
-	implementation ('com.amazonaws:aws-java-sdk-core:1.12.400')  {
-		exclude group: 'commons-logging', module: 'commons-logging'
-	}
-	implementation ('com.amazonaws:aws-java-sdk-dynamodb:1.12.400')  {
-		exclude group: 'commons-logging', module: 'commons-logging'
-	}
+	implementation 'com.amazonaws:aws-java-sdk-core:1.12.400'
+	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
 	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
 	implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
 	implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
 	implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
 
-	implementation ('ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5') {
-		exclude group: 'commons-logging', module: 'commons-logging'
-	}
-	implementation ('ca.uhn.hapi.fhir:org.hl7.fhir.r4:6.0.15') {
-		exclude group: 'commons-logging', module: 'commons-logging'
-	}
+	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
+	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:6.0.15'
 
 	implementation 'ch.qos.logback:logback-classic:1.4.5'
 	implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
