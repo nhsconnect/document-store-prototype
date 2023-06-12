@@ -27,6 +27,10 @@ dependencies {
 	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
 	implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
 
+	implementation 'ch.qos.logback:logback-classic:1.4.5'
+	implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
+	implementation 'net.logstash.logback:logstash-logback-encoder:7.0'
+
 	integrationTestImplementation(testFixtures(project(":app")))
 	integrationTestImplementation 'org.json:json:20220924'
 	integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
