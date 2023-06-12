@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.authoriser;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimNames;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
@@ -59,19 +60,22 @@ public class OIDCHttpClient implements OIDCClient {
                         Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()),
                         claimsSet.getSubject(),
                         claimsSet.getSessionID(),
+                        claimsSet.getClaim(JWTClaimNames.SUBJECT).toString(),
                         oidcAuthResponse.getAccessToken());
         sessionStore.save(session);
         return session;
     }
 
     @Override
-    public UserInfo fetchUserInfo(String sessionID) throws AuthorisationException {
-        UserInfo userInfo;
-        try {
-            userInfo = userInfoFetcher.fetchUserInfo(new BearerAccessToken(sessionID));
-        } catch (UserInfoFetchingException e) {
-            System.out.println("sessionID: " + sessionID);
-            throw new AuthorisationException(e);
+    public UserInfo fetchUserInfo(String sessionID, String subClaim)
+            throws UserInfoFetchingException {
+
+        UserInfo userInfo = userInfoFetcher.fetchUserInfo(new BearerAccessToken(sessionID));
+
+        if (!subClaim.equals(userInfo.getClaim(JWTClaimNames.SUBJECT))) {
+            throw new UserInfoFetchingException(
+                    "Sub claims for the user and the user info response do not match. The returned"
+                            + " information cannot be used");
         }
 
         return userInfo;

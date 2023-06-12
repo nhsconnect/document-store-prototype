@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
+import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
@@ -120,11 +121,12 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         }
 
         try {
-            var userInfo = OIDCClient.fetchUserInfo(session.getAccessTokenHash());
+            var userInfo =
+                    OIDCClient.fetchUserInfo(session.getAccessTokenHash(), session.getSubClaim());
             if (userInfo != null) {
                 LOGGER.debug(userInfo.toJSONString());
             }
-        } catch (AuthorisationException exception) {
+        } catch (UserInfoFetchingException exception) {
             LOGGER.debug(exception.toString());
         }
 

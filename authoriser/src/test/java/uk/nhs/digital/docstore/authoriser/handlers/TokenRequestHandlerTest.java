@@ -48,7 +48,8 @@ class TokenRequestHandlerTest {
 
         var oidcClient = Mockito.mock(OIDCClient.class);
         Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
-        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString())).thenReturn(null);
+        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(null);
 
         var handler = new TokenRequestHandler(oidcClient, clock);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
@@ -97,7 +98,8 @@ class TokenRequestHandlerTest {
 
         var oidcClient = Mockito.mock(OIDCClient.class);
         Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
-        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString())).thenReturn(null);
+        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(null);
 
         var handler = new TokenRequestHandler(oidcClient);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
@@ -127,7 +129,8 @@ class TokenRequestHandlerTest {
 
         var oidcClient = Mockito.mock(OIDCClient.class);
         Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
-        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString())).thenReturn(null);
+        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(null);
 
         var handler = new TokenRequestHandler(oidcClient);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));

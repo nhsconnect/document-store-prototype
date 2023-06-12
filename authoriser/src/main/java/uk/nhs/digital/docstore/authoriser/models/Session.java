@@ -15,9 +15,10 @@ public class Session {
     private Instant timeToExist;
     private String role;
     private String oidcSubject;
-
     private String oidcSessionID;
     private String accessTokenHash;
+
+    private String subClaim;
     public static final String PARTITION_KEY_PREFIX = "OIDCSUBJECT#";
     public static final String SORT_KEY_PREFIX = "SESSION#";
 
@@ -26,6 +27,7 @@ public class Session {
             Instant timeToExist,
             Subject subject,
             SessionID sessionID,
+            String subClaim,
             AccessToken accessToken) {
         var session = new Session();
         session.setId(id);
@@ -34,6 +36,7 @@ public class Session {
         session.setTimeToExist(timeToExist);
         session.setOIDCSubject(subject.getValue());
         session.setOidcSessionID(sessionID.getValue());
+        session.setSubClaim(subClaim);
         session.setAccessTokenHash(accessToken.getValue());
 
         return session;
@@ -58,6 +61,14 @@ public class Session {
 
     public String getAccessTokenHash() {
         return accessTokenHash;
+    }
+
+    public String getSubClaim() {
+        return subClaim;
+    }
+
+    public void setSubClaim(String subClaim) {
+        this.subClaim = subClaim;
     }
 
     @DynamoDBHashKey(attributeName = "PK")

@@ -114,13 +114,15 @@ class OIDCHttpClientTest {
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
 
         var sessionId = "sessionId";
+        var subClaim = "SubClaim";
         var expectedUserInfo = new UserInfo(new Subject());
+        expectedUserInfo.setClaim(JWTClaimNames.SUBJECT, subClaim);
         Mockito.when(userInfoFetcher.fetchUserInfo(new BearerAccessToken(sessionId)))
                 .thenReturn(expectedUserInfo);
         var client =
                 new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
 
-        var result = client.fetchUserInfo(sessionId);
+        var result = client.fetchUserInfo(sessionId, subClaim);
 
         assert (result).equals(expectedUserInfo);
     }
