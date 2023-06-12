@@ -18,6 +18,8 @@ terraform.rc
 /terraform/.cache
 /virusScanner/terraform/virus-scanner-tfplan
 virusScanner/terraform/.terraform.lock.hcl
+terraform/bootstrap/terraform/.terraform*
+
 
 ### Dependencies
 node_modules
