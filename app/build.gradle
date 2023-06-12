@@ -42,8 +42,12 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
 	implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
 
-	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.96'
-	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
+	implementation ('ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5') {
+		exclude group: 'commons-logging', name: 'commons-logging', version: '1.2'
+	}
+	implementation ('ca.uhn.hapi.fhir:org.hl7.fhir.r4:6.0.15') {
+		exclude group: 'commons-logging', name: 'commons-logging', version: '1.2'
+	}
 
 	implementation 'ch.qos.logback:logback-classic:1.4.5'
 	implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
