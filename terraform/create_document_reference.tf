@@ -52,10 +52,3 @@ resource "aws_lambda_permission" "api_gateway_permission_for_create_doc_ref" {
 locals {
   create_document_reference_invocation_arn = "arn:aws:execute-api:${var.region}:${var.account_id}:${aws_api_gateway_rest_api.lambda_api.id}/${var.api_gateway_stage}/${module.create_doc_ref_endpoint.http_method}${aws_api_gateway_resource.doc_ref_collection_resource.path}"
 }
-
-resource "aws_lambda_layer_version" "document_store_lambda_layer" {
-  filename   = var.lambda_layers_filename
-  layer_name = "app_lambda_layer"
-
-  compatible_runtimes = ["java11"]
-}
