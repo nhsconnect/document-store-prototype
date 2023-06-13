@@ -128,11 +128,11 @@ build-ui: ## Build the UI
 
 .PHONY: build-api-jars
 build-api-jars: ## Build API JARs
-	bash ./scripts/tasks.bash _build-api-jars
+	bash ./scripts/tasks.sh _build-api-jars
 
 .PHONY: deploy-to-localstack
 deploy-to-localstack: ## Deploy to LocalStack
-	bash ./scripts/tasks.bash _deploy-to-localstack
+	bash ./scripts/tasks.sh _deploy-to-localstack
 
 .PHONY: start-ui
 start-ui: ## Start the UI
@@ -140,11 +140,11 @@ start-ui: ## Start the UI
 
 .PHONY: start-localstack
 start-localstack: ## Start LocalStack
-	bash ./scripts/tasks.bash start-localstack
+	bash ./scripts/tasks.sh start-localstack
 
 .PHONY: view-localstack-logs
 view-localstack-logs: ## View LocalStack logs
-	bash ./scripts/tasks.bash view-localstack-logs
+	bash ./scripts/tasks.sh view-localstack-logs
 
 .PHONY: help
 help: ## Show help
@@ -152,31 +152,31 @@ help: ## Show help
 
 .PHONY: plan-and-deploy-workspace
 plan-and-deploy-workspace:
-	bash ./scripts/sandbox.bash deploy_workspace_amplify_app
+	bash ./scripts/sandbox.sh deploy_workspace_amplify_app
 
 # Deploy both UI and Terraform for Sandbox A
 .PHONY: deploy-app-sanda
 deploy-app-sanda:
-	bash ./scripts/sandbox.bash deploy-app-sanda
+	bash ./scripts/sandbox.sh deploy-app-sanda
 # Deploy both UI and Terraform for Sandbox B
 .PHONY: deploy-app-sandb
 deploy-app-sandb:
-	bash ./scripts/sandbox.bash deploy-app-sandb
+	bash ./scripts/sandbox.sh deploy-app-sandb
 
 # Deploy only UI for Sandbox A
 .PHONY: deploy-ui-sanda
 deploy-ui-sanda:
-	bash ./scripts/sandbox.bash deploy-ui-sanda
+	bash ./scripts/sandbox.sh deploy-ui-sanda
 # Deploy only UI for Sandbox B
 .PHONY: deploy-ui-sandb
 deploy-ui-sandb:
-	bash ./scripts/sandbox.bash deploy-ui-sandb
+	bash ./scripts/sandbox.sh deploy-ui-sandb
 
 # Destroy terraform Sandbox A
 .PHONY: destroy-sanda
 destroy-sanda:
-	bash ./scripts/sandbox.bash destroy-sanda
+	bash ./scripts/sandbox.sh destroy-sanda
 # Destroy terraform Sandbox B
 .PHONY: destroy-sandb
 destroy-sandb:
-	bash ./scripts/sandbox.bash destroy-sandb
+	bash ./scripts/sandbox.sh destroy-sandb

@@ -32,7 +32,7 @@ function run_sandbox() {
       terraform output -json >"../terraform_output.json"
       cd ..
       printf "${blue}\nCreating UI...\n\n${normal}"
-      if [[ "$OSTYPE" == "darwin"* ]]; then
+      if [[ $OS_TYPE == "darwin"* ]]; then
         create_sandbox_config $TF_FILE --osx
       else
         create_sandbox_config $TF_FILE --linux
