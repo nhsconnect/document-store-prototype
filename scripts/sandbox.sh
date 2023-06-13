@@ -7,6 +7,7 @@ function run_sandbox() {
     WORKSPACE=$1
     ENVIRONMENT="dev"
     MODE=$2
+    TF_FILE="./terraform_output.json"
     cd ./terraform
     printf "${blue}\nFinding workspace...\n\n${normal}"
     if [ $MODE == --destroy ]; then
@@ -30,8 +31,7 @@ function run_sandbox() {
       terraform output -json >"../terraform_output.json"
       cd ..
       printf "${blue}\nCreating UI...\n\n${normal}"
-      create_sandbox_config terraform_output.json
-      cat ui/src/config.js
+      create_sandbox_config $TF_FILE --osx || create_sandbox_config $TF_FILE --windows
       REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
       cd ui/build
       zip -r ../../ui.zip *
@@ -42,12 +42,10 @@ function run_sandbox() {
     elif [ $MODE == --deploy-ui ]; then
       terraform workspace select ${WORKSPACE} || (printf "${yellow}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE}) || (printf "${red}\n Remote state for ${WORKSPACE} not found. \n Initialise remote state by running deploy for the first time...\n\n${normal}" && rm -rf ./.terraform && rm .terraform.lock.hcl && exit 1);
       printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
-      TF_FILE="./terraform_output.json"
       if [ -f $TF_FILE ]; then
         cd ..
         printf "${blue}\nCreating UI...\n\n${normal}"
-        create_sandbox_config terraform_output.json
-        cat ui/src/config.js
+        create_sandbox_config $TF_FILE --osx || create_sandbox_config $TF_FILE --windows
         REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
         cd ui/build
         zip -r ../../ui.zip *
@@ -60,7 +58,6 @@ function run_sandbox() {
         cd ..
         make -f ./makefile deploy-app-${WORKSPACE}
       fi
-
     fi
     exit 0;
 }
@@ -77,6 +74,7 @@ function build_lambdas() {
 }
 
 function create_sandbox_config() {
+  MODE=$2
   cp ui/src/config.js.example ui/src/config.js
   user_pool="$(jq -r '.cognito_user_pool_ids.value' "$1")"
   user_pool_client_id="$(jq -r '.cognito_client_ids.value' "$1")"
@@ -85,15 +83,28 @@ function create_sandbox_config() {
   cognito_redirect_signin="$(jq -r '.cognito_redirect_signin.value' "$1")"
   cognito_redirect_signout="$(jq -r $(get_signout_url) "$1")"
   amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
-  sed -i "" "s/%pool-id%/${user_pool}/" ui/src/config.js
-  sed -i "" "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
-  sed -i "" "s/%region%/${aws_region}/" ui/src/config.js
-  sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
-  sed -i "" "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
-  sed -i "" "s~%cognito-redirect-signin%~${cognito_redirect_signin}~" ui/src/config.js
-  sed -i "" "s~%cognito-redirect-signout%~${cognito_redirect_signout}~" ui/src/config.js
-  sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
-  sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
+  if [ $MODE == --osx ]; then
+    sed -i "" "s/%pool-id%/${user_pool}/" ui/src/config.js
+    sed -i "" "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
+    sed -i "" "s/%region%/${aws_region}/" ui/src/config.js
+    sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
+    sed -i "" "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
+    sed -i "" "s~%cognito-redirect-signin%~${cognito_redirect_signin}~" ui/src/config.js
+    sed -i "" "s~%cognito-redirect-signout%~${cognito_redirect_signout}~" ui/src/config.js
+    sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
+    sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
+  elif [ $MODE == --linux ]; then
+    sed -i "s/%pool-id%/${user_pool}/" ui/src/config.js
+    sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
+    sed -i "s/%region%/${aws_region}/" ui/src/config.js
+    sed -i "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
+    sed -i "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
+    sed -i "s~%cognito-redirect-signin%~${cognito_redirect_signin}~" ui/src/config.js
+    sed -i "s~%cognito-redirect-signout%~${cognito_redirect_signout}~" ui/src/config.js
+    sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
+    sed -i "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
+  fi
+  cat ui/src/config.js
 }
 
 function deploy_sandbox_ui() {
