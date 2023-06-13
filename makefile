@@ -180,8 +180,3 @@ destroy-sanda:
 .PHONY: destroy-sandb
 destroy-sandb:
 	./tasks destroy-sandb
-
-
-.PHONY: plan-and-deploy-workspace
-plan-and-deploy-workspace:
-	./tasks deploy_workspace_amplify_app

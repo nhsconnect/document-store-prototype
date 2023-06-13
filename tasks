@@ -122,19 +122,27 @@ function export_cypress_base_url() {
 
 function run_sandbox() {
     blue=$(tput setaf 4)
+    green=$(tput setaf 2)
     normal=$(tput sgr0)
     WORKSPACE=$1
     ENVIRONMENT="dev"
     MODE=$2
     cd ./terraform
+    printf "${blue}\nFinding workspace...\n\n${normal}"
     if [ $MODE == --destroy ]; then
-      printf "${blue}\nFinding workspace...\n\n${normal}"
       terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, exiting...\n\n${normal}" && exit 1)
+      printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
       terraform destroy -var-file="dev.tfvars"
       printf "${blue}\nFinished destroy process for ${WORKSPACE}.\n\n${normal}"
     elif [ $MODE == --deploy-app ]; then
       terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select -or-create ${WORKSPACE})
+      printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
+      printf "${blue}\nBuilding lambda layers...\n\n${normal}"
+      cd ..
+      ./gradlew app:build
+      ./gradlew app:buildZip
       printf "${blue}\nRefreshing local plan...\n\n${normal}"
+      cd ./terraform
       terraform refresh -var-file="dev.tfvars"
       terraform plan -var-file="dev.tfvars" -out tfplan
       terraform apply tfplan
@@ -152,7 +160,14 @@ function run_sandbox() {
       printf "${blue}\nFinished deployment process.\n\n${normal}"
     elif [ $MODE == --deploy-ui ]; then
       terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE}) || (printf "${blue}\n Remote state for ${WORKSPACE} not found. \n Initialise remote state by running deploy for the first time...\n\n${normal}" && rm -rf ./.terraform && rm .terraform.lock.hcl && exit 1);
+      printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
+      printf "${blue}\nBuilding lambda layers...\n\n${normal}"
+      cd ..
+      ./gradlew app:build
+      ./gradlew app:buildZip
       printf "${blue}\nRefreshing local plan...\n\n${normal}"
+      cd ./terraform
+      ls ../lambdas/CreateDocumentManifestByNhsNumber/build/libs
       terraform refresh -var-file="dev.tfvars"
       terraform output -json >"../terraform_output.json"
       cd ..
@@ -171,6 +186,7 @@ function run_sandbox() {
 }
 
 function deploy_workspace_ui() {
+  printf $3
   app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
   aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name $3 >deployment.output
   jobId="$(jq -r .jobId deployment.output)"
@@ -191,52 +207,6 @@ function create_workspace_ui_config_file() {
   sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
 }
 
-function deploy_workspace_amplify_app() {
-  echo "Using Workspace ${WORKSPACE_NAME}"
-  ENVIRONMENT="dev"
-  check_env
-  cd terraform
-  terraform workspace select ${WORKSPACE_NAME}
-  echo "Selected workspace: "
-  terraform workspace show
-  terraform output -json >"../terraform_output.json"
-  cd ..
-  echo "Creating UI Config file"
-  create_ui_config_file terraform_output.json
-  cat ui/src/config.js
-  echo "Building App"
-  cd ui
-  REACT_APP_ENV=${ENVIRONMENT} npm run build
-  cd ..
-  echo "Zipping UI"
-  cd ui/build
-  zip -r ../../ui.zip *
-  cd ../..
-  echo "Deploying UI"
-  deploy_workspace_ui terraform_output.json ui.zip
-
-}
-
-function deploy_workspace_ui() {
-  app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
-  aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name ${WORKSPACE_NAME} >deployment.output
-  jobId="$(jq -r .jobId deployment.output)"
-  zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
-  rm -f deployment.output
-
-  curl -XPUT --data-binary "@$2" "$zipUploadUrl"
-  aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name ${WORKSPACE_NAME} --job-id "${jobId}"
-}
-
-function create_workspace_ui_config_file() {
-  cp ui/src/config.js.example ui/src/config.js
-  api_endpoint="$(jq -r '.api_gateway_url.value' "$1")"
-  amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
-  sed -i "" "s/%region%/${aws_region}/" ui/src/config.js
-  sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
-  sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
-  sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
-}
 function get_terraform_output() {
   tf_init
   terraform output -json >"../$1"
@@ -500,9 +470,6 @@ destroy-sanda)
   ;;
 destroy-sandb)
   run_sandbox "sandb" --destroy
-  ;;
-deploy_workspace_amplify_app)
-  deploy_workspace_amplify_app
   ;;
 *)
   echo "make $@"
