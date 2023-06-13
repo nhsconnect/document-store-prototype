@@ -128,11 +128,11 @@ build-ui: ## Build the UI
 
 .PHONY: build-api-jars
 build-api-jars: ## Build API JARs
-	./tasks _build-api-jars
+	sh ./scripts/tasks.sh _build-api-jars
 
 .PHONY: deploy-to-localstack
 deploy-to-localstack: ## Deploy to LocalStack
-	./tasks _deploy-to-localstack
+	sh ./scripts/tasks.sh _deploy-to-localstack
 
 .PHONY: start-ui
 start-ui: ## Start the UI
@@ -140,11 +140,11 @@ start-ui: ## Start the UI
 
 .PHONY: start-localstack
 start-localstack: ## Start LocalStack
-	./tasks start-localstack
+	sh ./scripts/tasks.sh start-localstack
 
 .PHONY: view-localstack-logs
 view-localstack-logs: ## View LocalStack logs
-	./tasks view-localstack-logs
+	sh ./scripts/tasks.sh view-localstack-logs
 
 .PHONY: help
 help: ## Show help
@@ -152,31 +152,31 @@ help: ## Show help
 
 .PHONY: plan-and-deploy-workspace
 plan-and-deploy-workspace:
-	./tasks deploy_workspace_amplify_app
+	sh ./scripts/sandbox.sh deploy_workspace_amplify_app
 
 # Deploy both UI and Terraform for Sandbox A
 .PHONY: deploy-app-sanda
 deploy-app-sanda:
-	./tasks deploy-app-sanda
+	sh ./scripts/sandbox.sh deploy-app-sanda
 # Deploy both UI and Terraform for Sandbox B
 .PHONY: deploy-app-sandb
 deploy-app-sandb:
-	./tasks deploy-app-sandb
+	sh ./scripts/sandbox.sh deploy-app-sandb
 
 # Deploy only UI for Sandbox A
 .PHONY: deploy-ui-sanda
 deploy-ui-sanda:
-	./tasks deploy-ui-sanda
+	sh ./scripts/sandbox.sh deploy-ui-sanda
 # Deploy only UI for Sandbox B
 .PHONY: deploy-ui-sandb
 deploy-ui-sandb:
-	./tasks deploy-ui-sandb
+	sh ./scripts/sandbox.sh deploy-ui-sandb
 
 # Destroy terraform Sandbox A
 .PHONY: destroy-sanda
 destroy-sanda:
-	./tasks destroy-sanda
+	sh ./scripts/sandbox.sh destroy-sanda
 # Destroy terraform Sandbox B
 .PHONY: destroy-sandb
 destroy-sandb:
-	./tasks destroy-sandb
+	sh ./scripts/sandbox.sh destroy-sandb
