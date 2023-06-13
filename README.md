@@ -158,6 +158,20 @@ AWS, [see here for details](https://docs.aws.amazon.com/cli/latest/userguide/cli
 ./bootstrap-terraform.sh "environment"
 ```
 
+### Create the DNS Hosted Zone for ARF
+This needs to be completed after the bucket and dyanmo table have been deployed in the previous step. This will create the Hosted Zone "access-request-fulfilment.patient-deductions.nhs.uk".
+
+After creation the Name Servers (output from Terraform or viewable in the AWS Console) need to be sent to DNSTeam@nhs.uk as they control any NHS.UK domains, and sending the Name Servers will allow traffic to be routed to our app.
+
+Subdomains can then be controlled by us and added to the Hosted Zone (e.g. dev.access-request-fulfilment.patient-deductions.nhs.uk, or sandbox.access-request-fulfilment.patient-deductions.nhs.uk) so we can direct traffic to the correct Amplify applications. 
+
+```bash
+cd terraform/bootstrap/terraform
+terraform init
+terraform plan #check that only one resource will be created
+terraform apply
+```
+
 ### Initialising GoCD Agents
 
 In order to deploy to AWS from the pipeline, a GoCD agent must have a role and policy attached to it. These need to be
