@@ -8,6 +8,7 @@ function run_sandbox() {
     ENVIRONMENT="dev"
     MODE=$2
     TF_FILE="./terraform_output.json"
+    OS_TYPE=$(uname)
     cd ./terraform
     printf "${blue}\nFinding workspace...\n\n${normal}"
     if [ $MODE == --destroy ]; then
@@ -31,7 +32,11 @@ function run_sandbox() {
       terraform output -json >"../terraform_output.json"
       cd ..
       printf "${blue}\nCreating UI...\n\n${normal}"
-      create_sandbox_config $TF_FILE --osx || create_sandbox_config $TF_FILE --windows
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        create_sandbox_config $TF_FILE --osx
+      else
+        create_sandbox_config $TF_FILE --linux
+      fi
       REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
       cd ui/build
       zip -r ../../ui.zip *
@@ -45,7 +50,11 @@ function run_sandbox() {
       if [ -f $TF_FILE ]; then
         cd ..
         printf "${blue}\nCreating UI...\n\n${normal}"
-        create_sandbox_config $TF_FILE --osx || create_sandbox_config $TF_FILE --windows
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+          create_sandbox_config $TF_FILE --osx
+        else
+          create_sandbox_config $TF_FILE --linux
+        fi
         REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
         cd ui/build
         zip -r ../../ui.zip *
