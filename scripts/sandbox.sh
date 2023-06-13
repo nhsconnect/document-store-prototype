@@ -1,9 +1,9 @@
+blue=$(tput setaf 4)
+green=$(tput setaf 2)
+red=$(tput setaf 1)
+yellow=$(tput setaf 3)
+normal=$(tput sgr0)
 function run_sandbox() {
-    blue=$(tput setaf 4)
-    green=$(tput setaf 2)
-    red=$(tput setaf 1)
-    yellow=$(tput setaf 3)
-    normal=$(tput sgr0)
     WORKSPACE=$1
     ENVIRONMENT="dev"
     MODE=$2
@@ -79,7 +79,7 @@ function build_lambdas() {
     ./gradlew lambdas:FakeVirusScannedEvent:build &&
     ./gradlew lambdas:ReRegistrationEvent:build &&
     ./gradlew lambdas:SearchPatientDetails:build &&
-    ./gradlew lambdas:VirusScannedEvent:build) || printf "Error building lambdas, ensure you are in root directory."
+    ./gradlew lambdas:VirusScannedEvent:build) || printf "${red}\nError building lambdas, ensure you are in root directory.\n\n${normal}"
 }
 
 function create_sandbox_config() {
