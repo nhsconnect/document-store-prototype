@@ -2,6 +2,10 @@ variable "environment" {
   type = string
 }
 
+variable "arf_domain_name" {
+  type = string
+}
+
 variable "region" {
   type    = string
   default = "eu-west-2"
