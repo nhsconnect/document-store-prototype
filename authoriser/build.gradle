@@ -40,7 +40,7 @@ dependencies {
 	implementation 'ch.qos.logback:logback-classic:1.4.5'
 	implementation 'com.nimbusds:oauth2-oidc-sdk:10.7'
 
-	testImplementation 'org.json:json:20211205'
+	testImplementation 'org.json:json:20230227'
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 	testImplementation 'org.assertj:assertj-core:3.21.0'
 	testImplementation 'org.mockito:mockito-core:5.1.1'
@@ -78,10 +78,6 @@ spotless {
 	java {
 		googleJavaFormat('1.15.0').aosp().reflowLongStrings()
 	}
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
 }
 
 task integrationTest(type: Test) {
