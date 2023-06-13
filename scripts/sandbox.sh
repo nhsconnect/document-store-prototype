@@ -136,11 +136,11 @@ deploy-app-sandb)
   run_sandbox "sandb" --deploy-app
   ;;
 deploy-ui-sanda)
-run_sandbox "sanda" --deploy-ui
-;;
+  run_sandbox "sanda" --deploy-ui
+  ;;
 deploy-ui-sandb)
-run_sandbox "sandb" --deploy-ui
-;;
+  run_sandbox "sandb" --deploy-ui
+  ;;
 destroy-sanda)
   run_sandbox "sanda" --destroy
   ;;
