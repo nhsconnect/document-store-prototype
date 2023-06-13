@@ -16,6 +16,8 @@ sourceSets {
 }
 
 configurations {
+	compileClasspath.exclude group: 'commons-logging', module: 'commons-logging'
+	runtimeClasspath.exclude group: 'commons-logging', module: 'commons-logging'
 	integrationTestImplementation.extendsFrom implementation
 	integrationTestRuntime.extendsFrom runtimeOnly
 }
@@ -25,13 +27,9 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
 	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
 	implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
-
 	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
-
+	implementation 'com.fasterxml.jackson:jackson-bom:2.15.2'
 	implementation 'com.auth0:java-jwt:4.2.1'
-
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
 
 	integrationTestImplementation(testFixtures(project(":app")))
 	integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'

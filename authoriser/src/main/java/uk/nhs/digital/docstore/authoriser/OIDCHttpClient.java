@@ -72,10 +72,6 @@ public class OIDCHttpClient implements OIDCClient {
 
         UserInfo userInfo = userInfoFetcher.fetchUserInfo(new BearerAccessToken(sessionID));
 
-        System.out.println("Sub claim from ID token: " + subClaim);
-        System.out.println(
-                "Sub claim from user info request: " + userInfo.getClaim(JWTClaimNames.SUBJECT));
-
         if (!subClaim.equals(userInfo.getClaim(JWTClaimNames.SUBJECT))) {
             throw new UserInfoFetchingException(
                     "Sub claims for the user and the user info response do not match. The returned"
