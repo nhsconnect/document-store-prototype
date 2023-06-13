@@ -1,8 +1,8 @@
 resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
-  alarm_name        = "prs_${var.environment}_doc_store_api_5xx_error"
+  alarm_name        = "prs_${terraform.workspace}_doc_store_api_5xx_error"
   alarm_description = "Triggers when a 5xx status code has been returned by the DocStoreAPI."
   namespace         = "AWS/ApiGateway"
-  dimensions        = {
+  dimensions = {
     ApiName = aws_api_gateway_rest_api.lambda_api.name
   }
   metric_name         = "5XXError"
@@ -17,7 +17,7 @@ resource "aws_cloudwatch_metric_alarm" "doc_store_api_5xx_error" {
 }
 
 resource "aws_sns_topic" "alarm_notifications" {
-  name   = "alarms-notifications-topic"
+  name = "alarms-notifications-topic"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -45,7 +45,7 @@ resource "aws_kms_key" "alarm_notification_encryption_key" {
 }
 
 resource "aws_kms_alias" "alarm_notification_encryption_key_alias" {
-  name          = "alias/alarm-notification-encryption-kms-key"
+  name          = "alias/alarm-notification-encryption-key-kms-${terraform.workspace}"
   target_key_id = aws_kms_key.alarm_notification_encryption_key.id
 }
 

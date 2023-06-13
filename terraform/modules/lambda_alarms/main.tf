@@ -1,7 +1,6 @@
 variable "environment" {
   type = string
 }
-
 variable "lambda_function_name" {
   type = string
 }
@@ -21,9 +20,9 @@ variable "notification_sns_topic_arn" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "lambda_error" {
-  alarm_name        = "prs_${var.environment}_${var.lambda_short_name}_error"
+  alarm_name        = "prs_${terraform.workspace}_${var.lambda_short_name}_error"
   alarm_description = "Triggers when an error has occurred in ${var.lambda_function_name}."
-  dimensions        = {
+  dimensions = {
     FunctionName = var.lambda_function_name
   }
   namespace           = "AWS/Lambda"
@@ -39,9 +38,9 @@ resource "aws_cloudwatch_metric_alarm" "lambda_error" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "lambda_duration_alarm" {
-  alarm_name        = "prs_${var.environment}_${var.lambda_short_name}_duration"
+  alarm_name        = "prs_${terraform.workspace}_${var.lambda_short_name}_duration"
   alarm_description = "Triggers when duration of ${var.lambda_function_name} exceeds 80% of timeout."
-  dimensions        = {
+  dimensions = {
     FunctionName = var.lambda_function_name
   }
   threshold           = var.lambda_timeout * 0.8 * 1000
@@ -54,9 +53,9 @@ resource "aws_cloudwatch_metric_alarm" "lambda_duration_alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "lambda_memory_alarm" {
-  alarm_name        = "prs_${var.environment}_${var.lambda_short_name}_memory"
+  alarm_name        = "prs_${terraform.workspace}_${var.lambda_short_name}_memory"
   alarm_description = "Triggers when max memory usage of ${var.lambda_function_name} exceeds 80% of provisioned memory."
-  dimensions        = {
+  dimensions = {
     function_name = var.lambda_function_name
   }
   threshold           = 80

@@ -1,4 +1,5 @@
 environment                           = "dev"
+NHS_CIS2_ENVIRONMENT                  = "development"
 arf_domain_name                       = "access-request-fulfilment.patient-deductions.nhs.uk"
 account_id                            = "533825906475"
 enable_session_auth                   = true

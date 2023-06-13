@@ -5,7 +5,7 @@ module "document_manifest_endpoint" {
   lambda_arn     = aws_lambda_function.document_manifest_lambda.invoke_arn
   http_method    = "GET"
   authorization  = "CUSTOM" //TODO
-authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
+  authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
 }
 
 module "document_manifest_preflight" {
@@ -18,14 +18,14 @@ module "document_manifest_preflight" {
 
 resource "aws_lambda_function" "document_manifest_lambda" {
   handler          = "uk.nhs.digital.docstore.lambdas.CreateDocumentManifestByNhsNumberHandler::handleRequest"
-  function_name    = "CreateDocumentManifestByNhsNumberHandler"
+  function_name    = "${terraform.workspace}_CreateDocumentManifestByNhsNumberHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn
   timeout          = 60
   memory_size      = 1000
   filename         = var.create_doc_manifest_lambda_jar_filename
   source_code_hash = filebase64sha256(var.create_doc_manifest_lambda_jar_filename)
-  layers           = [
+  layers = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21",
     aws_lambda_layer_version.document_store_lambda_layer.arn
   ]
@@ -52,17 +52,17 @@ resource "aws_lambda_permission" "api_gateway_permission_for_document_manifest" 
   source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
-module create_document_manifest_by_nhs_number_alarms {
+module "create_document_manifest_by_nhs_number_alarms" {
   source                     = "./modules/lambda_alarms"
   lambda_function_name       = aws_lambda_function.document_manifest_lambda.function_name
   lambda_timeout             = aws_lambda_function.document_manifest_lambda.timeout
   lambda_short_name          = "create_document_manifest_by_nhs_number_handler"
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-  environment                = var.environment
+  environment                = terraform.workspace
 }
 
 resource "aws_dynamodb_table" "doc_zip_trace_store" {
-  name           = "DocumentZipTrace"
+  name           = "${terraform.workspace}_DocumentZipTrace"
   hash_key       = "ID"
   billing_mode   = "PAY_PER_REQUEST"
   stream_enabled = false

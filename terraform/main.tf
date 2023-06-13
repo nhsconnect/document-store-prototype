@@ -5,7 +5,13 @@ terraform {
       version = "4.52.0"
     }
   }
-  backend "s3" {}
+  backend "s3" {
+    bucket     = "prs-dev-terraform-state"
+    dynamodb_table = "prs-dev-terraform-state-locking"
+    region     = "eu-west-2"
+    key        = "prs/terraform.tfstate"
+    encrypt    = true
+  }
 }
 
 provider "aws" {
@@ -31,7 +37,7 @@ provider "aws" {
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
-  name = "LambdaExecution"
+  name = "${terraform.workspace}_LambdaExecution"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -59,7 +65,7 @@ resource "aws_iam_role_policy_attachment" "lambda_insights_policy" {
 }
 
 resource "aws_api_gateway_rest_api" "lambda_api" {
-  name = "DocStoreAPI"
+  name = "${terraform.workspace}_DocStoreAPI"
 }
 
 resource "aws_api_gateway_deployment" "api_deploy" {
@@ -131,8 +137,15 @@ resource "aws_api_gateway_gateway_response" "doc_store_bad_gateway_response" {
 }
 
 resource "aws_iam_policy" "dynamodb_table_access_policy" {
-  name   = "DynamoDBTableAccess"
+  name   = "${terraform.workspace}_DynamoDBTableAccess"
   policy = data.aws_iam_policy_document.dynamodb_table_access_policy_doc.json
+}
+data "aws_ssm_parameter" "cis2_provider_client_id" {
+  name = "/${var.NHS_CIS2_ENVIRONMENT}/cis2/client_id"
+}
+
+data "aws_ssm_parameter" "cis2_provider_client_secret" {
+  name = "/${var.NHS_CIS2_ENVIRONMENT}/cis2/client_secret"
 }
 
 data "aws_iam_policy_document" "dynamodb_table_access_policy_doc" {
@@ -160,18 +173,6 @@ data "aws_iam_policy_document" "dynamodb_table_access_policy_doc" {
   }
 }
 
-output "api_gateway_rest_api_id" {
-  value = aws_api_gateway_deployment.api_deploy.rest_api_id
-}
-
-output "api_gateway_rest_api_stage" {
-  value = aws_api_gateway_deployment.api_deploy.stage_name
-}
-
-output "api_gateway_url" {
-  value = aws_api_gateway_deployment.api_deploy.invoke_url
-}
-
 locals {
   common_environment_variables = {
     DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
@@ -181,14 +182,15 @@ locals {
     SQS_ENDPOINT               = var.sqs_endpoint
     SQS_AUDIT_QUEUE_URL        = aws_sqs_queue.sensitive_audit.url
   }
+
   authoriser_environment_variables = {
     DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
     OIDC_ISSUER_URL    = var.cis2_provider_oidc_issuer
     OIDC_AUTHORIZE_URL = var.cis2_provider_authorize_url
     OIDC_JWKS_URL      = var.cis2_provider_jwks_uri
     OIDC_CALLBACK_URL  = var.cloud_only_service_instances > 0 ? "${local.amplify_base_url}/auth-callback" : var.cis2_client_callback_urls[0]
-    OIDC_CLIENT_ID     = var.cis2_provider_client_id
-    OIDC_CLIENT_SECRET = var.cis2_provider_client_secret
+    OIDC_CLIENT_ID     = data.aws_ssm_parameter.cis2_provider_client_id.value
+    OIDC_CLIENT_SECRET = data.aws_ssm_parameter.cis2_provider_client_secret.value
     OIDC_TOKEN_URL     = var.cis2_provider_token_url
     OIDC_USER_INFO_URL = var.cis2_provider_user_info_url
   }
