@@ -1,6 +1,8 @@
 function run_sandbox() {
     blue=$(tput setaf 4)
     green=$(tput setaf 2)
+    red=$(tput setaf 1)
+    yellow=$(tput setaf 3)
     normal=$(tput sgr0)
     WORKSPACE=$1
     ENVIRONMENT="dev"
@@ -8,12 +10,12 @@ function run_sandbox() {
     cd ./terraform
     printf "${blue}\nFinding workspace...\n\n${normal}"
     if [ $MODE == --destroy ]; then
-      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, exiting...\n\n${normal}" && exit 1)
+      terraform workspace select ${WORKSPACE} || (printf "${red}\n${WORKSPACE} not found, exiting...\n\n${normal}" && exit 1)
       printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
       terraform destroy -var-file="dev.tfvars"
       printf "${blue}\nFinished destroy process for ${WORKSPACE}.\n\n${normal}"
     elif [ $MODE == --deploy-app ]; then
-      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select -or-create ${WORKSPACE})
+      terraform workspace select ${WORKSPACE} || (printf "${yellow}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select -or-create ${WORKSPACE})
       printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
       printf "${blue}\nBuilding lambda layers...\n\n${normal}"
       cd ..
@@ -38,28 +40,27 @@ function run_sandbox() {
       deploy_sandbox_ui terraform_output.json ui.zip ${WORKSPACE}
       printf "${blue}\nFinished deployment process.\n\n${normal}"
     elif [ $MODE == --deploy-ui ]; then
-      terraform workspace select ${WORKSPACE} || (printf "${blue}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE}) || (printf "${blue}\n Remote state for ${WORKSPACE} not found. \n Initialise remote state by running deploy for the first time...\n\n${normal}" && rm -rf ./.terraform && rm .terraform.lock.hcl && exit 1);
+      terraform workspace select ${WORKSPACE} || (printf "${yellow}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE}) || (printf "${red}\n Remote state for ${WORKSPACE} not found. \n Initialise remote state by running deploy for the first time...\n\n${normal}" && rm -rf ./.terraform && rm .terraform.lock.hcl && exit 1);
       printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
-      printf "${blue}\nBuilding lambda layers...\n\n${normal}"
-      cd ..
-      ./gradlew app:build
-      build_lambdas
-      ./gradlew app:buildZip
-      printf "${blue}\nRefreshing local plan...\n\n${normal}"
-      cd ./terraform
-      terraform refresh -var-file="dev.tfvars"
-      terraform output -json >"../terraform_output.json"
-      cd ..
-      printf "${blue}\nCreating UI...\n\n${normal}"
-      create_sandbox_config terraform_output.json
-      cat ui/src/config.js
-      REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
-      cd ui/build
-      zip -r ../../ui.zip *
-      cd ../..
-      printf "${blue}\nDeploying UI...\n\n${normal}"
-      deploy_sandbox_ui terraform_output.json ui.zip ${WORKSPACE}
-      printf "${blue}\nFinished deployment process.\n\n${normal}"
+      TF_FILE="./terraform_output.json"
+      if [ -f $TF_FILE ]; then
+        cd ..
+        printf "${blue}\nCreating UI...\n\n${normal}"
+        create_sandbox_config terraform_output.json
+        cat ui/src/config.js
+        REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
+        cd ui/build
+        zip -r ../../ui.zip *
+        cd ../..
+        printf "${blue}\nDeploying UI...\n\n${normal}"
+        deploy_sandbox_ui $TF_FILE ui.zip ${WORKSPACE}
+        printf "${blue}\nFinished deployment process.\n\n${normal}"
+      else
+        printf "${yellow}\nTerraform config not found, running deploy for the first time...\n\n${normal}"
+        cd ..
+        make -f ./makefile deploy-app-${WORKSPACE}
+      fi
+
     fi
     exit 0;
 }
