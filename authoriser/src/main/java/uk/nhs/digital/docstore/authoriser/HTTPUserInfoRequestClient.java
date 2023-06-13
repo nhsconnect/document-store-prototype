@@ -10,7 +10,6 @@ public class HTTPUserInfoRequestClient implements UserInfoRequestClient {
     public UserInfoResponse getResponse(UserInfoRequest request) {
         try {
             var httpRequest = request.toHTTPRequest();
-            System.out.println(httpRequest.toString());
             return UserInfoResponse.parse(httpRequest.send());
         } catch (ParseException e) {
             throw new RuntimeException(e);

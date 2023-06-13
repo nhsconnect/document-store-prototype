@@ -20,14 +20,7 @@ public class UserInfoFetcher {
     public UserInfo fetchUserInfo(AccessToken authCode) throws UserInfoFetchingException {
         var userInfoEndpoint = providerMetadata.getUserInfoEndpointURI();
         UserInfoRequest userInfoRequest = new UserInfoRequest(userInfoEndpoint, authCode);
-        System.out.println(userInfoRequest.getAccessToken().getType());
-        System.out.println(userInfoRequest.getAccessToken().getValue());
-        System.out.println(userInfoRequest.getAccessToken().getLifetime());
-        System.out.println(userInfoRequest.getAccessToken().getScope());
-        System.out.println(userInfoRequest.getAccessToken().getIssuedTokenType());
-        System.out.println(userInfoRequest.getAccessToken().getParameterNames());
-        System.out.println(userInfoRequest.getAccessToken().getClass());
-        System.out.println(userInfoRequest.toString());
+
         var userInfoResponse = userInfoClient.getResponse(userInfoRequest);
 
         if (!userInfoResponse.indicatesSuccess()) {
