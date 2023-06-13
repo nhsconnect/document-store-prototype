@@ -22,12 +22,11 @@ sourceSets {
 }
 
 configurations {
+	compileClasspath.exclude group: 'commons-logging', module: 'commons-logging'
+	runtimeClasspath.exclude group: 'commons-logging', module: 'commons-logging'
+
 	integrationTestImplementation.extendsFrom testImplementation
-	integrationTestRuntime.extendsFrom testRuntime
 	testFixturesImplementation.extendsFrom implementation
-	testFixturesRuntime.extendsFrom runtimeOnly
-
-
 }
 
 tasks.withType(Test) {
@@ -35,23 +34,19 @@ tasks.withType(Test) {
 }
 
 dependencies {
+	implementation 'com.amazonaws:aws-java-sdk-core:1.12.400'
 	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
-	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.261'
 	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
 	implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
 	implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
 	implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
 
+	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
+	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:6.0.15'
+
 	implementation 'ch.qos.logback:logback-classic:1.4.5'
 	implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.0'
-
-	implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
-	implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
-	runtimeOnly 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1'
-
-	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.96'
-	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
 
 	implementation 'com.auth0:java-jwt:4.2.1'
 
@@ -60,24 +55,18 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
 
-	implementation 'commons-io:commons-io:2.11'
-
 	testImplementation 'org.json:json:20220924'
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 	testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
-	testImplementation 'org.mockito:mockito-core:4.0.0'
 	testImplementation 'uk.org.webcompere:system-stubs-jupiter:2.0.1'
-	testImplementation 'org.assertj:assertj-core:3.21.0'
 	testImplementation 'net.javacrumbs.json-unit:json-unit-assertj:2.28.0'
-	testImplementation 'org.apache.commons:commons-lang3:3.12.0'
+	testImplementation 'org.assertj:assertj-core:3.21.0'
 
 	testFixturesImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
-	testFixturesImplementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
 	testFixturesImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
-	testFixturesImplementation 'org.apache.commons:commons-lang3:3.12.0'
 
 	integrationTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
-	integrationTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
+	integrationTestImplementation 'com.jayway.jsonpath:json-path:2.8.0'
 	integrationTestImplementation 'org.awaitility:awaitility:4.1.1'
 }
 

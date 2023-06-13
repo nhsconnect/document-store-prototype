@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.authoriser;
 
+import com.nimbusds.jose.PlainHeader;
 import com.nimbusds.jwt.*;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.ClientID;
@@ -7,6 +8,7 @@ import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.time.Instant;
 import org.assertj.core.api.Assertions;
@@ -27,8 +29,10 @@ class OIDCHttpClientTest {
         var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
-        var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
-        Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(idToken);
+        var idToken = new PlainJWT(new PlainHeader(), claimsSet.toJWTClaimsSet());
+        var accessToken = new BearerAccessToken();
+        var oidcAuthResponse = new OIDCTokens(idToken, accessToken, null);
+        Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(oidcAuthResponse);
 
         var tokenValidator =
                 new IDTokenValidator(
@@ -67,7 +71,9 @@ class OIDCHttpClientTest {
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
         var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
-        Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(idToken);
+        var accessToken = new BearerAccessToken();
+        var oidcAuthResponse = new OIDCTokens(idToken, accessToken, null);
+        Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(oidcAuthResponse);
 
         ClientID clientID = new ClientID("test");
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
@@ -108,13 +114,15 @@ class OIDCHttpClientTest {
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
 
         var sessionId = "sessionId";
+        var subClaim = "SubClaim";
         var expectedUserInfo = new UserInfo(new Subject());
+        expectedUserInfo.setClaim(JWTClaimNames.SUBJECT, subClaim);
         Mockito.when(userInfoFetcher.fetchUserInfo(new BearerAccessToken(sessionId)))
                 .thenReturn(expectedUserInfo);
         var client =
                 new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
 
-        var result = client.fetchUserInfo(sessionId);
+        var result = client.fetchUserInfo(sessionId, subClaim);
 
         assert (result).equals(expectedUserInfo);
     }

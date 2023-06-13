@@ -27,10 +27,11 @@ class OIDCTokenFetcherTest {
 
     @Test
     void fetchTokenReturnsTheIDTokenIfTheRequestIsSuccessful() throws Exception {
-        var token = new PlainJWT(IDTokenClaimsSetBuilder.buildClaimsSet().toJWTClaimsSet());
 
-        var oidcClient =
-                new FakeTokenRequestClient(new OIDCTokens(token, new BearerAccessToken(), null));
+        var token = new PlainJWT(IDTokenClaimsSetBuilder.buildClaimsSet().toJWTClaimsSet());
+        var oidcAuthResponse = new OIDCTokens(token, new BearerAccessToken(), null);
+
+        var oidcClient = new FakeTokenRequestClient(oidcAuthResponse);
 
         var clientID = new ClientID("client-id");
         var secret = new Secret("some-secret");
@@ -65,12 +66,11 @@ class OIDCTokenFetcherTest {
         assertThat(latestRequest.getClientAuthentication().getClientID()).isEqualTo(clientID);
         // Assert that the result token is the same token we passed into our fake token request
         // client constructor
-        assertThat(result).isEqualTo(token);
+        assertThat(result).isEqualTo(oidcAuthResponse);
     }
 
     @Test
-    void shouldThrowTokenFetchingExceptionWhenGettingErrorResponse()
-            throws URISyntaxException, TokenFetchingException {
+    void shouldThrowTokenFetchingExceptionWhenGettingErrorResponse() throws URISyntaxException {
         var clientID = new ClientID("client-id");
         var secret = new Secret("some-secret");
         var redirectURI = new URI("http://some-redirect.uri");

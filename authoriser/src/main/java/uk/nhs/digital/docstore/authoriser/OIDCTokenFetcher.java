@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
 import com.nimbusds.oauth2.sdk.TokenErrorResponse;
@@ -9,6 +8,7 @@ import com.nimbusds.oauth2.sdk.auth.ClientSecretPost;
 import com.nimbusds.oauth2.sdk.client.ClientInformation;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 
 public class OIDCTokenFetcher {
@@ -25,7 +25,7 @@ public class OIDCTokenFetcher {
         this.providerMetadata = providerMetadata;
     }
 
-    public JWT fetchToken(AuthorizationCode authCode) throws TokenFetchingException {
+    public OIDCTokens fetchToken(AuthorizationCode authCode) throws TokenFetchingException {
         var tokenEndpoint = providerMetadata.getTokenEndpointURI();
         var clientAuth = new ClientSecretPost(clientInfo.getID(), clientInfo.getSecret());
         var codeGrant =
@@ -39,6 +39,6 @@ public class OIDCTokenFetcher {
             throw new TokenFetchingException(errorResponse.getErrorObject().getDescription());
         }
         var successResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
-        return successResponse.getOIDCTokens().getIDToken();
+        return successResponse.getOIDCTokens();
     }
 }

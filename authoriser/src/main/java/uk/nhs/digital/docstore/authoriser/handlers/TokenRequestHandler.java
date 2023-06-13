@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.net.MalformedURLException;
 import java.time.Clock;
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
+import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
@@ -120,11 +120,13 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                     .withBody("");
         }
 
-        UserInfo userInfo;
-
         try {
-            userInfo = OIDCClient.fetchUserInfo(session.getOidcSessionID());
-        } catch (AuthorisationException exception) {
+            var userInfo =
+                    OIDCClient.fetchUserInfo(session.getAccessTokenHash(), session.getSubClaim());
+            if (userInfo != null) {
+                LOGGER.debug(userInfo.toJSONString());
+            }
+        } catch (UserInfoFetchingException exception) {
             LOGGER.debug(exception.toString());
         }
 

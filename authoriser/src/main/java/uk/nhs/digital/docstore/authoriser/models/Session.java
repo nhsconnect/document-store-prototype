@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore.authoriser.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nimbusds.oauth2.sdk.id.Subject;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.time.Instant;
 import java.util.UUID;
@@ -14,10 +15,32 @@ public class Session {
     private Instant timeToExist;
     private String role;
     private String oidcSubject;
-
     private String oidcSessionID;
+    private String accessTokenHash;
+
+    private String subClaim;
     public static final String PARTITION_KEY_PREFIX = "OIDCSUBJECT#";
     public static final String SORT_KEY_PREFIX = "SESSION#";
+
+    public static Session create(
+            UUID id,
+            Instant timeToExist,
+            Subject subject,
+            SessionID sessionID,
+            String subClaim,
+            AccessToken accessToken) {
+        var session = new Session();
+        session.setId(id);
+        session.setPK(PARTITION_KEY_PREFIX + subject.getValue());
+        session.setSK(SORT_KEY_PREFIX + id);
+        session.setTimeToExist(timeToExist);
+        session.setOIDCSubject(subject.getValue());
+        session.setOidcSessionID(sessionID.getValue());
+        session.setSubClaim(subClaim);
+        session.setAccessTokenHash(accessToken.getValue());
+
+        return session;
+    }
 
     public static Session create(
             UUID id, Instant timeToExist, Subject subject, SessionID sessionID) {
@@ -30,6 +53,22 @@ public class Session {
         session.setOidcSessionID(sessionID.getValue());
 
         return session;
+    }
+
+    public void setAccessTokenHash(String accessTokenHash) {
+        this.accessTokenHash = accessTokenHash;
+    }
+
+    public String getAccessTokenHash() {
+        return accessTokenHash;
+    }
+
+    public String getSubClaim() {
+        return subClaim;
+    }
+
+    public void setSubClaim(String subClaim) {
+        this.subClaim = subClaim;
     }
 
     @DynamoDBHashKey(attributeName = "PK")

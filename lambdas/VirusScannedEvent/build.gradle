@@ -26,15 +26,6 @@ dependencies {
 	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
 	implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
 
-	implementation 'ch.qos.logback:logback-classic:1.4.5'
-	implementation 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
-	implementation 'net.logstash.logback:logstash-logback-encoder:7.0'
-
-	implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
-	implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
-	runtimeOnly 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1'
-
-	implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.96'
 	implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
 
 	implementation 'com.auth0:java-jwt:4.2.1'
@@ -48,8 +39,7 @@ dependencies {
 	integrationTestImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
 	integrationTestImplementation 'org.mockito:mockito-core:4.0.0'
 	integrationTestImplementation 'org.assertj:assertj-core:3.21.0'
-	integrationTestImplementation 'com.jayway.jsonpath:json-path:2.6.0'
-
+	integrationTestImplementation 'com.jayway.jsonpath:json-path:2.8.0'
 }
 
 java {
