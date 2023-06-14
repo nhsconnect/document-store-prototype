@@ -17,7 +17,7 @@ public class SessionManager {
         var session = authenticationClient.authoriseSession(authCode);
         var userInfo =
                 authenticationClient.fetchUserInfo(
-                        session.getOidcSessionID(), session.getSubClaim());
+                        session.getAccessTokenHash(), session.getSubClaim());
         System.out.println(userInfo.toJSONString());
 
         return session;
