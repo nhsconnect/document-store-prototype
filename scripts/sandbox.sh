@@ -35,6 +35,8 @@ function run_sandbox() {
         exit 1;
       fi
       printf "$yellow\nBuilding lambda layers...\n\n${normal}"
+      touch ./.dynamo_env
+      echo "WORKSPACE=$WORKSPACE" > .dynamo_env
       cd ..
       ./gradlew app:build
       build_lambdas
@@ -47,19 +49,20 @@ function run_sandbox() {
       terraform apply tfplan
       printf "${yellow}\n Terraform environment ready!\n Run ${normal}$ make deploy-ui-${WORKSPACE}${yellow}\n to deploy the ui to amplify.\n\n${normal}"
     elif [ $MODE == --deploy-ui ]; then
-      if [ -f $TF_FILE ]; then
+      if [ -f ".$TF_FILE" ]; then
         local TF_STATE=$(find_workspace $WORKSPACE --create)
         if [ $TF_STATE -ne 0 ]; then 
           exit $TF_STATE
         fi
         printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
         cd ..
-        printf "$yellow\nCreating UI...\n\n${normal}"
+        printf "$yellow\n Using ${OSTYPE} config...\n\n${normal}"
         if [[ "$OSTYPE" == "Darwin"* ]]; then
           create_sandbox_config $TF_FILE --osx
         else
           create_sandbox_config $TF_FILE --linux
         fi
+        printf "$yellow\n Building UI for the ${ENVIRONMENT} environment...\n\n${normal}"
         REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
         cd ui/build
         zip -r ../../ui.zip *
