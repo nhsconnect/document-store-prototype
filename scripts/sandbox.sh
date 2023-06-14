@@ -1,7 +1,10 @@
-green=$(tput setaf 2)
-red=$(tput setaf 1)
-yellow=$(tput setaf 3)
-normal=$(tput sgr0)
+set -e
+
+readonly aws_region=eu-west-2
+readonly green=$(tput setaf 2)
+readonly red=$(tput setaf 1)
+readonly yellow=$(tput setaf 3)
+readonly normal=$(tput sgr0)
     
 function find_workspace(){
   MODE=$2
@@ -76,7 +79,7 @@ function run_sandbox() {
         zip -r ../../ui.zip *
         cd ../..
         printf "\n⌛${yellow} Deploying UI...\n\n${normal}"
-        deploy_sandbox_ui $TF_FILE ui.zip $WORKSPACE
+        deploy_sandbox_ui $TF_FILE ./ui.zip $WORKSPACE
         printf "\n✅${green} Finished deployment process.\n\n${normal}"
       else
         printf "\nℹ️${red} Terraform config not found.\n   Please run ${normal}$ deploy-app-$WORKSPACE${red}\n   for the first time.\n\n${normal}"
@@ -126,13 +129,13 @@ function create_sandbox_config() {
 
 function deploy_sandbox_ui() {
   app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
+  echo $app_id
   aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name $3 >deployment.output
   jobId="$(jq -r .jobId deployment.output)"
   zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
-  rm -f deployment.output
 
   curl -XPUT --data-binary "@$2" "$zipUploadUrl"
-  aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name $3 --job-id "${jobId}"
+  aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name $3 --job-id "$jobId"
 }
 
 readonly command="$1"
