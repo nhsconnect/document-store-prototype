@@ -9,16 +9,11 @@ function find_workspace(){
   printf "$yellow\nFinding local workspace...\n\n${normal}"
   terraform workspace select $WORKSPACE || printf "${yellow}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init
   printf "${yellow}\nTerraform state initialised, selecting workspace...\n\n${normal}"
-
-  (
-    if [ $MODE == --create ]; then
-      terraform workspace select $WORKSPACE || printf "${yellow}\nRemote state not found for $WORKSPACE,\n creating workspace...\n\n${normal}" && terraform workspace select -or-create $WORKSPACE
-    else 
-      terraform workspace select $WORKSPACE
+  if [ $MODE == --create ]; then
+    terraform workspace select $WORKSPACE || printf "${yellow}\nRemote state not found for $WORKSPACE,\n creating workspace...\n\n${normal}" && terraform workspace select -or-create $WORKSPACE  || (printf "${red}\nUnknown error, check aws is authorised.\n\n${normal}" && return 1)
+  else 
+    terraform workspace select $WORKSPACE  || (printf "${red}\nUnknown error, check aws is authorised.\n\n${normal}" && return 1)
   fi
-  ) || (printf "${red}\nUnknown error, check aws is authorised.\n\n${normal}" && exit 1);
-
-  printf "${green}\n$WORKSPACE selected!\n\n${normal}"
 }
 
 function run_sandbox() {
@@ -34,7 +29,11 @@ function run_sandbox() {
       terraform destroy -var-file="dev.tfvars"
       printf "$yellow\nFinished destroy process for ${WORKSPACE}.\n\n${normal}"
     elif [ $MODE == --deploy-app ]; then
-      find_workspace $WORKSPACE --create 
+      find_workspace $WORKSPACE --create
+      TF_STATE=$?
+      if [[ TF_STATE -ne 0 ]]; then
+        exit 1;
+      fi
       printf "$yellow\nBuilding lambda layers...\n\n${normal}"
       cd ..
       ./gradlew app:build
@@ -49,7 +48,10 @@ function run_sandbox() {
       printf "${yellow}\n Terraform environment ready!\n Run ${normal}$ make deploy-ui-${WORKSPACE}${yellow}\n to deploy the ui to amplify.\n\n${normal}"
     elif [ $MODE == --deploy-ui ]; then
       if [ -f $TF_FILE ]; then
-        find_workspace $WORKSPACE
+        local TF_STATE=$(find_workspace $WORKSPACE --create)
+        if [ $TF_STATE -ne 0 ]; then 
+          exit $TF_STATE
+        fi
         printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
         cd ..
         printf "$yellow\nCreating UI...\n\n${normal}"
