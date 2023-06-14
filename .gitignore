@@ -1,5 +1,6 @@
 ### Env variables
 .env
+.dynamo_env
 
 ### Terraform
 terraform.json
