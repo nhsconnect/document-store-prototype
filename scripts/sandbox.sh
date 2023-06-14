@@ -1,56 +1,59 @@
-blue=$(tput setaf 4)
 green=$(tput setaf 2)
 red=$(tput setaf 1)
 yellow=$(tput setaf 3)
 normal=$(tput sgr0)
+    
+function find_workspace(){
+  MODE=$2
+  WORKSPACE=$1
+  printf "$yellow\nFinding local workspace...\n\n${normal}"
+  terraform workspace select $WORKSPACE || printf "${yellow}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init
+  printf "${yellow}\nTerraform state initialised, selecting workspace...\n\n${normal}"
+
+  (
+    if [ $MODE == --create ]; then
+      terraform workspace select $WORKSPACE || printf "${yellow}\nRemote state not found for $WORKSPACE,\n creating workspace...\n\n${normal}" && terraform workspace select -or-create $WORKSPACE
+    else 
+      terraform workspace select $WORKSPACE
+  fi
+  ) || (printf "${red}\nUnknown error, check aws is authorised.\n\n${normal}" && exit 1);
+
+  printf "${green}\n$WORKSPACE selected!\n\n${normal}"
+}
+
 function run_sandbox() {
     WORKSPACE=$1
     ENVIRONMENT="dev"
     MODE=$2
     TF_FILE="./terraform_output.json"
-    OS_TYPE=$(uname)
+    OSTYPE=$(uname)
     cd ./terraform
-    printf "${blue}\nFinding workspace...\n\n${normal}"
     if [ $MODE == --destroy ]; then
-      terraform workspace select ${WORKSPACE} || (printf "${red}\n${WORKSPACE} not found, exiting...\n\n${normal}" && exit 1)
-      printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
+      printf "$yellow\nFinding local workspace...\n\n${normal}"
+      terraform workspace select $WORKSPACE
       terraform destroy -var-file="dev.tfvars"
-      printf "${blue}\nFinished destroy process for ${WORKSPACE}.\n\n${normal}"
+      printf "$yellow\nFinished destroy process for ${WORKSPACE}.\n\n${normal}"
     elif [ $MODE == --deploy-app ]; then
-      terraform workspace select ${WORKSPACE} || (printf "${yellow}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select -or-create ${WORKSPACE})
-      printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
-      printf "${blue}\nBuilding lambda layers...\n\n${normal}"
+      find_workspace $WORKSPACE --create 
+      printf "$yellow\nBuilding lambda layers...\n\n${normal}"
       cd ..
       ./gradlew app:build
       build_lambdas
       ./gradlew app:buildZip
-      printf "${blue}\nRefreshing local plan...\n\n${normal}"
+      printf "$yellow\nRefreshing local plan...\n\n${normal}"
       cd ./terraform
       terraform refresh -var-file="dev.tfvars"
       terraform plan -var-file="dev.tfvars" -out tfplan
-      terraform apply tfplan
       terraform output -json >"../terraform_output.json"
-      cd ..
-      printf "${blue}\nCreating UI...\n\n${normal}"
-      if [[ $OS_TYPE == "darwin"* ]]; then
-        create_sandbox_config $TF_FILE --osx
-      else
-        create_sandbox_config $TF_FILE --linux
-      fi
-      REACT_APP_ENV=${ENVIRONMENT} npm --prefix ./ui run build
-      cd ui/build
-      zip -r ../../ui.zip *
-      cd ../..
-      printf "${blue}\nDeploying UI...\n\n${normal}"
-      deploy_sandbox_ui terraform_output.json ui.zip ${WORKSPACE}
-      printf "${blue}\nFinished deployment process.\n\n${normal}"
+      terraform apply tfplan
+      printf "${yellow}\n Terraform environment ready!\n Run ${normal}$ make deploy-ui-${WORKSPACE}${yellow}\n to deploy the ui to amplify.\n\n${normal}"
     elif [ $MODE == --deploy-ui ]; then
-      terraform workspace select ${WORKSPACE} || (printf "${yellow}\n${WORKSPACE} not found, initialising local state...\n\n${normal}" && terraform init && terraform workspace select ${WORKSPACE}) || (printf "${red}\n Remote state for ${WORKSPACE} not found. \n Initialise remote state by running deploy for the first time...\n\n${normal}" && rm -rf ./.terraform && rm .terraform.lock.hcl && exit 1);
-      printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
       if [ -f $TF_FILE ]; then
+        find_workspace $WORKSPACE
+        printf "${green}\n${WORKSPACE} selected!\n\n${normal}"
         cd ..
-        printf "${blue}\nCreating UI...\n\n${normal}"
-        if [[ "$OSTYPE" == "darwin"* ]]; then
+        printf "$yellow\nCreating UI...\n\n${normal}"
+        if [[ "$OSTYPE" == "Darwin"* ]]; then
           create_sandbox_config $TF_FILE --osx
         else
           create_sandbox_config $TF_FILE --linux
@@ -59,13 +62,11 @@ function run_sandbox() {
         cd ui/build
         zip -r ../../ui.zip *
         cd ../..
-        printf "${blue}\nDeploying UI...\n\n${normal}"
-        deploy_sandbox_ui $TF_FILE ui.zip ${WORKSPACE}
-        printf "${blue}\nFinished deployment process.\n\n${normal}"
+        printf "$yellow\nDeploying UI...\n\n${normal}"
+        deploy_sandbox_ui $TF_FILE ui.zip $WORKSPACE
+        printf "$yellow\nFinished deployment process.\n\n${normal}"
       else
-        printf "${yellow}\nTerraform config not found, running deploy for the first time...\n\n${normal}"
-        cd ..
-        make -f ./makefile deploy-app-${WORKSPACE}
+        printf "${yellow}\n Terraform config not found.\n Please run ${normal}$ deploy-app-${WORKSPACE}${yellow}\n for the first time.\n\n${normal}"
       fi
     fi
     exit 0;
@@ -123,12 +124,6 @@ function deploy_sandbox_ui() {
 
 readonly command="$1"
 case "${command}" in
-deploy-app-sanda)
-  run_sandbox "sanda" --deploy-app
-  ;;
-deploy-app-sandb)
-  run_sandbox "sandb" --deploy-app
-  ;;
 deploy-ui-sanda)
   run_sandbox "sanda" --deploy-ui
   ;;
@@ -141,8 +136,18 @@ destroy-sanda)
 destroy-sandb)
   run_sandbox "sandb" --destroy
   ;;
+deploy-app-sanda)
+  run_sandbox "sanda" --deploy-app
+  ;;
+deploy-app-sandb)
+  run_sandbox "sandb" --deploy-app
+  ;;
 *)
   echo "make $@"
   make "$@"
   ;;
 esac
+
+# // Plan and apply seperate steps
+# // DNS Changes
+# // Dynamo Table names
