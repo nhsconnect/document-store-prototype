@@ -110,6 +110,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         try {
             session = sessionManager.createSession(authCode.get());
         } catch (Exception exception) {
+            LOGGER.debug(exception.getMessage());
             var headers = new HashMap<String, String>();
             headers.put("Location", requestEvent.getErrorUri().orElseThrow());
             headers.put("Access-Control-Allow-Credentials", "true");
