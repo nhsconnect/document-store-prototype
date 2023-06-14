@@ -16,8 +16,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
-import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
-import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
@@ -26,7 +24,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
     public static final String AMPLIFY_BASE_URL_ENV_VAR = "AMPLIFY_BASE_URL";
-    private final uk.nhs.digital.docstore.authoriser.OIDCClient OIDCClient;
+    private final SessionManager sessionManager;
 
     private Clock clock = Clock.systemUTC();
 
@@ -43,23 +41,25 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
     @SuppressWarnings("unused")
     public TokenRequestHandler() {
         this(
-                new OIDCHttpClient(
-                        new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
-                        new OIDCTokenFetcher(
-                                getClientInformation(),
-                                new HTTPTokenRequestClient(),
-                                getProviderMetadata()),
-                        new UserInfoFetcher(new HTTPUserInfoRequestClient(), getProviderMetadata()),
-                        makeIDTokenValidator()));
+                new SessionManager(
+                        new OIDCHttpClient(
+                                new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
+                                new OIDCTokenFetcher(
+                                        getClientInformation(),
+                                        new HTTPTokenRequestClient(),
+                                        getProviderMetadata()),
+                                new UserInfoFetcher(
+                                        new HTTPUserInfoRequestClient(), getProviderMetadata()),
+                                makeIDTokenValidator())));
     }
 
-    public TokenRequestHandler(OIDCClient OIDCClient, Clock clock) {
-        this.OIDCClient = OIDCClient;
+    public TokenRequestHandler(SessionManager sessionManager, Clock clock) {
+        this.sessionManager = sessionManager;
         this.clock = clock;
     }
 
-    public TokenRequestHandler(OIDCClient OIDCClient) {
-        this.OIDCClient = OIDCClient;
+    public TokenRequestHandler(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
     }
 
     @Override
@@ -108,8 +108,8 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         Session session;
 
         try {
-            session = OIDCClient.authoriseSession(authCode.get());
-        } catch (AuthorisationException exception) {
+            session = sessionManager.createSession(authCode.get());
+        } catch (Exception exception) {
             var headers = new HashMap<String, String>();
             headers.put("Location", requestEvent.getErrorUri().orElseThrow());
             headers.put("Access-Control-Allow-Credentials", "true");
@@ -118,16 +118,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                     .withStatusCode(SEE_OTHER_STATUS_CODE)
                     .withHeaders(headers)
                     .withBody("");
-        }
-
-        try {
-            var userInfo =
-                    OIDCClient.fetchUserInfo(session.getAccessTokenHash(), session.getSubClaim());
-            if (userInfo != null) {
-                LOGGER.debug(userInfo.toJSONString());
-            }
-        } catch (UserInfoFetchingException exception) {
-            LOGGER.debug(exception.toString());
         }
 
         // TODO: [PRMT-2779] Add redaction if required

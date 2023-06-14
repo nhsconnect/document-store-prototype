@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import uk.nhs.digital.docstore.authoriser.OIDCClient;
+import uk.nhs.digital.docstore.authoriser.SessionManager;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
@@ -46,12 +46,10 @@ class TokenRequestHandlerTest {
         session.setId(UUID.randomUUID());
         session.setAccessTokenHash("AccesstokenHash");
 
-        var oidcClient = Mockito.mock(OIDCClient.class);
-        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
-        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(null);
+        var sessionManager = Mockito.mock(SessionManager.class);
+        Mockito.when(sessionManager.createSession(authCode)).thenReturn(session);
 
-        var handler = new TokenRequestHandler(oidcClient, clock);
+        var handler = new TokenRequestHandler(sessionManager, clock);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(303);
@@ -96,12 +94,10 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
-        var oidcClient = Mockito.mock(OIDCClient.class);
-        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
-        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(null);
+        var sessionManager = Mockito.mock(SessionManager.class);
+        Mockito.when(sessionManager.createSession(authCode)).thenReturn(session);
 
-        var handler = new TokenRequestHandler(oidcClient);
+        var handler = new TokenRequestHandler(sessionManager);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(303);
@@ -127,12 +123,10 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
-        var oidcClient = Mockito.mock(OIDCClient.class);
-        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
-        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(null);
+        var sessionManager = Mockito.mock(SessionManager.class);
+        Mockito.when(sessionManager.createSession(authCode)).thenReturn(session);
 
-        var handler = new TokenRequestHandler(oidcClient);
+        var handler = new TokenRequestHandler(sessionManager);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(303);
