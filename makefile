@@ -154,20 +154,29 @@ help: ## Show help
 plan-and-deploy-workspace:
 	bash ./scripts/sandbox.sh deploy_workspace_amplify_app
 
-# Deploy both UI and Terraform for Sandbox A
+# Builds the app and plans Terraform for Sandbox A
+.PHONY: plan-app-sanda
+plan-app-sanda:
+	bash ./scripts/sandbox.sh plan-app-sanda
+# Builds the app and plans Terraform for Sandbox B
+.PHONY: plan-app-sandb
+plan-app-sandb:
+	bash ./scripts/sandbox.sh plan-app-sandb
+
+# Deploy Terraform for Sandbox A
 .PHONY: deploy-app-sanda
 deploy-app-sanda:
 	bash ./scripts/sandbox.sh deploy-app-sanda
-# Deploy both UI and Terraform for Sandbox B
+# Deploy Terraform for Sandbox B
 .PHONY: deploy-app-sandb
 deploy-app-sandb:
 	bash ./scripts/sandbox.sh deploy-app-sandb
 
-# Deploy only UI for Sandbox A
+# Deploy UI for Sandbox A
 .PHONY: deploy-ui-sanda
 deploy-ui-sanda:
 	bash ./scripts/sandbox.sh deploy-ui-sanda
-# Deploy only UI for Sandbox B
+# Deploy UI for Sandbox B
 .PHONY: deploy-ui-sandb
 deploy-ui-sandb:
 	bash ./scripts/sandbox.sh deploy-ui-sandb

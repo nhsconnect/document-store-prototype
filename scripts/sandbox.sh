@@ -33,7 +33,7 @@ function run_sandbox() {
       printf "\n⌛${yellow} Destroying resources for $WORKSPACE...\n\n${normal}"
       terraform destroy -var-file="dev.tfvars"
       printf "\n✅${green} Finished destroy process for $WORKSPACE!\n\n${normal}"
-    elif [ $MODE == --deploy-app ]; then
+    elif [ $MODE == --plan-app ]; then
       find_workspace $WORKSPACE --create
       local TF_STATE=$?
       if [[ $TF_STATE -ne 0 ]]; then
@@ -54,10 +54,9 @@ function run_sandbox() {
       ./gradlew app:buildZip
       printf "\n⌛${yellow} Refreshing local plan...\n\n${normal}"
       cd ./terraform
-      terraform refresh -var-file="dev.tfvars"
-      terraform plan -var-file="dev.tfvars" -out tfplan
-      terraform output -json >"../terraform_output.json"
-      terraform apply tfplan
+      refresh_plan_and_output
+    elif [ $MODE == --deploy-app ]; then
+      terraform apply tfplan || (refresh_plan_and_output && terraform apply tfplan)
       printf "\n✅${green} Terraform environment ready!\n   Run ${normal}$ make deploy-ui-$WORKSPACE${green}\n   to deploy the ui to amplify.\n\n${normal}"
     elif [ $MODE == --deploy-ui ]; then
       if [ -f ".$TF_FILE" ]; then
@@ -86,6 +85,12 @@ function run_sandbox() {
       fi
     fi
     exit 0;
+}
+
+function refresh_plan_and_output() {
+  terraform refresh -var-file="dev.tfvars"
+  terraform plan -var-file="dev.tfvars" -out tfplan
+  terraform output -json >"../terraform_output.json"
 }
 
 function build_lambdas() {
@@ -158,12 +163,14 @@ deploy-app-sanda)
 deploy-app-sandb)
   run_sandbox "sandb" --deploy-app
   ;;
+plan-app-sanda)
+  run_sandbox "sanda" --plan-app
+  ;;
+plan-app-sandb)
+  run_sandbox "sandb" --plan-app
+  ;;
 *)
   echo "make $@"
   make "$@"
   ;;
 esac
-
-# // Plan and apply seperate steps
-# // DNS Changes
-# // Dynamo Table names
