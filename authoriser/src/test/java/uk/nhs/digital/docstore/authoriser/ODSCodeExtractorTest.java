@@ -10,6 +10,6 @@ class ODSCodeExtractorTest {
         userInfo.put("org_code", "A9A5A");
         var codes = ODSCodeExtractor.getCodes(userInfo);
 
-        assert(codes.get(0)).equals("A9A5A");
+        assert (codes.get(0)).equals("A9A5A");
     }
 }
