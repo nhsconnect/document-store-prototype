@@ -28,8 +28,6 @@ resource "aws_amplify_branch" "main" {
 
   count = var.cloud_only_service_instances
 }
-<<<<<<< HEAD
-=======
 
 resource "aws_amplify_domain_association" "amplify_domain" {
   app_id      = aws_amplify_app.doc-store-ui[0].id
@@ -44,4 +42,3 @@ resource "aws_amplify_domain_association" "amplify_domain" {
 output "amplify_app_ids" {
   value = aws_amplify_app.doc-store-ui[*].id
 }
->>>>>>> a0adc3d6 (temp)
