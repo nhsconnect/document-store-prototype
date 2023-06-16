@@ -7,7 +7,7 @@ import org.json.JSONObject;
 public class ODSCodeExtractor {
     public static List<String> getCodes(JSONObject userInfo) {
         ArrayList<String> codes = new ArrayList<>();
-        codes.add((String) userInfo.get("org_code"));
+        codes.add(userInfo.getJSONArray("nhsid_user_orgs").getJSONObject(0).getString("org_code"));
         return codes;
     }
 }
