@@ -157,4 +157,30 @@ class ODSCodeExtractorTest {
         assertEquals(1, Collections.frequency(codes, singularCode));
         assertEquals(1, Collections.frequency(codes, duplicatedCode));
     }
+
+    @Test
+    void returnsAnEmptyArrayIfUserHasNoRoles() {
+        String singleOrgUser =
+                "{\n"
+                        + "    \"uid\": \"555042709107\",\n"
+                        + "    \"sub\": \"555042709107\",\n"
+                        + "    \"nhsid_useruid\": \"555042709107\",\n"
+                        + "    \"nhsid_nrbac_roles\": [\n"
+                        + "    ],\n"
+                        + "    \"nhsid_user_orgs\": [\n"
+                        + "        {\n"
+                        + "            \"org_name\": \"NHSID DEV\",\n"
+                        + "            \"org_code\": \"A9A5A\"\n"
+                        + "        }\n"
+                        + "    ],\n"
+                        + "    \"name\": \"TestUserOne Caius Mr\",\n"
+                        + "    \"given_name\": \"Caius\",\n"
+                        + "    \"family_name\": \"TestUserOne\"\n"
+                        + "}";
+        var userInfo = new JSONObject(singleOrgUser);
+
+        var codes = ODSCodeExtractor.getCodes(userInfo);
+
+        assert (codes.isEmpty());
+    }
 }
