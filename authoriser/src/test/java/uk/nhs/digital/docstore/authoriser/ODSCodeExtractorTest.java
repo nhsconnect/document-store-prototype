@@ -1,7 +1,9 @@
 package uk.nhs.digital.docstore.authoriser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -105,5 +107,54 @@ class ODSCodeExtractorTest {
         assertTrue(codes.contains(odsCode0));
         assertTrue(codes.contains(odsCode1));
         assertTrue(codes.contains(odsCode2));
+    }
+
+    @Test
+    void ignoresDuplicateODSCodes() {
+        String singularCode = "A9A5A";
+        String duplicatedCode = "B1B1B";
+        String multipleOrgUser =
+                "{\n"
+                        + "    \"nhsid_useruid\": \"910000000001\",\n"
+                        + "    \"name\": \"USERQ RANDOM Mr\",\n"
+                        + "    \"nhsid_nrbac_roles\": [\n"
+                        + "        {\n"
+                        + "            \"org_code\": \""
+                        + singularCode
+                        + "\",\n"
+                        + "            \"person_orgid\": \"555254239107\",\n"
+                        + "            \"person_roleid\": \"555254240100\",\n"
+                        + "            \"role_code\": \"S8000:G8000:R8001\",\n"
+                        + "            \"role_name\": \"\\\"Clinical\\\":\\\"Clinical"
+                        + " Provision\\\":\\\"Nurse Access Role\\\"\"\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "            \"org_code\": \""
+                        + duplicatedCode
+                        + "\",\n"
+                        + "            \"person_orgid\": \"555254239107\",\n"
+                        + "            \"person_roleid\": \"555254242102\",\n"
+                        + "            \"role_code\": \"S8000:G8000:R8000\",\n"
+                        + "            \"role_name\": \"\\\"Clinical\\\":\\\"Clinical"
+                        + " Provision\\\":\\\"Clinical Practitioner Access Role\\\"\"\n"
+                        + "        },\n"
+                        + "        {\n"
+                        + "            \"org_code\": \""
+                        + duplicatedCode
+                        + "\",\n"
+                        + "            \"person_orgid\": \"555254239107\",\n"
+                        + "            \"person_roleid\": \"555254241101\",\n"
+                        + "            \"role_code\": \"S8000:G8000:R8003\",\n"
+                        + "            \"role_name\": \"\\\"Clinical\\\":\\\"Clinical"
+                        + " Provision\\\":\\\"Health Professional Access Role\\\"\"\n"
+                        + "        }\n"
+                        + "    ]\n"
+                        + "}";
+        var userInfo = new JSONObject(multipleOrgUser);
+
+        var codes = ODSCodeExtractor.getCodes(userInfo);
+
+        assertEquals(1, Collections.frequency(codes, singularCode));
+        assertEquals(1, Collections.frequency(codes, duplicatedCode));
     }
 }

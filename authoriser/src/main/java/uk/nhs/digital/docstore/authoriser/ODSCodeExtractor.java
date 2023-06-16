@@ -11,7 +11,10 @@ public class ODSCodeExtractor {
 
         for (int i = 0; i < orgs.length(); i++) {
             var org = orgs.getJSONObject(i);
-            codes.add(org.getString("org_code"));
+            var odsCode = org.getString("org_code");
+            if (!codes.contains(odsCode)) {
+                codes.add(odsCode);
+            }
         }
 
         return codes;
