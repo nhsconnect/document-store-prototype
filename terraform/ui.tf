@@ -33,12 +33,10 @@ resource "aws_amplify_domain_association" "amplify_domain" {
   app_id      = aws_amplify_app.doc-store-ui[0].id
   domain_name = var.arf_domain_name
 
+
   sub_domain {
     branch_name = aws_amplify_branch.main[0].branch_name
-    prefix      = "${var.environment}.${var.arf_domain_name}"
+    prefix      = workspace.name == "prod" ? "" : "${workspace.name}"
   }
 }
 
-output "amplify_app_ids" {
-  value = aws_amplify_app.doc-store-ui[*].id
-}
