@@ -1,7 +1,8 @@
 package uk.nhs.digital.docstore.authoriser;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.json.JSONObject;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ODSCodeExtractorTest {
@@ -56,9 +57,9 @@ class ODSCodeExtractorTest {
     }
 
     @Test
-    @Disabled
     void returnsMultipleODSCodes() {
-        String odsCode1 = "A9A5A";
+        String odsCode0 = "A9A5A";
+        String odsCode1 = "RBA";
         String odsCode2 = "B1B1B";
         String multipleOrgUser =
                 "{\n"
@@ -67,7 +68,7 @@ class ODSCodeExtractorTest {
                         + "    \"nhsid_nrbac_roles\": [\n"
                         + "        {\n"
                         + "            \"org_code\": \""
-                        + odsCode1
+                        + odsCode0
                         + "\",\n"
                         + "            \"person_orgid\": \"555254239107\",\n"
                         + "            \"person_roleid\": \"555254240100\",\n"
@@ -76,7 +77,9 @@ class ODSCodeExtractorTest {
                         + " Provision\\\":\\\"Nurse Access Role\\\"\"\n"
                         + "        },\n"
                         + "        {\n"
-                        + "            \"org_code\": \"RBA\",\n"
+                        + "            \"org_code\": \""
+                        + odsCode1
+                        + "\",\n"
                         + "            \"person_orgid\": \"555254239107\",\n"
                         + "            \"person_roleid\": \"555254242102\",\n"
                         + "            \"role_code\": \"S8000:G8000:R8000\",\n"
@@ -99,7 +102,8 @@ class ODSCodeExtractorTest {
 
         var codes = ODSCodeExtractor.getCodes(userInfo);
 
-        assert (codes.get(0)).equals(odsCode1);
-        assert (codes.get(2)).equals(odsCode2);
+        assertTrue(codes.contains(odsCode0));
+        assertTrue(codes.contains(odsCode1));
+        assertTrue(codes.contains(odsCode2));
     }
 }
