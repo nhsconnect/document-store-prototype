@@ -5,20 +5,36 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.authoriser.handlers.TokenRequestHandler;
 
 public class ODSAPIClient {
+    public static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
+
     private static final String url =
             "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/";
 
     public static String getOrgData(String odsCode) throws IOException {
         var requestUrl = new URL(url + odsCode);
         HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
-
         connection.setRequestMethod("GET");
 
         int responseCode = connection.getResponseCode();
-        System.out.println("Response Code: " + responseCode);
 
+        if (responseCode != 200) {
+            LOGGER.error("Response code: " + responseCode + " problem retrieving ODS code");
+            throw new IOException(connection.getResponseMessage());
+        }
+
+        var response = getResponse(connection);
+
+        connection.disconnect();
+
+        return response;
+    }
+
+    private static String getResponse(HttpURLConnection connection) throws IOException {
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String line;
@@ -29,11 +45,6 @@ public class ODSAPIClient {
         }
 
         reader.close();
-
-        System.out.println("Response Body: " + response);
-
-        connection.disconnect();
-
         return response.toString();
     }
 }
