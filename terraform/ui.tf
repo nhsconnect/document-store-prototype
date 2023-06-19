@@ -29,16 +29,21 @@ resource "aws_amplify_branch" "main" {
   count = var.cloud_only_service_instances
 }
 
-resource "aws_amplify_domain_association" "amplify_domain" {
-  app_id      = aws_amplify_app.doc-store-ui[0].id
-  domain_name = var.arf_domain_name
-
-  sub_domain {
-    branch_name = aws_amplify_branch.main[0].branch_name
-    prefix      = "${var.environment}.${var.arf_domain_name}"
-  }
+resource "aws_route53_record" "ui_domain_records" {
+  name    = terraform.workspace == "prod" ? "access-request-fulfilment.patient-deductions.nhs.uk" : "${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk"
+  type    = "CNAME"
+  records = ["${terraform.workspace}.${aws_amplify_app.doc-store-ui[0].default_domain}"]
+  zone_id = var.arf_zone_id
+  ttl     = 300
 }
 
-output "amplify_app_ids" {
-  value = aws_amplify_app.doc-store-ui[*].id
+resource "aws_amplify_domain_association" "domain_name" {
+  app_id      = aws_amplify_app.doc-store-ui[0].id
+  domain_name = "access-request-fulfilment.patient-deductions.nhs.uk"
+
+  # https://www.example.com
+  sub_domain {
+    branch_name = aws_amplify_branch.main[0].branch_name
+    prefix      = terraform.workspace
+  }
 }

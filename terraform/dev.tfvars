@@ -15,3 +15,4 @@ cognito_key_id                        = "owPwCSHr3lp0iS3IYF8OkOGFS/47dU6YOdDlVQz
 pds_fhir_is_stubbed                   = "false"
 cloud_storage_security_agent_role_arn = "arn:aws:iam::533825906475:role/CloudStorageSecAgentRole-miyho7d"
 quarantine_bucket_name                = "cloudstoragesecquarantine-miyho7d-533825906475-eu-west-2"
+arf_zone_id                           = "Z03876441EL64PCVENJO8"

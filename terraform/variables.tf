@@ -6,6 +6,11 @@ variable "arf_domain_name" {
   type = string
 }
 
+variable "arf_zone_id" {
+  type = string
+  default = ""
+}
+
 variable "region" {
   type    = string
   default = "eu-west-2"
