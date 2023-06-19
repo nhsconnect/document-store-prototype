@@ -86,7 +86,7 @@ describe("<UploadDocumentsPage />", () => {
                 0
             );
             expect(screen.getByRole("status", { name: `${documentOne.name} upload status` }).textContent).toContain(
-                "Uploading"
+                "uploaded"
             );
 
             triggerUploadStateChange(documentTwo, documentUploadStates.UPLOADING, 0);
@@ -95,7 +95,7 @@ describe("<UploadDocumentsPage />", () => {
                 0
             );
             expect(screen.getByRole("status", { name: `${documentTwo.name} upload status` }).textContent).toContain(
-                "Uploading"
+                "0% uploaded..."
             );
 
             triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 10);
@@ -104,7 +104,7 @@ describe("<UploadDocumentsPage />", () => {
                 10
             );
             expect(screen.getByRole("status", { name: `${documentOne.name} upload status` }).textContent).toContain(
-                "Uploading"
+                "10% uploaded..."
             );
 
             triggerUploadStateChange(documentOne, documentUploadStates.UPLOADING, 70);
@@ -113,7 +113,7 @@ describe("<UploadDocumentsPage />", () => {
                 70
             );
             expect(screen.getByRole("status", { name: `${documentOne.name} upload status` }).textContent).toContain(
-                "Uploading"
+                "70% uploaded..."
             );
 
             triggerUploadStateChange(documentTwo, documentUploadStates.UPLOADING, 20);
@@ -122,7 +122,7 @@ describe("<UploadDocumentsPage />", () => {
                 20
             );
             expect(screen.getByRole("status", { name: `${documentTwo.name} upload status` }).textContent).toContain(
-                "Uploading"
+                "20% uploaded..."
             );
 
             triggerUploadStateChange(documentTwo, documentUploadStates.SUCCEEDED, 100);

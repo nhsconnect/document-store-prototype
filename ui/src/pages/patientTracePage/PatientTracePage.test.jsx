@@ -46,9 +46,9 @@ describe("<PatientTracePage/>", () => {
             userEvent.click(screen.getByRole("button", { name: "Search" }));
 
             await waitFor(() => {
-                expect(screen.getByRole("progressbar")).toBeInTheDocument();
+                expect(screen.getByRole("SpinnerButton")).toBeInTheDocument();
             });
-            expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+            expect(screen.queryByRole("SpinnerButton")).not.toBeInTheDocument();
         });
 
         it("displays a message when invalid NHS number provided", async () => {
