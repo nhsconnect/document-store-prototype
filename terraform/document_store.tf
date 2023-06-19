@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "document_store" {
-  bucket_prefix = "document-store-"
+  bucket = "${terraform.workspace}-document-store"
 
   lifecycle {
     ignore_changes = [
