@@ -17,7 +17,7 @@ const AuthCallbackRouter = () => {
         window.location.replace(tokenRequestUrl);
     }, [baseAPIUrl]);
 
-    return <Spinner status="Logging in..." style={{height: '100vh', top: '50%'}} />;
+    return <Spinner status="Logging in..." />;
 };
 
 export default AuthCallbackRouter;

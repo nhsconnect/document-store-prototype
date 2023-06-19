@@ -16,7 +16,7 @@ const Layout = ({ children }) => {
                     minHeight: "75vh",
                 }}
             >
-                <main className="nhsuk-main-wrapper app-homepage" id="maincontent" role="main" >
+                <main className="nhsuk-main-wrapper app-homepage" id="maincontent" role="main">
                     <section className="app-homepage-content">
                         <div>{children}</div>
                     </section>
