@@ -122,7 +122,11 @@ const UploadDocumentsPage = ({ nextPagePath }) => {
                                             value={document.progress}
                                         ></progress>
                                         <p role="status" aria-label={`${document.file.name} upload status`}>
-                                            {uploadStateMessages[document.state]}
+                                            {document.state === stateNames.UPLOADING ? (
+                                                <> {Math.round(document.progress)}% uploaded... </>
+                                            ) : (
+                                                uploadStateMessages[document.state]
+                                            )}
                                         </p>
                                     </Table.Cell>
                                 </Table.Row>
