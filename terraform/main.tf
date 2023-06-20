@@ -177,7 +177,6 @@ locals {
   common_environment_variables = {
     DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
     DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
-    DYNAMODB_TABLE             = aws_dynamodb_table.doc_ref_store.name
     S3_ENDPOINT                = var.s3_endpoint
     S3_USE_PATH_STYLE          = var.s3_use_path_style
     SQS_ENDPOINT               = var.sqs_endpoint
