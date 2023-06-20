@@ -34,9 +34,6 @@ dependencies {
 	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
 	implementation 'com.amazonaws:aws-lambda-java-events:3.9.0'
 	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
-	implementation 'com.amazonaws:aws-java-sdk-core:1.12.400'
-	implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
-	implementation 'com.amazonaws:aws-java-sdk-ssm:1.12.381'
 	implementation 'com.auth0:java-jwt:4.2.1'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
 	implementation 'com.auth0:jwks-rsa:0.21.3'
@@ -47,9 +44,6 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 	testImplementation 'org.assertj:assertj-core:3.21.0'
 	testImplementation 'org.mockito:mockito-core:5.1.1'
-
-	integrationTestImplementation 'com.amazonaws:aws-java-sdk-api-gateway:1.12.92'
-
 }
 
 java {
