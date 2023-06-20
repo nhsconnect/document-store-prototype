@@ -21,7 +21,8 @@ public class DynamoDbConnection {
                         dynamodbClient,
                         DynamoDBMapperConfig.builder()
                                 .withSaveBehavior(UPDATE_SKIP_NULL_ATTRIBUTES)
-                                .withTableNameResolver(DynamoDBMapperConfig.DefaultTableNameResolver.INSTANCE)
+                                .withTableNameResolver(
+                                        DynamoDBMapperConfig.DefaultTableNameResolver.INSTANCE)
                                 .withTableNameOverride(tableNameOverrider())
                                 .build());
     }
