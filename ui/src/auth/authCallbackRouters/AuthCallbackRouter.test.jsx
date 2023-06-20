@@ -37,6 +37,6 @@ describe("AuthCallbackRouter", () => {
     it("returns a loading state until redirection to token request handler", () => {
         render(<AuthCallbackRouter />);
 
-        expect(screen.getByRole("progressbar", { name: "Logging in..." })).toBeInTheDocument();
+        expect(screen.getByRole("Spinner", { name: "Logging in..." })).toBeInTheDocument();
     });
 });

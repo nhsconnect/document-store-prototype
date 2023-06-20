@@ -5,25 +5,27 @@ import { Footer } from "nhsuk-react-components";
 
 const Layout = ({ children }) => {
     return (
-        <>
+        <div>
             <Header />
             <div
+                className="nhsuk-width-container"
                 style={{
                     margin: `0 auto`,
                     maxWidth: 960,
                     padding: `0 1.0875rem 1.45rem`,
+                    minHeight: "75vh",
                 }}
             >
-                <main className="nhsuk-main-wrapper app-homepage" id="maincontent">
+                <main className="nhsuk-main-wrapper app-homepage" id="maincontent" role="main">
                     <section className="app-homepage-content">
-                        <div className="nhsuk-width-container">{children}</div>
+                        <div>{children}</div>
                     </section>
                 </main>
             </div>
             <Footer>
                 <Footer.Copyright>&copy; {"Crown copyright"}</Footer.Copyright>
             </Footer>
-        </>
+        </div>
     );
 };
 

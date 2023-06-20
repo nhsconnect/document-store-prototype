@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { usePatientDetailsContext } from "../../providers/patientDetailsProvider/PatientDetailsProvider";
 import BackButton from "../../components/backButton/BackButton";
-import ProgressBar from "../../components/progressBar/ProgressBar";
 import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import ErrorBox from "../../components/errorBox/ErrorBox";
 import { useNavigate } from "react-router";
 import routes from "../../enums/routes";
 import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import SpinnerButton from "../../components/spinnerButton/SpinnerButton";
 
 const states = {
     IDLE: "idle",
@@ -104,8 +104,11 @@ export const PatientTracePage = ({ nextPage }) => {
                             readOnly={submissionState === states.SUCCEEDED || submissionState === states.SEARCHING}
                         />
                     </Fieldset>
-                    {submissionState === states.SEARCHING && <ProgressBar status="Searching..."></ProgressBar>}
-                    <Button type="submit">Search</Button>
+                    {submissionState === states.SEARCHING ? (
+                        <SpinnerButton status="Searching..."></SpinnerButton>
+                    ) : (
+                        <Button type="submit">Search</Button>
+                    )}
                 </form>
             </>
         </>

@@ -1,7 +1,7 @@
 import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import { useEffect } from "react";
 import routes from "../../enums/routes";
-import ProgressBar from "../../components/progressBar/ProgressBar";
+import Spinner from "../../components/spinner/Spinner";
 
 const AuthCallbackRouter = () => {
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
@@ -17,7 +17,7 @@ const AuthCallbackRouter = () => {
         window.location.replace(tokenRequestUrl);
     }, [baseAPIUrl]);
 
-    return <ProgressBar status="Logging in..." />;
+    return <Spinner status="Logging in..." />;
 };
 
 export default AuthCallbackRouter;
