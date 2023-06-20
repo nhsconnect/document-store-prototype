@@ -14,6 +14,7 @@ import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import uk.nhs.digital.docstore.authoriser.SSMService;
 
 public abstract class BaseAuthRequestHandler {
     public static final int SEE_OTHER_STATUS_CODE = 303;
@@ -37,29 +38,32 @@ public abstract class BaseAuthRequestHandler {
         var env = System.getenv();
         var clientMetadata = new OIDCClientMetadata();
         try {
-            clientMetadata.setRedirectionURI(new URI(env.get("OIDC_CALLBACK_URL")));
+            clientMetadata.setRedirectionURI(
+                    new URI(SSMService.retrieveParameterStoreValue("OIDC_CALLBACK_URL")));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
         return new OIDCClientInformation(
-                new ClientID(env.get("OIDC_CLIENT_ID")),
+                new ClientID(SSMService.retrieveParameterStoreValue("OIDC_CLIENT_ID")),
                 null,
                 clientMetadata,
-                new Secret(env.get("OIDC_CLIENT_SECRET")));
+                new Secret(SSMService.retrieveParameterStoreValue("OIDC_CLIENT_SECRET")));
     }
 
     protected static OIDCProviderMetadata getProviderMetadata() {
-        var env = System.getenv();
         OIDCProviderMetadata providerMetadata;
         try {
             providerMetadata =
                     new OIDCProviderMetadata(
-                            new Issuer(env.get("OIDC_ISSUER_URL")),
+                            new Issuer(SSMService.retrieveParameterStoreValue("OIDC_ISSUER_URL")),
                             List.of(SubjectType.PUBLIC),
-                            new URI(env.get("OIDC_JWKS_URL")));
-            providerMetadata.setAuthorizationEndpointURI(new URI(env.get("OIDC_AUTHORIZE_URL")));
-            providerMetadata.setTokenEndpointURI(new URI(env.get("OIDC_TOKEN_URL")));
-            providerMetadata.setUserInfoEndpointURI(new URI(env.get("OIDC_USER_INFO_URL")));
+                            new URI(SSMService.retrieveParameterStoreValue("OIDC_JWKS_URL")));
+            providerMetadata.setAuthorizationEndpointURI(
+                    new URI(SSMService.retrieveParameterStoreValue("OIDC_AUTHORIZE_URL")));
+            providerMetadata.setTokenEndpointURI(
+                    new URI(SSMService.retrieveParameterStoreValue("OIDC_TOKEN_URL")));
+            providerMetadata.setUserInfoEndpointURI(
+                    new URI(SSMService.retrieveParameterStoreValue("OIDC_USER_INFO_URL")));
             providerMetadata.setScopes(
                     new Scope("openid", "profile", "nationalrbacaccess", "associatedorgs"));
         } catch (URISyntaxException e) {
