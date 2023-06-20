@@ -16,7 +16,7 @@ public class JSONDataExtractor {
                 codes.add(odsCode);
             }
         }
-
+        System.out.println(codes);
         return codes;
     }
 
