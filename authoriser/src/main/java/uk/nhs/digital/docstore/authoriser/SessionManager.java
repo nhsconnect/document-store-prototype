@@ -25,7 +25,6 @@ public class SessionManager {
                                 session.getAccessTokenHash(), session.getSubClaim()));
 
         var odsCodes = JSONDataExtractor.getOdsCodesFromUserInfo(userInfo);
-        System.out.println(odsCodes);
 
         HashMap<String, List<String>> orgDataMap = new HashMap<>();
 

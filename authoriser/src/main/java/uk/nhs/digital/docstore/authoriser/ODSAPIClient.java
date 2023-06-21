@@ -46,7 +46,6 @@ public class ODSAPIClient {
         }
 
         reader.close();
-        JSONObject jsonResponse = new JSONObject(response);
-        return jsonResponse;
+        return new JSONObject(response.toString());
     }
 }
