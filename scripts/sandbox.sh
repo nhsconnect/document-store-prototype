@@ -9,21 +9,6 @@ readonly red="${i_er}$(tput setaf 1)"
 readonly yellow="${i_ld}$(tput setaf 3)"
 readonly normal=$(tput sgr0)
 readonly os_type=$(uname)
-    
-function find_workspace(){
-  MODE=$2
-  WORKSPACE=$1
-  if [ ! -f .terraform.lock.hcl ]; then
-    (printf "\n${yellow} Terraform not found, initialising local environment...\n\n${normal}" && terraform init && printf "\n${green} Terraform initialised!\n\n${normal}") || return 1
-  fi
-  printf "\n${yellow} Finding local workspace...\n\n${normal}"
-  if [ "$MODE" == "--or-create" ]; then
-    terraform workspace select $WORKSPACE || (printf "\n${yellow} Remote state not found for $WORKSPACE,\n creating workspace...\n\n${normal}" && terraform workspace select -or-create $WORKSPACE) || return 1
-  else 
-    terraform workspace select $WORKSPACE  || return 1
-  fi
-  printf "\n${green} Workspace $WORKSPACE selected!\n\n${normal}"
-}
 
 function run_sandbox() {
     WORKSPACE=$1
@@ -32,10 +17,10 @@ function run_sandbox() {
     TF_FILE="./terraform_output.json"
     cd ./terraform
     if [ "$MODE" == "--destroy" ]; then
-      find_workspace $WORKSPACE --or-create
+      find_workspace $WORKSPACE
       local TF_STATE=$?
       if [[ $TF_STATE -ne 0 ]]; then
-         printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && exit 1;
+         exit $TF_STATE
       fi
       printf "\n${yellow} Destroying resources for $WORKSPACE...\n\n${normal}"
       terraform destroy -var-file="dev.tfvars"
@@ -44,27 +29,31 @@ function run_sandbox() {
       find_workspace $WORKSPACE --or-create
       local TF_STATE=$?
       if [[ $TF_STATE -ne 0 ]]; then
-         printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && exit 1;
+         exit $TF_STATE
       fi
       printf "\n${yellow} Building lambda layers...\n\n${normal}"
       cd ..
-      ./gradlew app:build || printf "\n${yellow} Formatting code...\n\n${normal}" && ./gradlew app:spotlessApply
+      ./gradlew app:build || (printf "\n${yellow} Formatting code...\n\n${normal}" && ./gradlew app:spotlessApply)
       build_lambdas
       local LAMBDA_STATE=$?
       echo $LAMBDA_STATE
       if [[ $LAMBDA_STATE -ne 0 ]]; then
-        printf "\n${red} Error building lambdas, ensure you are in root directory and gradle is installed.\n\n${normal}" && exit 1;
+        exit $LAMBDA_STATE;
       fi
       ./gradlew app:buildZip
-      printf "\n${yellow} Syncing local plan with remote plan...\n\n${normal}"
+      printf "\n${yellow} Creating Terraform plan...\n\n${normal}"
       cd ./terraform
-      terraform refresh -var-file="dev.tfvars"
-      terraform plan -var-file="dev.tfvars" -out tfplan
+      terraform plan -var-file="dev.tfvars" -out tfplan 2>&1 | tee tfplan.log
       terraform output -json >"../terraform_output.json"
-      printf "\n${green} Terraform plan successfully bundled!\n   Run ${normal}$ make deploy-app-$WORKSPACE${green}\n   to deploy into AWS.\n\n${normal}"
+      printf "\n${green} Terraform plan created!\n   Plan output has been logged to ${normal}tfplan.log$(tput setaf 2)\n   check the output then run ${normal}$ make deploy-app-${WORKSPACE} $(tput setaf 2)to continue deployment.${normal}.\n\n${normal}"
     elif [ $MODE == --deploy-app ]; then
-      terraform apply tfplan || printf "\n${red} Terraform config not found.\n   Please run ${normal}$ plan-app-$WORKSPACE${red}\n   for the first time.\n\n${normal}" && exit 1;
-      printf "\n${green} Terraform plan successfully deployed to AWS!\n   Run ${normal}$ make deploy-ui-$WORKSPACE${green}\n   to deploy the ui to amplify.\n\n${normal}"
+      find_workspace $WORKSPACE --or-create
+      local TF_STATE=$?
+      if [[ $TF_STATE -ne 0 ]]; then
+          exit $TF_STATE;
+      fi
+      terraform apply tfplan || (printf "\n${red} Terraform config not found.\n   Please run ${normal}$ plan-app-$WORKSPACE$(tput setaf 1)\n   for the first time.\n\n${normal}" && exit 1);
+      printf "\n${green} Terraform plan successfully deployed to AWS!\n   Run ${normal}$ make deploy-ui-$WORKSPACE$(tput setaf 2)\n   to deploy the ui to amplify.\n\n${normal}"
     elif [ $MODE == --deploy-ui ]; then
       if [ -f ".$TF_FILE" ]; then
         find_workspace $WORKSPACE
@@ -87,10 +76,27 @@ function run_sandbox() {
         deploy_sandbox_ui $TF_FILE ./ui.zip $WORKSPACE
         printf "\n${green} Finished deployment process!\n\n${normal}"
       else
-        printf "\n${red} Terraform config not found.\n   Please run ${normal}$ plan-app-$WORKSPACE${red}\n   for the first time.\n\n${normal}"
+        printf "\n${red} Terraform config not found.\n   Please run ${normal}$ plan-app-$WORKSPACE$(tput setaf 1)\n   for the first time.\n\n${normal}"
       fi
     fi
     exit 0;
+}
+    
+function find_workspace(){
+  MODE=$2
+  WORKSPACE=$1
+  if [ ! -f .terraform.lock.hcl ]; then
+    (printf "\n${yellow} Terraform not found, initialising local environment...\n\n${normal}" && terraform init && printf "\n${green} Terraform initialised!\n\n${normal}") || (printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && return 1)
+  fi 
+  printf "\n${yellow} Finding workspace...\n\n${normal}"
+  if [ "$MODE" == "--or-create" ]; then
+    terraform workspace select -or-create $WORKSPACE || (printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && return 1)
+  else 
+    terraform workspace select $WORKSPACE || (printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && return 1)
+  fi
+  printf "\n${green} Workspace $WORKSPACE selected!\n\n${normal}"
+  printf "\n${yellow} Syncing Terraform config...\n\n${normal}"
+  terraform refresh -var-file="dev.tfvars"
 }
 
 function build_lambdas() {
@@ -101,7 +107,7 @@ function build_lambdas() {
     ./gradlew lambdas:FakeVirusScannedEvent:build &&
     ./gradlew lambdas:ReRegistrationEvent:build &&
     ./gradlew lambdas:SearchPatientDetails:build &&
-    ./gradlew lambdas:VirusScannedEvent:build) || return 1;
+    ./gradlew lambdas:VirusScannedEvent:build) || (printf "\n${red} Unknown error building lambdas.\n\n${normal}" && return 1);
 }
 
 function create_sandbox_config() {
@@ -140,7 +146,6 @@ function deploy_sandbox_ui() {
   aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name $3 >deployment.output
   jobId="$(jq -r .jobId deployment.output)"
   zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
-
   curl -XPUT --data-binary "@$2" "$zipUploadUrl"
   aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name $3 --job-id "$jobId"
 }
