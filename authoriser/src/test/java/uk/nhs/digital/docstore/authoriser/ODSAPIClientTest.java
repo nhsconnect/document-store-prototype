@@ -10,8 +10,8 @@ class ODSAPIClientTest {
     void returnsExpectedResponse() throws IOException {
         var response = ODSAPIClient.getOrgData("X26");
 
-        assert (response.contains("PrimaryRoleId"));
-        assert (response.contains("X26"));
+        assert (response.toString().contains("X26"));
+        assert (response.toString().contains("PrimaryRoleId"));
     }
 
     @Test
