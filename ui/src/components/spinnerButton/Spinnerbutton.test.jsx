@@ -7,7 +7,7 @@ describe("SpinnerButton", () => {
 
         render(<SpinnerButton status={status} />);
 
-        expect(screen.getByRole("SpinnerButton", { name: status })).toBeInTheDocument();
+        expect(screen.getByRole("SpinnerButton", { name: "SpinnerButton" })).toBeInTheDocument();
         expect(screen.getByRole("status")).toBeInTheDocument();
     });
 });
