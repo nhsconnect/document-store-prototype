@@ -1,11 +1,10 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Collections;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class JSONDataExtractorTest {
 
@@ -186,7 +185,7 @@ class JSONDataExtractorTest {
 
     @Test
     void returnsSingularRoleCode() {
-        String roleCode = "RO116";
+        String roleCode = "RO177";
         String singleRoleOrg =
                 "{\n"
                         + "    \"Organisation\": {\n"
@@ -529,7 +528,7 @@ class JSONDataExtractorTest {
 
         var roleCodes = JSONDataExtractor.getRolesFromOrgData(orgData);
 
-        assertTrue(roleCodes.contains(roleCode0));
+        assertFalse(roleCodes.contains(roleCode0));
         assertTrue(roleCodes.contains(roleCode1));
     }
 

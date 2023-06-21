@@ -33,11 +33,15 @@ public class SessionManager {
                     try {
                         var orgData = ODSAPIClient.getOrgData(code);
                         var orgRoles = JSONDataExtractor.getRolesFromOrgData(orgData);
-                        orgDataMap.put(code, orgRoles);
+                        if(!orgRoles.isEmpty()) {
+                            orgDataMap.put(code, orgRoles);
+                        }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 });
+
+
 
         return session;
     }
