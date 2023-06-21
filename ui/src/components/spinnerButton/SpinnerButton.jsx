@@ -8,7 +8,7 @@ const SpinnerButton = ({ status }) => {
         <>
             <Button aria-label={status} style={buttonStyle} role="SpinnerButton">
                 <div className="spinner-button"></div>
-                <div role="status" className="nhsuk-loader__text" aria-label={status}>
+                <div role="status" className="nhsuk-loader__text">
                     {status}
                 </div>
             </Button>
