@@ -34,8 +34,10 @@
     text-align: center;
     padding-top: 150px;
     padding-bottom: 150px;
+    spac
     &__text {
         @include nhsuk-typography-responsive(19);
+        padding-bottom: 16px;
         font-weight: 700;
         display: block;
         margin-bottom: 0;
