@@ -142,7 +142,7 @@ common:
           command: dojo
           arguments:
             - ./tasks deploy-ui
-          timeout: 30
+    timeout: 30
   e2e_test: &e2e_test
     tasks:
       - exec:
