@@ -6,7 +6,6 @@ import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import java.time.Instant;
 import java.util.*;
-
 import org.assertj.core.api.Assertions;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -59,11 +58,7 @@ class SessionManagerTest {
         var oidcClient = Mockito.mock(OIDCClient.class);
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
 
-        var session =
-                Session.create(
-                        UUID.randomUUID(),
-                        claimsSet,
-                        new BearerAccessToken());
+        var session = Session.create(UUID.randomUUID(), claimsSet, new BearerAccessToken());
 
         Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
         Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
@@ -82,7 +77,9 @@ class SessionManagerTest {
         var result = sessionManager.createSession(authCode);
 
         var optionalSession =
-                sessionStore.load(new Subject(result.getOIDCSubject()), result.getId());
+                sessionStore.load(
+                        new Subject(result.getSession().getOIDCSubject()),
+                        result.getSession().getId());
         Assertions.assertThat(optionalSession).isPresent();
         var actualSession = optionalSession.get();
 
@@ -104,11 +101,7 @@ class SessionManagerTest {
         var oidcClient = Mockito.mock(OIDCClient.class);
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
 
-        var session =
-                Session.create(
-                        UUID.randomUUID(),
-                        claimsSet,
-                        new BearerAccessToken());
+        var session = Session.create(UUID.randomUUID(), claimsSet, new BearerAccessToken());
 
         Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
         Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
@@ -127,7 +120,9 @@ class SessionManagerTest {
         var result = sessionManager.createSession(authCode);
 
         var optionalSession =
-                sessionStore.load(new Subject(result.getOIDCSubject()), result.getId());
+                sessionStore.load(
+                        new Subject(result.getSession().getOIDCSubject()),
+                        result.getSession().getId());
         Assertions.assertThat(optionalSession).isEmpty();
     }
 }

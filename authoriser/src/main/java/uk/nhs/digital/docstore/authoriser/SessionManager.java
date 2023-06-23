@@ -4,9 +4,10 @@ import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import java.util.HashMap;
 import java.util.List;
 import org.json.JSONObject;
+import uk.nhs.digital.docstore.authoriser.enums.LoginEventOutcome;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
-import uk.nhs.digital.docstore.authoriser.models.Session;
+import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 
 public class SessionManager {
@@ -38,7 +39,7 @@ public class SessionManager {
         this.odsApiClient = odsApiClient;
     }
 
-    public Session createSession(AuthorizationCode authCode)
+    public LoginEventResponse createSession(AuthorizationCode authCode)
             throws AuthorisationException, UserInfoFetchingException {
         var session = authenticationClient.authoriseSession(authCode);
         var userInfo =
@@ -63,10 +64,14 @@ public class SessionManager {
         // if one org then see if the user has a valid role
         // if more than one org then redirect the user to the org selection screen (see what data we
         // need to show to the user, presumably name of org and ODS code?)
-        if (!gpAndPcseOrgs.isEmpty()) {
+        if (gpAndPcseOrgs.isEmpty()) {
+            return new LoginEventResponse(session, LoginEventOutcome.NO_VALID_ORGS);
+        } else if (gpAndPcseOrgs.size() == 1) {
             sessionStore.save(session);
+            return new LoginEventResponse(session, LoginEventOutcome.ONE_VALID_ORG);
+        } else {
+            sessionStore.save(session);
+            return new LoginEventResponse(session, LoginEventOutcome.MULTIPLE_VALID_ORGS);
         }
-
-        return session; // wrap session in a  response object?
     }
 }

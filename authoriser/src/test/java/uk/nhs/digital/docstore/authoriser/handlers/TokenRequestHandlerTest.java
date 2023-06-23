@@ -13,6 +13,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.SessionManager;
+import uk.nhs.digital.docstore.authoriser.enums.LoginEventOutcome;
+import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
@@ -46,8 +48,9 @@ class TokenRequestHandlerTest {
         session.setId(UUID.randomUUID());
         session.setAccessTokenHash("AccesstokenHash");
 
+        var loginOutcome = new LoginEventResponse(session, LoginEventOutcome.ONE_VALID_ORG);
         var sessionManager = Mockito.mock(SessionManager.class);
-        Mockito.when(sessionManager.createSession(authCode)).thenReturn(session);
+        Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
         var handler = new TokenRequestHandler(sessionManager, clock);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
@@ -94,8 +97,9 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
+        var loginOutcome = new LoginEventResponse(session, LoginEventOutcome.ONE_VALID_ORG);
         var sessionManager = Mockito.mock(SessionManager.class);
-        Mockito.when(sessionManager.createSession(authCode)).thenReturn(session);
+        Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
         var handler = new TokenRequestHandler(sessionManager);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
@@ -123,8 +127,9 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
+        var loginOutcome = new LoginEventResponse(session, LoginEventOutcome.ONE_VALID_ORG);
         var sessionManager = Mockito.mock(SessionManager.class);
-        Mockito.when(sessionManager.createSession(authCode)).thenReturn(session);
+        Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
         var handler = new TokenRequestHandler(sessionManager);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
