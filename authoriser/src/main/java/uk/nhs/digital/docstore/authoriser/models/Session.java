@@ -1,8 +1,10 @@
 package uk.nhs.digital.docstore.authoriser.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.nimbusds.jwt.JWTClaimNames;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.time.Instant;
 import java.util.UUID;
@@ -24,19 +26,16 @@ public class Session {
 
     public static Session create(
             UUID id,
-            Instant timeToExist,
-            Subject subject,
-            SessionID sessionID,
-            String subClaim,
+            IDTokenClaimsSet responseData,
             AccessToken accessToken) {
         var session = new Session();
         session.setId(id);
-        session.setPK(PARTITION_KEY_PREFIX + subject.getValue());
+        session.setPK(PARTITION_KEY_PREFIX + responseData.getSubject().getValue());
         session.setSK(SORT_KEY_PREFIX + id);
-        session.setTimeToExist(timeToExist);
-        session.setOIDCSubject(subject.getValue());
-        session.setOidcSessionID(sessionID.getValue());
-        session.setSubClaim(subClaim);
+        session.setTimeToExist(Instant.ofEpochMilli (responseData.getExpirationTime().getTime()));
+        session.setOIDCSubject(responseData.getSubject().getValue());
+        session.setOidcSessionID(responseData.getSessionID().getValue());
+        session.setSubClaim(responseData.getClaim(JWTClaimNames.SUBJECT).toString());
         session.setAccessTokenHash(accessToken.getValue());
 
         return session;

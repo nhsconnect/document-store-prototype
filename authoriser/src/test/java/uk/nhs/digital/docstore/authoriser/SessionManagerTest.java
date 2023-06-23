@@ -1,14 +1,12 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import com.nimbusds.jwt.JWTClaimNames;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
+
 import org.assertj.core.api.Assertions;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -64,10 +62,7 @@ class SessionManagerTest {
         var session =
                 Session.create(
                         UUID.randomUUID(),
-                        Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()),
-                        claimsSet.getSubject(),
-                        claimsSet.getSessionID(),
-                        claimsSet.getClaim(JWTClaimNames.SUBJECT).toString(),
+                        claimsSet,
                         new BearerAccessToken());
 
         Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
@@ -78,7 +73,7 @@ class SessionManagerTest {
         Mockito.when(odsApiRequestClient.getResponse("Org1")).thenReturn(new JSONObject());
         Mockito.when(odsApiRequestClient.getResponse("Org2")).thenReturn(new JSONObject());
         Mockito.when(jsonDataExtractor.getGpAndPcseRolesFromOrgData(Mockito.any(JSONObject.class)))
-                .thenReturn(new ArrayList<>(Arrays.asList("role1")));
+                .thenReturn(new ArrayList<>(Collections.singletonList("role1")));
 
         var sessionManager =
                 new SessionManager(
@@ -100,5 +95,39 @@ class SessionManagerTest {
     }
 
     @Test
-    public void doesNotSaveSessionIfUserHasNoValidOrgs() {}
+    public void doesNotSaveSessionIfUserHasNoValidOrgs()
+            throws AuthorisationException, UserInfoFetchingException {
+        var sessionStore = new InMemorySessionStore();
+        var authCode = new AuthorizationCode("authcode");
+        var jsonDataExtractor = Mockito.mock(JSONDataExtractor.class);
+        var odsApiRequestClient = Mockito.mock(ODSAPIRequestClient.class);
+        var oidcClient = Mockito.mock(OIDCClient.class);
+        var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
+
+        var session =
+                Session.create(
+                        UUID.randomUUID(),
+                        claimsSet,
+                        new BearerAccessToken());
+
+        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
+        Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(new UserInfo(new Subject()));
+        Mockito.when(jsonDataExtractor.getOdsCodesFromUserInfo(Mockito.any(JSONObject.class)))
+                .thenReturn(new ArrayList<>(Arrays.asList("Org1", "Org2")));
+        Mockito.when(odsApiRequestClient.getResponse("Org1")).thenReturn(new JSONObject());
+        Mockito.when(odsApiRequestClient.getResponse("Org2")).thenReturn(new JSONObject());
+        Mockito.when(jsonDataExtractor.getGpAndPcseRolesFromOrgData(Mockito.any(JSONObject.class)))
+                .thenReturn(new ArrayList<>());
+
+        var sessionManager =
+                new SessionManager(
+                        oidcClient, sessionStore, jsonDataExtractor, odsApiRequestClient);
+
+        var result = sessionManager.createSession(authCode);
+
+        var optionalSession =
+                sessionStore.load(new Subject(result.getOIDCSubject()), result.getId());
+        Assertions.assertThat(optionalSession).isEmpty();
+    }
 }
