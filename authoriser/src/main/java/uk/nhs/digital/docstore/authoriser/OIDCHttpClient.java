@@ -10,7 +10,6 @@ import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
-import java.time.Instant;
 import java.util.UUID;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
@@ -52,10 +51,7 @@ public class OIDCHttpClient implements OIDCClient {
         // TODO: pass in the whole claimset rather than extracting individual values here
         return Session.create(
                 UUID.randomUUID(),
-                Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()),
-                claimsSet.getSubject(),
-                claimsSet.getSessionID(),
-                claimsSet.getClaim(JWTClaimNames.SUBJECT).toString(),
+                claimsSet,
                 oidcAuthResponse.getAccessToken());
     }
 
