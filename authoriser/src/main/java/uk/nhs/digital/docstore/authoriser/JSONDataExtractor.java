@@ -5,7 +5,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 public class JSONDataExtractor {
-    public static List<String> getOdsCodesFromUserInfo(JSONObject userInfo) {
+    public List<String> getOdsCodesFromUserInfo(JSONObject userInfo) {
         ArrayList<String> codes = new ArrayList<>();
         var orgs = userInfo.getJSONArray("nhsid_nrbac_roles");
 
@@ -20,7 +20,7 @@ public class JSONDataExtractor {
         return codes;
     }
 
-    public static List<String> getRolesFromOrgData(JSONObject orgData) {
+    public List<String> getGpAndPcseRolesFromOrgData(JSONObject orgData) {
         ArrayList<String> roleCodes = new ArrayList<>();
         var jsonRoles =
                 orgData.getJSONObject("Organisation").getJSONObject("Roles").getJSONArray("Role");
@@ -28,9 +28,9 @@ public class JSONDataExtractor {
         for (int i = 0; i < jsonRoles.length(); i++) {
             var jsonRole = jsonRoles.getJSONObject(i);
             var roleCode = jsonRole.getString("id");
-            var gpCode = "RO177";
-            var pcseCode = "RO157";
-            if(roleCode.equals(gpCode) || roleCode.equals(pcseCode)) {
+            final var gpCode = "RO177";
+            final var pcseCode = "RO157";
+            if (roleCode.equals(gpCode) || roleCode.equals(pcseCode)) {
                 roleCodes.add(roleCode);
             }
         }

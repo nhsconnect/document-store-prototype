@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 class ODSAPIClientTest {
     @Test
     void returnsExpectedResponse() throws IOException {
-        var response = ODSAPIClient.getOrgData("X26");
+        var odsClient = new ODSAPIClient();
+        var response = odsClient.getOrgData("X26");
 
         assert (response.toString().contains("X26"));
         assert (response.toString().contains("PrimaryRoleId"));
@@ -16,6 +17,7 @@ class ODSAPIClientTest {
 
     @Test
     void throwsErrorIfResponseCodeIsNot200() {
-        assertThrows(IOException.class, () -> ODSAPIClient.getOrgData(""));
+        var odsClient = new ODSAPIClient();
+        assertThrows(IOException.class, () -> odsClient.getOrgData(""));
     }
 }

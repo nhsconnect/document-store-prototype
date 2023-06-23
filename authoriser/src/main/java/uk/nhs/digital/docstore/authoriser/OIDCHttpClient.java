@@ -16,21 +16,16 @@ import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
-import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 
 public class OIDCHttpClient implements OIDCClient {
-
-    private final SessionStore sessionStore;
     private final OIDCTokenFetcher tokenFetcher;
     private final UserInfoFetcher userInfoFetcher;
     private final IDTokenValidator tokenValidator;
 
     public OIDCHttpClient(
-            SessionStore sessionStore,
             OIDCTokenFetcher tokenFetcher,
             UserInfoFetcher userInfoFetcher,
             IDTokenValidator tokenValidator) {
-        this.sessionStore = sessionStore;
         this.tokenFetcher = tokenFetcher;
         this.userInfoFetcher = userInfoFetcher;
         this.tokenValidator = tokenValidator;
@@ -54,16 +49,14 @@ public class OIDCHttpClient implements OIDCClient {
             throw new AuthorisationException(e);
         }
 
-        var session =
-                Session.create(
-                        UUID.randomUUID(),
-                        Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()),
-                        claimsSet.getSubject(),
-                        claimsSet.getSessionID(),
-                        claimsSet.getClaim(JWTClaimNames.SUBJECT).toString(),
-                        oidcAuthResponse.getAccessToken());
-        sessionStore.save(session);
-        return session;
+        // TODO: pass in the whole claimset rather than extracting individual values here
+        return Session.create(
+                UUID.randomUUID(),
+                Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()),
+                claimsSet.getSubject(),
+                claimsSet.getSessionID(),
+                claimsSet.getClaim(JWTClaimNames.SUBJECT).toString(),
+                oidcAuthResponse.getAccessToken());
     }
 
     @Override

@@ -18,13 +18,11 @@ import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
-import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 
 class OIDCHttpClientTest {
     @Test
     void createsAUserSessionWhenTheAuthCodeCanBeExchangedForAValidIdToken() throws Exception {
         var authCode = new AuthorizationCode();
-        var sessionStore = new InMemorySessionStore();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
         var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
 
@@ -38,8 +36,7 @@ class OIDCHttpClientTest {
                 new IDTokenValidator(
                         claimsSet.getIssuer(), new ClientID(claimsSet.getAudience().get(0)));
 
-        var client =
-                new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
+        var client = new OIDCHttpClient(tokenFetcher, userInfoFetcher, tokenValidator);
 
         Session result;
         try {
@@ -48,24 +45,17 @@ class OIDCHttpClientTest {
             throw new RuntimeException(e);
         }
 
-        var optionalSession =
-                sessionStore.load(new Subject(result.getOIDCSubject()), result.getId());
-        Assertions.assertThat(optionalSession).isPresent();
-        var session = optionalSession.get();
-
-        Assertions.assertThat(session.getTimeToExist())
-                .isEqualTo(Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()));
-
-        Assertions.assertThat(session.getOIDCSubject())
-                .isEqualTo(claimsSet.getSubject().getValue());
-        Assertions.assertThat(session.getOidcSessionID())
-                .isEqualTo(claimsSet.getSessionID().getValue());
+        assert (result.getTimeToExist())
+                .equals(Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()));
+        assert (result.getOIDCSubject()).equals(claimsSet.getSubject().getValue());
+        assert (result.getOidcSessionID()).equals(claimsSet.getSessionID().getValue());
+        assert (result.getSubClaim()).equals(claimsSet.getClaim(JWTClaimNames.SUBJECT).toString());
+        assert (result.getAccessTokenHash()).equals(accessToken.getValue());
     }
 
     @Test
     void throwsAnAuthorisationExceptionWhenTheIDTokenIsNotValid() throws Exception {
         var authCode = new AuthorizationCode();
-        var sessionStore = new InMemorySessionStore();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
         var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
 
@@ -78,8 +68,7 @@ class OIDCHttpClientTest {
         ClientID clientID = new ClientID("test");
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
 
-        var client =
-                new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
+        var client = new OIDCHttpClient(tokenFetcher, userInfoFetcher, tokenValidator);
 
         Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode))
                 .isInstanceOf(AuthorisationException.class);
@@ -88,7 +77,6 @@ class OIDCHttpClientTest {
     @Test
     public void throwsAuthorisationExceptionWhenFetchingTheIdentityTokenFails() throws Exception {
         var authCode = new AuthorizationCode();
-        var sessionStore = new InMemorySessionStore();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
         var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
 
@@ -98,8 +86,7 @@ class OIDCHttpClientTest {
         ClientID clientID = new ClientID("test");
         var tokenValidator = new IDTokenValidator(Issuer.parse("http://some.url"), clientID);
 
-        var client =
-                new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
+        var client = new OIDCHttpClient(tokenFetcher, userInfoFetcher, tokenValidator);
 
         Assertions.assertThatThrownBy(() -> client.authoriseSession(authCode))
                 .isInstanceOf(AuthorisationException.class);
@@ -107,7 +94,6 @@ class OIDCHttpClientTest {
 
     @Test
     public void returnsUserInfoWhenGivenAValidSessionId() throws Exception {
-        var sessionStore = new InMemorySessionStore();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
         var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
         var clientID = new ClientID("test");
@@ -119,8 +105,7 @@ class OIDCHttpClientTest {
         expectedUserInfo.setClaim(JWTClaimNames.SUBJECT, subClaim);
         Mockito.when(userInfoFetcher.fetchUserInfo(new BearerAccessToken(sessionId)))
                 .thenReturn(expectedUserInfo);
-        var client =
-                new OIDCHttpClient(sessionStore, tokenFetcher, userInfoFetcher, tokenValidator);
+        var client = new OIDCHttpClient(tokenFetcher, userInfoFetcher, tokenValidator);
 
         var result = client.fetchUserInfo(sessionId, subClaim);
 

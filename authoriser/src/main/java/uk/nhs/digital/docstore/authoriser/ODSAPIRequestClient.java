@@ -6,8 +6,9 @@ import org.json.JSONObject;
 
 public class ODSAPIRequestClient {
     public JSONObject getResponse(String odsCode) {
+        var odsClient = new ODSAPIClient();
         try {
-            return new JSONObject(ODSAPIClient.getOrgData(odsCode));
+            return new JSONObject(odsClient.getOrgData(odsCode));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

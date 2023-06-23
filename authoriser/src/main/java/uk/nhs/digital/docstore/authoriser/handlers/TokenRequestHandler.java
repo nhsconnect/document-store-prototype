@@ -43,14 +43,14 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         this(
                 new SessionManager(
                         new OIDCHttpClient(
-                                new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())),
                                 new OIDCTokenFetcher(
                                         getClientInformation(),
                                         new HTTPTokenRequestClient(),
                                         getProviderMetadata()),
                                 new UserInfoFetcher(
                                         new HTTPUserInfoRequestClient(), getProviderMetadata()),
-                                makeIDTokenValidator())));
+                                makeIDTokenValidator()),
+                        new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient()))));
     }
 
     public TokenRequestHandler(SessionManager sessionManager, Clock clock) {
