@@ -16,6 +16,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
+import uk.nhs.digital.docstore.authoriser.enums.LoginEventOutcome;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
@@ -73,14 +74,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         if (authCode.isEmpty()) {
             LOGGER.debug("Auth code is empty");
-            var headers = new HashMap<String, String>();
-            headers.put("Location", requestEvent.getErrorUri().orElseThrow());
-            headers.put("Access-Control-Allow-Credentials", "true");
-            return new APIGatewayProxyResponseEvent()
-                    .withIsBase64Encoded(false)
-                    .withStatusCode(SEE_OTHER_STATUS_CODE)
-                    .withHeaders(headers)
-                    .withBody("");
+            return getAuthErrorRedirect(requestEvent);
         }
 
         if (!requestEvent.hasMatchingStateValues()) {
@@ -91,14 +85,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                             + " and query parameter state: "
                             + requestEvent.getQueryParameterState().orElse(null));
 
-            var headers = new HashMap<String, String>();
-            headers.put("Location", requestEvent.getErrorUri().orElseThrow());
-            headers.put("Access-Control-Allow-Credentials", "true");
-            return new APIGatewayProxyResponseEvent()
-                    .withIsBase64Encoded(false)
-                    .withStatusCode(SEE_OTHER_STATUS_CODE)
-                    .withHeaders(headers)
-                    .withBody("");
+            return getAuthErrorRedirect(requestEvent);
         }
 
         // TODO: [PRMT-2779] Add redaction if required
@@ -111,17 +98,20 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             loginResponse = sessionManager.createSession(authCode.get());
         } catch (Exception exception) {
             LOGGER.debug(exception.getMessage());
-            var headers = new HashMap<String, String>();
-            headers.put("Location", requestEvent.getErrorUri().orElseThrow());
-            headers.put("Access-Control-Allow-Credentials", "true");
-            return new APIGatewayProxyResponseEvent()
-                    .withIsBase64Encoded(false)
-                    .withStatusCode(SEE_OTHER_STATUS_CODE)
-                    .withHeaders(headers)
-                    .withBody("");
+            return getAuthErrorRedirect(requestEvent);
         }
 
         var session = loginResponse.getSession();
+
+        if (loginResponse.getOutcome().equals(LoginEventOutcome.NO_VALID_ORGS)) {
+            // TODO redirect user to a screen explaining they have no valid org to log in
+            return getAuthErrorRedirect(requestEvent);
+        }
+
+        if (loginResponse.getOutcome().equals(LoginEventOutcome.ONE_VALID_ORG)) {
+            // TODO make a HTTP request to a login completion handler with the user's sessionID,
+            // roleID, org and role codes
+        }
 
         // TODO: [PRMT-2779] Add redaction if required
         LOGGER.debug(
@@ -134,13 +124,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
         var sessionId = session.getId().toString();
-
-        // Todo [PRMT-2806] Before success response is sent, make a UserInfo request with sessionId
-        // as bearer to get the role information
-
-        // Relay to the client admin or user role
-        // If userInfo fails return auth error response
-        // Write tests for
 
         var stateCookie =
                 httpOnlyCookieBuilder(
@@ -165,6 +148,18 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 .withHeaders(headers)
                 .withBody("")
                 .withMultiValueHeaders(multiValueHeaders);
+    }
+
+    private static APIGatewayProxyResponseEvent getAuthErrorRedirect(
+            TokenRequestEvent requestEvent) {
+        var headers = new HashMap<String, String>();
+        headers.put("Location", requestEvent.getErrorUri().orElseThrow());
+        headers.put("Access-Control-Allow-Credentials", "true");
+        return new APIGatewayProxyResponseEvent()
+                .withIsBase64Encoded(false)
+                .withStatusCode(SEE_OTHER_STATUS_CODE)
+                .withHeaders(headers)
+                .withBody("");
     }
 
     private static IDTokenValidator makeIDTokenValidator() {

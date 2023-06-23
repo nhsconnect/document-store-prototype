@@ -78,6 +78,48 @@ class TokenRequestHandlerTest {
     }
 
     @Test
+    void handleRequestReturnsBadRequestResponseWhenUserHasNoValidOrgs() throws Exception {
+        var request = new TokenRequestEvent();
+        var redirectUrl = "some-url";
+        var errorRedirectUrl = "some-error-url";
+        var authCode = new AuthorizationCode();
+        var state = new State();
+        request.setQueryStringParameters(
+                Map.of(
+                        "redirect_uri",
+                        redirectUrl,
+                        "error_uri",
+                        errorRedirectUrl,
+                        "code",
+                        authCode.getValue(),
+                        "state",
+                        state.getValue()));
+        request.setHeaders(Map.of("Cookie", "State=" + state.getValue()));
+        var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
+        var fixedTime = Instant.now(clock);
+        var maxCookieAgeInSeconds = 100L;
+        var cookieExpiryTime = fixedTime.plusSeconds(maxCookieAgeInSeconds);
+        var session = new Session();
+        session.setRole("Role");
+        session.setOIDCSubject("subject");
+        session.setTimeToExist(cookieExpiryTime);
+        session.setId(UUID.randomUUID());
+        session.setAccessTokenHash("AccesstokenHash");
+
+        var loginOutcome = new LoginEventResponse(session, LoginEventOutcome.NO_VALID_ORGS);
+        var sessionManager = Mockito.mock(SessionManager.class);
+        Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
+
+        var handler = new TokenRequestHandler(sessionManager, clock);
+        var response = handler.handleRequest(request, Mockito.mock(Context.class));
+
+        assertThat(response.getStatusCode()).isEqualTo(303);
+        assertThat(response.getBody()).isEqualTo("");
+        assertThat(response.getIsBase64Encoded()).isFalse();
+        assertThat(response.getHeaders().get("Location")).contains(errorRedirectUrl);
+    }
+
+    @Test
     void handleRequestReturnsBadRequestUrlWhenTheRequestStateIsInvalid() throws Exception {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
