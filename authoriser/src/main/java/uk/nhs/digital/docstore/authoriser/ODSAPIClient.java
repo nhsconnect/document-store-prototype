@@ -16,7 +16,7 @@ public class ODSAPIClient {
     private static final String url =
             "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/";
 
-    public static JSONObject getOrgData(String odsCode) throws IOException {
+    public JSONObject getOrgData(String odsCode) throws IOException {
         var requestUrl = new URL(url + odsCode);
         HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
         connection.setRequestMethod("GET");

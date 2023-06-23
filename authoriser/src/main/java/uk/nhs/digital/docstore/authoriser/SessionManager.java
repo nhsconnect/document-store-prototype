@@ -1,19 +1,41 @@
 package uk.nhs.digital.docstore.authoriser;
 
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import org.json.JSONObject;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
+import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 
 public class SessionManager {
-    OIDCClient authenticationClient;
+    private final OIDCClient authenticationClient;
+    private final SessionStore sessionStore;
 
-    public SessionManager(OIDCClient authenticationClient) {
+    private final JSONDataExtractor jsonDataExtractor;
+
+    private final ODSAPIRequestClient odsApiClient;
+
+    // for live code (we don't need to know about the JSON extractor or ODS client)
+    public SessionManager(OIDCClient authenticationClient, SessionStore sessionStore) {
+        this(
+                authenticationClient,
+                sessionStore,
+                new JSONDataExtractor(),
+                new ODSAPIRequestClient());
+    }
+
+    // for testing
+    public SessionManager(
+            OIDCClient authenticationClient,
+            SessionStore sessionStore,
+            JSONDataExtractor jsonDataExtractor,
+            ODSAPIRequestClient odsApiClient) {
         this.authenticationClient = authenticationClient;
+        this.sessionStore = sessionStore;
+        this.jsonDataExtractor = jsonDataExtractor;
+        this.odsApiClient = odsApiClient;
     }
 
     public Session createSession(AuthorizationCode authCode)
@@ -24,25 +46,27 @@ public class SessionManager {
                         authenticationClient.fetchUserInfo(
                                 session.getAccessTokenHash(), session.getSubClaim()));
 
-        var odsCodes = JSONDataExtractor.getOdsCodesFromUserInfo(userInfo);
+        var odsCodes = jsonDataExtractor.getOdsCodesFromUserInfo(userInfo);
 
-        HashMap<String, List<String>> orgDataMap = new HashMap<>();
+        HashMap<String, List<String>> gpAndPcseOrgs = new HashMap<>();
 
         odsCodes.forEach(
                 code -> {
-                    try {
-                        var orgData = ODSAPIClient.getOrgData(code);
-                        var orgRoles = JSONDataExtractor.getRolesFromOrgData(orgData);
-                        if(!orgRoles.isEmpty()) {
-                            orgDataMap.put(code, orgRoles);
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    var orgData = odsApiClient.getResponse(code);
+                    var orgRoles = jsonDataExtractor.getGpAndPcseRolesFromOrgData(orgData);
+                    if (!orgRoles.isEmpty()) {
+                        gpAndPcseOrgs.put(code, orgRoles);
                     }
                 });
 
+        // if it's empty then the user can't log in
+        // if one org then see if the user has a valid role
+        // if more than one org then redirect the user to the org selection screen (see what data we
+        // need to show to the user, presumably name of org and ODS code?)
+        if (!gpAndPcseOrgs.isEmpty()) {
+            sessionStore.save(session);
+        }
 
-
-        return session;
+        return session; // wrap session in a  response object?
     }
 }
