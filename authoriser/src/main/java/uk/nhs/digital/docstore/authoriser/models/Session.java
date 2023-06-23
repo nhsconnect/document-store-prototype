@@ -24,15 +24,12 @@ public class Session {
     public static final String PARTITION_KEY_PREFIX = "OIDCSUBJECT#";
     public static final String SORT_KEY_PREFIX = "SESSION#";
 
-    public static Session create(
-            UUID id,
-            IDTokenClaimsSet responseData,
-            AccessToken accessToken) {
+    public static Session create(UUID id, IDTokenClaimsSet responseData, AccessToken accessToken) {
         var session = new Session();
         session.setId(id);
         session.setPK(PARTITION_KEY_PREFIX + responseData.getSubject().getValue());
         session.setSK(SORT_KEY_PREFIX + id);
-        session.setTimeToExist(Instant.ofEpochMilli (responseData.getExpirationTime().getTime()));
+        session.setTimeToExist(Instant.ofEpochMilli(responseData.getExpirationTime().getTime()));
         session.setOIDCSubject(responseData.getSubject().getValue());
         session.setOidcSessionID(responseData.getSessionID().getValue());
         session.setSubClaim(responseData.getClaim(JWTClaimNames.SUBJECT).toString());

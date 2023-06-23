@@ -16,7 +16,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
-import uk.nhs.digital.docstore.authoriser.models.Session;
+import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
@@ -105,10 +105,10 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         LOGGER.debug(
                 "Authorising session for state: " + requestEvent.getCookieState().orElse(null));
 
-        Session session;
+        LoginEventResponse loginResponse;
 
         try {
-            session = sessionManager.createSession(authCode.get());
+            loginResponse = sessionManager.createSession(authCode.get());
         } catch (Exception exception) {
             LOGGER.debug(exception.getMessage());
             var headers = new HashMap<String, String>();
@@ -120,6 +120,8 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                     .withHeaders(headers)
                     .withBody("");
         }
+
+        var session = loginResponse.getSession();
 
         // TODO: [PRMT-2779] Add redaction if required
         LOGGER.debug(

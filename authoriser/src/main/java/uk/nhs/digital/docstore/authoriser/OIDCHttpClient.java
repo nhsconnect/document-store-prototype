@@ -49,10 +49,7 @@ public class OIDCHttpClient implements OIDCClient {
         }
 
         // TODO: pass in the whole claimset rather than extracting individual values here
-        return Session.create(
-                UUID.randomUUID(),
-                claimsSet,
-                oidcAuthResponse.getAccessToken());
+        return Session.create(UUID.randomUUID(), claimsSet, oidcAuthResponse.getAccessToken());
     }
 
     @Override
