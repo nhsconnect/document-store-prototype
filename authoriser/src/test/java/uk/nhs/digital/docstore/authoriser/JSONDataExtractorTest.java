@@ -189,7 +189,7 @@ class JSONDataExtractorTest {
 
     @Test
     void returnsSingularRoleCodeFromOrgData() {
-        String roleCode = "RO177";
+        String roleCode = "RO76";
         String singleRoleOrg =
                 "{\n"
                         + "    \"Organisation\": {\n"
@@ -534,8 +534,8 @@ class JSONDataExtractorTest {
         var dataExtractor = new JSONDataExtractor();
         var roleCodes = dataExtractor.getGpAndPcseRolesFromOrgData(orgData);
 
-        assertFalse(roleCodes.contains(roleCode0));
-        assertTrue(roleCodes.contains(roleCode1));
+        assertTrue(roleCodes.contains(roleCode0));
+        assertFalse(roleCodes.contains(roleCode1));
     }
 
     @Test

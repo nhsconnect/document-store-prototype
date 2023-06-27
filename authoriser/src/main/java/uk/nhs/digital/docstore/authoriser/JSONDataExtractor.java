@@ -28,7 +28,7 @@ public class JSONDataExtractor {
         for (int i = 0; i < jsonRoles.length(); i++) {
             var jsonRole = jsonRoles.getJSONObject(i);
             var roleCode = jsonRole.getString("id");
-            final var gpCode = "RO177";
+            final var gpCode = "RO76";
             final var pcseCode = "RO157";
             if (roleCode.equals(gpCode) || roleCode.equals(pcseCode)) {
                 roleCodes.add(roleCode);
