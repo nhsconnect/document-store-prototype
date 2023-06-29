@@ -85,9 +85,8 @@ function run_sandbox() {
 function find_workspace(){
   MODE=$2
   WORKSPACE=$1
-  if [ ! -f .terraform.lock.hcl ]; then
-    (printf "\n${yellow} Terraform not found, initialising local environment...\n\n${normal}" && terraform init && printf "\n${green} Terraform initialised!\n\n${normal}") || (printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && return 1)
-  fi 
+  printf "\n${yellow} Initialising local environment...\n\n${normal}"
+  terraform init
   printf "\n${yellow} Finding workspace...\n\n${normal}"
   if [ "$MODE" == "--or-create" ]; then
     terraform workspace select -or-create $WORKSPACE || (printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && return 1)
@@ -118,7 +117,6 @@ function create_sandbox_config() {
   user_pool="$(jq -r '.cognito_user_pool_ids.value' "$TF_FILE")"
   user_pool_client_id="$(jq -r '.cognito_client_ids.value' "$TF_FILE")"
   api_endpoint="$(jq -r '.api_gateway_url.value' "$TF_FILE")"
-  api_name="$(terraform workspace show)_doc-store-api"
   cognito_domain="$(jq -r '.cognito_user_pool_domain.value' "$TF_FILE")"
   amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$TF_FILE")"
   if [ $MODE == --osx ]; then
@@ -126,7 +124,6 @@ function create_sandbox_config() {
     sed -i "" "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
     sed -i "" "s/%region%/${aws_region}/" ui/src/config.js
     sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
-    sed -i "" "s~%api-name%~${api_name}~" ui/src/config.js
     sed -i "" "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
     sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
     sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
@@ -134,7 +131,6 @@ function create_sandbox_config() {
     sed -i "s/%pool-id%/${user_pool}/" ui/src/config.js
     sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
     sed -i "s/%region%/${aws_region}/" ui/src/config.js
-    sed -i "s~%api-name%~${api_name}~" ui/src/config.js
     sed -i "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
     sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
     sed -i "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
