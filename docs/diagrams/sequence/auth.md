@@ -48,7 +48,7 @@ sequenceDiagram
     Browser ->> ARF API: Redirected to ARF API with auth code and cookie 
     ARF API ->> CIS2 : Request Token
     CIS2 -->> ARF API : Return Access and ID tokens
-    ARF API ->> CIS2 User Info : Request user info with ID Token
+    ARF API ->> CIS2 User Info : Request user info with Access Token
     CIS2 User Info ->> ARF API : Return user info
     ARF API ->> ODS API : Search for ODS Codes
     ODS API -->> ARF API : Return ODS code information
