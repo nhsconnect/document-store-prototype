@@ -31,7 +31,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
     private Clock clock = Clock.systemUTC();
 
     public static String getAmplifyBaseUrl() {
-        String url = System.getenv(AMPLIFY_BASE_URL_ENV_VAR);
+        String url = "https://sanda.access-request-fulfilment.patient-deductions.nhs.uk/"// System.getenv(AMPLIFY_BASE_URL_ENV_VAR);
         if (url == null) {
             LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);
             return "__unset__AMPLIFY_BASE_URL";

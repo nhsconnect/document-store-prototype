@@ -6,11 +6,11 @@ terraform {
     }
   }
   backend "s3" {
-    bucket     = "prs-dev-terraform-state"
+    bucket         = "prs-dev-terraform-state"
     dynamodb_table = "prs-dev-terraform-state-locking"
-    region     = "eu-west-2"
-    key        = "prs/terraform.tfstate"
-    encrypt    = true
+    region         = "eu-west-2"
+    key            = "prs/terraform.tfstate"
+    encrypt        = true
   }
 }
 
@@ -195,5 +195,5 @@ locals {
     OIDC_TOKEN_URL     = var.cis2_provider_token_url
     OIDC_USER_INFO_URL = var.cis2_provider_user_info_url
   }
-  amplify_base_url = var.cloud_only_service_instances > 0 ? "https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com" : ""
+  amplify_base_url = var.cloud_only_service_instances > 0 ? "https://sanda.access-request-fulfilment.patient-deductions.nhs.uk" : ""
 }
