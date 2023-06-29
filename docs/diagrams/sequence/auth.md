@@ -48,12 +48,11 @@ sequenceDiagram
     Browser ->> ARF API: Redirected to ARF API with auth code and cookie 
     ARF API ->> CIS2 : Request Token
     CIS2 -->> ARF API : Return Access and ID tokens
-    ARF API ->> Session Storage : Create session
     ARF API ->> CIS2 User Info : Request user info with ID Token
     CIS2 User Info ->> ARF API : Return user info
     ARF API ->> ODS API : Search for ODS Codes
     ODS API -->> ARF API : Return ODS code information
-    ARF API -->> Session Storage : Cache user's role 
+    ARF API ->> Session Storage : Create session
     ARF API -->> Browser : Redirect with session cookie
     Browser ->> ARF API : Endpoint Request With Cookie
     ARF API ->> Session Storage : Check valid session exists
