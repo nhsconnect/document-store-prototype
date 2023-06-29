@@ -15,7 +15,7 @@ const config = {
     API: {
         endpoints: [
             {
-                name: "%doc-store-api%",
+                name: "doc-store-api",
                 endpoint: "%api-endpoint%",
             },
         ],
