@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
@@ -141,12 +142,15 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         LOGGER.debug(
                 "Responding with auth cookies for session with ID ending in: "
                         + sessionId.substring(sessionId.length() - 4));
+        var response = new JSONObject();
+        response.put("SessionId", sessionIdCookie);
+        response.put("RoleId", roleCookie);
+        response.put("State", stateCookie);
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
-                .withStatusCode(SEE_OTHER_STATUS_CODE)
                 .withHeaders(headers)
-                .withBody("")
+                .withBody(response.toString())
                 .withMultiValueHeaders(multiValueHeaders);
     }
 
