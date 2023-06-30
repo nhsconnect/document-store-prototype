@@ -46,7 +46,7 @@ public class SessionManager {
                 new JSONObject(
                         authenticationClient.fetchUserInfo(
                                 session.getAccessTokenHash(), session.getSubClaim()));
-
+        System.out.println("user info object: " + userInfo);
         var odsCodes = jsonDataExtractor.getOdsCodesFromUserInfo(userInfo);
 
         HashMap<String, List<String>> gpAndPcseOrgs = new HashMap<>();
