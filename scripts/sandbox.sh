@@ -84,7 +84,7 @@ function run_sandbox() {
     
 function find_workspace(){
   MODE=$2
-  WORKSPACE=$1
+  export WORKSPACE=$1
   printf "\n${yellow} Initialising local environment...\n\n${normal}"
   terraform init
   printf "\n${yellow} Finding workspace...\n\n${normal}"
@@ -119,6 +119,8 @@ function create_sandbox_config() {
   api_endpoint="$(jq -r '.api_gateway_url.value' "$TF_FILE")"
   cognito_domain="$(jq -r '.cognito_user_pool_domain.value' "$TF_FILE")"
   amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$TF_FILE")"
+  redirect_signin="https://${WORKSPACE}.access-request-fulfilment.patient-deductions.nhs.uk"
+  redirect_signout="https://${WORKSPACE}.access-request-fulfilment.patient-deductions.nhs.uk"
   if [ $MODE == --osx ]; then
     sed -i "" "s/%pool-id%/${user_pool}/" ui/src/config.js
     sed -i "" "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
@@ -127,6 +129,8 @@ function create_sandbox_config() {
     sed -i "" "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
     sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
     sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
+    sed -i "" "s~%cognito-redirect-signin%~${redirect_signin}~" ui/src/config.js
+    sed -i "" "s~%cognito-redirect-signout%~${redirect_signout}~" ui/src/config.js
   elif [ $MODE == --linux ]; then
     sed -i "s/%pool-id%/${user_pool}/" ui/src/config.js
     sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
@@ -134,7 +138,10 @@ function create_sandbox_config() {
     sed -i "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
     sed -i "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
     sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
-    sed -i "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
+    sed -i "s/%oidc-provider-id%/${OIDC_PROVIDER_ID}/" ui/src/config.js
+    sed -i "s~%cognito-redirect-signin%~${redirect_signin}~" ui/src/config.js
+    sed -i "s~%cognito-redirect-signout%~${redirect_signout}~" ui/src/config.js
+
   fi
   cat ui/src/config.js
 }
@@ -176,6 +183,7 @@ plan-app-sandb)
   run_sandbox "sandb" --plan-app
   ;;
 *)
+  # shellcheck disable=SC2145
   echo "make $@"
   make "$@"
   ;;
