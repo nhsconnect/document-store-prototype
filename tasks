@@ -55,13 +55,17 @@ function get_encrypted_ssm_parameter() {
 }
 
 function deploy_ui() {
+  printf "\n\n\n\GETTING APPID\n\n\n\n"
   app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
+  printf "\n\n\n\CREATING JOB TO AWS\n\n\n\n"
   aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main >deployment.output
+  printf "\n\n\n\GETTIN IDS\n\n\n\n"
   jobId="$(jq -r .jobId deployment.output)"
   zipUploadUrl="$(jq -r .zipUploadUrl deployment.output)"
   rm -f deployment.output
-
+  printf "\n\n\n\RUNNING CURL\n\n\n\n"  
   curl -XPUT --data-binary "@$2" "$zipUploadUrl"
+  printf "\n\n\n\RUNNING AWS DEPLOYMENT\n\n\n\n"
   aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main --job-id "${jobId}"
 }
 
@@ -242,6 +246,8 @@ _deploy-to-localstack)
 tf_plan)
   assume_ci_role
   tf_init
+  printf "\n\n\n\nclient_id $(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id)\n\n\n\n"
+  printf "\n\n\n\nclient_secret $(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \n\n\n\n"
   terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" \
     -var cis2_provider_client_id=$(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id) \
     -var cis2_provider_client_secret=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \
