@@ -58,6 +58,7 @@ function deploy_ui() {
   printf "\n\n\n\GETTING APPID\n\n\n\n"
   app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
   printf "\n\n\n\CREATING JOB TO AWS\n\n\n\n"
+  printf "APP ID $app_id"
   aws amplify create-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main >deployment.output
   printf "\n\n\n\GETTIN IDS\n\n\n\n"
   jobId="$(jq -r .jobId deployment.output)"
