@@ -237,10 +237,6 @@ _deploy-to-localstack)
 tf_plan)
   assume_ci_role
   tf_init
-  CLIENT_ID=$(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id)
-  CLIENT_SECRET=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret)
-  printf "\n\n\n\n\n\n ============= CLIENT_ID: $CLIENT_ID\n\n\n\n\n\n"
-  printf "\n\n\n\n\n\n ============= CLIENT_SECRET: $CLIENT_SECRET\n\n\n\n\n\n"
   terraform plan -var-file="../terraform/${ENVIRONMENT}.tfvars" \
     -var cis2_provider_client_id=$(get_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_id) \
     -var cis2_provider_client_secret=$(get_encrypted_ssm_parameter /${NHS_CIS2_ENVIRONMENT}/cis2/client_secret) \
