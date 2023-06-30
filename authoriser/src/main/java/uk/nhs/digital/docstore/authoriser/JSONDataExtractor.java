@@ -22,8 +22,7 @@ public class JSONDataExtractor {
     public List<String> getGpAndPcseRolesFromOrgData(JSONObject orgData) {
         ArrayList<String> roleCodes = new ArrayList<>();
         var jsonRoles =
-                orgData.getJSONObject("Organisation")
-                        .getJSONObject("Roles").getJSONArray("Role");
+                orgData.getJSONObject("Organisation").getJSONObject("Roles").getJSONArray("Role");
 
         final var gpCode = "RO76";
         final var pcseCode = "RO157";
