@@ -44,8 +44,9 @@ public class SessionManager {
         var session = authenticationClient.authoriseSession(authCode);
         var userInfo =
                 new JSONObject(
-                        authenticationClient.fetchUserInfo(
-                                session.getAccessTokenHash(), session.getSubClaim()));
+                        authenticationClient
+                                .fetchUserInfo(session.getAccessTokenHash(), session.getSubClaim())
+                                .toJSONString());
         System.out.println("user info object: " + userInfo);
         var odsCodes = jsonDataExtractor.getOdsCodesFromUserInfo(userInfo);
 
