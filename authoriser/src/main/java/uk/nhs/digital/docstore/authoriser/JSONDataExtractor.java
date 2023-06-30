@@ -16,25 +16,27 @@ public class JSONDataExtractor {
                 codes.add(odsCode);
             }
         }
-        System.out.println(codes);
         return codes;
     }
 
     public List<String> getGpAndPcseRolesFromOrgData(JSONObject orgData) {
         ArrayList<String> roleCodes = new ArrayList<>();
         var jsonRoles =
-                orgData.getJSONObject("Organisation").getJSONObject("Roles").getJSONArray("Role");
+                orgData.getJSONObject("Organisation")
+                        .getJSONObject("Roles").getJSONArray("Role");
+
+        final var gpCode = "RO76";
+        final var pcseCode = "RO157";
+        final var devCode = "RO198";
 
         for (int i = 0; i < jsonRoles.length(); i++) {
             var jsonRole = jsonRoles.getJSONObject(i);
             var roleCode = jsonRole.getString("id");
-            final var gpCode = "RO76";
-            final var pcseCode = "RO157";
-            if (roleCode.equals(gpCode) || roleCode.equals(pcseCode)) {
+
+            if (roleCode.equals(gpCode) || roleCode.equals(pcseCode) || roleCode.equals(devCode)) {
                 roleCodes.add(roleCode);
             }
         }
-
         return roleCodes;
     }
 }
