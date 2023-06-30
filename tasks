@@ -200,12 +200,17 @@ build-ui)
   cd ..
   ;;
 deploy-ui)
+  printf "\n\n\n\nASSUMING CI ROLE\n\n\n\n"
   assume_ci_role
+  printf "\n\n\n\nGETTING TF OUTPUT\n\n\n\n"
   get_terraform_output terraform_output.json
+  printf "\n\n\n\BUILDING ZIP FILE\n\n\n\n"
   cd ui/build
   zip -r ../../ui.zip *
   cd ../..
+  printf "\n\n\n\DEPLOYING ZIP FILE\n\n\n\n"
   deploy_ui terraform_output.json ui.zip
+  printf "\n\n\n\CLEARING ROLE\n\n\n\n"
   clear_assumed_iam_role
   ;;
 _build-api-jars)
