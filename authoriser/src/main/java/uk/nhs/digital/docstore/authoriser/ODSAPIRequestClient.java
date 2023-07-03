@@ -8,7 +8,7 @@ public class ODSAPIRequestClient {
     public JSONObject getResponse(String odsCode) {
         var odsClient = new ODSAPIClient();
         try {
-            return new JSONObject(odsClient.getOrgData(odsCode));
+            return odsClient.getOrgData(odsCode);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
