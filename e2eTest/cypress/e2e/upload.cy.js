@@ -23,8 +23,8 @@ describe("Uploads docs and tests it looks OK", () => {
         cy.findByRole("button", { name: "Start now" }).click();
 
         if (oidcProvider === "cis2devoidc") {
-            cy.findByPlaceholderText("User Name").type(username);
-            cy.findByPlaceholderText("Password").type(password);
+            cy.findByPlaceholderText("").type(text);
+            cy.findByPlaceholderText("").type(password);
             cy.findByRole("button", { name: "Continue" }).click();
         }
 
