@@ -30,8 +30,12 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
     private Clock clock = Clock.systemUTC();
 
+
     public static String getAmplifyBaseUrl() {
-        String url = "https://sanda.access-request-fulfilment.patient-deductions.nhs.uk/"// System.getenv(AMPLIFY_BASE_URL_ENV_VAR);
+        String workspace = System.getenv("WORKSPACE");
+        String url = (workspace == null || workspace.isEmpty()) ?
+                "https://access-request-fulfilment.patient-deductions.nhs.uk/":
+                "https://"+workspace+".access-request-fulfilment.patient-deductions.nhs.uk/";
         if (url == null) {
             LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);
             return "__unset__AMPLIFY_BASE_URL";
@@ -73,9 +77,9 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         LOGGER.debug("Handling token request");
         LOGGER.debug("Request event: " + requestEvent);
 
-        var workspace = System.getenv("WORKSPACE");
+        String workspace = System.getenv("WORKSPACE");
 
-        LOGGER.warn("Currently on Workspace {}", workspace);
+        LOGGER.debug("Currently on Workspace " + workspace);
 
         if (authCode.isEmpty()) {
             LOGGER.debug("Auth code is empty");

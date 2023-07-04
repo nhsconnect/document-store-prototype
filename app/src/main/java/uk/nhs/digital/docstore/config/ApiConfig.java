@@ -10,8 +10,13 @@ public class ApiConfig {
     public static final String AMPLIFY_BASE_URL_ENV_VAR = "AMPLIFY_BASE_URL";
 
     public String getAmplifyBaseUrl() {
+        String workspace = System.getenv("WORKSPACE");
         String url =
-                "https://sanda.access-request-fulfilment.patient-deductions.nhs.uk/"; // System.getenv(AMPLIFY_BASE_URL_ENV_VAR);
+                (workspace == null || workspace.isEmpty())
+                        ? "https://access-request-fulfilment.patient-deductions.nhs.uk/"
+                        : "https://"
+                                + workspace
+                                + ".access-request-fulfilment.patient-deductions.nhs.uk/";
         if (url == null) {
             LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);
             return "__unset__AMPLIFY_BASE_URL";

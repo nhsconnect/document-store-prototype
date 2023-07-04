@@ -194,6 +194,7 @@ locals {
     OIDC_CLIENT_SECRET = data.aws_ssm_parameter.cis2_provider_client_secret.value
     OIDC_TOKEN_URL     = var.cis2_provider_token_url
     OIDC_USER_INFO_URL = var.cis2_provider_user_info_url
+    WORKSPACE          = terraform.workspace
   }
   amplify_base_url = var.cloud_only_service_instances > 0 ? "https://sanda.access-request-fulfilment.patient-deductions.nhs.uk" : ""
 }
