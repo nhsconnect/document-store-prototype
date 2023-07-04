@@ -19,12 +19,12 @@ const AuthCallbackRouter = () => {
                 params: { code, state, redirect_uri, error_uri },
             })
             .then((res) => {
-                console.log(JSON.parse(res));
-                //navigate(routes.AUTH_SUCCESS);
+                console.log(res);
+                navigate(routes.AUTH_SUCCESS);
             })
             .catch((err) => {
                 console.log(err);
-                //navigate(routes.AUTH_ERROR);
+                navigate(routes.AUTH_ERROR);
             });
     }, [baseAPIUrl, navigate]);
 
