@@ -1,9 +1,9 @@
 import AuthCallbackRouter from "./AuthCallbackRouter";
-import {render, screen, waitFor} from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import routes from "../../enums/routes";
 import { BrowserRouter } from "react-router-dom";
 import axios from "axios";
-import {act} from "react-dom/test-utils";
+import { act } from "react-dom/test-utils";
 
 jest.mock("../../providers/configProvider/ConfigProvider");
 jest.mock("axios");
@@ -47,7 +47,6 @@ describe("AuthCallbackRouter", () => {
 
         //expect(mockedUsedNavigate).toHaveBeenCalledTimes(1);
         expect(axios.get).toHaveBeenCalledWith(tokenRequestHandlerUrl);
-
     });
 
     it("returns a loading state until redirection to token request handler", async () => {
