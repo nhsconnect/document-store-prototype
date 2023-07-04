@@ -29,7 +29,7 @@ public class BackChannelLogoutHandler extends BaseAuthRequestHandler
     public BackChannelLogoutHandler() {
         this(
                 getLogoutTokenValidator(),
-                new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())));
+                new DynamoDBSessionStore(createDynamoDbMapper()));
     }
 
     public BackChannelLogoutHandler(

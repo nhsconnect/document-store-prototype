@@ -24,7 +24,7 @@ public class LogoutHandler extends BaseAuthRequestHandler
 
     @SuppressWarnings("unused")
     public LogoutHandler() {
-        this(new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())));
+        this(new DynamoDBSessionStore(createDynamoDbMapper()));
     }
 
     @Override

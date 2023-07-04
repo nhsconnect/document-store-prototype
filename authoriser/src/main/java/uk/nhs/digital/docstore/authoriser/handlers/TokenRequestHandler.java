@@ -52,7 +52,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                                 new UserInfoFetcher(
                                         new HTTPUserInfoRequestClient(), getProviderMetadata()),
                                 makeIDTokenValidator()),
-                        new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient()))));
+                        new DynamoDBSessionStore(createDynamoDbMapper())));
     }
 
     public TokenRequestHandler(SessionManager sessionManager, Clock clock) {
@@ -72,6 +72,10 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         LOGGER.debug("Handling token request");
         LOGGER.debug("Request event: " + requestEvent);
+
+        var workspace = System.getenv("WORKSPACE");
+
+        LOGGER.warn("Currently on Workspace {}", workspace);
 
         if (authCode.isEmpty()) {
             LOGGER.debug("Auth code is empty");
