@@ -17,6 +17,7 @@ const AuthCallbackRouter = () => {
         axios.defaults.withCredentials = true;
         axios
             .get(`${baseAPIUrl}/Auth/TokenRequest`, {
+                crossdomain: true,
                 params: { code, state, redirect_uri, error_uri },
             })
             .then((res) => {
