@@ -113,7 +113,7 @@ resource "aws_api_gateway_gateway_response" "doc_store_unauthorised_response" {
   }
 
   response_parameters = {
-    "gatewayresponse.header.Access-Control-Allow-Origin"      = "'${local.amplify_base_url}'"
+    "gatewayresponse.header.Access-Control-Allow-Origin"      = terraform.workspace != "prod" ? "'https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk'" : "'https://access-request-fulfilment.patient-deductions.nhs.uk'"
     "gatewayresponse.header.Access-Control-Allow-Methods"     = "'*'"
     "gatewayresponse.header.Access-Control-Allow-Headers"     = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Auth-Cookie,Accept'"
     "gatewayresponse.header.Access-Control-Allow-Credentials" = "'true'"
@@ -129,7 +129,7 @@ resource "aws_api_gateway_gateway_response" "doc_store_bad_gateway_response" {
   }
 
   response_parameters = {
-    "gatewayresponse.header.Access-Control-Allow-Origin"      = "'${local.amplify_base_url}'"
+    "gatewayresponse.header.Access-Control-Allow-Origin"      = terraform.workspace != "prod" ? "'https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk'" : "'https://access-request-fulfilment.patient-deductions.nhs.uk'"
     "gatewayresponse.header.Access-Control-Allow-Methods"     = "'*'"
     "gatewayresponse.header.Access-Control-Allow-Headers"     = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Auth-Cookie,Accept'"
     "gatewayresponse.header.Access-Control-Allow-Credentials" = "'true'"
@@ -196,6 +196,6 @@ locals {
     OIDC_USER_INFO_URL = var.cis2_provider_user_info_url
     WORKSPACE          = terraform.workspace
   }
-  amplify_base_url = var.cloud_only_service_instances > 0 ? "https://sanda.access-request-fulfilment.patient-deductions.nhs.uk" : ""
-#  app_base_url = terraform.workspace != "prod"
+  amplify_base_url    = var.cloud_only_service_instances > 0 ? "https://sanda.access-request-fulfilment.patient-deductions.nhs.uk" : ""
+  app_base_url        = terraform.workspace != "prod" ? "'https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk'" : "'https://access-request-fulfilment.patient-deductions.nhs.uk'"
 }
