@@ -18,7 +18,7 @@ const AuthCallbackRouter = () => {
             .get(`${baseAPIUrl}/Auth/TokenRequest`, {
                 withCredentials: true,
                 headers: {
-                    cookie: state,
+                    Cookie: state,
                 },
                 params: { code, redirect_uri, error_uri },
             })
