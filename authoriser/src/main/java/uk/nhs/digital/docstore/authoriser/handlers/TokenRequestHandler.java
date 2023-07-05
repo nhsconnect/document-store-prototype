@@ -111,10 +111,11 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             return getAuthErrorRedirect(requestEvent);
         }
 
-//        if (loginResponse.getOutcome().equals(LoginEventOutcome.ONE_VALID_ORG)) {
-//            TODO make a HTTP request to a login completion handler with the user's sessionID,
-//            roleID, org and role codes
-//        }
+        //        if (loginResponse.getOutcome().equals(LoginEventOutcome.ONE_VALID_ORG)) {
+        //            TODO make a HTTP request to a login completion handler with the user's
+        // sessionID,
+        //            roleID, org and role codes
+        //        }
 
         // TODO: [PRMT-2779] Add redaction if required
         LOGGER.debug(
