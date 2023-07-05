@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore.authoriser.handlers;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
@@ -33,9 +32,10 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
     public static String getAmplifyBaseUrl() {
         String workspace = System.getenv("WORKSPACE");
-        String url = (workspace == null || workspace.isEmpty()) ?
-                "https://access-request-fulfilment.patient-deductions.nhs.uk/":
-                "https://"+workspace+".access-request-fulfilment.patient-deductions.nhs.uk/";
+        String url =
+                (workspace == null || workspace.isEmpty())
+                        ? "https://access-request-fulfilment.patient-deductions.nhs.uk/"
+                        : String.format("https://%s.access-request-fulfilment.patient-deductions.nhs.uk/", workspace);
         if (url == null) {
             LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);
             return "__unset__AMPLIFY_BASE_URL";
@@ -76,10 +76,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         LOGGER.debug("Handling token request");
         LOGGER.debug("Request event: " + requestEvent);
-
-        String workspace = System.getenv("WORKSPACE");
-
-        LOGGER.debug("Currently on Workspace " + workspace);
 
         if (authCode.isEmpty()) {
             LOGGER.debug("Auth code is empty");

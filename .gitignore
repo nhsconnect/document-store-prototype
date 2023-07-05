@@ -134,5 +134,5 @@ PDS_FHIR_AUTH_KEY.*
 .DS_Store
 
 #terraform Output for Workspace deployments
-terraform_output.json
-terraform/.terraform.lock.hcl
+.terraform_output.json
+.terraform/.terraform.lock.hcl
