@@ -147,26 +147,31 @@ const SearchResultsPage = () => {
                             {downloadState === states.PENDING && (
                                 <ProgressBar status="Downloading documents..."></ProgressBar>
                             )}
-                            <Button
-                                type="button"
-                                onClick={downloadAll}
-                                disabled={downloadState === states.PENDING || numberOfCleanFiles < 1}
-                            >
-                                Download All Documents
-                            </Button>
+                            <p>
+                                Only permanently delete all documents for this patient if you have a valid reason to.
+                                For example, if the retention period of these documents has been reached.
+                            </p>
+                            <>
+                                <Button
+                                    type="button"
+                                    onClick={downloadAll}
+                                    disabled={downloadState === states.PENDING || numberOfCleanFiles < 1}
+                                >
+                                    Download All Documents
+                                </Button>
+                                <Link
+                                    role="button"
+                                    className="nhsuk-button nhsuk-button--secondary"
+                                    to={routes.SEARCH_RESULTS_DELETE}
+                                >
+                                    Delete All Documents
+                                </Link>
+                            </>
                             {downloadState === states.SUCCEEDED && (
                                 <p>
                                     <strong>All documents have been successfully downloaded.</strong>
                                 </p>
                             )}
-                            <p>
-                                Only use this option if you have a valid reason to permanently delete all available
-                                documents for this patient. For example, if the retention period of these documents has
-                                been reached.
-                            </p>
-                            <Link role="button" className="nhsuk-button" to={routes.SEARCH_RESULTS_DELETE}>
-                                Delete All Documents
-                            </Link>
                         </>
                     )}
                     {searchResults.length === 0 && (
