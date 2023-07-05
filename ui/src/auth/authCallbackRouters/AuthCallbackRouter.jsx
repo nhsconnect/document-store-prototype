@@ -16,7 +16,10 @@ const AuthCallbackRouter = () => {
         const redirect_uri = new URL(routes.AUTH_SUCCESS, window.location.href);
         axios
             .get(`${baseAPIUrl}/Auth/TokenRequest`, {
-                params: { code, state, redirect_uri, error_uri },
+                headers: {
+                    state,
+                },
+                params: { code, redirect_uri, error_uri },
             })
             .then((res) => {
                 console.log(res);
