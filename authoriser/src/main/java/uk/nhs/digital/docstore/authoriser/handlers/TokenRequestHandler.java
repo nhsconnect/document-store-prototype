@@ -72,6 +72,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         //         TODO: [PRMT-2779] Add identifier such as a redacted state
         LOGGER.debug("Handling token request");
+        LOGGER.debug("Request event: " + requestEvent);
 
         if (authCode.isEmpty()) {
             LOGGER.debug("Auth code is empty");
