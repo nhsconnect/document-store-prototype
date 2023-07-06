@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import routes from "../../enums/routes";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import Spinner from "../../components/spinner/Spinner";
 
 const AuthCallbackRouter = () => {
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ const AuthCallbackRouter = () => {
             });
     }, [baseAPIUrl, navigate]);
 
-    return null;
+    return <Spinner status="Logging in..." />;
 };
 
 export default AuthCallbackRouter;
