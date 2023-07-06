@@ -38,9 +38,7 @@ public abstract class BaseAuthRequestHandler {
     protected static DynamoDBMapper createDynamoDbMapper() {
         return new DynamoDBMapper(
                 getDynamodbClient(),
-                DynamoDBMapperConfig.builder()
-                    .withTableNameOverride(tableNameOverrider())
-                    .build());
+                DynamoDBMapperConfig.builder().withTableNameOverride(tableNameOverrider()).build());
     }
 
     protected static OIDCClientInformation getClientInformation() {
