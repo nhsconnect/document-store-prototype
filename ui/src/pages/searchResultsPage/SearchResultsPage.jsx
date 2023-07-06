@@ -154,6 +154,7 @@ const SearchResultsPage = () => {
                             <>
                                 <Button
                                     type="button"
+                                    style={{ marginRight: 5 }}
                                     onClick={downloadAll}
                                     disabled={downloadState === states.PENDING || numberOfCleanFiles < 1}
                                 >
