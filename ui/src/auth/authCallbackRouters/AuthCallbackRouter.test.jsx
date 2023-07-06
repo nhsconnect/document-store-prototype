@@ -1,27 +1,19 @@
-import AuthCallbackRouter from "./AuthCallbackRouter";
 import { render, screen, waitFor } from "@testing-library/react";
+import AuthCallbackRouter from "./AuthCallbackRouter";
+import { useNavigate } from "react-router";
+import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import routes from "../../enums/routes";
-import { BrowserRouter } from "react-router-dom";
-import axios from "axios";
-import { act } from "react-dom/test-utils";
+import axiosService from "../../services/axiosService";
 
+jest.mock("react-router");
 jest.mock("../../providers/configProvider/ConfigProvider");
-jest.mock("axios");
+jest.mock("../../services/axiosService");
 
 describe("AuthCallbackRouter", () => {
-    let tokenResponse = {
-        State: "State=some-state; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly",
-        SessionId:
-            "SessionId=8634b700-fe04-4c30-a95c-c10ad378ec5c; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
-        RoleId: "RoleId=ADMIN; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
-    };
-
-    beforeEach(() => {
-        axios.get.mockResolvedValue(tokenResponse);
-    });
+    const oldWindowLocation = window.location;
 
     afterAll(() => {
-        jest.clearAllMocks();
+        window.location = oldWindowLocation;
     });
 
     it("navigates to the token request handler URl", async () => {
@@ -29,33 +21,48 @@ describe("AuthCallbackRouter", () => {
         const allQueryParams = `?${codeAndStateQueryParams}&client_id=some-client-id`;
         const baseUiUrl = "http://localhost:3000";
         const baseAPIUrl = "https://api.url";
-        const redirect_uri = `${baseUiUrl}${routes.AUTH_SUCCESS}`;
-        const error_uri = `${baseUiUrl}${routes.AUTH_ERROR}`;
-        const tokenRequestHandlerUrl = `${baseAPIUrl}/Auth/TokenRequest?${codeAndStateQueryParams}&redirect_uri=${redirect_uri}&error_uri=${error_uri}`;
 
-        render(
-            <BrowserRouter>
-                {" "}
-                <AuthCallbackRouter />{" "}
-            </BrowserRouter>
-        );
+        const windowLocationProperties = {
+            search: { value: allQueryParams },
+            replace: { value: jest.fn() },
+            href: { value: baseUiUrl },
+        };
 
-        let catchFn = jest.fn(),
-            thenFn = jest.fn();
+        delete window.location;
+        window.location = Object.defineProperties({}, windowLocationProperties);
+        useBaseAPIUrl.mockReturnValue(baseAPIUrl);
 
-        axios.get(tokenRequestHandlerUrl).then(thenFn).catch(catchFn);
+        // Mock the GET request
+        const responseData = {
+            State: "State=some-state; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly",
+            SessionId:
+                "SessionId=8634b700-fe04-4c30-a95c-c10ad378ec5c; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
+            RoleId: "RoleId=ADMIN; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
+        };
+        const params = {
+            code: "some-auth-code",
+            state: "some-state",
+            error_uri: new URL("http://localhost:3000/auth-error"),
+            redirect_uri: new URL("http://localhost:3000/auth-success"),
+        };
+        axiosService.get.mockResolvedValue(responseData);
 
-        //expect(mockedUsedNavigate).toHaveBeenCalledTimes(1);
-        expect(axios.get).toHaveBeenCalledWith(tokenRequestHandlerUrl);
+        // Create a mock navigate function
+        const mockNavigate = jest.fn();
+        useNavigate.mockImplementation(() => mockNavigate);
+
+        render(<AuthCallbackRouter />);
+
+        // Wait for the navigation to occur
+        await waitFor(() => {
+            expect(axiosService.get).toHaveBeenCalledWith(`/Auth/TokenRequest`, { params });
+            expect(axiosService.get).toHaveBeenCalledTimes(1);
+            expect(mockNavigate).toHaveBeenCalledWith(routes.AUTH_SUCCESS);
+        });
     });
 
     it("returns a loading state until redirection to token request handler", async () => {
-        render(
-            <BrowserRouter>
-                {" "}
-                <AuthCallbackRouter />{" "}
-            </BrowserRouter>
-        );
+        render(<AuthCallbackRouter />);
 
         expect(screen.getByRole("Spinner", { name: "Logging in..." })).toBeInTheDocument();
     });
