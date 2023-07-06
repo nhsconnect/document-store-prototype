@@ -3,11 +3,11 @@ import AuthCallbackRouter from "./AuthCallbackRouter";
 import { useNavigate } from "react-router";
 import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import routes from "../../enums/routes";
-import axiosService from "../../services/axiosService";
+import axios from "axios";
 
 jest.mock("react-router");
 jest.mock("../../providers/configProvider/ConfigProvider");
-jest.mock("../../services/axiosService");
+jest.mock("axios");
 
 describe("AuthCallbackRouter", () => {
     const oldWindowLocation = window.location;
@@ -42,10 +42,10 @@ describe("AuthCallbackRouter", () => {
         const params = {
             code: "some-auth-code",
             state: "some-state",
-            error_uri: new URL("http://localhost:3000/auth-error"),
-            redirect_uri: new URL("http://localhost:3000/auth-success"),
+            error_uri: new URL(`${baseUiUrl}/auth-error`),
+            redirect_uri: new URL(`${baseUiUrl}/auth-success`),
         };
-        axiosService.get.mockResolvedValue(responseData);
+        axios.get.mockResolvedValue(responseData);
 
         // Create a mock navigate function
         const mockNavigate = jest.fn();
@@ -55,8 +55,8 @@ describe("AuthCallbackRouter", () => {
 
         // Wait for the navigation to occur
         await waitFor(() => {
-            expect(axiosService.get).toHaveBeenCalledWith(`/Auth/TokenRequest`, { params });
-            expect(axiosService.get).toHaveBeenCalledTimes(1);
+            expect(axios.get).toHaveBeenCalledWith(`${baseAPIUrl}/Auth/TokenRequest`, { params });
+            expect(axios.get).toHaveBeenCalledTimes(1);
             expect(mockNavigate).toHaveBeenCalledWith(routes.AUTH_SUCCESS);
         });
     });
