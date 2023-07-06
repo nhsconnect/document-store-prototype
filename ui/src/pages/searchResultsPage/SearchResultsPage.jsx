@@ -125,7 +125,7 @@ const SearchResultsPage = () => {
                                 </>
                             )}
                             {numberOfCleanFiles > 0 && (
-                                <Table caption="List of documents available">
+                                <Table caption="List of documents available" style={{ fontSize: 32 }}>
                                     <Table.Head>
                                         <Table.Row>
                                             <Table.Cell>Filename</Table.Cell>
