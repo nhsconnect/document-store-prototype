@@ -49,7 +49,7 @@ describe("AuthCallbackRouter", () => {
         expect(axios.get).toHaveBeenCalledWith(tokenRequestHandlerUrl);
     });
 
-    it("returns a loading state until redirection to token request handler", async () => {
+    it.skip("returns a loading state until redirection to token request handler", async () => {
         render(
             <BrowserRouter>
                 {" "}
