@@ -19,7 +19,7 @@ const AuthCallbackRouter = () => {
             .get(`${baseAPIUrl}/Auth/TokenRequest`, {
                 params: { code, state, redirect_uri, error_uri },
             })
-            .then((res) => {
+            .then(() => {
                 navigate(routes.AUTH_SUCCESS);
             })
             .catch((err) => {
