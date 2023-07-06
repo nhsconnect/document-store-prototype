@@ -159,13 +159,9 @@ const SearchResultsPage = () => {
                                 >
                                     Download All Documents
                                 </Button>
-                                <Link
-                                    role="button"
-                                    className="nhsuk-button nhsuk-button--secondary"
-                                    to={routes.SEARCH_RESULTS_DELETE}
-                                >
+                                <Button secondary role="button" href={routes.SEARCH_RESULTS_DELETE}>
                                     Delete All Documents
-                                </Link>
+                                </Button>
                             </>
                             {downloadState === states.SUCCEEDED && (
                                 <p>
