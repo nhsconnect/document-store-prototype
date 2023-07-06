@@ -1,7 +1,6 @@
 import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import { useEffect } from "react";
 import routes from "../../enums/routes";
-import Spinner from "../../components/spinner/Spinner";
 import axios from "axios";
 import { useNavigate } from "react-router";
 
@@ -29,7 +28,7 @@ const AuthCallbackRouter = () => {
             });
     }, [baseAPIUrl, navigate]);
 
-    return <Spinner status="Logging in..." />;
+    return null;
 };
 
 export default AuthCallbackRouter;
