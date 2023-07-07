@@ -78,6 +78,8 @@ const SearchResultsPage = () => {
         }
     };
 
+    const docsAvailableTableCaption = <h3 style={{ fontSize: 32 }}>List of documents available</h3>;
+
     return (
         <>
             <h1>Download electronic health records and attachments</h1>
@@ -126,10 +128,7 @@ const SearchResultsPage = () => {
                                 </>
                             )}
                             {numberOfCleanFiles > 0 && (
-                                <Table
-                                    caption="List of documents available"
-                                    captionProps={{ fontSize: "32px !important" }}
-                                >
+                                <Table caption={docsAvailableTableCaption}>
                                     <Table.Head>
                                         <Table.Row>
                                             <Table.Cell>Filename</Table.Cell>
