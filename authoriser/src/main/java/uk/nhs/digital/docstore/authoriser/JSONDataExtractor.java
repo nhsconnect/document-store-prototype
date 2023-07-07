@@ -5,6 +5,11 @@ import java.util.List;
 import org.json.JSONObject;
 
 public class JSONDataExtractor {
+
+    private final String GP_CODE = "RO76";
+    private final String PCSE_CODE = "RO157";
+    private final String DEV_CODE = "RO198";
+
     public List<String> getOdsCodesFromUserInfo(JSONObject userInfo) {
         ArrayList<String> codes = new ArrayList<>();
         var orgs = userInfo.getJSONArray("nhsid_nrbac_roles");
@@ -24,15 +29,13 @@ public class JSONDataExtractor {
         var jsonRoles =
                 orgData.getJSONObject("Organisation").getJSONObject("Roles").getJSONArray("Role");
 
-        final var gpCode = "RO76";
-        final var pcseCode = "RO157";
-        final var devCode = "RO198";
-
         for (int i = 0; i < jsonRoles.length(); i++) {
             var jsonRole = jsonRoles.getJSONObject(i);
             var roleCode = jsonRole.getString("id");
 
-            if (roleCode.equals(gpCode) || roleCode.equals(pcseCode) || roleCode.equals(devCode)) {
+            if (roleCode.equals(GP_CODE)
+                    || roleCode.equals(PCSE_CODE)
+                    || roleCode.equals(DEV_CODE)) {
                 roleCodes.add(roleCode);
             }
         }
