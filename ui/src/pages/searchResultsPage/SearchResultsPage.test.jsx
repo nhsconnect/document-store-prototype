@@ -177,14 +177,14 @@ describe("<SearchResultsPage />", () => {
             });
         });
 
-        it("disables the download all button while waiting to download the zip file", async () => {
+        it("display spinner on the download all button while waiting to download the zip file", async () => {
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
             findByNhsNumberMock.mockResolvedValue([buildSearchResult()]);
 
             renderSearchResultsPage();
             userEvent.click(await screen.findByRole("button", { name: "Download All Documents" }));
+            expect(screen.getByRole("SpinnerButton")).toBeInTheDocument();
 
-            expect(screen.getByRole("button", { name: "Download All Documents" })).toBeDisabled();
             await waitFor(() => {
                 expect(downloadFile).toHaveBeenCalled();
             });

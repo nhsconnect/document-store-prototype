@@ -10,6 +10,7 @@ import ServiceError from "../../components/serviceError/ServiceError";
 import { useAuthorisedDocumentStore } from "../../providers/documentStoreProvider/DocumentStoreProvider";
 import routes from "../../enums/routes";
 import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import SpinnerButton from "../../components/spinnerButton/SpinnerButton";
 
 const states = {
     INITIAL: "initial",
@@ -144,22 +145,23 @@ const SearchResultsPage = () => {
                                     </Table.Body>
                                 </Table>
                             )}
-                            {downloadState === states.PENDING && (
-                                <ProgressBar status="Downloading documents..."></ProgressBar>
-                            )}
                             <p>
                                 Only permanently delete all documents for this patient if you have a valid reason to.
                                 For example, if the retention period of these documents has been reached.
                             </p>
                             <>
-                                <Button
-                                    type="button"
-                                    style={{ marginRight: 72 }}
-                                    onClick={downloadAll}
-                                    disabled={downloadState === states.PENDING || numberOfCleanFiles < 1}
-                                >
-                                    Download All Documents
-                                </Button>
+                                {downloadState === states.PENDING ? (
+                                    <SpinnerButton status="Downloading documents" />
+                                ) : (
+                                    <Button
+                                        type="button"
+                                        style={{ marginRight: 72 }}
+                                        onClick={downloadAll}
+                                        disabled={numberOfCleanFiles < 1}
+                                    >
+                                        Download All Documents
+                                    </Button>
+                                )}
                                 <Button secondary role="button" href={routes.SEARCH_RESULTS_DELETE}>
                                     Delete All Documents
                                 </Button>
