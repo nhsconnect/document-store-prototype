@@ -34,16 +34,6 @@ public class TokenRequestEvent extends APIGatewayProxyRequestEvent {
                 .map(AuthorizationCode::new);
     }
 
-    public Optional<String> getRedirectUri() {
-        return Optional.ofNullable(getQueryStringParameters())
-                .map(parameters -> parameters.get("redirect_uri"));
-    }
-
-    public Optional<String> getErrorUri() {
-        return Optional.ofNullable(getQueryStringParameters())
-                .map(parameters -> parameters.get("error_uri"));
-    }
-
     public Optional<State> getQueryParameterState() {
         return Optional.ofNullable(getQueryStringParameters())
                 .map(parameters -> parameters.get("state"))

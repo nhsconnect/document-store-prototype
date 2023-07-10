@@ -13,7 +13,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
@@ -70,27 +69,23 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         var authCode = requestEvent.getAuthCode();
 
-        //         TODO: [PRMT-2779] Add identifier such as a redacted state
         LOGGER.debug("Handling token request");
         LOGGER.debug("Request event: " + requestEvent);
 
         if (authCode.isEmpty()) {
             LOGGER.debug("Auth code is empty");
-            return getAuthErrorRedirect(requestEvent);
+            return authError();
         }
 
         if (!requestEvent.hasMatchingStateValues()) {
-            // TODO: [PRMT-2779] Add redaction if required
             LOGGER.debug(
                     "Mismatching state values. Cookie state: "
                             + requestEvent.getCookieState().orElse(null)
                             + " and query parameter state: "
                             + requestEvent.getQueryParameterState().orElse(null));
 
-            return getAuthErrorRedirect(requestEvent);
+            return authError();
         }
-
-        // TODO: [PRMT-2779] Add redaction if required
         LOGGER.debug(
                 "Authorising session for state: " + requestEvent.getCookieState().orElse(null));
 
@@ -100,30 +95,21 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             loginResponse = sessionManager.createSession(authCode.get());
         } catch (Exception exception) {
             LOGGER.debug(exception.getMessage());
-            return getAuthErrorRedirect(requestEvent);
+            return authError();
         }
 
         var session = loginResponse.getSession();
 
         if (loginResponse.getOutcome().equals(LoginEventOutcome.NO_VALID_ORGS)) {
-            // TODO redirect user to a screen explaining they have no valid org to log in
             LOGGER.debug("user has no valid orgs to log in with");
-            return getAuthErrorRedirect(requestEvent);
+            return authError();
         }
 
-        //        if (loginResponse.getOutcome().equals(LoginEventOutcome.ONE_VALID_ORG)) {
-        //            TODO make a HTTP request to a login completion handler with the user's
-        // sessionID,
-        //            roleID, org and role codes
-        //        }
-
-        // TODO: [PRMT-2779] Add redaction if required
         LOGGER.debug(
                 "Successfully authorised session with state: "
                         + requestEvent.getCookieState().orElse(null));
 
         var headers = new HashMap<String, String>();
-        headers.put("Location", requestEvent.getRedirectUri().orElseThrow());
         headers.put("Access-Control-Allow-Credentials", "true");
         headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
         var maxCookieAgeInSeconds =
@@ -137,35 +123,26 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 httpOnlyCookieBuilder(
                         "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
         var sessionIdCookie = httpOnlyCookieBuilder("SessionId", sessionId, maxCookieAgeInSeconds);
-        var isAdmin = true ? "ADMIN" : "USER";
-        var roleCookie = httpOnlyCookieBuilder("RoleId", isAdmin, maxCookieAgeInSeconds);
-        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie, roleCookie);
+        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
-        // TODO: [PRMT-2779] Add or improve redaction if required
         LOGGER.debug(
                 "Responding with auth cookies for session with ID ending in: "
                         + sessionId.substring(sessionId.length() - 4));
-        var response = new JSONObject();
-        response.put("SessionId", sessionIdCookie);
-        response.put("RoleId", roleCookie);
-        response.put("State", stateCookie);
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
                 .withHeaders(headers)
-                .withBody(response.toString())
+                .withBody("")
                 .withMultiValueHeaders(multiValueHeaders);
     }
 
-    private static APIGatewayProxyResponseEvent getAuthErrorRedirect(
-            TokenRequestEvent requestEvent) {
+    private static APIGatewayProxyResponseEvent authError() {
         var headers = new HashMap<String, String>();
-        headers.put("Location", requestEvent.getErrorUri().orElseThrow());
         headers.put("Access-Control-Allow-Credentials", "true");
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
-                .withStatusCode(SEE_OTHER_STATUS_CODE)
+                .withStatusCode(ERROR_STATUS_CODE)
                 .withHeaders(headers)
                 .withBody("");
     }
