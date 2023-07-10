@@ -110,7 +110,7 @@ const SearchResultsPage = () => {
                                     >
                                         <Table.Head>
                                             <Table.Row>
-                                                <Table.Cell className={"tableColumnHeader"}>Filename</Table.Cell>
+                                                <Table.Cell className={"table-column-header"}>Filename</Table.Cell>
                                             </Table.Row>
                                         </Table.Head>
                                         <Table.Body>
@@ -131,8 +131,8 @@ const SearchResultsPage = () => {
                                 <Table caption={docsAvailableTableCaption}>
                                     <Table.Head>
                                         <Table.Row>
-                                            <Table.Cell className={"tableColumnHeader"}>Filename</Table.Cell>
-                                            <Table.Cell className={"tableColumnHeader"}>Uploaded At</Table.Cell>
+                                            <Table.Cell className={"table-column-header"}>Filename</Table.Cell>
+                                            <Table.Cell className={"table-column-header"}>Uploaded At</Table.Cell>
                                         </Table.Row>
                                     </Table.Head>
                                     <Table.Body>
