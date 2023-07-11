@@ -57,7 +57,6 @@ describe("AuthCallbackRouter", () => {
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledWith(`${baseAPIUrl}/Auth/TokenRequest`, {
                 params,
-                withCredentials: true,
             });
             expect(axios.get).toHaveBeenCalledTimes(1);
             expect(mockNavigate).toHaveBeenCalledWith(routes.AUTH_SUCCESS);
