@@ -197,5 +197,5 @@ locals {
     WORKSPACE          = terraform.workspace
   }
   amplify_base_url    = var.cloud_only_service_instances > 0 ? "https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk" : ""
-  app_base_url        = terraform.workspace != "prod" ? "'https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk'" : "'https://access-request-fulfilment.patient-deductions.nhs.uk'"
+  app_base_url        = terraform.workspace != "prod" ? "https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk" : "https://access-request-fulfilment.patient-deductions.nhs.uk"
 }
