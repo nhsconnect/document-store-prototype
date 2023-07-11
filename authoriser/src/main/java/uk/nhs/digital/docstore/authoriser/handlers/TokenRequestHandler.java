@@ -30,7 +30,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
     private Clock clock = Clock.systemUTC();
 
-    public String getAmplifyBaseUrl() {
+    public static String getAmplifyBaseUrl() {
         String url = System.getenv(AMPLIFY_BASE_URL_ENV_VAR);
         if (url == null) {
             LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);
@@ -163,6 +163,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         var headers = new HashMap<String, String>();
         headers.put("Location", requestEvent.getErrorUri().orElseThrow());
         headers.put("Access-Control-Allow-Credentials", "true");
+        headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
                 .withStatusCode(SEE_OTHER_STATUS_CODE)
