@@ -34,6 +34,7 @@ function run_sandbox() {
       printf "\n${yellow} Building lambda layers...\n\n${normal}"
       cd ..
       ./gradlew app:build || (printf "\n${yellow} Formatting code...\n\n${normal}" && ./gradlew app:spotlessApply)
+      ./gradlew authoriser:build && ./gradlew authoriser:spotlessApply
       build_lambdas
       local LAMBDA_STATE=$?
       echo $LAMBDA_STATE

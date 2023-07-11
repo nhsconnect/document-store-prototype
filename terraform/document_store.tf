@@ -323,13 +323,10 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 
   depends_on = [aws_lambda_permission.s3_permission_for_fake_virus_scanned_event]
 }
-<<<<<<< HEAD
 
 resource "aws_lambda_layer_version" "document_store_lambda_layer" {
   filename   = var.lambda_layers_filename
-  layer_name = "app_lambda_layer"
+  layer_name = "${terraform.workspace}_app_lambda_layer"
   source_code_hash = filebase64sha256(var.lambda_layers_filename)
   compatible_runtimes = ["java11"]
 }
-=======
->>>>>>> ac4bc494 ([PRMT-3343] updated terraform scripts to use Workspace name to differentiate resources)

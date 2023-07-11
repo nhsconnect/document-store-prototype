@@ -34,9 +34,9 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         String workspace = System.getenv("WORKSPACE");
         String url =
                 (workspace == null || workspace.isEmpty())
-                        ? "https://access-request-fulfilment.patient-deductions.nhs.uk/"
+                        ? "https://access-request-fulfilment.patient-deductions.nhs.uk"
                         : String.format(
-                                "https://%s.access-request-fulfilment.patient-deductions.nhs.uk/",
+                                "https://%s.access-request-fulfilment.patient-deductions.nhs.uk",
                                 workspace);
         if (url == null) {
             LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);

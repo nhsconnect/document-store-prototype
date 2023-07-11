@@ -196,6 +196,6 @@ locals {
     OIDC_USER_INFO_URL = var.cis2_provider_user_info_url
     WORKSPACE          = terraform.workspace
   }
-  amplify_base_url    = var.cloud_only_service_instances > 0 ? "https://sanda.access-request-fulfilment.patient-deductions.nhs.uk" : ""
+  amplify_base_url    = var.cloud_only_service_instances > 0 ? "https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk" : ""
   app_base_url        = terraform.workspace != "prod" ? "'https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk'" : "'https://access-request-fulfilment.patient-deductions.nhs.uk'"
 }
