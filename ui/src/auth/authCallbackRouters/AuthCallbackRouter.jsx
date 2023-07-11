@@ -12,13 +12,11 @@ const AuthCallbackRouter = () => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const code = urlSearchParams.get("code");
         const state = urlSearchParams.get("state");
-        const error_uri = new URL(routes.AUTH_ERROR, window.location.href);
-        const redirect_uri = new URL(routes.AUTH_SUCCESS, window.location.href);
-        axios.defaults.withCredentials = true;
         console.log(code, state);
         axios
             .get(`${baseAPIUrl}/Auth/TokenRequest`, {
-                params: { code, state, redirect_uri, error_uri },
+                params: { code, state },
+                withCredentials: true,
             })
             .then(() => {
                 navigate(routes.AUTH_SUCCESS);

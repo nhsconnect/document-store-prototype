@@ -42,8 +42,6 @@ describe("AuthCallbackRouter", () => {
         const params = {
             code: "some-auth-code",
             state: "some-state",
-            error_uri: new URL(`${baseUiUrl}/auth-error`),
-            redirect_uri: new URL(`${baseUiUrl}/auth-success`),
         };
         axios.get.mockResolvedValue(responseData);
 
