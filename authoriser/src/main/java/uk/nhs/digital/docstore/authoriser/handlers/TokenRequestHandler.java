@@ -113,7 +113,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         var headers = new HashMap<String, String>();
         headers.put("Access-Control-Allow-Credentials", "true");
-        headers.put("Access-Control-Allow-Origin", "https://main.dhpu8o94qbs05.amplifyapp.com");
+        headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
         var sessionId = session.getId().toString();

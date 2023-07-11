@@ -25,7 +25,7 @@ class TokenRequestHandlerTest {
         var authCode = new AuthorizationCode();
         var state = new State();
         request.setQueryStringParameters(
-            Map.of("code", authCode.getValue(), "state", state.getValue()));
+                Map.of("code", authCode.getValue(), "state", state.getValue()));
         request.setHeaders(Map.of("Cookie", "State=" + state.getValue()));
         var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
         var fixedTime = Instant.now(clock);
@@ -48,22 +48,22 @@ class TokenRequestHandlerTest {
         // assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
-            .contains(
-                "State=" + state + "; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly");
+                .contains(
+                        "State=" + state + "; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly");
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
-            .contains(
-                "SubjectClaim="
-                    + session.getOIDCSubject()
-                    + "; SameSite=None; Secure; Path=/; Max-Age="
-                    + maxCookieAgeInSeconds
-                    + "; HttpOnly");
+                .contains(
+                        "SubjectClaim="
+                                + session.getOIDCSubject()
+                                + "; SameSite=None; Secure; Path=/; Max-Age="
+                                + maxCookieAgeInSeconds
+                                + "; HttpOnly");
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
-            .contains(
-                "SessionId="
-                    + session.getId()
-                    + "; SameSite=None; Secure; Path=/; Max-Age="
-                    + maxCookieAgeInSeconds
-                    + "; HttpOnly");
+                .contains(
+                        "SessionId="
+                                + session.getId()
+                                + "; SameSite=None; Secure; Path=/; Max-Age="
+                                + maxCookieAgeInSeconds
+                                + "; HttpOnly");
     }
 
     @Test
@@ -72,7 +72,7 @@ class TokenRequestHandlerTest {
         var authCode = new AuthorizationCode();
         var state = new State();
         request.setQueryStringParameters(
-            Map.of("code", authCode.getValue(), "state", state.getValue()));
+                Map.of("code", authCode.getValue(), "state", state.getValue()));
         request.setHeaders(Map.of("Cookie", "State=" + state.getValue()));
         var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
         var fixedTime = Instant.now(clock);
@@ -102,7 +102,7 @@ class TokenRequestHandlerTest {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
         request.setQueryStringParameters(
-            Map.of("code", authCode.getValue(), "state", new State().getValue()));
+                Map.of("code", authCode.getValue(), "state", new State().getValue()));
         request.setHeaders(Map.of("Cookie", "State=" + new State().getValue()));
         var session = new Session();
         session.setRole("some-role");
