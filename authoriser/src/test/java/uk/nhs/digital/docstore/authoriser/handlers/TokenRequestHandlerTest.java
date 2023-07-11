@@ -93,7 +93,7 @@ class TokenRequestHandlerTest {
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(401);
-//        assertThat(response.getBody()).isEqualTo("");
+        //        assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
 
@@ -115,7 +115,7 @@ class TokenRequestHandlerTest {
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(401);
-//        assertThat(response.getBody()).isEqualTo("");
+        //        assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
 
@@ -135,7 +135,7 @@ class TokenRequestHandlerTest {
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(401);
-//        assertThat(response.getBody()).isEqualTo("");
+        //        assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
 }
