@@ -75,7 +75,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         if (authCode.isEmpty()) {
             LOGGER.debug("Auth code is empty");
-            return authError();
+            return authError("Auth code is empty");
         }
 
         if (!requestEvent.hasMatchingStateValues()) {
@@ -85,7 +85,11 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                             + " and query parameter state: "
                             + requestEvent.getQueryParameterState().orElse(null));
 
-            return authError();
+            return authError(
+                    "Mismatching state values. Cookie state: "
+                            + requestEvent.getCookieState().orElse(null)
+                            + " and query parameter state: "
+                            + requestEvent.getQueryParameterState().orElse(null));
         }
 
         LOGGER.debug(
@@ -97,14 +101,14 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             loginResponse = sessionManager.createSession(authCode.get());
         } catch (Exception exception) {
             LOGGER.debug(exception.getMessage());
-            return authError();
+            return authError(exception.getMessage());
         }
 
         var session = loginResponse.getSession();
 
         if (loginResponse.getOutcome().equals(LoginEventOutcome.NO_VALID_ORGS)) {
             LOGGER.debug("user has no valid orgs to log in with");
-            return authError();
+            return authError("user has no valid orgs to log in with");
         }
 
         LOGGER.debug(
@@ -145,7 +149,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 .withMultiValueHeaders(multiValueHeaders);
     }
 
-    private static APIGatewayProxyResponseEvent authError() {
+    private static APIGatewayProxyResponseEvent authError(String err) {
         var headers = new HashMap<String, String>();
         headers.put("Access-Control-Allow-Credentials", "true");
         headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
@@ -153,7 +157,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 .withIsBase64Encoded(false)
                 .withStatusCode(ERROR_STATUS_CODE)
                 .withHeaders(headers)
-                .withBody("");
+                .withBody(err);
     }
 
     private static IDTokenValidator makeIDTokenValidator() {
