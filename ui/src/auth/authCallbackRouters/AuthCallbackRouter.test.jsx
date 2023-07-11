@@ -55,7 +55,10 @@ describe("AuthCallbackRouter", () => {
 
         // Wait for the navigation to occur
         await waitFor(() => {
-            expect(axios.get).toHaveBeenCalledWith(`${baseAPIUrl}/Auth/TokenRequest`, { params });
+            expect(axios.get).toHaveBeenCalledWith(`${baseAPIUrl}/Auth/TokenRequest`, {
+                params,
+                withCredentials: true,
+            });
             expect(axios.get).toHaveBeenCalledTimes(1);
             expect(mockNavigate).toHaveBeenCalledWith(routes.AUTH_SUCCESS);
         });
