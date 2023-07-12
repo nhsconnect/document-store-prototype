@@ -168,7 +168,6 @@ const SearchResultsPage = () => {
                                     className="nhsuk-button nhsuk-button--secondary"
                                     to={routes.SEARCH_RESULTS_DELETE}
                                     role="button"
-                                    href={routes.SEARCH_RESULTS_DELETE}
                                 >
                                     Delete All Documents
                                 </Link>
