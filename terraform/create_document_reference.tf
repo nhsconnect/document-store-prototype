@@ -34,7 +34,7 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
     variables = merge({
       AMPLIFY_BASE_URL                = local.amplify_base_url
       TEST_DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.test_document_store.bucket
-      VIRUS_SCANNER_IS_STUBBED        = var.virus_scanner_is_stubbed
+      VIRUS_SCANNER_IS_STUBBED        =  terraform.workspace != "main" ? "true" : var.virus_scanner_is_stubbed
     }, local.common_environment_variables)
   }
 }
