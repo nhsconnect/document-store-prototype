@@ -179,6 +179,7 @@ pipelines:
       - build:
           environment_variables:
             ENVIRONMENT: dev
+            WORKSPACE: dev
             NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
@@ -187,6 +188,7 @@ pipelines:
             lambdas: *build_lambdas
       - plan_terraform:
           environment_variables:
+            WORKSPACE: dev
             ENVIRONMENT: dev
             NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true

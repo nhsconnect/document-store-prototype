@@ -71,7 +71,7 @@ resource "aws_route_table_association" "virus_scanning_subnet2_route_table_assoc
 }
 
 data "aws_ssm_parameter" "cloud_security_admin_email" {
-  name = "/prs/${terraform.workspace}/user-input/cloud-security-admin-email"
+  name = "/prs/${var.environment}/user-input/cloud-security-admin-email"
 }
 
 resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
