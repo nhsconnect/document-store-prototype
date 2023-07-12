@@ -5,12 +5,10 @@ const SpinnerButton = ({ status }) => {
     const buttonStyle = { display: "flex" };
 
     return (
-        <>
-            <Button aria-label="SpinnerButton" style={buttonStyle} role="SpinnerButton">
-                <div className="spinner-button"></div>
-                <div role="status">{status}</div>
-            </Button>
-        </>
+        <Button aria-label="SpinnerButton" style={buttonStyle} role="SpinnerButton">
+            <div className="spinner-button"></div>
+            <div role="status">{status}</div>
+        </Button>
     );
 };
 

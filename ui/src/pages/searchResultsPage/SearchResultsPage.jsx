@@ -153,7 +153,7 @@ const SearchResultsPage = () => {
                             </p>
                             <>
                                 {downloadState === states.PENDING ? (
-                                    <SpinnerButton status="Downloading documents" />
+                                    <SpinnerButton status="Downloading documents" style={{ marginRight: 72 }} />
                                 ) : (
                                     <Button
                                         type="button"
@@ -164,9 +164,14 @@ const SearchResultsPage = () => {
                                         Download All Documents
                                     </Button>
                                 )}
-                                <Button secondary role="button" href={routes.SEARCH_RESULTS_DELETE}>
+                                <Link
+                                    className="nhsuk-button nhsuk-button--secondary"
+                                    to={routes.SEARCH_RESULTS_DELETE}
+                                    role="button"
+                                    href={routes.SEARCH_RESULTS_DELETE}
+                                >
                                     Delete All Documents
-                                </Button>
+                                </Link>
                             </>
                             {downloadState === states.SUCCEEDED && (
                                 <p>
