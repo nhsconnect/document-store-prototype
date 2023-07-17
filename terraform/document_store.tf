@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "document_store" {
-  bucket = "${terraform.workspace}-document-store"
+  bucket = "document-store"
+  count  = var.workspace_is_a_sandbox ? 0 : 1
 
   lifecycle {
     ignore_changes = [
@@ -10,7 +11,8 @@ resource "aws_s3_bucket" "document_store" {
 }
 
 resource "aws_s3_bucket_policy" "document_store_bucket_policy" {
-  bucket = aws_s3_bucket.document_store.id
+  bucket = aws_s3_bucket.document_store[0].id
+  count  = var.workspace_is_a_sandbox ? 0 : 1
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -22,8 +24,8 @@ resource "aws_s3_bucket_policy" "document_store_bucket_policy" {
           "s3:*"
         ],
         "Resource" : [
-          "${aws_s3_bucket.document_store.arn}/*",
-          "${aws_s3_bucket.document_store.arn}"
+          "${aws_s3_bucket.document_store[0].arn}/*",
+          "${aws_s3_bucket.document_store[0].arn}"
         ],
         "Effect" : "Deny",
         "Condition" : {
@@ -78,17 +80,21 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
 
 resource "aws_kms_alias" "document_store_encryption_key_alias" {
   name          = "alias/document-store-bucket-key-ncryption-${terraform.workspace}"
-  target_key_id = aws_kms_key.document_store_encryption_key.id
+  target_key_id = aws_kms_key.document_store_encryption_key[0].id
+  count         = var.workspace_is_a_sandbox ? 0 : 1
 }
 
 resource "aws_kms_key" "document_store_encryption_key" {
   description         = "Encryption key for document store so the virus scanner can read files inside"
   enable_key_rotation = true
   policy              = data.aws_iam_policy_document.document_encryption_key_policy.json
+  count               = var.workspace_is_a_sandbox ? 0 : 1
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "document_store_encryption" {
-  bucket = aws_s3_bucket.document_store.id
+  bucket = aws_s3_bucket.document_store[0].id
+  count  = var.workspace_is_a_sandbox ? 0 : 1
+
   rule {
     bucket_key_enabled = true
     apply_server_side_encryption_by_default {
@@ -98,14 +104,16 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "document_store_en
 }
 
 resource "aws_s3_bucket_versioning" "document_store_versioning" {
-  bucket = aws_s3_bucket.document_store.id
+  bucket = aws_s3_bucket.document_store[0].id
+  count  = var.workspace_is_a_sandbox ? 0 : 1
   versioning_configuration {
     status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "document_store_lifecycle" {
-  bucket = aws_s3_bucket.document_store.id
+  bucket = aws_s3_bucket.document_store[0].id
+  count  = var.workspace_is_a_sandbox ? 0 : 1
 
   rule {
     id = "rule-1"
@@ -141,7 +149,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "document_store_lifecycle" {
 }
 
 resource "aws_s3_bucket_cors_configuration" "document_store_bucket_cors_config" {
-  bucket = aws_s3_bucket.document_store.id
+  bucket = aws_s3_bucket.document_store[0].id
+  count  = var.workspace_is_a_sandbox ? 0 : 1
 
   cors_rule {
     allowed_headers = ["*"]
@@ -175,7 +184,7 @@ resource "aws_iam_role_policy" "s3_get_document_data_policy" {
           "s3:PutObject",
           "s3:DeleteObject",
         ],
-        "Resource" : ["${aws_s3_bucket.document_store.arn}/*", "${aws_s3_bucket.test_document_store.arn}/*"]
+        "Resource" : [var.workspace_is_a_sandbox ? "${aws_s3_bucket.test_document_store.arn}/*" : "${aws_s3_bucket.document_store[0].arn}/*", "${aws_s3_bucket.test_document_store.arn}/*"]
       }
     ]
   })
@@ -233,7 +242,7 @@ data "aws_iam_policy_document" "s3_object_access_policy_doc" {
 
 resource "aws_s3_bucket" "test_document_store" {
   bucket_prefix = "${terraform.workspace}-test-document-store"
-
+  force_destroy = var.workspace_is_a_sandbox
   lifecycle {
     ignore_changes = [
       cors_rule
@@ -269,14 +278,16 @@ resource "aws_s3_bucket_policy" "test_document_store_bucket_policy" {
 }
 
 resource "aws_s3_bucket_acl" "document_store_acl" {
-  bucket     = aws_s3_bucket.document_store.id
+  bucket     = aws_s3_bucket.document_store[0].id
+  count      = var.workspace_is_a_sandbox ? 0 : 1
   acl        = "private"
   depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership_document_store]
 
 }
 # Resource to avoid error "AccessControlListNotSupported: The bucket does not allow ACLs"
 resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership_document_store" {
-  bucket = aws_s3_bucket.document_store.id
+  bucket = aws_s3_bucket.document_store[0].id
+  count  = var.workspace_is_a_sandbox ? 0 : 1
   rule {
     object_ownership = "ObjectWriter"
   }

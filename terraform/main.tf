@@ -175,7 +175,7 @@ data "aws_iam_policy_document" "dynamodb_table_access_policy_doc" {
 
 locals {
   common_environment_variables = {
-    DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.document_store.bucket
+    DOCUMENT_STORE_BUCKET_NAME = var.workspace_is_a_sandbox ? aws_s3_bucket.test_document_store.bucket : aws_s3_bucket.document_store[0].bucket
     DYNAMODB_ENDPOINT          = var.dynamodb_endpoint
     S3_ENDPOINT                = var.s3_endpoint
     S3_USE_PATH_STYLE          = var.s3_use_path_style

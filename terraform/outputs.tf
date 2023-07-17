@@ -3,7 +3,7 @@ output "amplify_app_ids" {
 }
 
 output "document-store-bucket" {
-  value = aws_s3_bucket.document_store.bucket
+  value = var.workspace_is_a_sandbox ? "" : aws_s3_bucket.document_store[0].bucket
 }
 
 output "api_gateway_rest_api_id" {

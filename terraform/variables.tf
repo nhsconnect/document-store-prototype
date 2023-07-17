@@ -226,3 +226,8 @@ variable "virus_scanner_is_stubbed" {
   type    = string
   default = "false"
 }
+
+variable "workspace_is_a_sandbox" {
+  type = bool
+  default = false
+}

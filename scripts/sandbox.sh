@@ -44,7 +44,7 @@ function run_sandbox() {
       ./gradlew app:buildZip
       printf "\n${yellow} Creating Terraform plan...\n\n${normal}"
       cd ./terraform
-      terraform plan -var-file="dev.tfvars" -out tfplan 2>&1 | tee tfplan.log
+      terraform plan -var workspace_is_a_sandbox=true -var-file="dev.tfvars" -out tfplan 2>&1 | tee tfplan.log
       terraform output -json >"../terraform_output.json"
       printf "\n${green} Terraform plan created!\n   Plan output has been logged to ${normal}tfplan.log$(tput setaf 2)\n   check the output then run ${normal}$ make deploy-app-${WORKSPACE} $(tput setaf 2)to continue deployment.${normal}.\n\n${normal}"
     elif [ $MODE == --deploy-app ]; then
