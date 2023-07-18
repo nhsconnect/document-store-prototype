@@ -21,7 +21,9 @@ import routes from "./enums/routes";
 import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
 import AuthSuccessRouter from "./auth/authSuccessRouter/AuthSuccessRouter";
 import SessionProvider from "./providers/sessionProvider/SessionProvider";
+import IdleProvider from "./providers/idleProvider/IdleProvider";
 import { PatientSummaryPage } from "./pages/patientSummaryPage/patientSummaryPage";
+import InactivityErrorPage from "./pages/inactivityErrorPage/InactivityErrorPage";
 
 const AppRoutes = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
@@ -41,6 +43,7 @@ const AppRoutes = () => {
         SEARCH_PATIENT_RESULT,
         SEARCH_RESULTS,
         SEARCH_RESULTS_DELETE,
+        INACTIVITY_ERROR,
     } = routes;
 
     const ProtectedAuthRoutes = ({ children }) => {
@@ -62,10 +65,21 @@ const AppRoutes = () => {
             <Route element={<AuthErrorPage />} path={AUTH_ERROR} />
             <Route
                 element={
+                    <SessionProvider>
+                        <InactivityErrorPage />
+                    </SessionProvider>
+                }
+                path={INACTIVITY_ERROR}
+            />
+
+            <Route
+                element={
                     <ProtectedAuthRoutes>
-                        <DocumentStoreProvider>
-                            <Outlet />
-                        </DocumentStoreProvider>
+                        <IdleProvider>
+                            <DocumentStoreProvider>
+                                <Outlet />
+                            </DocumentStoreProvider>
+                        </IdleProvider>
                     </ProtectedAuthRoutes>
                 }
             >
