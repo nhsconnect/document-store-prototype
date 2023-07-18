@@ -29,7 +29,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
     private Clock clock = Clock.systemUTC();
 
-
     public static String getAmplifyBaseUrl() {
         String workspace = System.getenv("WORKSPACE");
         String url =
