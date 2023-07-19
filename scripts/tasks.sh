@@ -117,9 +117,7 @@ function tf_init {
   cd terraform
   terraform init \
     -backend-config ${ENVIRONMENT}.s3.tfbackend
-  terraform workspace list
-  echo ${WORKSPACE}
-  terraform workspace select -or-create ${WORKSPACE}
+  terraform workspace select ${WORKSPACE}
 }
 
 function tf_init_virus_scanner {
