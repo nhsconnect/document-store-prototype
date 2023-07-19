@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { ButtonLink } from "nhsuk-react-components";
-import { useBaseAPIUrl, useFeatureToggle } from "../../providers/configProvider/ConfigProvider";
-import { useNavigate } from "react-router";
-import routes from "../../enums/routes";
+import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import Spinner from "../../components/spinner/Spinner";
 
 const StartPage = () => {
-    const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     return !loading ? (
         <>
@@ -43,7 +39,7 @@ const StartPage = () => {
                 onClick={(e) => {
                     e.preventDefault();
                     setLoading(true);
-                    isOIDCAuthActive ? navigate(routes.HOME) : window.location.replace(`${baseAPIUrl}/Auth/Login`);
+                    window.location.replace(`${baseAPIUrl}/Auth/Login`);
                 }}
             >
                 Start now
