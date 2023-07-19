@@ -21,6 +21,9 @@ public class DynamoDbConnection {
                         dynamodbClient,
                         DynamoDBMapperConfig.builder()
                                 .withSaveBehavior(UPDATE_SKIP_NULL_ATTRIBUTES)
+                                .withTableNameResolver(
+                                        DynamoDBMapperConfig.DefaultTableNameResolver.INSTANCE)
+                                .withTableNameOverride(tableNameOverrider())
                                 .build());
     }
 
@@ -38,5 +41,11 @@ public class DynamoDbConnection {
                                     dynamodbEndpoint, AWS_REGION));
         }
         return clientBuilder.build();
+    }
+
+    public DynamoDBMapperConfig.TableNameOverride tableNameOverrider() {
+        var workspace = System.getenv("WORKSPACE");
+        String prefix = workspace != null && !workspace.isEmpty() ? workspace.concat("_") : "";
+        return DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix(prefix);
     }
 }

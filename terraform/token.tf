@@ -1,13 +1,13 @@
 resource "aws_lambda_function" "token_request_lambda" {
   handler          = "uk.nhs.digital.docstore.authoriser.handlers.TokenRequestHandler::handleRequest"
-  function_name    = "TokenRequestHandler"
+  function_name    = "${terraform.workspace}_TokenRequestHandler"
   runtime          = "java11"
   role             = aws_iam_role.authoriser_execution_role.arn
   timeout          = 60
   memory_size      = 448
   filename         = var.authoriser_lambda_jar_filename
   source_code_hash = filebase64sha256(var.authoriser_lambda_jar_filename)
-  layers           = [
+  layers = [
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {

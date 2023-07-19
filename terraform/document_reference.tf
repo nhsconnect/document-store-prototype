@@ -2,7 +2,7 @@ module "doc_ref_collection_preflight" {
   source         = "./modules/api_gateway_preflight"
   api_gateway_id = aws_api_gateway_rest_api.lambda_api.id
   resource_id    = aws_api_gateway_resource.doc_ref_collection_resource.id
-  origin         = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
+  origin         = terraform.workspace != "prod" ? "'https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk'" : "'https://access-request-fulfilment.patient-deductions.nhs.uk'"
   methods        = "'GET,OPTIONS,POST,DELETE'"
 }
 
@@ -13,7 +13,7 @@ resource "aws_api_gateway_resource" "doc_ref_collection_resource" {
 }
 
 resource "aws_dynamodb_table" "doc_ref_store" {
-  name           = "DocumentReferenceMetadata"
+  name           = "${terraform.workspace}_DocumentReferenceMetadata"
   hash_key       = "ID"
   billing_mode   = "PAY_PER_REQUEST"
   stream_enabled = false

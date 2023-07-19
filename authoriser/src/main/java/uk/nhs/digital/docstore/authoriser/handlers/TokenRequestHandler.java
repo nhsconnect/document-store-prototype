@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore.authoriser.handlers;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
@@ -31,7 +30,13 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
     private Clock clock = Clock.systemUTC();
 
     public static String getAmplifyBaseUrl() {
-        String url = System.getenv(AMPLIFY_BASE_URL_ENV_VAR);
+        String workspace = System.getenv("WORKSPACE");
+        String url =
+                (workspace == null || workspace.isEmpty())
+                        ? "https://access-request-fulfilment.patient-deductions.nhs.uk"
+                        : String.format(
+                                "https://%s.access-request-fulfilment.patient-deductions.nhs.uk",
+                                workspace);
         if (url == null) {
             LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);
             return "__unset__AMPLIFY_BASE_URL";
@@ -52,7 +57,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                                 new UserInfoFetcher(
                                         new HTTPUserInfoRequestClient(), getProviderMetadata()),
                                 makeIDTokenValidator()),
-                        new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient()))));
+                        new DynamoDBSessionStore(createDynamoDbMapper())));
     }
 
     public TokenRequestHandler(SessionManager sessionManager, Clock clock) {

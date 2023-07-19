@@ -1,5 +1,6 @@
 ### Env variables
 .env
+.dynamo_env
 
 ### Terraform
 terraform.json
@@ -18,6 +19,8 @@ terraform.rc
 /terraform/.cache
 /virusScanner/terraform/virus-scanner-tfplan
 virusScanner/terraform/.terraform.lock.hcl
+terraform/bootstrap/terraform/.terraform*
+
 
 ### Dependencies
 node_modules
@@ -130,4 +133,9 @@ PDS_FHIR_AUTH_KEY.*
 # Misc
 .DS_Store
 
-
+#terraform Output for Workspace deployments
+.terraform_output.json
+.terraform/.terraform.lock.hcl
+/terraform/.terraform.lock.hcl
+/deployment.output
+/terraform_output.json

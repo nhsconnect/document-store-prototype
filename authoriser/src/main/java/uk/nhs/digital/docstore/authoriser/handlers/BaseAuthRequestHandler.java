@@ -3,6 +3,8 @@ package uk.nhs.digital.docstore.authoriser.handlers;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
@@ -31,6 +33,12 @@ public abstract class BaseAuthRequestHandler {
                                     dynamodbEndpoint, AWS_REGION));
         }
         return clientBuilder.build();
+    }
+
+    protected static DynamoDBMapper createDynamoDbMapper() {
+        return new DynamoDBMapper(
+                getDynamodbClient(),
+                DynamoDBMapperConfig.builder().withTableNameOverride(tableNameOverrider()).build());
     }
 
     protected static OIDCClientInformation getClientInformation() {
@@ -80,5 +88,11 @@ public abstract class BaseAuthRequestHandler {
                 + fieldContents
                 + "; SameSite=None; Secure; Path=/; Max-Age="
                 + maxAgeInSeconds;
+    }
+
+    private static DynamoDBMapperConfig.TableNameOverride tableNameOverrider() {
+        var workspace = System.getenv("WORKSPACE");
+        String prefix = workspace != null && !workspace.isEmpty() ? workspace.concat("_") : "";
+        return DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix(prefix);
     }
 }

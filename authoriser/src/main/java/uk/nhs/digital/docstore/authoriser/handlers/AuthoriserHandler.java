@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore.authoriser.handlers;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.IamPolicyResponse;
@@ -19,7 +18,7 @@ public class AuthoriserHandler extends BaseAuthRequestHandler
 
     @SuppressWarnings("unused")
     public AuthoriserHandler() {
-        this(new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())));
+        this(new DynamoDBSessionStore(createDynamoDbMapper()));
     }
 
     public AuthoriserHandler(SessionStore sessionStore) {

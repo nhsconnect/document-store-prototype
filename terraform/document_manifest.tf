@@ -5,20 +5,20 @@ module "document_manifest_endpoint" {
   lambda_arn     = aws_lambda_function.document_manifest_lambda.invoke_arn
   http_method    = "GET"
   authorization  = "CUSTOM" //TODO
-authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
+  authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
 }
 
 module "document_manifest_preflight" {
   source         = "./modules/api_gateway_preflight"
   api_gateway_id = aws_api_gateway_rest_api.lambda_api.id
   resource_id    = aws_api_gateway_resource.document_manifest_resource.id
-  origin         = var.cloud_only_service_instances > 0 ? "'https://${aws_amplify_branch.main[0].branch_name}.${aws_amplify_app.doc-store-ui[0].id}.amplifyapp.com'" : "'*'"
+  origin         = terraform.workspace != "prod" ? "'https://${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk'" : "'https://access-request-fulfilment.patient-deductions.nhs.uk'"
   methods        = "'GET,OPTIONS,POST'"
 }
 
 resource "aws_lambda_function" "document_manifest_lambda" {
   handler          = "uk.nhs.digital.docstore.lambdas.CreateDocumentManifestByNhsNumberHandler::handleRequest"
-  function_name    = "CreateDocumentManifestByNhsNumberHandler"
+  function_name    = "${terraform.workspace}_CreateDocumentManifestByNhsNumberHandler"
   runtime          = "java11"
   role             = aws_iam_role.lambda_execution_role.arn
   timeout          = 60
@@ -52,17 +52,17 @@ resource "aws_lambda_permission" "api_gateway_permission_for_document_manifest" 
   source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
-module create_document_manifest_by_nhs_number_alarms {
+module "create_document_manifest_by_nhs_number_alarms" {
   source                     = "./modules/lambda_alarms"
   lambda_function_name       = aws_lambda_function.document_manifest_lambda.function_name
   lambda_timeout             = aws_lambda_function.document_manifest_lambda.timeout
   lambda_short_name          = "create_document_manifest_by_nhs_number_handler"
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-  environment                = var.environment
+  environment                = terraform.workspace
 }
 
 resource "aws_dynamodb_table" "doc_zip_trace_store" {
-  name           = "DocumentZipTrace"
+  name           = "${terraform.workspace}_DocumentZipTrace"
   hash_key       = "ID"
   billing_mode   = "PAY_PER_REQUEST"
   stream_enabled = false

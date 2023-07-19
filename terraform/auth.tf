@@ -4,10 +4,10 @@ resource "aws_api_gateway_resource" "auth_resource" {
   path_part   = "Auth"
 }
 
-resource aws_dynamodb_table "access_request_fulfilment_auth" {
-  name = "ARFAuth"
-  hash_key = "PK"
-  range_key = "SK"
+resource "aws_dynamodb_table" "access_request_fulfilment_auth" {
+  name           = "${terraform.workspace}_ARFAuth"
+  hash_key       = "PK"
+  range_key      = "SK"
   billing_mode   = "PAY_PER_REQUEST"
   stream_enabled = false
 
@@ -27,8 +27,8 @@ resource aws_dynamodb_table "access_request_fulfilment_auth" {
   }
 }
 
-resource aws_iam_policy "arf_auth_table_policy" {
-  name = "arf_auth_table_policy"
+resource "aws_iam_policy" "arf_auth_table_policy" {
+  name = "${terraform.workspace}_arf_auth_table_policy"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [

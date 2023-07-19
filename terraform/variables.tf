@@ -2,9 +2,22 @@ variable "environment" {
   type = string
 }
 
+variable "arf_domain_name" {
+  type = string
+}
+
+variable "arf_zone_id" {
+  type = string
+  default = ""
+}
+
 variable "region" {
   type    = string
   default = "eu-west-2"
+}
+variable "workspace" {
+  type    = string
+  default = "default"
 }
 
 variable "account_id" {
@@ -34,42 +47,42 @@ variable "basic_auth_password" {
 
 variable "create_doc_manifest_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
+  default = "../lambdas/CreateDocumentManifestByNhsNumber/build/libs/CreateDocumentManifestByNhsNumber.jar"
 }
 
 variable "create_doc_ref_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/CreateDocumentReference/build/libs/CreateDocumentReference.jar"
+  default = "../lambdas/CreateDocumentReference/build/libs/CreateDocumentReference.jar"
 }
 
 variable "delete_doc_ref_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/DeleteDocumentReference/build/libs/DeleteDocumentReference.jar"
+  default = "../lambdas/DeleteDocumentReference/build/libs/DeleteDocumentReference.jar"
 }
 
 variable "doc_ref_search_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/DocumentReferenceSearch/build/libs/DocumentReferenceSearch.jar"
+  default = "../lambdas/DocumentReferenceSearch/build/libs/DocumentReferenceSearch.jar"
 }
 
 variable "fake_virus_scanner_event_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/FakeVirusScannedEvent/build/libs/FakeVirusScannedEvent.jar"
+  default = "../lambdas/FakeVirusScannedEvent/build/libs/FakeVirusScannedEvent.jar"
 }
 
 variable "reregistration_event_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/ReRegistrationEvent/build/libs/ReRegistrationEvent.jar"
+  default = "../lambdas/ReRegistrationEvent/build/libs/ReRegistrationEvent.jar"
 }
 
 variable "search_patient_details_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/SearchPatientDetails/build/libs/SearchPatientDetails.jar"
+  default = "../lambdas/SearchPatientDetails/build/libs/SearchPatientDetails.jar"
 }
 
 variable "virus_scanner_event_lambda_jar_filename" {
   type    = string
-  default = "..lambdas/VirusScannedEvent/build/libs/VirusScannedEvent.jar"
+  default = "../lambdas/VirusScannedEvent/build/libs/VirusScannedEvent.jar"
 }
 
 variable "lambda_layers_filename" {
@@ -149,6 +162,11 @@ variable "cis2_provider_oidc_issuer" {
   default = ""
 }
 
+variable "NHS_CIS2_ENVIRONMENT" {
+  type    = string
+  default = ""
+}
+
 variable "cis2_provider_authorize_url" {
   type    = string
   default = ""
@@ -207,4 +225,9 @@ variable "quarantine_bucket_name" {
 variable "virus_scanner_is_stubbed" {
   type    = string
   default = "false"
+}
+
+variable "workspace_is_a_sandbox" {
+  type = bool
+  default = false
 }

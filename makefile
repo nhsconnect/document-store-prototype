@@ -128,11 +128,11 @@ build-ui: ## Build the UI
 
 .PHONY: build-api-jars
 build-api-jars: ## Build API JARs
-	./tasks _build-api-jars
+	bash ./scripts/tasks.sh _build-api-jars
 
 .PHONY: deploy-to-localstack
 deploy-to-localstack: ## Deploy to LocalStack
-	./tasks _deploy-to-localstack
+	bash ./scripts/tasks.sh _deploy-to-localstack
 
 .PHONY: start-ui
 start-ui: ## Start the UI
@@ -140,12 +140,52 @@ start-ui: ## Start the UI
 
 .PHONY: start-localstack
 start-localstack: ## Start LocalStack
-	./tasks start-localstack
+	bash ./scripts/tasks.sh start-localstack
 
 .PHONY: view-localstack-logs
 view-localstack-logs: ## View LocalStack logs
-	./tasks view-localstack-logs
+	bash ./scripts/tasks.sh view-localstack-logs
 
 .PHONY: help
 help: ## Show help
 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1,$$2}'
+
+.PHONY: plan-and-deploy-workspace
+plan-and-deploy-workspace:
+	bash ./scripts/sandbox.sh deploy_workspace_amplify_app
+
+# Builds the app and plans Terraform for Sandbox A
+.PHONY: plan-app-sanda
+plan-app-sanda:
+	bash ./scripts/sandbox.sh plan-app-sanda
+# Builds the app and plans Terraform for Sandbox B
+.PHONY: plan-app-sandb
+plan-app-sandb:
+	bash ./scripts/sandbox.sh plan-app-sandb
+
+# Deploy Terraform for Sandbox A
+.PHONY: deploy-app-sanda
+deploy-app-sanda:
+	bash ./scripts/sandbox.sh deploy-app-sanda
+# Deploy Terraform for Sandbox B
+.PHONY: deploy-app-sandb
+deploy-app-sandb:
+	bash ./scripts/sandbox.sh deploy-app-sandb
+
+# Deploy UI for Sandbox A
+.PHONY: deploy-ui-sanda
+deploy-ui-sanda:
+	bash ./scripts/sandbox.sh deploy-ui-sanda
+# Deploy UI for Sandbox B
+.PHONY: deploy-ui-sandb
+deploy-ui-sandb:
+	bash ./scripts/sandbox.sh deploy-ui-sandb
+
+# Destroy terraform Sandbox A
+.PHONY: destroy-sanda
+destroy-sanda:
+	bash ./scripts/sandbox.sh destroy-sanda
+# Destroy terraform Sandbox B
+.PHONY: destroy-sandb
+destroy-sandb:
+	bash ./scripts/sandbox.sh destroy-sandb

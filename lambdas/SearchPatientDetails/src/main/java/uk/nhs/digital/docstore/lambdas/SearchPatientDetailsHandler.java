@@ -57,10 +57,8 @@ public class SearchPatientDetailsHandler
     public APIGatewayProxyResponseEvent handleRequest(
             APIGatewayProxyRequestEvent requestEvent, Context context) {
         Tracer.setMDCContext(context);
-        LOGGER.debug("PATIENT DETAILS LAMBDA HIT");
         LOGGER.debug("Patient request:" + requestEvent);
 
-        LOGGER.debug("API Gateway event received - processing starts");
         var searchParameters = queryParametersFrom(requestEvent);
 
         try {
@@ -73,11 +71,9 @@ public class SearchPatientDetailsHandler
                                     patientSearchConfig, sensitiveIndex, authService);
             var patientDetails = pdsFhirClient.fetchPatientDetails(nhsNumber);
 
-            LOGGER.debug("Generating response body");
             var json = convertToJson(patientDetails);
             var body = getBody(json);
 
-            LOGGER.debug("Processing finished - about to return the response: \n " + body);
             var apiGatewayResponse = apiConfig.getApiGatewayResponse(200, body, "GET", null);
             LOGGER.debug("Response: " + apiGatewayResponse);
             return apiGatewayResponse;
@@ -88,7 +84,7 @@ public class SearchPatientDetailsHandler
             LOGGER.debug("Invalid NHS number - error: " + e.getMessage());
             return apiConfig.getApiGatewayResponse(400, getBodyWithError(e), "GET", null);
         } catch (Exception exception) {
-            LOGGER.debug("OH NO IT'S ALL ON FIRE - error: " + exception.getMessage());
+            LOGGER.debug("Unexpected error: " + exception.getMessage());
             return errorResponseGenerator.errorResponse(exception);
         }
     }

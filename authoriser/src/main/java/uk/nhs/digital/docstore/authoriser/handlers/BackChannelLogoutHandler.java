@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore.authoriser.handlers;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -27,9 +26,7 @@ public class BackChannelLogoutHandler extends BaseAuthRequestHandler
     public static final Logger LOGGER = LoggerFactory.getLogger(BackChannelLogoutHandler.class);
 
     public BackChannelLogoutHandler() {
-        this(
-                getLogoutTokenValidator(),
-                new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())));
+        this(getLogoutTokenValidator(), new DynamoDBSessionStore(createDynamoDbMapper()));
     }
 
     public BackChannelLogoutHandler(

@@ -74,22 +74,22 @@ function get_signout_url {
 
 function create_ui_config_file() {
   cp ui/src/config.js.example ui/src/config.js
-  user_pool="$(jq -r '.cognito_user_pool_ids.value[0]' "$1")"
-  user_pool_client_id="$(jq -r '.cognito_client_ids.value[0]' "$1")"
+  user_pool="$(jq -r '.cognito_user_pool_ids.value' "$1")"
+  user_pool_client_id="$(jq -r '.cognito_client_ids.value' "$1")"
   api_endpoint="$(jq -r '.api_gateway_url.value' "$1")"
-  cognito_domain="$(jq -r '.cognito_user_pool_domain.value[0]' "$1")"
-  cognito_redirect_signin="$(jq -r '.cognito_redirect_signin.value[0]' "$1")"
+  cognito_domain="$(jq -r '.cognito_user_pool_domain.value' "$1")"
+  cognito_redirect_signin="$(jq -r '.cognito_redirect_signin.value' "$1")"
   cognito_redirect_signout="$(jq -r $(get_signout_url) "$1")"
   amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
-  sed -i "s/%pool-id%/${user_pool}/" ui/src/config.js
-  sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
-  sed -i "s/%region%/${aws_region}/" ui/src/config.js
-  sed -i "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
-  sed -i "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
-  sed -i "s~%cognito-redirect-signin%~${cognito_redirect_signin}~" ui/src/config.js
-  sed -i "s~%cognito-redirect-signout%~${cognito_redirect_signout}~" ui/src/config.js
-  sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
-  sed -i "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
+  sed -i "" "s/%pool-id%/${user_pool}/" ui/src/config.js
+  sed -i "" "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
+  sed -i "" "s/%region%/${aws_region}/" ui/src/config.js
+  sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
+  sed -i "" "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
+  sed -i "" "s~%cognito-redirect-signin%~${cognito_redirect_signin}~" ui/src/config.js
+  sed -i "" "s~%cognito-redirect-signout%~${cognito_redirect_signout}~" ui/src/config.js
+  sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
+  sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
 }
 
 function create_cypress_config_file() {
@@ -112,25 +112,13 @@ function export_cypress_base_url() {
   echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com" >e2eTest/cypress.sh
 }
 
-function get_terraform_output() {
-  tf_init
-  terraform output -json >"../$1"
-  cd ..
-}
-
-function check_env {
-  if [[ -z "${ENVIRONMENT}" ]]; then
-    echo "Must set ENVIRONMENT"
-    exit 1
-  fi
-}
-
 function tf_init {
   check_env
   cd terraform
 
   terraform init \
     -backend-config ${ENVIRONMENT}.s3.tfbackend
+  terraform workspace select -or-create ${WORKSPACE}
 }
 
 function tf_init_virus_scanner {
@@ -156,23 +144,47 @@ function confirm_current_role {
   fi
 }
 
+function check_env {
+  if [[ -z "${ENVIRONMENT}" ]]; then
+    echo "Must set ENVIRONMENT"
+    exit 1
+  fi
+}
+
 function get_user_pool_id {
   echo "$(aws cognito-idp list-user-pools --region ${aws_region} --query 'UserPools[?Name==`doc-store-user-pool`].Id' --max-results 1 | jq -r '.[0]')"
+}
+
+function get_terraform_output() {
+  tf_init
+  terraform output -json >"../$1"
+  cd ..
 }
 
 function create_cognito_user {
   aws cognito-idp admin-create-user --user-pool-id $(get_user_pool_id) --username "$1" --temporary-password "$2"
 }
 
+function create_json_for_nhs_api_public_key() {
+  echo $(get_ssm_parameter /prs/${ENVIRONMENT}/user-input/pds-fhir-public-key) >ui/public/jwks.json
+}
+
+function create_workspace_ui_config_file() {
+  cp ui/src/config.js.example ui/src/config.js
+  api_endpoint="$(jq -r '.api_gateway_url.value' "$1")"
+  amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
+  sed -i "" "s/%region%/${aws_region}/" ui/src/config.js
+  sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
+  sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
+  sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
+}
+
+
 function delete_cognito_user {
   aws cognito-idp admin-delete-user --user-pool-id $(get_user_pool_id) --username "$1"
   if [[ $? -eq 0 ]]; then
     echo "User deleted"
   fi
-}
-
-function create_json_for_nhs_api_public_key() {
-  echo $(get_ssm_parameter /prs/${ENVIRONMENT}/user-input/pds-fhir-public-key) >ui/public/jwks.json
 }
 
 readonly command="$1"
@@ -363,3 +375,4 @@ virus-scanner-tf-apply)
   make "$@"
   ;;
 esac
+

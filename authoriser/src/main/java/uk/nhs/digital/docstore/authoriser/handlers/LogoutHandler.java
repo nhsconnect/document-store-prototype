@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore.authoriser.handlers;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
@@ -24,7 +23,7 @@ public class LogoutHandler extends BaseAuthRequestHandler
 
     @SuppressWarnings("unused")
     public LogoutHandler() {
-        this(new DynamoDBSessionStore(new DynamoDBMapper(getDynamodbClient())));
+        this(new DynamoDBSessionStore(createDynamoDbMapper()));
     }
 
     @Override

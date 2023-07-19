@@ -5,21 +5,21 @@ module "create_doc_ref_endpoint" {
   lambda_arn     = aws_lambda_function.create_doc_ref_lambda.invoke_arn
   http_method    = "POST"
   authorization  = "CUSTOM" //TODO
-authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
+  authorizer_id  = aws_api_gateway_authorizer.cis2_authoriser.id
 }
 
-module create_document_reference_alarms {
+module "create_document_reference_alarms" {
   source                     = "./modules/lambda_alarms"
   lambda_function_name       = aws_lambda_function.create_doc_ref_lambda.function_name
   lambda_timeout             = aws_lambda_function.create_doc_ref_lambda.timeout
   lambda_short_name          = "create_document_reference_handler"
   notification_sns_topic_arn = aws_sns_topic.alarm_notifications.arn
-  environment                = var.environment
+  environment                = terraform.workspace
 }
 
 resource "aws_lambda_function" "create_doc_ref_lambda" {
   handler       = "uk.nhs.digital.docstore.lambdas.CreateDocumentReferenceHandler::handleRequest"
-  function_name = "CreateDocumentReferenceHandler"
+  function_name = "${terraform.workspace}_CreateDocumentReferenceHandler"
   runtime       = "java11"
   role          = aws_iam_role.lambda_execution_role.arn
   timeout     = 15
@@ -32,9 +32,9 @@ resource "aws_lambda_function" "create_doc_ref_lambda" {
   ]
   environment {
     variables = merge({
-      AMPLIFY_BASE_URL = local.amplify_base_url
+      AMPLIFY_BASE_URL                = local.amplify_base_url
       TEST_DOCUMENT_STORE_BUCKET_NAME = aws_s3_bucket.test_document_store.bucket
-      VIRUS_SCANNER_IS_STUBBED  = var.virus_scanner_is_stubbed
+      VIRUS_SCANNER_IS_STUBBED        =  var.workspace_is_a_sandbox ? "true" : var.virus_scanner_is_stubbed
     }, local.common_environment_variables)
   }
 }
