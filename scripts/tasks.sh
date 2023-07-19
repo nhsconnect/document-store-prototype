@@ -74,22 +74,11 @@ function get_signout_url {
 
 function create_ui_config_file() {
   cp ui/src/config.js.example ui/src/config.js
-  user_pool="$(jq -r '.cognito_user_pool_ids.value' "$1")"
-  user_pool_client_id="$(jq -r '.cognito_client_ids.value' "$1")"
   api_endpoint="$(jq -r '.api_gateway_url.value' "$1")"
-  cognito_domain="$(jq -r '.cognito_user_pool_domain.value' "$1")"
-  cognito_redirect_signin="$(jq -r '.cognito_redirect_signin.value' "$1")"
-  cognito_redirect_signout="$(jq -r $(get_signout_url) "$1")"
   amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$1")"
-  sed -i "" "s/%pool-id%/${user_pool}/" ui/src/config.js
-  sed -i "" "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
-  sed -i "" "s/%region%/${aws_region}/" ui/src/config.js
-  sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
-  sed -i "" "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
-  sed -i "" "s~%cognito-redirect-signin%~${cognito_redirect_signin}~" ui/src/config.js
-  sed -i "" "s~%cognito-redirect-signout%~${cognito_redirect_signout}~" ui/src/config.js
-  sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
-  sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
+  sed -i "s/%region%/${aws_region}/" ui/src/config.js
+  sed -i "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
+  sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
 }
 
 function create_cypress_config_file() {
