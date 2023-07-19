@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { ButtonLink } from "nhsuk-react-components";
 import { useBaseAPIUrl, useFeatureToggle } from "../../providers/configProvider/ConfigProvider";
+import { useNavigate } from "react-router";
+import routes from "../../enums/routes";
+import Spinner from "../../components/spinner/Spinner";
 
 const StartPage = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
-
-    return (
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    return !loading ? (
         <>
             <h1>Inactive Patient Record Administration</h1>
             <p>
@@ -35,8 +39,18 @@ const StartPage = () => {
             </p>
             <h2>Before You Start</h2>
             <p>You can only use this service if you have a valid NHS smartcard.</p>
-            <ButtonLink href={isOIDCAuthActive ? "/home" : `${baseAPIUrl}/Auth/Login`}>Start now</ButtonLink>
+            <ButtonLink
+                onClick={(e) => {
+                    e.preventDefault();
+                    setLoading(true);
+                    isOIDCAuthActive ? navigate(routes.HOME) : window.location.replace(`${baseAPIUrl}/Auth/Login`);
+                }}
+            >
+                Start now
+            </ButtonLink>
         </>
+    ) : (
+        <Spinner status="Logging in..." />
     );
 };
 
