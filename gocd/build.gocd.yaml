@@ -89,7 +89,7 @@ common:
       - exec:
           command: dojo
           arguments:
-            - ./tasks tf_plan
+            - ./scripts/tasks tf_plan
   deploy_terraform: &deploy_terraform
     tasks:
       - fetch:
@@ -113,7 +113,7 @@ common:
       - exec:
           command: dojo
           arguments:
-            - ./tasks tf_apply
+            - ./scripts/tasks tf_apply
   deploy_ui: &deploy_ui
     tasks:
       - exec:
@@ -121,40 +121,40 @@ common:
           arguments:
             - -c
             - Dojofile-node
-            - ./tasks install-ui-dependencies
+            - ./scripts/tasks install-ui-dependencies
       - exec:
           command: dojo
           arguments:
-            - ./tasks configure-ui
-      - exec:
-          command: dojo
-          arguments:
-            - -c
-            - Dojofile-node
-            - ./tasks test-ui
+            - ./scripts/tasks configure-ui
       - exec:
           command: dojo
           arguments:
             - -c
             - Dojofile-node
-            - ./tasks build-ui
+            - ./scripts/tasks test-ui
       - exec:
           command: dojo
           arguments:
-            - ./tasks deploy-ui
+            - -c
+            - Dojofile-node
+            - ./scripts/tasks build-ui
+      - exec:
+          command: dojo
+          arguments:
+            - ./scripts/tasks deploy-ui
     timeout: 30
   e2e_test: &e2e_test
     tasks:
       - exec:
           command: dojo
           arguments:
-            - ./tasks configure-e2e-test
+            - ./scripts/tasks configure-e2e-test
       - exec:
           command: dojo
           arguments:
             - -c
             - Dojofile-node
-            - ./tasks install-e2e-test-dependencies && ./tasks run-e2e-test
+            - ./scripts/tasks install-e2e-test-dependencies && ./scripts/tasks run-e2e-test
     artifacts:
       - test:
           source: e2eTest/cypress/screenshots
@@ -179,7 +179,6 @@ pipelines:
       - build:
           environment_variables:
             ENVIRONMENT: dev
-            WORKSPACE: dev
             NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
@@ -196,6 +195,7 @@ pipelines:
             plan: *plan_terraform
       - deploy_terraform:
           environment_variables:
+            WORKSPACE: dev
             ENVIRONMENT: dev
             NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
@@ -204,6 +204,7 @@ pipelines:
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: dev
+            WORKSPACE: dev
             NHS_CIS2_ENVIRONMENT: development
             OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
@@ -248,7 +249,7 @@ pipelines:
                 - exec:
                     command: dojo
                     arguments:
-                      - ./tasks run-integration-test
+                      - ./scripts/tasks run-integration-test
       - e2e_tests:
           environment_variables:
             ENVIRONMENT: dev
