@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "document_store" {
-  bucket = "document-store"
+  bucket = "${terraform.workspace}-arf-document-store"
   count  = var.workspace_is_a_sandbox ? 0 : 1
 
   lifecycle {
@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
 }
 
 resource "aws_kms_alias" "document_store_encryption_key_alias" {
-  name          = "alias/document-store-bucket-key-ncryption-${terraform.workspace}"
+  name          = "alias/document-store-bucket-key-encryption-${terraform.workspace}"
   target_key_id = aws_kms_key.document_store_encryption_key[0].id
   count         = var.workspace_is_a_sandbox ? 0 : 1
 }
