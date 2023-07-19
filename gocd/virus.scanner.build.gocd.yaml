@@ -9,7 +9,7 @@ common:
       - exec:
           command: dojo
           arguments:
-            - ./tasks virus-scanner-tf-plan
+            - ./scripts/tasks.sh virus-scanner-tf-plan
   deploy_terraform: &deploy_terraform
     tasks:
       - fetch:
@@ -21,7 +21,7 @@ common:
       - exec:
           command: dojo
           arguments:
-            - ./tasks virus-scanner-tf-apply
+            - ./scripts/tasks.sh virus-scanner-tf-apply
 pipelines:
   "virus-scanner.dev":
     group: access-request-fulfilment
