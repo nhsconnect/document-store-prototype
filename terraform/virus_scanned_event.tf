@@ -18,6 +18,7 @@ resource "aws_lambda_function" "virus_scanned_event_lambda" {
       DYNAMODB_ENDPOINT      = var.dynamodb_endpoint
       SQS_AUDIT_QUEUE_URL    = aws_sqs_queue.sensitive_audit.url
       SQS_ENDPOINT           = var.sqs_endpoint
+      WORKSPACE              = terraform.workspace
     }
   }
 }
