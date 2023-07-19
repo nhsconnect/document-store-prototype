@@ -115,9 +115,9 @@ function export_cypress_base_url() {
 function tf_init {
   check_env
   cd terraform
-  terraform workspace list
   terraform init \
     -backend-config ${ENVIRONMENT}.s3.tfbackend
+  terraform workspace list
   echo ${WORKSPACE}
   terraform workspace select -or-create ${WORKSPACE}
 }
