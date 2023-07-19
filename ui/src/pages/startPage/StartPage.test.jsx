@@ -2,40 +2,22 @@ import { render, screen } from "@testing-library/react";
 import StartPage from "./StartPage";
 import userEvent from "@testing-library/user-event";
 import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
-import { MemoryRouter, useNavigate } from "react-router";
-import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 
 jest.mock("../../providers/configProvider/ConfigProvider");
-jest.mock("react-router", () => ({
-    ...jest.requireActual("react-router"),
-    useNavigate: jest.fn(),
-}));
 
-const renderPage = () =>
-    render(
-        <MemoryRouter>
-            <StartPage />
-        </MemoryRouter>
-    );
 describe("StartPage", () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
 
     it("renders the page header", () => {
-        const navigateMock = jest.fn();
-        useNavigate.mockReturnValue(navigateMock);
-
-        renderPage();
+        render(<StartPage />);
 
         expect(screen.getByRole("heading", { name: "Inactive Patient Record Administration" })).toBeInTheDocument();
     });
 
     it("renders service info", () => {
-        const navigateMock = jest.fn();
-        useNavigate.mockReturnValue(navigateMock);
-
-        renderPage();
+        render(<StartPage />);
 
         expect(screen.getByText(/When a patient is inactive/)).toBeInTheDocument();
         expect(screen.getByText(/General Practice Staff/)).toBeInTheDocument();
@@ -43,10 +25,7 @@ describe("StartPage", () => {
     });
 
     it("renders service issue guidance with a link to service desk that opens in a new tab", () => {
-        const navigateMock = jest.fn();
-        useNavigate.mockReturnValue(navigateMock);
-
-        renderPage();
+        render(<StartPage />);
 
         expect(screen.getByText(/If there is an issue/)).toBeInTheDocument();
         const nationalServiceDeskLink = screen.getByRole("link", { name: /National Service Desk/ });
@@ -58,8 +37,6 @@ describe("StartPage", () => {
     });
 
     it("renders a 'Before you start' section", () => {
-        const navigateMock = jest.fn();
-        useNavigate.mockReturnValue(navigateMock);
         render(<StartPage />);
 
         expect(screen.getByRole("heading", { name: "Before You Start" })).toBeInTheDocument();
