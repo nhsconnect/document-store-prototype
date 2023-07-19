@@ -36,6 +36,7 @@ const StartPage = () => {
             <h2>Before You Start</h2>
             <p>You can only use this service if you have a valid NHS smartcard.</p>
             <ButtonLink
+                role="button"
                 onClick={(e) => {
                     e.preventDefault();
                     setLoading(true);

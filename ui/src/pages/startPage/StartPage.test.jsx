@@ -1,5 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import StartPage from "./StartPage";
+import userEvent from "@testing-library/user-event";
+import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 
 jest.mock("../../providers/configProvider/ConfigProvider");
 
@@ -41,28 +43,28 @@ describe("StartPage", () => {
         expect(screen.getByText(/valid NHS smartcard/)).toBeInTheDocument();
     });
 
-    // it("renders a button with a href to the auth login endpoint it is clicked", () => {
-    //     const baseAPIUrl = "https://api.url";
+    it("renders a button with a valid redirect url to the auth login endpoint", () => {
+        const baseUrl = "http://dummy.com";
+        const apiName = "doc-store-api";
+        useBaseAPIUrl.mockReturnValue(baseUrl);
 
-    //     useFeatureToggle.mockReturnValue(false);
-    //     useBaseAPIUrl.mockReturnValue(baseAPIUrl);
+        render(<StartPage />);
+        userEvent.click(screen.getByRole("button", { name: "Start now" }));
+        expect(useBaseAPIUrl).toHaveBeenCalledWith(apiName);
+    });
 
-    //     render(<StartPage />);
+    it("renders a spinner when redirect button is clicked", () => {
+        const mockWindow = Object.create(window);
+        const baseUrl = "http://dummy.com";
+        Object.defineProperty(mockWindow, "location", {
+            value: {
+                href: baseUrl,
+            },
+        });
 
-    //     //Click button
+        render(<StartPage />);
+        userEvent.click(screen.getByRole("button", { name: "Start now" }));
 
-    //     /*
-    //     window = Object.create(window);
-    //     const url = "http://dummy.com";
-    //     Object.defineProperty(window, 'location', {
-    //     value: {
-    //         href: url
-    //     },
-    //     writable: true // possibility to override
-    //     });
-    //     expect(window.location.href).toEqual(url);
-    //     */
-
-    //     expect(screen.getByRole("button", { name: "Start now" })).toHaveAttribute("href", `${baseAPIUrl}/Auth/Login`);
-    // });
+        expect(screen.getByText(/Logging in.../)).toBeInTheDocument();
+    });
 });
