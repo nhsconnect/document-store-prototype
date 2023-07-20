@@ -6,6 +6,7 @@ public enum PermittedOrgTypes {
     DEV("Dev", "RO198");
     public final String orgDescription;
     public final String roleCode;
+
     PermittedOrgTypes(String orgDescription, String roleCode) {
         this.orgDescription = orgDescription;
         this.roleCode = roleCode;
