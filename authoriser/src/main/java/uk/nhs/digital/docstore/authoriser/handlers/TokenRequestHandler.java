@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,9 +142,11 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 "Responding with auth cookies for session with ID ending in: "
                         + sessionId.substring(sessionId.length() - 4));
         var response = new JSONObject();
-        response.put("SessionId", sessionIdCookie);
-        response.put("RoleId", roleCookie);
-        response.put("State", stateCookie);
+        var organisations = new ArrayList<String>();
+        organisations.add("org1");
+        organisations.add("org2");
+        response.put("SessionId", sessionId);
+        response.put("Organisations", organisations);
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
