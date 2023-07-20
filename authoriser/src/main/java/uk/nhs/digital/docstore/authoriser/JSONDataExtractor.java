@@ -3,12 +3,9 @@ package uk.nhs.digital.docstore.authoriser;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
+import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgTypes;
 
 public class JSONDataExtractor {
-
-    private final String GP_CODE = "RO76";
-    private final String PCSE_CODE = "RO157";
-    private final String DEV_CODE = "RO198";
 
     public List<String> getOdsCodesFromUserInfo(JSONObject userInfo) {
         ArrayList<String> codes = new ArrayList<>();
@@ -33,9 +30,9 @@ public class JSONDataExtractor {
             var jsonRole = jsonRoles.getJSONObject(i);
             var roleCode = jsonRole.getString("id");
 
-            if (roleCode.equals(GP_CODE)
-                    || roleCode.equals(PCSE_CODE)
-                    || roleCode.equals(DEV_CODE)) {
+            if (roleCode.equals(PermittedOrgTypes.PCSE.roleCode)
+                    || roleCode.equals(PermittedOrgTypes.GPP.roleCode)
+                    || roleCode.equals(PermittedOrgTypes.DEV.roleCode)) {
                 roleCodes.add(roleCode);
             }
         }
