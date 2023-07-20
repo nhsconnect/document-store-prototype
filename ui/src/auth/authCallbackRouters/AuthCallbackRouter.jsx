@@ -19,11 +19,11 @@ const AuthCallbackRouter = () => {
                 withCredentials: true,
             })
             .then((res) => {
-                const { sessionId, organisations } = res.data;
+                const { SessionId, Organisations } = res.data;
                 setSession({
                     ...session,
-                    sessionId,
-                    organisations,
+                    sessionId: SessionId,
+                    organisations: Organisations,
                     isLoggedIn: true,
                 });
                 if (session.orgs) {
