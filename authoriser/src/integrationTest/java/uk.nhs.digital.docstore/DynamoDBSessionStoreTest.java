@@ -14,16 +14,25 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.helpers.AWSServiceContainer;
 import uk.nhs.digital.docstore.helpers.DynamoDBHelper;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+
+@ExtendWith(SystemStubsExtension.class)
 
 public class DynamoDBSessionStoreTest {
     private final AWSServiceContainer aws = new AWSServiceContainer();
     private final DynamoDBHelper dynamoDBHelper = new DynamoDBHelper(aws.getDynamoDBClient());
     private final DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(aws.getDynamoDBClient());
     private final DynamoDBSessionStore db = new DynamoDBSessionStore(dynamoDBMapper);
+    @SystemStub
+    private EnvironmentVariables environmentVariables = new EnvironmentVariables()
+            .set("WORKSPACE", "dev");
 
     @BeforeEach
     public void cleanUp() {
