@@ -275,7 +275,7 @@ extract-json-terraform-output)
   ;;
 run-integration-test)
   assume_test_runner_role
-  gradle integrationTest
+  WORKSPACE=${WORKSPACE} gradle integrationTest
   clear_assumed_iam_role
   ;;
 install-e2e-test-dependencies)

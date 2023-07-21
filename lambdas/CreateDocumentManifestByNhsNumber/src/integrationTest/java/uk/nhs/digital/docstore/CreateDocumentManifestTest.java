@@ -45,8 +45,6 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
 
     @BeforeEach
     public void setUp() {
-        var workspace = System.getenv("WORKSPACE");
-        System.out.println("workspace is:" + workspace);
         metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         documentStore = new DocumentStore(aws.getS3Client());
         DocumentZipTraceStore zipTraceStore =
