@@ -27,7 +27,7 @@ public class DynamoDBSessionStoreTest {
 
     @BeforeEach
     public void cleanUp() {
-        String tableName = "ARFAuth";
+        String tableName = "dev_ARFAuth";
         dynamoDBHelper.refreshTable(tableName);
     }
 
