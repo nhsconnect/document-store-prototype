@@ -22,8 +22,8 @@ describe("downloads and deletes docs", () => {
         cy.findByRole("button", { name: "Start now" }).click();
 
         if (oidcProvider === "cis2devoidc") {
-            cy.findByPlaceholderText(" User Name ").type(username);
-            cy.findByPlaceholderText(" Password ").type(password);
+            cy.findByText("User Name").type(username);
+            cy.findByText("Password").type(password);
             cy.findByRole("button", { name: "Continue" }).click();
         }
 
