@@ -26,7 +26,7 @@ const AuthCallbackRouter = () => {
                     organisations: Organisations,
                     isLoggedIn: true,
                 });
-                if (session.orgs) {
+                if (session.organisations) {
                     navigate(routes.ORG_SELECT);
                 } else {
                     navigate(routes.HOME);
