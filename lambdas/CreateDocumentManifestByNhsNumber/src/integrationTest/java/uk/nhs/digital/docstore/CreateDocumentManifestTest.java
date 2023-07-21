@@ -30,8 +30,12 @@ import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.lambdas.CreateDocumentManifestByNhsNumberHandler;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(SystemStubsExtension.class)
 public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
     @Mock private Context context;
 
@@ -42,6 +46,10 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
     private DocumentStore documentStore;
 
     private CreateDocumentManifestByNhsNumberHandler createDocumentManifestByNhsNumberHandler;
+
+    @SystemStub
+    private EnvironmentVariables environmentVariables = new EnvironmentVariables()
+            .set("WORKSPACE", "dev");
 
     @BeforeEach
     public void setUp() {
