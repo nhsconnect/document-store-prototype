@@ -213,6 +213,7 @@ pipelines:
       - app_integration_tests:
           environment_variables:
             ENVIRONMENT: dev
+            WORKSPACE: dev
             NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
