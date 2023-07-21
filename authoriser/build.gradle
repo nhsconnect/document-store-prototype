@@ -81,6 +81,9 @@ spotless {
 }
 
 task integrationTest(type: Test) {
+	inputs.property("WORKSPACE") {
+		System.getenv("WORKSPACE")
+	}
 	group 'verification'
 	description 'Run all end-to-end tests against LocalStack.'
 	testClassesDirs = sourceSets.integrationTest.output.classesDirs

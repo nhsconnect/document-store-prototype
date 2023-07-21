@@ -9,7 +9,7 @@ import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.time.Instant;
 import java.util.UUID;
 
-@DynamoDBTable(tableName = "dev_ARFAuth")
+@DynamoDBTable(tableName = "ARFAuth")
 public class Session {
     private String pk;
     private UUID id;
