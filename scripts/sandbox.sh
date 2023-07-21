@@ -33,8 +33,8 @@ function run_sandbox() {
       fi
       printf "\n${yellow} Building lambda layers...\n\n${normal}"
       cd ..
-      ./gradlew app:build || (printf "\n${yellow} Formatting code...\n\n${normal}" && ./gradlew app:spotlessApply)
-      ./gradlew authoriser:build && ./gradlew authoriser:spotlessApply
+      ./gradlew app:spotlessApply && ./gradlew app:build
+      ./gradlew authoriser:spotlessApply && ./gradlew authoriser:build 
       build_lambdas
       local LAMBDA_STATE=$?
       echo $LAMBDA_STATE
@@ -100,6 +100,15 @@ function find_workspace(){
 }
 
 function build_lambdas() {
+    ./gradlew lambdas:CreateDocumentManifestByNhsNumber:spotlessApply
+    ./gradlew lambdas:CreateDocumentReference:spotlessApply
+    ./gradlew lambdas:DeleteDocumentReference:spotlessApply
+    ./gradlew lambdas:DocumentReferenceSearch:spotlessApply
+    ./gradlew lambdas:FakeVirusScannedEvent:spotlessApply
+    ./gradlew lambdas:ReRegistrationEvent:spotlessApply
+    ./gradlew lambdas:SearchPatientDetails:spotlessApply
+    ./gradlew lambdas:VirusScannedEvent:spotlessApply
+    
     (./gradlew lambdas:CreateDocumentManifestByNhsNumber:build &&
     ./gradlew lambdas:CreateDocumentReference:build &&
     ./gradlew lambdas:DeleteDocumentReference:build &&
