@@ -31,6 +31,12 @@ dependencies {
 
 	implementation 'com.auth0:java-jwt:4.2.1'
 
+	compileOnly 'org.projectlombok:lombok:1.18.28'
+	annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.28'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+
 	integrationTestImplementation(testFixtures(project(":app")))
 	integrationTestImplementation 'org.json:json:20230227'
 	integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
