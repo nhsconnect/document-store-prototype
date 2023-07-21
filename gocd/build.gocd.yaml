@@ -252,6 +252,7 @@ pipelines:
                       - ./scripts/tasks.sh run-integration-test
       - e2e_tests:
           environment_variables:
+            WORKSPACE: dev
             ENVIRONMENT: dev
             NHS_CIS2_ENVIRONMENT: development
             OIDC_PROVIDER_ID: "cis2devoidc"
