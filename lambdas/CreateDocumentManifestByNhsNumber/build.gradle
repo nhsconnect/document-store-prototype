@@ -37,7 +37,6 @@ dependencies {
 	integrationTestImplementation 'org.mockito:mockito-core:4.0.0'
 	integrationTestImplementation 'org.assertj:assertj-core:3.21.0'
 	integrationTestImplementation 'com.jayway.jsonpath:json-path:2.8.0'
-	integrationTestImplementation 'uk.org.webcompere:system-stubs-jupiter:2.0.1'
 }
 
 java {

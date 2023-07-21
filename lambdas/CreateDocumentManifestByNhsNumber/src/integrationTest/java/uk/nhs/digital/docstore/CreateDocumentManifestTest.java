@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.auth0.jwt.JWT;
@@ -30,12 +31,8 @@ import uk.nhs.digital.docstore.helpers.DocumentMetadataBuilder;
 import uk.nhs.digital.docstore.lambdas.CreateDocumentManifestByNhsNumberHandler;
 import uk.nhs.digital.docstore.model.DocumentLocation;
 import uk.nhs.digital.docstore.model.NhsNumber;
-import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
-import uk.org.webcompere.systemstubs.jupiter.SystemStub;
-import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 @ExtendWith(MockitoExtension.class)
-@ExtendWith(SystemStubsExtension.class)
 public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
     @Mock private Context context;
 
@@ -47,16 +44,13 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
 
     private CreateDocumentManifestByNhsNumberHandler createDocumentManifestByNhsNumberHandler;
 
-    @SystemStub
-    private EnvironmentVariables environmentVariables = new EnvironmentVariables()
-            .set("WORKSPACE", "dev");
 
     @BeforeEach
     public void setUp() {
-        metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+        metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient(), DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix("dev_").config()));
         documentStore = new DocumentStore(aws.getS3Client());
         DocumentZipTraceStore zipTraceStore =
-                new DocumentZipTraceStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+                new DocumentZipTraceStore(new DynamoDBMapper(aws.getDynamoDBClient(), DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix("dev_").config()));
         createDocumentManifestByNhsNumberHandler =
                 new CreateDocumentManifestByNhsNumberHandler(
                         new StubbedApiConfig("http://ui-url"),
