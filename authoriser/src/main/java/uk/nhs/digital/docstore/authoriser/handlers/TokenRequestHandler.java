@@ -20,6 +20,7 @@ import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.config.Tracer;
 import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
+import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
@@ -142,9 +143,10 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 "Responding with auth cookies for session with ID ending in: "
                         + sessionId.substring(sessionId.length() - 4));
         var response = new JSONObject();
-        var organisations = new ArrayList<String>();
-        organisations.add("org1");
-        organisations.add("org2");
+        var organisations = new ArrayList<Organisation>();
+        organisations.add(new Organisation("Radyr GP", "A100", "GPP"));
+        organisations.add(new Organisation("Cardiff Health Clinic", "A100", "GPP"));
+        organisations.add(new Organisation("National Care Support", "A410", "PCSE"));
         response.put("SessionId", sessionId);
         response.put("Organisations", organisations);
 

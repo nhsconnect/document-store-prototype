@@ -19,7 +19,7 @@ public class PolicyDocumentGeneratorTest {
                 List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
         var authConfig = new AuthConfig(pcseResources, clinicalResources);
 
-        var organisations = List.of(new Organisation("X4S4L", "some-org-name"));
+        var organisations = List.of(new Organisation("some-org-name", "X4S4L", "some-org-type"));
         var roles = List.of(new Role("some-role-code"));
 
         var generatePolicy = new PolicyDocumentGenerator(authConfig, organisations, roles);
@@ -52,7 +52,8 @@ public class PolicyDocumentGeneratorTest {
                 List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
         var authConfig = new AuthConfig(pcseResources, clinicalResources);
 
-        var organisations = List.of(new Organisation("some-org-code", "some-org-name"));
+        var organisations =
+                List.of(new Organisation("some-org-code", "some-org-name", "some-org-type"));
         var roles = List.of(new Role("role:role:R8008"));
 
         var generatePolicy = new PolicyDocumentGenerator(authConfig, organisations, roles);
@@ -85,7 +86,8 @@ public class PolicyDocumentGeneratorTest {
                 List.of("api-gateway-invocation-arn-3", "api-gateway-invocation-arn-4");
         var authConfig = new AuthConfig(pcseResources, clinicalResources);
 
-        var organisations = List.of(new Organisation("some-org-code", "some-org-name"));
+        var organisations =
+                List.of(new Organisation("some-org-code", "some-org-name", "some-org-type"));
         var roles = List.of(new Role("some-role-code"));
 
         var generatePolicy = new PolicyDocumentGenerator(authConfig, organisations, roles);
