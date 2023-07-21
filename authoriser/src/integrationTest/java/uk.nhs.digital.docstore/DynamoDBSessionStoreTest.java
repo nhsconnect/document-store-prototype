@@ -81,7 +81,6 @@ public class DynamoDBSessionStoreTest {
 
         var sessionOne = Session.create(UUID.randomUUID(), timeToExist, subject, oidcSessionIDOne);
         var sessionTwo = Session.create(UUID.randomUUID(), timeToExist, subject, oidcSessionIDTwo);
-        System.out.println(sessionOne);
 
         dynamoDBMapper.save(sessionOne);
         dynamoDBMapper.save(sessionTwo);
