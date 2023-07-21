@@ -23,7 +23,7 @@ class AccessTokenClaimMapperTest {
     void shouldGetAssociatedOrganisationsFromTokenClaims()
             throws JsonProcessingException, InvalidAccessTokenException {
         var associatedOrganisations =
-                new AssociatedOrganisations(List.of(new Organisation("test", "test")));
+                new AssociatedOrganisations(List.of(new Organisation("test", "test", "test")));
 
         var claim = objectMapper.writeValueAsString(associatedOrganisations);
         var token = JWT.create().withClaim(ASSOCIATED_ORG, claim).sign(Algorithm.none());

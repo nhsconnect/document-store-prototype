@@ -14,11 +14,14 @@ class OrganisationTest {
         var mapper = new ObjectMapper();
 
         var organisation = new JSONObject();
-        organisation.put("org_code", "some-code");
+        organisation.put("ods_code", "some-code");
         organisation.put("org_name", "some-name");
+        organisation.put("org_type", "some-type");
+
+
 
         var expected = mapper.readValue(organisation.toString(), Organisation.class);
 
-        Assertions.assertEquals(expected.getOrgCode(), "some-code");
+        Assertions.assertEquals(expected.getOdsCode(), "some-code");
     }
 }
