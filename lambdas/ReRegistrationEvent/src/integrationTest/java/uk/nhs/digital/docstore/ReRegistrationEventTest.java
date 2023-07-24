@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -43,7 +42,7 @@ public class ReRegistrationEventTest extends BaseDocumentStoreTest {
 
     @BeforeEach
     void setUp() {
-        metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+        metadataStore = new DocumentMetadataStore(dynamoDBHelper.getMapper());
         documentStore = new DocumentStore(aws.getS3Client());
         deletionService =
                 new DocumentDeletionService(

@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.jayway.jsonpath.JsonPath;
@@ -43,8 +42,7 @@ public class CreateDocumentReferenceTest extends BaseDocumentStoreTest {
                 new CreateDocumentReferenceHandler(
                         new StubbedApiConfig("http://ui-url"),
                         new DocumentReferenceService(
-                                new DocumentMetadataStore(
-                                        new DynamoDBMapper(aws.getDynamoDBClient())),
+                                new DocumentMetadataStore(dynamoDBHelper.getMapper()),
                                 auditPublisher,
                                 new DocumentMetadataSerialiser()),
                         new DocumentStore(aws.getS3Client()),

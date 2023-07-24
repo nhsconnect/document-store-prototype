@@ -12,9 +12,10 @@ public abstract class BaseDocumentStoreTest {
     protected String documentStoreBucketName;
     protected AWSServiceContainer aws = new AWSServiceContainer();
 
+    protected final DynamoDBHelper dynamoDBHelper = new DynamoDBHelper(aws.getDynamoDBClient());
+
     @BeforeEach
     void refreshEnvironment() {
-        var dynamoDBHelper = new DynamoDBHelper(aws.getDynamoDBClient());
         dynamoDBHelper.refreshTable(metadataTableName);
         dynamoDBHelper.refreshTable(manifestTableName);
 
