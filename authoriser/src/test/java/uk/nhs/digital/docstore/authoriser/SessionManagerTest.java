@@ -67,7 +67,7 @@ class SessionManagerTest {
                 .thenReturn(new ArrayList<>(Arrays.asList("Org1", "Org2")));
         Mockito.when(odsApiRequestClient.getResponse("Org1")).thenReturn(new JSONObject());
         Mockito.when(odsApiRequestClient.getResponse("Org2")).thenReturn(new JSONObject());
-        Mockito.when(jsonDataExtractor.getGpAndPcseRolesFromOrgData(Mockito.any(JSONObject.class)))
+        Mockito.when(jsonDataExtractor.getProspectiveOrgs(Mockito.any(JSONObject.class)))
                 .thenReturn(new ArrayList<>(Collections.singletonList("role1")));
 
         var sessionManager =
@@ -110,7 +110,7 @@ class SessionManagerTest {
                 .thenReturn(new ArrayList<>(Arrays.asList("Org1", "Org2")));
         Mockito.when(odsApiRequestClient.getResponse("Org1")).thenReturn(new JSONObject());
         Mockito.when(odsApiRequestClient.getResponse("Org2")).thenReturn(new JSONObject());
-        Mockito.when(jsonDataExtractor.getGpAndPcseRolesFromOrgData(Mockito.any(JSONObject.class)))
+        Mockito.when(jsonDataExtractor.getProspectiveOrgs(Mockito.any(JSONObject.class)))
                 .thenReturn(new ArrayList<>());
 
         var sessionManager =

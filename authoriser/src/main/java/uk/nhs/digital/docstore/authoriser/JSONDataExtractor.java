@@ -2,8 +2,10 @@ package uk.nhs.digital.docstore.authoriser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.json.JSONObject;
-import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgTypes;
+import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
+import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 
 public class JSONDataExtractor {
 
@@ -21,7 +23,7 @@ public class JSONDataExtractor {
         return codes;
     }
 
-    public List<String> getGpAndPcseRolesFromOrgData(JSONObject orgData) {
+    public Optional<ProspectiveOrg> getProspectiveOrgs(JSONObject orgData) {
         ArrayList<String> roleCodes = new ArrayList<>();
         var jsonRoles =
                 orgData.getJSONObject("Organisation").getJSONObject("Roles").getJSONArray("Role");
@@ -30,12 +32,23 @@ public class JSONDataExtractor {
             var jsonRole = jsonRoles.getJSONObject(i);
             var roleCode = jsonRole.getString("id");
 
-            if (roleCode.equals(PermittedOrgTypes.PCSE.roleCode)
-                    || roleCode.equals(PermittedOrgTypes.GPP.roleCode)
-                    || roleCode.equals(PermittedOrgTypes.DEV.roleCode)) {
-                roleCodes.add(roleCode);
+            if (roleCode.equals(PermittedOrgs.PCSE.roleCode)) {
+                var orgName = orgData.getJSONObject("Organisation").getString("Name");
+                Optional<ProspectiveOrg> allowedOrg =
+                        Optional.of(new ProspectiveOrg("TempCode", orgName, PermittedOrgs.PCSE));
+                return allowedOrg;
+            } else if (roleCode.equals(PermittedOrgs.GPP.roleCode)) {
+                var orgName = orgData.getJSONObject("Organisation").getString("Name");
+                Optional<ProspectiveOrg> allowedOrg =
+                        Optional.of(new ProspectiveOrg("TempCode", orgName, PermittedOrgs.GPP));
+                return allowedOrg;
+            } else if (roleCode.equals(PermittedOrgs.DEV.roleCode)) {
+                var orgName = orgData.getJSONObject("Organisation").getString("Name");
+                Optional<ProspectiveOrg> allowedOrg =
+                        Optional.of(new ProspectiveOrg("TempCode", orgName, PermittedOrgs.GPP));
+                return allowedOrg;
             }
         }
-        return roleCodes;
+        return Optional.empty();
     }
 }

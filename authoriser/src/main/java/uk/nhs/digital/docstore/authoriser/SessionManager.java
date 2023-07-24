@@ -1,7 +1,7 @@
 package uk.nhs.digital.docstore.authoriser;
 
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
@@ -17,7 +17,6 @@ public class SessionManager {
 
     private final ODSAPIRequestClient odsApiClient;
 
-    // for live code (we don't need to know about the JSON extractor or ODS client)
     public SessionManager(OIDCClient authenticationClient, SessionStore sessionStore) {
         this(
                 authenticationClient,
@@ -26,7 +25,6 @@ public class SessionManager {
                 new ODSAPIRequestClient());
     }
 
-    // for testing
     public SessionManager(
             OIDCClient authenticationClient,
             SessionStore sessionStore,
@@ -49,21 +47,21 @@ public class SessionManager {
         System.out.println("user info object: " + userInfo);
         var odsCodes = jsonDataExtractor.getOdsCodesFromUserInfo(userInfo);
 
-        HashMap<String, List<String>> gpAndPcseOrgs = new HashMap<>();
+        var prospectiveOrgs = new ArrayList<ProspectiveOrg>();
 
         odsCodes.forEach(
-                code -> {
-                    var orgData = odsApiClient.getResponse(code);
-                    var orgRoles = jsonDataExtractor.getGpAndPcseRolesFromOrgData(orgData);
-                    if (!orgRoles.isEmpty()) {
-                        gpAndPcseOrgs.put(code, orgRoles);
+                odsCode -> {
+                    var orgData = odsApiClient.getResponse(odsCode);
+                    var prospectiveOrg = jsonDataExtractor.getProspectiveOrgs(orgData);
+                    if (!prospectiveOrg.isEmpty()) {
+                        prospectiveOrgs.add(prospectiveOrg.get());
                     }
                 });
 
-        if (!gpAndPcseOrgs.isEmpty()) {
+        if (!prospectiveOrgs.isEmpty()) {
             sessionStore.save(session);
         }
 
-        return new LoginEventResponse(session, gpAndPcseOrgs);
+        return new LoginEventResponse(session, prospectiveOrgs);
     }
 }
