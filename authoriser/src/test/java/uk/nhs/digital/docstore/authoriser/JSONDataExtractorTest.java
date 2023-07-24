@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collections;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 
 class JSONDataExtractorTest {
 
@@ -194,7 +195,9 @@ class JSONDataExtractorTest {
         String singleRoleOrg =
                 "{\n"
                         + "    \"Organisation\": {\n"
-                        + "        \"Name\": \"" + expectedName + "\",\n"
+                        + "        \"Name\": \""
+                        + expectedName
+                        + "\",\n"
                         + "        \"Date\": [\n"
                         + "            {\n"
                         + "                \"Type\": \"Operational\",\n"
@@ -332,9 +335,9 @@ class JSONDataExtractorTest {
         var roleCodes = dataExtractor.getProspectiveOrgs(orgData);
 
         assert (roleCodes.isPresent());
-        ProspectiveOrg org = roleCodes.get();
+        var org = roleCodes.get();
         assert (org.getOrgName()).equals(expectedName);
-        assert (roleCodes.get()
+        assert (org.getOrgType().equals(PermittedOrgs.GPP));
     }
 
     @Test
@@ -344,7 +347,9 @@ class JSONDataExtractorTest {
         String singleRoleOrg =
                 "{\n"
                         + "    \"Organisation\": {\n"
-                        + "        \"Name\": \"" + expectedName + "\",\n"
+                        + "        \"Name\": \""
+                        + expectedName
+                        + "\",\n"
                         + "        \"Date\": [\n"
                         + "            {\n"
                         + "                \"Type\": \"Operational\",\n"
