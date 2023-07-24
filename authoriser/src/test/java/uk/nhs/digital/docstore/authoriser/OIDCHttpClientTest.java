@@ -1,12 +1,13 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import com.nimbusds.jose.PlainHeader;
 import com.nimbusds.jwt.*;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
+import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
+import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
@@ -16,18 +17,19 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
+import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 
 class OIDCHttpClientTest {
     @Test
-    void createsAUserSessionWhenTheAuthCodeCanBeExchangedForAValidIdToken() throws Exception {
+    void createsAUserSessionWhenTheAuthCodeCanBeExchangedForAValidIdToken() throws LoginException {
         var authCode = new AuthorizationCode();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
         var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
-        var idToken = new PlainJWT(new PlainHeader(), claimsSet.toJWTClaimsSet());
+        var idToken = generateIdtoken(claimsSet);
         var accessToken = new BearerAccessToken();
         var oidcAuthResponse = new OIDCTokens(idToken, accessToken, null);
         Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(oidcAuthResponse);
@@ -39,11 +41,7 @@ class OIDCHttpClientTest {
         var client = new OIDCHttpClient(tokenFetcher, userInfoFetcher, tokenValidator);
 
         Session result;
-        try {
-            result = client.authoriseSession(authCode);
-        } catch (AuthorisationException e) {
-            throw new RuntimeException(e);
-        }
+        result = client.authoriseSession(authCode);
 
         assert (result.getTimeToExist())
                 .equals(Instant.ofEpochMilli(claimsSet.getExpirationTime().getTime()));
@@ -54,13 +52,13 @@ class OIDCHttpClientTest {
     }
 
     @Test
-    void throwsAnAuthorisationExceptionWhenTheIDTokenIsNotValid() throws Exception {
+    void throwsAnAuthorisationExceptionWhenTheIDTokenIsNotValid() throws LoginException {
         var authCode = new AuthorizationCode();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
         var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
 
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
-        var idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
+        var idToken = generateIdtoken(claimsSet);
         var accessToken = new BearerAccessToken();
         var oidcAuthResponse = new OIDCTokens(idToken, accessToken, null);
         Mockito.when(tokenFetcher.fetchToken(authCode)).thenReturn(oidcAuthResponse);
@@ -75,7 +73,8 @@ class OIDCHttpClientTest {
     }
 
     @Test
-    public void throwsAuthorisationExceptionWhenFetchingTheIdentityTokenFails() throws Exception {
+    public void throwsAuthorisationExceptionWhenFetchingTheIdentityTokenFails()
+            throws LoginException {
         var authCode = new AuthorizationCode();
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
         var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
@@ -93,7 +92,7 @@ class OIDCHttpClientTest {
     }
 
     @Test
-    public void returnsUserInfoWhenGivenAValidSessionId() throws Exception {
+    public void returnsUserInfoWhenGivenAValidSessionId() throws LoginException {
         var tokenFetcher = Mockito.mock(OIDCTokenFetcher.class);
         var userInfoFetcher = Mockito.mock(UserInfoFetcher.class);
         var clientID = new ClientID("test");
@@ -110,5 +109,15 @@ class OIDCHttpClientTest {
         var result = client.fetchUserInfo(sessionId, subClaim);
 
         assert (result).equals(expectedUserInfo);
+    }
+
+    private PlainJWT generateIdtoken(IDTokenClaimsSet claimsSet) {
+        PlainJWT idToken = null;
+        try {
+            idToken = new PlainJWT(claimsSet.toJWTClaimsSet());
+        } catch (ParseException e) {
+            Assertions.fail("Test helper in error - unable to build dummy JWT Claims Set");
+        }
+        return idToken;
     }
 }

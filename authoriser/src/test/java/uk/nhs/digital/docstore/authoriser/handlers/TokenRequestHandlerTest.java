@@ -13,14 +13,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.SessionManager;
 import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
+import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 class TokenRequestHandlerTest {
+
     @Test
-    void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws Exception {
+    void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws LoginException {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
         var state = new State();
@@ -50,7 +52,6 @@ class TokenRequestHandlerTest {
         var handler = new TokenRequestHandler(sessionManager, clock);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
-        // assertThat(response.getStatusCode()).isEqualTo(303);
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
                 .contains(
@@ -72,7 +73,60 @@ class TokenRequestHandlerTest {
     }
 
     @Test
-    void handleRequestReturnsBadRequestResponseWhenUserHasNoValidOrgs() throws Exception {
+    public void handleRequestRedirectsWithUserRoleWhenMultipleRolesAreFound()
+            throws LoginException {
+        var request = new TokenRequestEvent();
+        var authCode = new AuthorizationCode();
+        var state = new State();
+        request.setQueryStringParameters(
+                Map.of("code", authCode.getValue(), "state", state.getValue()));
+        request.setHeaders(Map.of("Cookie", "State=" + state.getValue()));
+        var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
+        var fixedTime = Instant.now(clock);
+        var maxCookieAgeInSeconds = 100L;
+        var cookieExpiryTime = fixedTime.plusSeconds(maxCookieAgeInSeconds);
+        var session = new Session();
+        session.setRole("Role");
+        session.setOIDCSubject("subject");
+        session.setTimeToExist(cookieExpiryTime);
+        session.setId(UUID.randomUUID());
+        session.setAccessTokenHash("AccesstokenHash");
+
+        var orgs =
+                List.of(
+                        new ProspectiveOrg("A100", "Town GP", PermittedOrgs.GPP),
+                        new ProspectiveOrg("A142", "City clinic", PermittedOrgs.DEV),
+                        new ProspectiveOrg("A410", "National care support", PermittedOrgs.PCSE));
+
+        var loginOutcome = new LoginEventResponse(session, orgs);
+        var sessionManager = Mockito.mock(SessionManager.class);
+        Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
+
+        var handler = new TokenRequestHandler(sessionManager, clock);
+        var response = handler.handleRequest(request, Mockito.mock(Context.class));
+
+        assertThat(response.getIsBase64Encoded()).isFalse();
+        assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
+                .contains(
+                        "State=" + state + "; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly");
+        assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
+                .contains(
+                        "SubjectClaim="
+                                + session.getOIDCSubject()
+                                + "; SameSite=None; Secure; Path=/; Max-Age="
+                                + maxCookieAgeInSeconds
+                                + "; HttpOnly");
+        assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
+                .contains(
+                        "SessionId="
+                                + session.getId()
+                                + "; SameSite=None; Secure; Path=/; Max-Age="
+                                + maxCookieAgeInSeconds
+                                + "; HttpOnly");
+    }
+
+    @Test
+    void handleRequestReturnsBadRequestResponseWhenUserHasNoValidOrgs() throws LoginException {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
         var state = new State();
@@ -105,7 +159,8 @@ class TokenRequestHandlerTest {
     }
 
     @Test
-    void handleRequestReturnsBadRequestResponseWhenTheRequestStateIsInvalid() throws Exception {
+    void handleRequestReturnsBadRequestResponseWhenTheRequestStateIsInvalid()
+            throws LoginException {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
         request.setQueryStringParameters(
@@ -129,7 +184,7 @@ class TokenRequestHandlerTest {
     }
 
     @Test
-    void handleRequestReturnsBadRequestResponseWhenTheStateCookieIsMissing() throws Exception {
+    void handleRequestReturnsBadRequestResponseWhenTheStateCookieIsMissing() throws LoginException {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
         request.setQueryStringParameters(Map.of("code", authCode.getValue()));
@@ -146,7 +201,6 @@ class TokenRequestHandlerTest {
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(400);
-        //        assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
 }
