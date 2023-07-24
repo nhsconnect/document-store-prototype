@@ -16,8 +16,10 @@ import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.audit.message.UserInfoAuditMessage;
 import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
+import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
+import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
@@ -96,7 +98,7 @@ class SessionManagerTest {
         Mockito.when(odsApiRequestClient.getResponse("Org1")).thenReturn(new JSONObject());
         Mockito.when(odsApiRequestClient.getResponse("Org2")).thenReturn(new JSONObject());
         Mockito.when(jsonDataExtractor.getProspectiveOrgs(Mockito.any(JSONObject.class)))
-                .thenReturn(new ArrayList<>(Collections.singletonList("role1")));
+                .thenReturn(Optional.of(new ProspectiveOrg("ODS", "Name", PermittedOrgs.GPP)));
 
         var sessionManager =
                 new SessionManager(
@@ -139,7 +141,7 @@ class SessionManagerTest {
         Mockito.when(odsApiRequestClient.getResponse("Org1")).thenReturn(new JSONObject());
         Mockito.when(odsApiRequestClient.getResponse("Org2")).thenReturn(new JSONObject());
         Mockito.when(jsonDataExtractor.getProspectiveOrgs(Mockito.any(JSONObject.class)))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Optional.empty());
 
         var sessionManager =
                 new SessionManager(

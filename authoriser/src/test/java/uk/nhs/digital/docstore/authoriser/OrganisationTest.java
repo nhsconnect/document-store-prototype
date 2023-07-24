@@ -18,8 +18,6 @@ class OrganisationTest {
         organisation.put("org_name", "some-name");
         organisation.put("org_type", "some-type");
 
-
-
         var expected = mapper.readValue(organisation.toString(), Organisation.class);
 
         Assertions.assertEquals(expected.getOdsCode(), "some-code");
