@@ -10,7 +10,6 @@ fi
 
 #Get test bucket
 S3_BUCKET_NAME=$(aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 ls | awk '{print $3}' | grep $BUCKET)
-echo S3_BUCKET_NAME
 aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 rm "s3://$S3_BUCKET_NAME" --recursive
 
 TABLE_NAME="dev_DocumentReferenceMetadata"
