@@ -45,7 +45,7 @@ public class DynamoDbConnection {
 
     public DynamoDBMapperConfig.TableNameOverride tableNameOverrider() {
         var workspace = System.getenv("WORKSPACE");
-        String prefix = workspace != null && !workspace.isEmpty() ? workspace.concat("_") : "dev_";
+        String prefix = workspace != null && !workspace.isEmpty() ? workspace.concat("_") : "";
         return DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix(prefix);
     }
 }
