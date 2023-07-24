@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.auth0.jwt.JWT;
@@ -43,7 +42,6 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
     private DocumentStore documentStore;
 
     private CreateDocumentManifestByNhsNumberHandler createDocumentManifestByNhsNumberHandler;
-
 
     @BeforeEach
     public void setUp() {

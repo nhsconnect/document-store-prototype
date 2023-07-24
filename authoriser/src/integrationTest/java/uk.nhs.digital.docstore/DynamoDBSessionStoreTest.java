@@ -23,7 +23,10 @@ import uk.nhs.digital.docstore.helpers.DynamoDBHelper;
 public class DynamoDBSessionStoreTest {
     private final AWSServiceContainer aws = new AWSServiceContainer();
     private final DynamoDBHelper dynamoDBHelper = new DynamoDBHelper(aws.getDynamoDBClient());
-    private final DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(aws.getDynamoDBClient(), DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix("dev_").config());
+    private final DynamoDBMapper dynamoDBMapper =
+            new DynamoDBMapper(
+                    aws.getDynamoDBClient(),
+                    DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix("dev_").config());
     private final DynamoDBSessionStore db = new DynamoDBSessionStore(dynamoDBMapper);
 
     @BeforeEach
