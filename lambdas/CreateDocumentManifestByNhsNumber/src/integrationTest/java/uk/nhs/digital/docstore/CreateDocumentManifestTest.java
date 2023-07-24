@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.auth0.jwt.JWT;
@@ -45,10 +46,19 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
 
     @BeforeEach
     public void setUp() {
-        metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+        metadataStore =
+                new DocumentMetadataStore(
+                        new DynamoDBMapper(
+                                aws.getDynamoDBClient(),
+                                DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix("dev_")
+                                        .config()));
         documentStore = new DocumentStore(aws.getS3Client());
         DocumentZipTraceStore zipTraceStore =
-                new DocumentZipTraceStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+                new DocumentZipTraceStore(
+                        new DynamoDBMapper(
+                                aws.getDynamoDBClient(),
+                                DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix("dev_")
+                                        .config()));
         createDocumentManifestByNhsNumberHandler =
                 new CreateDocumentManifestByNhsNumberHandler(
                         new StubbedApiConfig("http://ui-url"),
