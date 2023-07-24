@@ -2,11 +2,11 @@ package uk.nhs.digital.docstore.authoriser;
 
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import java.util.ArrayList;
-import java.util.List;
 import org.json.JSONObject;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
+import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 
 public class SessionManager {
