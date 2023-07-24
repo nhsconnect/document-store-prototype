@@ -8,14 +8,13 @@ import com.nimbusds.oauth2.sdk.id.State;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.SessionManager;
+import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
+import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
@@ -42,7 +41,9 @@ class TokenRequestHandlerTest {
         HashMap<String, List<String>> usersOrgs = new HashMap<>();
         usersOrgs.put("odsCode", List.of("R076"));
 
-        var loginOutcome = new LoginEventResponse(session, usersOrgs);
+        var orgs = List.of(new ProspectiveOrg("ODS", "Name", PermittedOrgs.GPP));
+
+        var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
@@ -89,9 +90,9 @@ class TokenRequestHandlerTest {
         session.setId(UUID.randomUUID());
         session.setAccessTokenHash("AccesstokenHash");
 
-        HashMap<String, List<String>> usersOrgs = new HashMap<>();
+        List<ProspectiveOrg> orgs = List.of();
 
-        var loginOutcome = new LoginEventResponse(session, usersOrgs);
+        var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
@@ -113,9 +114,9 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
-        HashMap<String, List<String>> usersOrgs = new HashMap<>();
+        List<ProspectiveOrg> orgs = List.of();
 
-        var loginOutcome = new LoginEventResponse(session, usersOrgs);
+        var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
@@ -135,9 +136,9 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
-        HashMap<String, List<String>> usersOrgs = new HashMap<>();
+        List<ProspectiveOrg> orgs = List.of();
 
-        var loginOutcome = new LoginEventResponse(session, usersOrgs);
+        var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
