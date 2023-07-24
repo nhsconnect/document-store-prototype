@@ -47,10 +47,10 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
 
     @BeforeEach
     public void setUp() {
-        metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient(), DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix("dev_").config()));
+        metadataStore = new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         documentStore = new DocumentStore(aws.getS3Client());
         DocumentZipTraceStore zipTraceStore =
-                new DocumentZipTraceStore(new DynamoDBMapper(aws.getDynamoDBClient(), DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix("dev_").config()));
+                new DocumentZipTraceStore(new DynamoDBMapper(aws.getDynamoDBClient()));
         createDocumentManifestByNhsNumberHandler =
                 new CreateDocumentManifestByNhsNumberHandler(
                         new StubbedApiConfig("http://ui-url"),

@@ -5,9 +5,9 @@ import uk.nhs.digital.docstore.helpers.AwsS3Helper;
 import uk.nhs.digital.docstore.helpers.DynamoDBHelper;
 
 public abstract class BaseDocumentStoreTest {
-    protected String metadataTableName = "DocumentReferenceMetadata";
+    protected String metadataTableName = "dev_DocumentReferenceMetadata";
 
-    protected String manifestTableName = "DocumentZipTrace";
+    protected String manifestTableName = "dev_DocumentZipTrace";
 
     protected String documentStoreBucketName;
     protected AWSServiceContainer aws = new AWSServiceContainer();
