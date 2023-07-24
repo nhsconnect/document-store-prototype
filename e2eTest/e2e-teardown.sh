@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ENVIRONMENT=${1:-local}
-BUCKET="dev-document-store"
+BUCKET="dev-test-document-store"
 
 if [[ -z "$AWS_ENDPOINT" && $ENVIRONMENT == "local" ]]; then
     AWS_ENDPOINT=http://localhost:4566
@@ -10,7 +10,7 @@ fi
 
 #Get test bucket
 S3_BUCKET_NAME=$(aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 ls | awk '{print $3}' | grep $BUCKET)
-
+echo S3_BUCKET_NAME
 aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 rm "s3://$S3_BUCKET_NAME" --recursive
 
 TABLE_NAME="dev_DocumentReferenceMetadata"
