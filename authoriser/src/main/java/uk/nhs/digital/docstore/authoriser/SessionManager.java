@@ -2,8 +2,6 @@ package uk.nhs.digital.docstore.authoriser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import java.util.HashMap;
-import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +11,10 @@ import uk.nhs.digital.docstore.authoriser.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
+import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
+
+import java.util.ArrayList;
 
 public class SessionManager {
     private final OIDCClient authenticationClient;
@@ -28,7 +29,6 @@ public class SessionManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionManager.class);
 
-    // for live code (we don't need to know about the JSON extractor or ODS client)
     public SessionManager(OIDCClient authenticationClient, SessionStore sessionStore) {
         this(
                 authenticationClient,
@@ -38,7 +38,6 @@ public class SessionManager {
                 new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")));
     }
 
-    // for testing
     public SessionManager(
             OIDCClient authenticationClient,
             SessionStore sessionStore,
@@ -70,21 +69,21 @@ public class SessionManager {
         System.out.println("user info object: " + userInfo);
         var odsCodes = jsonDataExtractor.getOdsCodesFromUserInfo(userInfo);
 
-        HashMap<String, List<String>> gpAndPcseOrgs = new HashMap<>();
+        var prospectiveOrgs = new ArrayList<ProspectiveOrg>();
 
         odsCodes.forEach(
-                code -> {
-                    var orgData = odsApiClient.getResponse(code);
-                    var orgRoles = jsonDataExtractor.getGpAndPcseRolesFromOrgData(orgData);
-                    if (!orgRoles.isEmpty()) {
-                        gpAndPcseOrgs.put(code, orgRoles);
+                odsCode -> {
+                    var orgData = odsApiClient.getResponse(odsCode);
+                    var prospectiveOrg = jsonDataExtractor.getProspectiveOrgs(orgData);
+                    if (!prospectiveOrg.isEmpty()) {
+                        prospectiveOrgs.add(prospectiveOrg.get());
                     }
                 });
 
-        if (!gpAndPcseOrgs.isEmpty()) {
+        if (!prospectiveOrgs.isEmpty()) {
             sessionStore.save(session);
         }
 
-        return new LoginEventResponse(session, gpAndPcseOrgs);
+        return new LoginEventResponse(session, prospectiveOrgs);
     }
 }
