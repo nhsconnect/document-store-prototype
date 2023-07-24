@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
+import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 import uk.nhs.digital.docstore.authoriser.models.Session;
@@ -21,7 +22,7 @@ import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 class SessionManagerTest {
 
     @Test
-    public void throwsErrorIfTokenCannotBeExchanged() throws Exception {
+    public void throwsErrorIfTokenCannotBeExchanged() throws LoginException {
         var oidcClient = Mockito.mock(OIDCClient.class);
         var sessionStore = new InMemorySessionStore();
         Mockito.when(oidcClient.authoriseSession(Mockito.any()))
@@ -34,7 +35,7 @@ class SessionManagerTest {
     }
 
     @Test
-    public void throwsErrorIfUserInfoRequestFails() throws Exception {
+    public void throwsErrorIfUserInfoRequestFails() throws LoginException {
         var sessionStore = new InMemorySessionStore();
         var oidcClient = Mockito.mock(OIDCClient.class);
         var session = Mockito.mock((Session.class));
@@ -51,8 +52,7 @@ class SessionManagerTest {
     }
 
     @Test
-    public void savesSessionIfUserHasOneOrMoreValidOrgs()
-            throws AuthorisationException, UserInfoFetchingException {
+    public void savesSessionIfUserHasOneOrMoreValidOrgs() throws LoginException {
         var sessionStore = new InMemorySessionStore();
         var authCode = new AuthorizationCode("authcode");
         var jsonDataExtractor = Mockito.mock(JSONDataExtractor.class);
@@ -94,8 +94,7 @@ class SessionManagerTest {
     }
 
     @Test
-    public void doesNotSaveSessionIfUserHasNoValidOrgs()
-            throws AuthorisationException, UserInfoFetchingException {
+    public void doesNotSaveSessionIfUserHasNoValidOrgs() throws LoginException {
         var sessionStore = new InMemorySessionStore();
         var authCode = new AuthorizationCode("authcode");
         var jsonDataExtractor = Mockito.mock(JSONDataExtractor.class);

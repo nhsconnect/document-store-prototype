@@ -3,8 +3,7 @@ package uk.nhs.digital.docstore.authoriser;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import java.util.ArrayList;
 import org.json.JSONObject;
-import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
-import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
+import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
@@ -36,8 +35,7 @@ public class SessionManager {
         this.odsApiClient = odsApiClient;
     }
 
-    public LoginEventResponse createSession(AuthorizationCode authCode)
-            throws AuthorisationException, UserInfoFetchingException {
+    public LoginEventResponse createSession(AuthorizationCode authCode) throws LoginException {
         var session = authenticationClient.authoriseSession(authCode);
         var userInfo =
                 new JSONObject(
@@ -53,7 +51,7 @@ public class SessionManager {
                 odsCode -> {
                     var orgData = odsApiClient.getResponse(odsCode);
                     var prospectiveOrg = jsonDataExtractor.getProspectiveOrgs(orgData);
-                    if (!prospectiveOrg.isEmpty()) {
+                    if (prospectiveOrg.isPresent()) {
                         prospectiveOrgs.add(prospectiveOrg.get());
                     }
                 });
