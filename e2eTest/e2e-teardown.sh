@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ENVIRONMENT=${1:-local}
-BUCKET="document-store"
+BUCKET="dev-document-store"
 
 if [[ -z "$AWS_ENDPOINT" && $ENVIRONMENT == "local" ]]; then
     AWS_ENDPOINT=http://localhost:4566
