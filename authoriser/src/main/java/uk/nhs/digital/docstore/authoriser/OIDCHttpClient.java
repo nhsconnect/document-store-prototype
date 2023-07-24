@@ -12,6 +12,7 @@ import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.util.UUID;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
+import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
@@ -31,7 +32,7 @@ public class OIDCHttpClient implements OIDCClient {
     }
 
     @Override
-    public Session authoriseSession(AuthorizationCode authCode) throws AuthorisationException {
+    public Session authoriseSession(AuthorizationCode authCode) throws LoginException {
         OIDCTokens oidcAuthResponse;
         try {
             oidcAuthResponse = tokenFetcher.fetchToken(authCode);
@@ -60,8 +61,8 @@ public class OIDCHttpClient implements OIDCClient {
 
         if (!subClaim.equals(userInfo.getClaim(JWTClaimNames.SUBJECT))) {
             throw new UserInfoFetchingException(
-                    "Sub claims for the user and the user info response do not match. The returned"
-                            + " information cannot be used");
+                    "Subject claims for the user and the user info response do not match. The"
+                            + " returned information cannot be used");
         }
 
         return userInfo;

@@ -18,6 +18,7 @@ import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
+import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 import uk.nhs.digital.docstore.authoriser.models.Session;
@@ -51,7 +52,7 @@ class SessionManagerTest {
     }
 
     @Test
-    public void throwsErrorIfTokenCannotBeExchanged() throws Exception {
+    public void throwsErrorIfTokenCannotBeExchanged() throws LoginException {
         Mockito.when(oidcClient.authoriseSession(Mockito.any()))
                 .thenThrow(new AuthorisationException(new Exception()));
 
@@ -62,7 +63,9 @@ class SessionManagerTest {
     }
 
     @Test
-    public void throwsErrorIfUserInfoRequestFails() throws Exception {
+    public void throwsErrorIfUserInfoRequestFails() throws LoginException, JsonProcessingException {
+        var sessionStore = new InMemorySessionStore();
+        var oidcClient = Mockito.mock(OIDCClient.class);
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
         var session = Session.create(UUID.randomUUID(), claimsSet, new BearerAccessToken());
 
@@ -85,7 +88,7 @@ class SessionManagerTest {
 
     @Test
     public void savesSessionIfUserHasOneOrMoreValidOrgs()
-            throws AuthorisationException, UserInfoFetchingException, JsonProcessingException {
+            throws LoginException, JsonProcessingException {
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
         var session = Session.create(UUID.randomUUID(), claimsSet, new BearerAccessToken());
 
@@ -127,7 +130,7 @@ class SessionManagerTest {
 
     @Test
     public void doesNotSaveSessionIfUserHasNoValidOrgs()
-            throws AuthorisationException, UserInfoFetchingException, JsonProcessingException {
+            throws LoginException, JsonProcessingException {
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
 
         var session = Session.create(UUID.randomUUID(), claimsSet, new BearerAccessToken());

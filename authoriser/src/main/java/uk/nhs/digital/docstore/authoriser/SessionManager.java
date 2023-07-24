@@ -8,8 +8,7 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.audit.message.UserInfoAuditMessage;
 import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.authoriser.audit.publisher.SplunkPublisher;
-import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
-import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
+import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
@@ -51,8 +50,7 @@ public class SessionManager {
         this.sensitiveIndex = sensitiveIndex;
     }
 
-    public LoginEventResponse createSession(AuthorizationCode authCode)
-            throws AuthorisationException, UserInfoFetchingException {
+    public LoginEventResponse createSession(AuthorizationCode authCode) throws LoginException {
         var session = authenticationClient.authoriseSession(authCode);
 
         try {
@@ -75,7 +73,7 @@ public class SessionManager {
                 odsCode -> {
                     var orgData = odsApiClient.getResponse(odsCode);
                     var prospectiveOrg = jsonDataExtractor.getProspectiveOrgs(orgData);
-                    if (!prospectiveOrg.isEmpty()) {
+                    if (prospectiveOrg.isPresent()) {
                         prospectiveOrgs.add(prospectiveOrg.get());
                     }
                 });
