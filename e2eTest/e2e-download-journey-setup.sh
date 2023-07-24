@@ -7,7 +7,7 @@ if [[ -z "$AWS_ENDPOINT" && $ENVIRONMENT == "local" ]]; then
     AWS_ENDPOINT=http://localhost:4566
 fi
 
-S3_BUCKET_NAME=$(aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 ls | awk '{print $3}' | grep '^test-document-store')
+S3_BUCKET_NAME=$(aws ${AWS_ENDPOINT:+--endpoint-url=$AWS_ENDPOINT} s3 ls | awk '{print $3}' | grep '^dev-test-document-store')
 
 KEY1="file-1"
 KEY2="file-2"
@@ -15,7 +15,7 @@ KEY2="file-2"
 S3_LOCATION_1="s3://${S3_BUCKET_NAME}/${KEY1}"
 S3_LOCATION_2="s3://${S3_BUCKET_NAME}/${KEY2}"
 
-jq --arg s3location1 "$S3_LOCATION_1" --arg s3location2 "$S3_LOCATION_2" ".DocumentReferenceMetadata[].PutRequest.Item |= (
+jq --arg s3location1 "$S3_LOCATION_1" --arg s3location2 "$S3_LOCATION_2" ".dev_DocumentReferenceMetadata[].PutRequest.Item |= (
     if .Location.S == \"s3-location-1\" then
         .Location.S = \$s3location1\
     elif

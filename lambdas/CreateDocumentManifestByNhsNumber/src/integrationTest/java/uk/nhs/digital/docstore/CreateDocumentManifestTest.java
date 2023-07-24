@@ -45,7 +45,6 @@ public class CreateDocumentManifestTest extends BaseDocumentStoreTest {
     @BeforeEach
     public void setUp() {
         metadataStore = new DocumentMetadataStore(dynamoDBHelper.getMapper());
-
         documentStore = new DocumentStore(aws.getS3Client());
         DocumentZipTraceStore zipTraceStore = new DocumentZipTraceStore(dynamoDBHelper.getMapper());
         createDocumentManifestByNhsNumberHandler =
