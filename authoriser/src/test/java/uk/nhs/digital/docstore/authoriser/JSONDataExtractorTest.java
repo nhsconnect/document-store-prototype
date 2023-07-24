@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collections;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
 
 class JSONDataExtractorTest {
 
@@ -188,12 +189,13 @@ class JSONDataExtractorTest {
     }
 
     @Test
-    void returnsSingularRoleCodeFromOrgData() {
+    void returnsGpOrgFromOrgData() {
         String roleCode = "RO76";
+        var expectedName = "NHS ENGLAND - X26";
         String singleRoleOrg =
                 "{\n"
                         + "    \"Organisation\": {\n"
-                        + "        \"Name\": \"NHS ENGLAND - X26\",\n"
+                        + "        \"Name\": \"" + expectedName + "\",\n"
                         + "        \"Date\": [\n"
                         + "            {\n"
                         + "                \"Type\": \"Operational\",\n"
@@ -328,77 +330,65 @@ class JSONDataExtractorTest {
         var orgData = new JSONObject(singleRoleOrg);
 
         var dataExtractor = new JSONDataExtractor();
-        var roleCodes = dataExtractor.getGpAndPcseRolesFromOrgData(orgData);
+        var roleCodes = dataExtractor.getProspectiveOrgs(orgData);
 
-        assert (roleCodes.get(0)).equals(roleCode);
+        assert (roleCodes.isPresent());
+        ProspectiveOrg org = roleCodes.get();
+        assert (org.getOrgName()).equals(expectedName);
     }
 
     @Test
-    void returnsMultipleRoleCodes() {
-        String roleCode0 = "RO76";
-        String roleCode1 = "RO177";
-        String multipleRoleOrg =
+    void returnsPcseOrgFromOrgData() {
+        String roleCode = "RO157";
+        var expectedName = "NHS ENGLAND - X26";
+        String singleRoleOrg =
                 "{\n"
                         + "    \"Organisation\": {\n"
-                        + "        \"Name\": \"COURTSIDE SURGERY\",\n"
+                        + "        \"Name\": \"" + expectedName + "\",\n"
                         + "        \"Date\": [\n"
                         + "            {\n"
                         + "                \"Type\": \"Operational\",\n"
-                        + "                \"Start\": \"1974-04-01\"\n"
+                        + "                \"Start\": \"2013-01-21\"\n"
+                        + "            },\n"
+                        + "            {\n"
+                        + "                \"Type\": \"Legal\",\n"
+                        + "                \"Start\": \"2013-04-01\"\n"
                         + "            }\n"
                         + "        ],\n"
                         + "        \"OrgId\": {\n"
                         + "            \"root\": \"2.16.840.1.113883.2.1.3.2.4.18.48\",\n"
                         + "            \"assigningAuthorityName\": \"HSCIC\",\n"
-                        + "            \"extension\": \"L81024\"\n"
+                        + "            \"extension\": \"X26\"\n"
                         + "        },\n"
                         + "        \"Status\": \"Active\",\n"
-                        + "        \"LastChangeDate\": \"2021-02-04\",\n"
+                        + "        \"LastChangeDate\": \"2023-01-31\",\n"
                         + "        \"orgRecordClass\": \"RC1\",\n"
                         + "        \"GeoLoc\": {\n"
                         + "            \"Location\": {\n"
-                        + "                \"AddrLn1\": \"KENNEDY WAY\",\n"
-                        + "                \"AddrLn2\": \"YATE\",\n"
-                        + "                \"Town\": \"BRISTOL\",\n"
-                        + "                \"County\": \"AVON\",\n"
-                        + "                \"PostCode\": \"BS37 4DQ\",\n"
+                        + "                \"AddrLn1\": \"THE LEEDS GOVERNMENT HUB\",\n"
+                        + "                \"AddrLn2\": \"7-8 WELLINGTON PLACE\",\n"
+                        + "                \"Town\": \"LEEDS\",\n"
+                        + "                \"PostCode\": \"LS1 4AP\",\n"
                         + "                \"Country\": \"ENGLAND\",\n"
-                        + "                \"UPRN\": 592571\n"
+                        + "                \"UPRN\": 72766088\n"
                         + "            }\n"
-                        + "        },\n"
-                        + "        \"Contacts\": {\n"
-                        + "            \"Contact\": [\n"
-                        + "                {\n"
-                        + "                    \"type\": \"tel\",\n"
-                        + "                    \"value\": \"01454 313874\"\n"
-                        + "                }\n"
-                        + "            ]\n"
                         + "        },\n"
                         + "        \"Roles\": {\n"
                         + "            \"Role\": [\n"
                         + "                {\n"
                         + "                    \"id\": \""
-                        + roleCode0
+                        + roleCode
                         + "\",\n"
-                        + "                    \"uniqueRoleId\": 186398,\n"
-                        + "                    \"Date\": [\n"
-                        + "                        {\n"
-                        + "                            \"Type\": \"Operational\",\n"
-                        + "                            \"Start\": \"2014-04-15\"\n"
-                        + "                        }\n"
-                        + "                    ],\n"
-                        + "                    \"Status\": \"Active\"\n"
-                        + "                },\n"
-                        + "                {\n"
-                        + "                    \"id\": \""
-                        + roleCode1
-                        + "\",\n"
-                        + "                    \"uniqueRoleId\": 78527,\n"
+                        + "                    \"uniqueRoleId\": 166234,\n"
                         + "                    \"primaryRole\": true,\n"
                         + "                    \"Date\": [\n"
                         + "                        {\n"
                         + "                            \"Type\": \"Operational\",\n"
-                        + "                            \"Start\": \"1974-04-01\"\n"
+                        + "                            \"Start\": \"2013-01-21\"\n"
+                        + "                        },\n"
+                        + "                        {\n"
+                        + "                            \"Type\": \"Legal\",\n"
+                        + "                            \"Start\": \"2013-04-01\"\n"
                         + "                        }\n"
                         + "                    ],\n"
                         + "                    \"Status\": \"Active\"\n"
@@ -411,79 +401,11 @@ class JSONDataExtractorTest {
                         + "                    \"Date\": [\n"
                         + "                        {\n"
                         + "                            \"Type\": \"Operational\",\n"
-                        + "                            \"Start\": \"2001-04-01\",\n"
-                        + "                            \"End\": \"2013-03-31\"\n"
-                        + "                        }\n"
-                        + "                    ],\n"
-                        + "                    \"Status\": \"Inactive\",\n"
-                        + "                    \"Target\": {\n"
-                        + "                        \"OrgId\": {\n"
-                        + "                            \"root\":"
-                        + " \"2.16.840.1.113883.2.1.3.2.4.18.48\",\n"
-                        + "                            \"assigningAuthorityName\": \"HSCIC\",\n"
-                        + "                            \"extension\": \"5A3\"\n"
+                        + "                            \"Start\": \"2013-01-21\"\n"
                         + "                        },\n"
-                        + "                        \"PrimaryRoleId\": {\n"
-                        + "                            \"id\": \"RO179\",\n"
-                        + "                            \"uniqueRoleId\": 101192\n"
-                        + "                        }\n"
-                        + "                    },\n"
-                        + "                    \"id\": \"RE4\",\n"
-                        + "                    \"uniqueRelId\": 263958\n"
-                        + "                },\n"
-                        + "                {\n"
-                        + "                    \"Date\": [\n"
                         + "                        {\n"
-                        + "                            \"Type\": \"Operational\",\n"
-                        + "                            \"Start\": \"1999-04-01\",\n"
-                        + "                            \"End\": \"2001-03-31\"\n"
-                        + "                        }\n"
-                        + "                    ],\n"
-                        + "                    \"Status\": \"Inactive\",\n"
-                        + "                    \"Target\": {\n"
-                        + "                        \"OrgId\": {\n"
-                        + "                            \"root\":"
-                        + " \"2.16.840.1.113883.2.1.3.2.4.18.48\",\n"
-                        + "                            \"assigningAuthorityName\": \"HSCIC\",\n"
-                        + "                            \"extension\": \"4YL81\"\n"
-                        + "                        },\n"
-                        + "                        \"PrimaryRoleId\": {\n"
-                        + "                            \"id\": \"RO171\",\n"
-                        + "                            \"uniqueRoleId\": 137206\n"
-                        + "                        }\n"
-                        + "                    },\n"
-                        + "                    \"id\": \"RE4\",\n"
-                        + "                    \"uniqueRelId\": 263959\n"
-                        + "                },\n"
-                        + "                {\n"
-                        + "                    \"Date\": [\n"
-                        + "                        {\n"
-                        + "                            \"Type\": \"Operational\",\n"
-                        + "                            \"Start\": \"2013-04-01\",\n"
-                        + "                            \"End\": \"2018-03-31\"\n"
-                        + "                        }\n"
-                        + "                    ],\n"
-                        + "                    \"Status\": \"Inactive\",\n"
-                        + "                    \"Target\": {\n"
-                        + "                        \"OrgId\": {\n"
-                        + "                            \"root\":"
-                        + " \"2.16.840.1.113883.2.1.3.2.4.18.48\",\n"
-                        + "                            \"assigningAuthorityName\": \"HSCIC\",\n"
-                        + "                            \"extension\": \"12A\"\n"
-                        + "                        },\n"
-                        + "                        \"PrimaryRoleId\": {\n"
-                        + "                            \"id\": \"RO98\",\n"
-                        + "                            \"uniqueRoleId\": 161525\n"
-                        + "                        }\n"
-                        + "                    },\n"
-                        + "                    \"id\": \"RE4\",\n"
-                        + "                    \"uniqueRelId\": 263960\n"
-                        + "                },\n"
-                        + "                {\n"
-                        + "                    \"Date\": [\n"
-                        + "                        {\n"
-                        + "                            \"Type\": \"Operational\",\n"
-                        + "                            \"Start\": \"2018-04-01\"\n"
+                        + "                            \"Type\": \"Legal\",\n"
+                        + "                            \"Start\": \"2013-04-01\"\n"
                         + "                        }\n"
                         + "                    ],\n"
                         + "                    \"Status\": \"Active\",\n"
@@ -492,50 +414,75 @@ class JSONDataExtractorTest {
                         + "                            \"root\":"
                         + " \"2.16.840.1.113883.2.1.3.2.4.18.48\",\n"
                         + "                            \"assigningAuthorityName\": \"HSCIC\",\n"
-                        + "                            \"extension\": \"15C\"\n"
+                        + "                            \"extension\": \"XDH\"\n"
                         + "                        },\n"
                         + "                        \"PrimaryRoleId\": {\n"
-                        + "                            \"id\": \"RO98\",\n"
-                        + "                            \"uniqueRoleId\": 297755\n"
+                        + "                            \"id\": \"RO126\",\n"
+                        + "                            \"uniqueRoleId\": 128996\n"
                         + "                        }\n"
                         + "                    },\n"
-                        + "                    \"id\": \"RE4\",\n"
-                        + "                    \"uniqueRelId\": 539679\n"
-                        + "                },\n"
+                        + "                    \"id\": \"RE3\",\n"
+                        + "                    \"uniqueRelId\": 189272\n"
+                        + "                }\n"
+                        + "            ]\n"
+                        + "        },\n"
+                        + "        \"Succs\": {\n"
+                        + "            \"Succ\": [\n"
                         + "                {\n"
+                        + "                    \"uniqueSuccId\": 36688,\n"
                         + "                    \"Date\": [\n"
                         + "                        {\n"
-                        + "                            \"Type\": \"Operational\",\n"
-                        + "                            \"Start\": \"2019-10-01\"\n"
+                        + "                            \"Type\": \"Legal\",\n"
+                        + "                            \"Start\": \"2013-04-01\"\n"
                         + "                        }\n"
                         + "                    ],\n"
-                        + "                    \"Status\": \"Active\",\n"
+                        + "                    \"Type\": \"Predecessor\",\n"
                         + "                    \"Target\": {\n"
                         + "                        \"OrgId\": {\n"
                         + "                            \"root\":"
                         + " \"2.16.840.1.113883.2.1.3.2.4.18.48\",\n"
                         + "                            \"assigningAuthorityName\": \"HSCIC\",\n"
-                        + "                            \"extension\": \"U13456\"\n"
+                        + "                            \"extension\": \"X09\"\n"
                         + "                        },\n"
                         + "                        \"PrimaryRoleId\": {\n"
-                        + "                            \"id\": \"RO272\",\n"
-                        + "                            \"uniqueRoleId\": 388792\n"
+                        + "                            \"id\": \"RO116\",\n"
+                        + "                            \"uniqueRoleId\": 111933\n"
                         + "                        }\n"
-                        + "                    },\n"
-                        + "                    \"id\": \"RE8\",\n"
-                        + "                    \"uniqueRelId\": 616487\n"
+                        + "                    }\n"
+                        + "                },\n"
+                        + "                {\n"
+                        + "                    \"uniqueSuccId\": 36589,\n"
+                        + "                    \"Date\": [\n"
+                        + "                        {\n"
+                        + "                            \"Type\": \"Legal\",\n"
+                        + "                            \"Start\": \"2013-04-01\"\n"
+                        + "                        }\n"
+                        + "                    ],\n"
+                        + "                    \"Type\": \"Predecessor\",\n"
+                        + "                    \"Target\": {\n"
+                        + "                        \"OrgId\": {\n"
+                        + "                            \"root\":"
+                        + " \"2.16.840.1.113883.2.1.3.2.4.18.48\",\n"
+                        + "                            \"assigningAuthorityName\": \"HSCIC\",\n"
+                        + "                            \"extension\": \"T1430\"\n"
+                        + "                        },\n"
+                        + "                        \"PrimaryRoleId\": {\n"
+                        + "                            \"id\": \"RO189\",\n"
+                        + "                            \"uniqueRoleId\": 136318\n"
+                        + "                        }\n"
+                        + "                    }\n"
                         + "                }\n"
                         + "            ]\n"
                         + "        }\n"
                         + "    }\n"
                         + "}";
-        var orgData = new JSONObject(multipleRoleOrg);
+        var orgData = new JSONObject(singleRoleOrg);
 
         var dataExtractor = new JSONDataExtractor();
-        var roleCodes = dataExtractor.getGpAndPcseRolesFromOrgData(orgData);
+        var roleCodes = dataExtractor.getProspectiveOrgs(orgData);
 
-        assertTrue(roleCodes.contains(roleCode0));
-        assertFalse(roleCodes.contains(roleCode1));
+        assert (roleCodes.isPresent());
+        assert (roleCodes.get().getOrgName()).equals(expectedName);
     }
 
     @Test
@@ -708,7 +655,7 @@ class JSONDataExtractorTest {
         var orgData = new JSONObject(org);
 
         var dataExtractor = new JSONDataExtractor();
-        var roles = dataExtractor.getGpAndPcseRolesFromOrgData(orgData);
+        var roles = dataExtractor.getProspectiveOrgs(orgData);
 
         assert (roles.isEmpty());
     }
@@ -854,7 +801,7 @@ class JSONDataExtractorTest {
         var orgData = new JSONObject(singleRoleOrg);
 
         var dataExtractor = new JSONDataExtractor();
-        var roleCodes = dataExtractor.getGpAndPcseRolesFromOrgData(orgData);
+        var roleCodes = dataExtractor.getProspectiveOrgs(orgData);
 
         assert (roleCodes.isEmpty());
     }
