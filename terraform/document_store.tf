@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "document_store" {
-  bucket = "${terraform.workspace}-arf-document-store-"
+  bucket = "${terraform.workspace}-document-store-"
   count  = var.workspace_is_a_sandbox ? 0 : 1
 
   lifecycle {
