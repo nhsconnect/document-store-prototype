@@ -16,7 +16,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
-import uk.nhs.digital.docstore.authoriser.enums.LoginEventOutcome;
+import uk.nhs.digital.docstore.authoriser.config.Tracer;
+import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
@@ -72,6 +73,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             TokenRequestEvent requestEvent, Context context) {
+        Tracer.setMDCContext(context);
 
         var authCode = requestEvent.getAuthCode();
 
@@ -80,7 +82,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         if (authCode.isEmpty()) {
             LOGGER.debug("Auth code is empty");
-            return authError("Auth code is empty");
+            return authError(HttpStatus.BAD_REQUEST.code);
         }
 
         if (!requestEvent.hasMatchingStateValues()) {
@@ -90,11 +92,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                             + " and query parameter state: "
                             + requestEvent.getQueryParameterState().orElse(null));
 
-            return authError(
-                    "Mismatching state values. Cookie state: "
-                            + requestEvent.getCookieState().orElse(null)
-                            + " and query parameter state: "
-                            + requestEvent.getQueryParameterState().orElse(null));
+            return authError(HttpStatus.BAD_REQUEST.code);
         }
 
         LOGGER.debug(
@@ -106,14 +104,14 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             loginResponse = sessionManager.createSession(authCode.get());
         } catch (Exception exception) {
             LOGGER.debug(exception.getMessage());
-            return authError(exception.getMessage());
+            return authError(HttpStatus.FORBIDDEN.code);
         }
 
         var session = loginResponse.getSession();
 
-        if (loginResponse.getOutcome().equals(LoginEventOutcome.NO_VALID_ORGS)) {
+        if (loginResponse.getUsersOrgs().isEmpty()) {
             LOGGER.debug("user has no valid orgs to log in with");
-            return authError("user has no valid orgs to log in with");
+            return authError(HttpStatus.UNAUTHORISED.code);
         }
 
         LOGGER.debug(
@@ -154,15 +152,15 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 .withMultiValueHeaders(multiValueHeaders);
     }
 
-    private static APIGatewayProxyResponseEvent authError(String err) {
+    private static APIGatewayProxyResponseEvent authError(int statusCode) {
         var headers = new HashMap<String, String>();
         headers.put("Access-Control-Allow-Credentials", "true");
         headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
-                .withStatusCode(ERROR_STATUS_CODE)
+                .withStatusCode(statusCode)
                 .withHeaders(headers)
-                .withBody(err);
+                .withBody("");
     }
 
     private static IDTokenValidator makeIDTokenValidator() {
