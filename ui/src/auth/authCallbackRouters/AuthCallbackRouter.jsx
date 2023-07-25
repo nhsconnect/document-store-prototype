@@ -21,6 +21,7 @@ const AuthCallbackRouter = () => {
                 withCredentials: true,
             })
             .then((res) => {
+                console.log("<(o'.'o)> " + res.data);
                 const { SessionId, Organisations } = res.data;
                 setSession({
                     ...session,
