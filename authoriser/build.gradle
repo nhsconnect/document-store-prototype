@@ -34,8 +34,10 @@ dependencies {
 	implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
 	implementation 'com.amazonaws:aws-lambda-java-events:3.9.0'
 	implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.400'
+	implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.363'
 	implementation 'com.auth0:java-jwt:4.2.1'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13'
 	implementation 'com.auth0:jwks-rsa:0.21.3'
 	implementation 'ch.qos.logback:logback-classic:1.4.5'
 	implementation 'com.nimbusds:oauth2-oidc-sdk:10.7'
@@ -44,6 +46,8 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 	testImplementation 'org.assertj:assertj-core:3.21.0'
 	testImplementation 'org.mockito:mockito-core:5.1.1'
+	testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
+	testImplementation 'uk.org.webcompere:system-stubs-jupiter:2.0.1'
 }
 
 java {
