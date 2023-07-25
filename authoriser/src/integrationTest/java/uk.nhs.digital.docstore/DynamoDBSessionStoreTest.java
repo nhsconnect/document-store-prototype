@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.time.Instant;
@@ -22,7 +23,10 @@ import uk.nhs.digital.docstore.helpers.DynamoDBHelper;
 public class DynamoDBSessionStoreTest {
     private final AWSServiceContainer aws = new AWSServiceContainer();
     private final DynamoDBHelper dynamoDBHelper = new DynamoDBHelper(aws.getDynamoDBClient());
-    private final DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(aws.getDynamoDBClient());
+    private final DynamoDBMapper dynamoDBMapper =
+            new DynamoDBMapper(
+                    aws.getDynamoDBClient(),
+                    DynamoDBMapperConfig.TableNameOverride.withTableNamePrefix("dev_").config());
     private final DynamoDBSessionStore db = new DynamoDBSessionStore(dynamoDBMapper);
 
     @BeforeEach
@@ -81,6 +85,7 @@ public class DynamoDBSessionStoreTest {
 
         var sessionOne = Session.create(UUID.randomUUID(), timeToExist, subject, oidcSessionIDOne);
         var sessionTwo = Session.create(UUID.randomUUID(), timeToExist, subject, oidcSessionIDTwo);
+
         dynamoDBMapper.save(sessionOne);
         dynamoDBMapper.save(sessionTwo);
 

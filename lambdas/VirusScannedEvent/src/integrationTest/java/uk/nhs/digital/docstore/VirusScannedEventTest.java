@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import java.time.Clock;
@@ -44,8 +43,7 @@ public class VirusScannedEventTest extends BaseDocumentStoreTest {
     @BeforeEach
     void setUp() {
         Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.of("Europe/London"));
-        DynamoDBMapper dynamoMapper = new DynamoDBMapper(aws.getDynamoDBClient());
-        this.metadataStore = new DocumentMetadataStore(dynamoMapper);
+        this.metadataStore = new DocumentMetadataStore(dynamoDBHelper.getMapper());
         this.virusScanService =
                 new VirusScannedEventService(
                         metadataStore,

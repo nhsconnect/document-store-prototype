@@ -78,7 +78,7 @@ const SearchResultsPage = () => {
         }
     };
 
-    const docsAvailableTableCaption = <h3 style={{ fontSize: 32 }}>List of documents available</h3>;
+    const docsAvailableTableCaption = <h2 style={{ fontSize: 32 }}>List of documents available</h2>;
 
     return (
         <>

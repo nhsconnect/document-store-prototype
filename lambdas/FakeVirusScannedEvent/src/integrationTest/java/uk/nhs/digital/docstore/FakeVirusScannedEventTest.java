@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
@@ -40,8 +39,7 @@ public class FakeVirusScannedEventTest extends BaseDocumentStoreTest {
 
     @BeforeEach
     void setUp() {
-        documentMetadataStore =
-                new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+        documentMetadataStore = new DocumentMetadataStore(dynamoDBHelper.getMapper());
         var virusScannedEventService =
                 new VirusScannedEventService(
                         documentMetadataStore,

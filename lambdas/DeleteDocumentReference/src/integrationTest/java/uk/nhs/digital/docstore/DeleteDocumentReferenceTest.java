@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -45,8 +44,7 @@ public class DeleteDocumentReferenceTest extends BaseDocumentStoreTest {
     void setUp() {
         var apiConfig = new StubbedApiConfig("http://ui-url");
 
-        documentMetadataStore =
-                new DocumentMetadataStore(new DynamoDBMapper(aws.getDynamoDBClient()));
+        documentMetadataStore = new DocumentMetadataStore(dynamoDBHelper.getMapper());
         documentStore = new DocumentStore(aws.getS3Client());
         var deletionService =
                 new DocumentDeletionService(

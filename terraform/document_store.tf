@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "document_store" {
-  bucket = "${terraform.workspace}-arf-document-store"
+  bucket_prefix = "${terraform.workspace}-document-store-"
   count  = var.workspace_is_a_sandbox ? 0 : 1
 
   lifecycle {
@@ -238,10 +238,8 @@ data "aws_iam_policy_document" "s3_object_access_policy_doc" {
   }
 }
 
-
-
 resource "aws_s3_bucket" "test_document_store" {
-  bucket_prefix = "${terraform.workspace}-test-document-store"
+  bucket_prefix = "${terraform.workspace}-test-document-store-"
   force_destroy = var.workspace_is_a_sandbox
   lifecycle {
     ignore_changes = [

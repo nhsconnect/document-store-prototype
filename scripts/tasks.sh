@@ -98,7 +98,7 @@ function create_cypress_config_file() {
 }
 
 function export_cypress_base_url() {
-  echo "CYPRESS_BASE_URL=https://main.$(jq -r '.amplify_app_ids.value[0]' "$1").amplifyapp.com" >e2eTest/cypress.sh
+  echo "CYPRESS_BASE_URL=https://dev.access-request-fulfilment.patient-deductions.nhs.uk" >e2eTest/cypress.sh
 }
 
 function tf_init {

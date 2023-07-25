@@ -1,8 +1,8 @@
 rootProject.name = 'document-store-prototype'
+include('lambdas:CreateDocumentManifestByNhsNumber')
 include('app')
 include('authoriser')
 include('virusScanner')
-include('lambdas:CreateDocumentManifestByNhsNumber')
 include('lambdas:CreateDocumentReference')
 include('lambdas:DeleteDocumentReference')
 include('lambdas:DocumentReferenceSearch')
