@@ -38,7 +38,7 @@ const AuthCallbackRouter = () => {
             .catch(() => {
                 navigate(routes.AUTH_ERROR);
             });
-    }, [baseAPIUrl, navigate, session, setSession]);
+    }, [baseAPIUrl, navigate]);
 
     return <Spinner status="Logging in..." />;
 };
