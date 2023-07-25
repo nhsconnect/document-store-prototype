@@ -145,7 +145,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         var response = new JSONObject();
         var organisations = new ArrayList<Organisation>();
         organisations.add(new Organisation("Radyr GP", "A100", "GPP"));
-        organisations.add(new Organisation("Cardiff Health Clinic", "A100", "GPP"));
+        organisations.add(new Organisation("Cardiff Health Clinic", "A110", "GPP"));
         organisations.add(new Organisation("National Care Support", "A410", "PCSE"));
         response.put("SessionId", sessionId);
         response.put("Organisations", organisations);
