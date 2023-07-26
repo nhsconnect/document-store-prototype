@@ -15,7 +15,7 @@ import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
-import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
+import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
 
@@ -70,7 +70,7 @@ class SessionManagerTest {
         Mockito.when(odsApiRequestClient.getResponse("Org1")).thenReturn(new JSONObject());
         Mockito.when(odsApiRequestClient.getResponse("Org2")).thenReturn(new JSONObject());
         Mockito.when(jsonDataExtractor.getProspectiveOrgs(Mockito.any(JSONObject.class)))
-                .thenReturn(Optional.of(new ProspectiveOrg("ODS", "Name", PermittedOrgs.GPP)));
+                .thenReturn(Optional.of(new Organisation("ODS", "Name", PermittedOrgs.GPP.type)));
 
         var sessionManager =
                 new SessionManager(

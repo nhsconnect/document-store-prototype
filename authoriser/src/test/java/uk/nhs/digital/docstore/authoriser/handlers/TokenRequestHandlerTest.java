@@ -15,14 +15,14 @@ import uk.nhs.digital.docstore.authoriser.SessionManager;
 import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
-import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
+import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 class TokenRequestHandlerTest {
 
     @Test
-    void handleRequestRedirectsWithUserRoleWhenRequestStateIsValid() throws LoginException {
+    void handleRequestRedirectsForSingleValidOrgUser() throws LoginException {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
         var state = new State();
@@ -43,7 +43,7 @@ class TokenRequestHandlerTest {
         HashMap<String, List<String>> usersOrgs = new HashMap<>();
         usersOrgs.put("odsCode", List.of("R076"));
 
-        var orgs = List.of(new ProspectiveOrg("ODS", "Name", PermittedOrgs.GPP));
+        var orgs = List.of(new Organisation("ODS", "Name", PermittedOrgs.GPP.type));
 
         var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);
@@ -70,6 +70,7 @@ class TokenRequestHandlerTest {
                                 + "; SameSite=None; Secure; Path=/; Max-Age="
                                 + maxCookieAgeInSeconds
                                 + "; HttpOnly");
+        // assertThat(response.getBody().contains())
     }
 
     @Test
@@ -94,9 +95,9 @@ class TokenRequestHandlerTest {
 
         var orgs =
                 List.of(
-                        new ProspectiveOrg("A100", "Town GP", PermittedOrgs.GPP),
-                        new ProspectiveOrg("A142", "City clinic", PermittedOrgs.DEV),
-                        new ProspectiveOrg("A410", "National care support", PermittedOrgs.PCSE));
+                        new Organisation("A100", "Town GP", PermittedOrgs.GPP.type),
+                        new Organisation("A142", "City clinic", PermittedOrgs.DEV.type),
+                        new Organisation("A410", "National care support", PermittedOrgs.PCSE.type));
 
         var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);
@@ -144,7 +145,7 @@ class TokenRequestHandlerTest {
         session.setId(UUID.randomUUID());
         session.setAccessTokenHash("AccesstokenHash");
 
-        List<ProspectiveOrg> orgs = List.of();
+        List<Organisation> orgs = List.of();
 
         var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);
@@ -169,7 +170,7 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
-        List<ProspectiveOrg> orgs = List.of();
+        List<Organisation> orgs = List.of();
 
         var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);
@@ -191,7 +192,7 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
-        List<ProspectiveOrg> orgs = List.of();
+        List<Organisation> orgs = List.of();
 
         var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);

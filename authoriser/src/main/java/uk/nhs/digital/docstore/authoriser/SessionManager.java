@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONObject;
 import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
-import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
+import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 
 public class SessionManager {
@@ -45,7 +45,7 @@ public class SessionManager {
         System.out.println("user info object: " + userInfo);
         var odsCodes = jsonDataExtractor.getOdsCodesFromUserInfo(userInfo);
 
-        var prospectiveOrgs = new ArrayList<ProspectiveOrg>();
+        var prospectiveOrgs = new ArrayList<Organisation>();
 
         odsCodes.forEach(
                 odsCode -> {

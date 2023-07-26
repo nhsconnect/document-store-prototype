@@ -2,24 +2,21 @@ package uk.nhs.digital.docstore.authoriser.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import lombok.*;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Organisation {
-    private final String odsCode;
-    private final String orgName;
-    private final String orgType;
 
-    public Organisation(
-            @JsonProperty("org_name") String orgName,
-            @JsonProperty("ods_code") String odsCode,
-            @JsonProperty("org_type") String orgType) {
-        this.odsCode = odsCode;
-        this.orgName = orgName;
-        this.orgType = orgType;
-    }
+    @JsonProperty("ods_code")
+    private String odsCode;
 
-    public String getOdsCode() {
-        return odsCode;
-    }
+    @JsonProperty("org_name")
+    private String orgName;
+
+    @JsonProperty("org_type")
+    private String orgType;
 
     public static boolean containsOrganisation(List<Organisation> organisations, String code) {
         return organisations.stream().anyMatch(org -> org.getOdsCode().equals(code));

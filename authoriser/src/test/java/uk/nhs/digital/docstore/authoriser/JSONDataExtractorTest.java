@@ -337,7 +337,7 @@ class JSONDataExtractorTest {
         assert (roleCodes.isPresent());
         var org = roleCodes.get();
         assert (org.getOrgName()).equals(expectedName);
-        assert (org.getOrgType().equals(PermittedOrgs.GPP));
+        assert (PermittedOrgs.fromType(org.getOrgType()).equals(PermittedOrgs.GPP));
     }
 
     @Test
