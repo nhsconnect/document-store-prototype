@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
 
@@ -22,4 +23,8 @@ class OrganisationTest {
 
         Assertions.assertEquals(expected.getOdsCode(), "some-code");
     }
+
+    @Disabled
+    @Test
+    void shouldSerialise() {}
 }

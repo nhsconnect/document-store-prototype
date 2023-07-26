@@ -19,7 +19,6 @@ public class Session {
     private String oidcSubject;
     private String oidcSessionID;
     private String accessTokenHash;
-
     private String subClaim;
     public static final String PARTITION_KEY_PREFIX = "OIDCSUBJECT#";
     public static final String SORT_KEY_PREFIX = "SESSION#";
