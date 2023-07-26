@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.json.JSONObject;
 import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
-import uk.nhs.digital.docstore.authoriser.models.ProspectiveOrg;
+import uk.nhs.digital.docstore.authoriser.models.Organisation;
 
 public class JSONDataExtractor {
 
@@ -23,8 +23,7 @@ public class JSONDataExtractor {
         return codes;
     }
 
-    public Optional<ProspectiveOrg> getProspectiveOrgs(JSONObject orgData) {
-        ArrayList<String> roleCodes = new ArrayList<>();
+    public Optional<Organisation> getProspectiveOrgs(JSONObject orgData) {
         var jsonRoles =
                 orgData.getJSONObject("Organisation").getJSONObject("Roles").getJSONArray("Role");
 
@@ -34,19 +33,13 @@ public class JSONDataExtractor {
 
             if (roleCode.equals(PermittedOrgs.PCSE.roleCode)) {
                 var orgName = orgData.getJSONObject("Organisation").getString("Name");
-                Optional<ProspectiveOrg> allowedOrg =
-                        Optional.of(new ProspectiveOrg("TempCode", orgName, PermittedOrgs.PCSE));
-                return allowedOrg;
+                return Optional.of(new Organisation("TempCode", orgName, PermittedOrgs.PCSE.type));
             } else if (roleCode.equals(PermittedOrgs.GPP.roleCode)) {
                 var orgName = orgData.getJSONObject("Organisation").getString("Name");
-                Optional<ProspectiveOrg> allowedOrg =
-                        Optional.of(new ProspectiveOrg("TempCode", orgName, PermittedOrgs.GPP));
-                return allowedOrg;
+                return Optional.of(new Organisation("TempCode", orgName, PermittedOrgs.GPP.type));
             } else if (roleCode.equals(PermittedOrgs.DEV.roleCode)) {
                 var orgName = orgData.getJSONObject("Organisation").getString("Name");
-                Optional<ProspectiveOrg> allowedOrg =
-                        Optional.of(new ProspectiveOrg("TempCode", orgName, PermittedOrgs.GPP));
-                return allowedOrg;
+                return Optional.of(new Organisation("TempCode", orgName, PermittedOrgs.GPP.type));
             }
         }
         return Optional.empty();

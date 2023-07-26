@@ -112,7 +112,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
         var session = loginResponse.getSession();
 
         if (loginResponse.getUsersOrgs().isEmpty()) {
-            LOGGER.debug("user has no valid orgs to log in with");
+            LOGGER.debug("user has no valid organisations to log in with");
             return authError(HttpStatus.UNAUTHORISED.code);
         }
 

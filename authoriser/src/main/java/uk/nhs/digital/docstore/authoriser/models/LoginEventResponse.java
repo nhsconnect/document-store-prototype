@@ -8,5 +8,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LoginEventResponse {
     private final Session session;
-    private final List<ProspectiveOrg> usersOrgs;
+    private final List<Organisation> usersOrgs;
 }
