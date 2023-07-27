@@ -108,11 +108,6 @@ resource "aws_iam_role_policy_attachment" "authoriser_insights_policy" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
 }
 
-resource "aws_iam_role_policy_attachment" "authoriser_sqs_policy" {
-  role       = aws_iam_role.authoriser_execution_role.name
-  policy_arn = aws_iam_policy.splunk_access_policy.arn
-}
-
 resource "aws_iam_role" "authoriser_execution" {
   name               = "${terraform.workspace}_AuthoriserExecution"
   description        = "Role to allow authoriser to execute"

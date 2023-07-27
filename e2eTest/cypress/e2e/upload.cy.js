@@ -10,7 +10,6 @@ describe("Uploads docs and tests it looks OK", () => {
         const nhsNumber = Cypress.env("REACT_APP_ENV") === "local" ? "9000000009" : "9449305552";
         const username = Cypress.env("username");
         const password = Cypress.env("password");
-        const text = Cypress.env("text");
         const oidcProvider = Cypress.env("oidc_provider");
         const uploadedFilePathNames = [
             "cypress/fixtures/test_patient_record.pdf",

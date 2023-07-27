@@ -4,7 +4,6 @@ export const routes = Object.freeze({
     AUTH_SUCCESS: "/auth-success",
     AUTH_ERROR: "/auth-error",
     HOME: "/home",
-    NO_VALID_ORGANISATION: "/no-valid-organisation",
     UPLOAD: "/upload",
     UPLOAD_SEARCH_PATIENT: "/upload/search-patient",
     UPLOAD_SEARCH_PATIENT_RESULT: "/upload/search-patient/result",

@@ -12,6 +12,7 @@ const AuthCallbackRouter = () => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const code = urlSearchParams.get("code");
         const state = urlSearchParams.get("state");
+        console.log(code, state);
         axios
             .get(`${baseAPIUrl}/Auth/TokenRequest`, {
                 params: { code, state },
@@ -21,11 +22,8 @@ const AuthCallbackRouter = () => {
                 navigate(routes.AUTH_SUCCESS);
             })
             .catch((err) => {
-                if (err.response.status === 401) {
-                    navigate(routes.NO_VALID_ORGANISATION);
-                } else if (err.response.status === 403) {
-                    navigate(routes.AUTH_ERROR);
-                }
+                console.log(err);
+                navigate(routes.AUTH_ERROR);
             });
     }, [baseAPIUrl, navigate]);
 

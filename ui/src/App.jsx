@@ -22,7 +22,6 @@ import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
 import AuthSuccessRouter from "./auth/authSuccessRouter/AuthSuccessRouter";
 import SessionProvider from "./providers/sessionProvider/SessionProvider";
 import { PatientSummaryPage } from "./pages/patientSummaryPage/patientSummaryPage";
-import NoValidOrgsPage from "./pages/noValidOrgsPage/NoValidOrgsPage";
 
 const AppRoutes = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
@@ -33,7 +32,6 @@ const AppRoutes = () => {
         AUTH_SUCCESS,
         AUTH_ERROR,
         HOME,
-        NO_VALID_ORGANISATION,
         UPLOAD,
         UPLOAD_SEARCH_PATIENT,
         UPLOAD_SEARCH_PATIENT_RESULT,
@@ -62,7 +60,6 @@ const AppRoutes = () => {
             />
             <Route element={<AuthSuccessRouter />} path={AUTH_SUCCESS} />
             <Route element={<AuthErrorPage />} path={AUTH_ERROR} />
-            <Route element={<NoValidOrgsPage />} path={NO_VALID_ORGANISATION} />
             <Route
                 element={
                     <ProtectedAuthRoutes>

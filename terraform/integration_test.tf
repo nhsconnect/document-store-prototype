@@ -1,5 +1,5 @@
 resource "aws_iam_role" "integration_test_runner" {
-  name               = "${terraform.workspace}_IntegrationTestRunner"
+  name               = "IntegrationTestRunner"
   description        = "Role for running integration tests against AWS resources"
   assume_role_policy = data.aws_iam_policy_document.integration_test_runner_trust_policy.json
   count              = terraform.workspace == "dev" ? 1 : 0

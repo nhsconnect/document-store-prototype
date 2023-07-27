@@ -8,13 +8,12 @@ import com.nimbusds.oauth2.sdk.id.State;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.SessionManager;
+import uk.nhs.digital.docstore.authoriser.enums.LoginEventOutcome;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
@@ -39,10 +38,7 @@ class TokenRequestHandlerTest {
         session.setId(UUID.randomUUID());
         session.setAccessTokenHash("AccesstokenHash");
 
-        HashMap<String, List<String>> usersOrgs = new HashMap<>();
-        usersOrgs.put("odsCode", List.of("R076"));
-
-        var loginOutcome = new LoginEventResponse(session, usersOrgs);
+        var loginOutcome = new LoginEventResponse(session, LoginEventOutcome.ONE_VALID_ORG);
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
@@ -89,9 +85,7 @@ class TokenRequestHandlerTest {
         session.setId(UUID.randomUUID());
         session.setAccessTokenHash("AccesstokenHash");
 
-        HashMap<String, List<String>> usersOrgs = new HashMap<>();
-
-        var loginOutcome = new LoginEventResponse(session, usersOrgs);
+        var loginOutcome = new LoginEventResponse(session, LoginEventOutcome.NO_VALID_ORGS);
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
@@ -104,7 +98,7 @@ class TokenRequestHandlerTest {
     }
 
     @Test
-    void handleRequestReturnsBadRequestResponseWhenTheRequestStateIsInvalid() throws Exception {
+    void handleRequestReturnsBadRequestUrlWhenTheRequestStateIsInvalid() throws Exception {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
         request.setQueryStringParameters(
@@ -113,17 +107,15 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
-        HashMap<String, List<String>> usersOrgs = new HashMap<>();
-
-        var loginOutcome = new LoginEventResponse(session, usersOrgs);
+        var loginOutcome = new LoginEventResponse(session, LoginEventOutcome.ONE_VALID_ORG);
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
         var handler = new TokenRequestHandler(sessionManager);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
-        assertThat(response.getStatusCode()).isEqualTo(400);
-        assertThat(response.getBody()).isEqualTo("");
+        assertThat(response.getStatusCode()).isEqualTo(401);
+        //        assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
 
@@ -135,16 +127,14 @@ class TokenRequestHandlerTest {
         var session = new Session();
         session.setRole("some-role");
 
-        HashMap<String, List<String>> usersOrgs = new HashMap<>();
-
-        var loginOutcome = new LoginEventResponse(session, usersOrgs);
+        var loginOutcome = new LoginEventResponse(session, LoginEventOutcome.ONE_VALID_ORG);
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
         var handler = new TokenRequestHandler(sessionManager);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
-        assertThat(response.getStatusCode()).isEqualTo(400);
+        assertThat(response.getStatusCode()).isEqualTo(401);
         //        assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
     }

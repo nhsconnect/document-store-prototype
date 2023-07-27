@@ -1,22 +1,21 @@
 package uk.nhs.digital.docstore.authoriser.models;
 
-import java.util.HashMap;
-import java.util.List;
+import uk.nhs.digital.docstore.authoriser.enums.LoginEventOutcome;
 
 public class LoginEventResponse {
     private final Session session;
-    private final HashMap<String, List<String>> usersOrgs;
+    private final LoginEventOutcome outcome;
 
-    public LoginEventResponse(Session session, HashMap<String, List<String>> usersOrgs) {
+    public LoginEventResponse(Session session, LoginEventOutcome loginEventOutcome) {
         this.session = session;
-        this.usersOrgs = usersOrgs;
+        this.outcome = loginEventOutcome;
     }
 
     public Session getSession() {
         return session;
     }
 
-    public HashMap<String, List<String>> getUsersOrgs() {
-        return usersOrgs;
+    public LoginEventOutcome getOutcome() {
+        return outcome;
     }
 }

@@ -1,6 +1,5 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
@@ -9,47 +8,20 @@ import java.time.Instant;
 import java.util.*;
 import org.assertj.core.api.Assertions;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import uk.nhs.digital.docstore.authoriser.audit.message.UserInfoAuditMessage;
-import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.exceptions.AuthorisationException;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.stubs.InMemorySessionStore;
-import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
-import uk.org.webcompere.systemstubs.jupiter.SystemStub;
-import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
-@ExtendWith(SystemStubsExtension.class)
 class SessionManagerTest {
-    private static final String SQS_URL = "some-url";
-    private static final String SQS_ENDPOINT = "some-endpoint";
-
-    @SystemStub
-    private EnvironmentVariables environmentVariables =
-            new EnvironmentVariables()
-                    .set("SQS_AUDIT_QUEUE_URL", SQS_URL)
-                    .set("SQS_ENDPOINT", SQS_ENDPOINT);
-
-    private static InMemorySessionStore sessionStore;
-    private final AuditPublisher splunkPublisher = Mockito.mock(AuditPublisher.class);
-    private final OIDCClient oidcClient = Mockito.mock(OIDCClient.class);
-    private final JSONDataExtractor jsonDataExtractor = Mockito.mock(JSONDataExtractor.class);
-    private final ODSAPIRequestClient odsApiRequestClient = Mockito.mock(ODSAPIRequestClient.class);
-    private final AuthorizationCode authCode = new AuthorizationCode("authcode");
-    private final UserInfoAuditMessage auditMessage = new UserInfoAuditMessage("user-id");
-
-    @BeforeEach
-    public void init() {
-        sessionStore = new InMemorySessionStore();
-    }
 
     @Test
     public void throwsErrorIfTokenCannotBeExchanged() throws Exception {
+        var oidcClient = Mockito.mock(OIDCClient.class);
+        var sessionStore = new InMemorySessionStore();
         Mockito.when(oidcClient.authoriseSession(Mockito.any()))
                 .thenThrow(new AuthorisationException(new Exception()));
 
@@ -61,34 +33,34 @@ class SessionManagerTest {
 
     @Test
     public void throwsErrorIfUserInfoRequestFails() throws Exception {
-        var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
-        var session = Session.create(UUID.randomUUID(), claimsSet, new BearerAccessToken());
-
-        Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
-        Mockito.doNothing().when(splunkPublisher).publish(auditMessage);
+        var sessionStore = new InMemorySessionStore();
+        var oidcClient = Mockito.mock(OIDCClient.class);
+        var session = Mockito.mock((Session.class));
+        Mockito.when(session.getAccessTokenHash()).thenReturn("Access token");
+        Mockito.when(session.getSubClaim()).thenReturn("Sub claim");
+        Mockito.when(oidcClient.authoriseSession(Mockito.any())).thenReturn(session);
         Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
                 .thenThrow(new UserInfoFetchingException("User info exception"));
 
-        var sessionManager =
-                new SessionManager(
-                        oidcClient,
-                        sessionStore,
-                        jsonDataExtractor,
-                        odsApiRequestClient,
-                        splunkPublisher);
+        var sessionManager = new SessionManager(oidcClient, sessionStore);
 
-        Assertions.assertThatThrownBy(() -> sessionManager.createSession(authCode))
+        Assertions.assertThatThrownBy(() -> sessionManager.createSession(new AuthorizationCode()))
                 .isInstanceOf(UserInfoFetchingException.class);
     }
 
     @Test
     public void savesSessionIfUserHasOneOrMoreValidOrgs()
-            throws AuthorisationException, UserInfoFetchingException, JsonProcessingException {
+            throws AuthorisationException, UserInfoFetchingException {
+        var sessionStore = new InMemorySessionStore();
+        var authCode = new AuthorizationCode("authcode");
+        var jsonDataExtractor = Mockito.mock(JSONDataExtractor.class);
+        var odsApiRequestClient = Mockito.mock(ODSAPIRequestClient.class);
+        var oidcClient = Mockito.mock(OIDCClient.class);
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
+
         var session = Session.create(UUID.randomUUID(), claimsSet, new BearerAccessToken());
 
         Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
-        Mockito.doNothing().when(splunkPublisher).publish(auditMessage);
         Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(new UserInfo(new Subject()));
         Mockito.when(jsonDataExtractor.getOdsCodesFromUserInfo(Mockito.any(JSONObject.class)))
@@ -100,11 +72,7 @@ class SessionManagerTest {
 
         var sessionManager =
                 new SessionManager(
-                        oidcClient,
-                        sessionStore,
-                        jsonDataExtractor,
-                        odsApiRequestClient,
-                        splunkPublisher);
+                        oidcClient, sessionStore, jsonDataExtractor, odsApiRequestClient);
 
         var result = sessionManager.createSession(authCode);
 
@@ -125,13 +93,17 @@ class SessionManagerTest {
 
     @Test
     public void doesNotSaveSessionIfUserHasNoValidOrgs()
-            throws AuthorisationException, UserInfoFetchingException, JsonProcessingException {
+            throws AuthorisationException, UserInfoFetchingException {
+        var sessionStore = new InMemorySessionStore();
+        var authCode = new AuthorizationCode("authcode");
+        var jsonDataExtractor = Mockito.mock(JSONDataExtractor.class);
+        var odsApiRequestClient = Mockito.mock(ODSAPIRequestClient.class);
+        var oidcClient = Mockito.mock(OIDCClient.class);
         var claimsSet = IDTokenClaimsSetBuilder.buildClaimsSet();
 
         var session = Session.create(UUID.randomUUID(), claimsSet, new BearerAccessToken());
 
         Mockito.when(oidcClient.authoriseSession(authCode)).thenReturn(session);
-        Mockito.doNothing().when(splunkPublisher).publish(auditMessage);
         Mockito.when(oidcClient.fetchUserInfo(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(new UserInfo(new Subject()));
         Mockito.when(jsonDataExtractor.getOdsCodesFromUserInfo(Mockito.any(JSONObject.class)))
@@ -143,11 +115,7 @@ class SessionManagerTest {
 
         var sessionManager =
                 new SessionManager(
-                        oidcClient,
-                        sessionStore,
-                        jsonDataExtractor,
-                        odsApiRequestClient,
-                        splunkPublisher);
+                        oidcClient, sessionStore, jsonDataExtractor, odsApiRequestClient);
 
         var result = sessionManager.createSession(authCode);
 

@@ -21,7 +21,7 @@ public class DynamoDBHelper {
         scanResult.getItems().forEach(item -> dynamoDBClient.deleteItem(tableName, item));
     }
 
-    public DynamoDBMapper getMapper() {
+    public DynamoDBMapper getMapper(){
         return new DynamoDBMapper(dynamoDBClient, config);
     }
 }

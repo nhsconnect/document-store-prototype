@@ -8,7 +8,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.AuthenticationRequestFactory;
-import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 
 public class LoginRedirectHandler extends BaseAuthRequestHandler
         implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -30,6 +29,7 @@ public class LoginRedirectHandler extends BaseAuthRequestHandler
             APIGatewayProxyRequestEvent requestEvent, Context context) {
 
         var authRequest = authenticationRequestFactory.build();
+        var resources = authRequest.getResources();
 
         LOGGER.debug("Request event:" + authRequest);
 
@@ -46,7 +46,7 @@ public class LoginRedirectHandler extends BaseAuthRequestHandler
                         + authRequestUri);
 
         return new APIGatewayProxyResponseEvent()
-                .withStatusCode(HttpStatus.SEE_OTHER.code)
+                .withStatusCode(SEE_OTHER_STATUS_CODE)
                 .withHeaders(headers)
                 .withIsBase64Encoded(false)
                 .withBody("");
