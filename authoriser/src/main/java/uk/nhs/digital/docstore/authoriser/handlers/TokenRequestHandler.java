@@ -137,7 +137,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         var response = new JSONObject();
         var organisations = new ArrayList<>(loginResponse.getUsersOrgs());
-        response.put("SessionId", sessionId);
         response.put("Organisations", organisations);
 
         return new APIGatewayProxyResponseEvent()
