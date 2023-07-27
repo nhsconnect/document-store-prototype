@@ -28,18 +28,20 @@ public class JSONDataExtractor {
                 orgData.getJSONObject("Organisation").getJSONObject("Roles").getJSONArray("Role");
 
         for (int i = 0; i < jsonRoles.length(); i++) {
-            var jsonRole = jsonRoles.getJSONObject(i);
-            var roleCode = jsonRole.getString("id");
+            var roleCode = jsonRoles.getJSONObject(i).getString("id");
+
+            var orgName = orgData.getJSONObject("Organisation").getString("Name");
+            var odsCode =
+                    orgData.getJSONObject("Organisation")
+                            .getJSONObject("OrgId")
+                            .getString("extension");
 
             if (roleCode.equals(PermittedOrgs.PCSE.roleCode)) {
-                var orgName = orgData.getJSONObject("Organisation").getString("Name");
-                return Optional.of(new Organisation(orgName, PermittedOrgs.PCSE.type));
+                return Optional.of(new Organisation(odsCode, orgName, PermittedOrgs.PCSE.type));
             } else if (roleCode.equals(PermittedOrgs.GPP.roleCode)) {
-                var orgName = orgData.getJSONObject("Organisation").getString("Name");
-                return Optional.of(new Organisation(orgName, PermittedOrgs.GPP.type));
+                return Optional.of(new Organisation(odsCode, orgName, PermittedOrgs.GPP.type));
             } else if (roleCode.equals(PermittedOrgs.DEV.roleCode)) {
-                var orgName = orgData.getJSONObject("Organisation").getString("Name");
-                return Optional.of(new Organisation(orgName, PermittedOrgs.GPP.type));
+                return Optional.of(new Organisation(odsCode, orgName, PermittedOrgs.GPP.type));
             }
         }
         return Optional.empty();

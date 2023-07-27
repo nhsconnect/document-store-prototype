@@ -192,6 +192,7 @@ class JSONDataExtractorTest {
     void returnsGpOrgFromOrgData() {
         String roleCode = "RO76";
         var expectedName = "NHS ENGLAND - X26";
+        var expectedOdsCode = "X26";
         String singleRoleOrg =
                 "{\n"
                         + "    \"Organisation\": {\n"
@@ -211,8 +212,9 @@ class JSONDataExtractorTest {
                         + "        \"OrgId\": {\n"
                         + "            \"root\": \"2.16.840.1.113883.2.1.3.2.4.18.48\",\n"
                         + "            \"assigningAuthorityName\": \"HSCIC\",\n"
-                        + "            \"extension\": \"X26\"\n"
-                        + "        },\n"
+                        + "            \"extension\": \""
+                        + expectedOdsCode
+                        + "\"},\n"
                         + "        \"Status\": \"Active\",\n"
                         + "        \"LastChangeDate\": \"2023-01-31\",\n"
                         + "        \"orgRecordClass\": \"RC1\",\n"
@@ -338,6 +340,7 @@ class JSONDataExtractorTest {
         var org = roleCodes.get();
         assert (org.getOrgName()).equals(expectedName);
         assert (PermittedOrgs.fromType(org.getOrgType()).equals(PermittedOrgs.GPP));
+        assert (org.getOdsCode().equals(expectedOdsCode));
     }
 
     @Test
