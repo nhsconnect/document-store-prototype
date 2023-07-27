@@ -1,7 +1,10 @@
 package uk.nhs.digital.docstore.authoriser;
 
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.json.JSONObject;
 import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
@@ -45,18 +48,12 @@ public class SessionManager {
         System.out.println("user info object: " + userInfo);
         var odsCodes = jsonDataExtractor.getOdsCodesFromUserInfo(userInfo);
 
-        var prospectiveOrgs = new ArrayList<Organisation>();
-
-        odsCodes.forEach(
-                odsCode -> {
-                    var orgData = odsApiClient.getResponse(odsCode);
-                    var prospectiveOrg = jsonDataExtractor.getProspectiveOrgs(orgData);
-                    if (prospectiveOrg.isPresent()) {
-                        var org = prospectiveOrg.get();
-                        org.setOdsCode(odsCode);
-                        prospectiveOrgs.add(org);
-                    }
-                });
+        List<Organisation> prospectiveOrgs = odsCodes.stream()
+                .map(odsApiClient::getResponse)
+                .map(jsonDataExtractor::getProspectiveOrgs)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
 
         if (!prospectiveOrgs.isEmpty()) {
             sessionStore.save(session);
