@@ -134,9 +134,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 httpOnlyCookieBuilder(
                         "SubjectClaim", session.getOIDCSubject(), maxCookieAgeInSeconds);
         var sessionIdCookie = httpOnlyCookieBuilder("SessionId", sessionId, maxCookieAgeInSeconds);
-        var role = "ADMIN";
-        var roleCookie = httpOnlyCookieBuilder("RoleId", role, maxCookieAgeInSeconds);
-        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie, roleCookie);
+        var cookies = List.of(stateCookie, subjectClaimCookie, sessionIdCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
         LOGGER.debug(

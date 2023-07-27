@@ -33,13 +33,13 @@ public class JSONDataExtractor {
 
             if (roleCode.equals(PermittedOrgs.PCSE.roleCode)) {
                 var orgName = orgData.getJSONObject("Organisation").getString("Name");
-                return Optional.of(new Organisation("TempCode", orgName, PermittedOrgs.PCSE.type));
+                return Optional.of(new Organisation(orgName, PermittedOrgs.PCSE.type));
             } else if (roleCode.equals(PermittedOrgs.GPP.roleCode)) {
                 var orgName = orgData.getJSONObject("Organisation").getString("Name");
-                return Optional.of(new Organisation("TempCode", orgName, PermittedOrgs.GPP.type));
+                return Optional.of(new Organisation(orgName, PermittedOrgs.GPP.type));
             } else if (roleCode.equals(PermittedOrgs.DEV.roleCode)) {
                 var orgName = orgData.getJSONObject("Organisation").getString("Name");
-                return Optional.of(new Organisation("TempCode", orgName, PermittedOrgs.GPP.type));
+                return Optional.of(new Organisation(orgName, PermittedOrgs.GPP.type));
             }
         }
         return Optional.empty();
