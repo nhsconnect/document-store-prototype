@@ -13,11 +13,11 @@ import uk.nhs.digital.docstore.authoriser.handlers.TokenRequestHandler;
 public class ODSAPIClient {
     public static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
 
-    private static final String url =
+    private static final String URL =
             "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/";
 
     public JSONObject getOrgData(String odsCode) throws IOException {
-        var requestUrl = new URL(url + odsCode);
+        var requestUrl = new URL(URL + odsCode);
         HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
         connection.setRequestMethod("GET");
 
