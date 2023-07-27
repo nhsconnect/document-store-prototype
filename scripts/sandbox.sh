@@ -34,14 +34,14 @@ function run_sandbox() {
       printf "\n${yellow} Building lambda layers...\n\n${normal}"
       cd ..
       ./gradlew app:spotlessApply && ./gradlew app:build
-      ./gradlew authoriser:spotlessApply && ./gradlew authoriser:build 
+      ./gradlew app:buildZip
+      ./gradlew authoriser:spotlessApply && ./gradlew authoriser:build
       build_lambdas
       local LAMBDA_STATE=$?
       echo $LAMBDA_STATE
       if [[ $LAMBDA_STATE -ne 0 ]]; then
         exit $LAMBDA_STATE;
       fi
-      ./gradlew app:buildZip
       printf "\n${yellow} Creating Terraform plan...\n\n${normal}"
       cd ./terraform
       terraform plan -var workspace_is_a_sandbox=true -var-file="dev.tfvars" -out tfplan 2>&1 | tee tfplan.log
