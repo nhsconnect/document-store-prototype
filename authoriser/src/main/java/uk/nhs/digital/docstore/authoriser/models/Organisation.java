@@ -22,6 +22,7 @@ public class Organisation {
         this.orgName = orgName;
         this.orgType = orgType;
     }
+
     public static boolean containsOrganisation(List<Organisation> organisations, String code) {
         return organisations.stream().anyMatch(org -> org.getOdsCode().equals(code));
     }
