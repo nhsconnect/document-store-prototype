@@ -18,6 +18,10 @@ public class Organisation {
     @JsonProperty("org_type")
     private String orgType;
 
+    public Organisation(String orgName, String orgType) {
+        this.orgName = orgName;
+        this.orgType = orgType;
+    }
     public static boolean containsOrganisation(List<Organisation> organisations, String code) {
         return organisations.stream().anyMatch(org -> org.getOdsCode().equals(code));
     }

@@ -52,7 +52,9 @@ public class SessionManager {
                     var orgData = odsApiClient.getResponse(odsCode);
                     var prospectiveOrg = jsonDataExtractor.getProspectiveOrgs(orgData);
                     if (prospectiveOrg.isPresent()) {
-                        prospectiveOrgs.add(prospectiveOrg.get());
+                        var org = prospectiveOrg.get();
+                        org.setOdsCode(odsCode);
+                        prospectiveOrgs.add(org);
                     }
                 });
 
