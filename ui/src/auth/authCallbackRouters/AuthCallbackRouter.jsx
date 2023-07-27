@@ -27,11 +27,12 @@ const AuthCallbackRouter = () => {
                     organisations: Organisations,
                     isLoggedIn: true,
                 });
-                if (session.organisations) {
+                navigate(routes.ORG_SELECT);
+               /* if (session.organisations) {
                     navigate(routes.ORG_SELECT);
                 } else {
                     navigate(routes.HOME);
-                }
+                }*/
             })
             .catch((err) => {
                 if (err.response.status === 401) {
