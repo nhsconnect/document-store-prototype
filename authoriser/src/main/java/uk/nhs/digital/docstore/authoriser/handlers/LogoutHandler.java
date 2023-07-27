@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.LogoutRequestEvent;
@@ -68,7 +69,7 @@ public class LogoutHandler extends BaseAuthRequestHandler
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
-                .withStatusCode(SEE_OTHER_STATUS_CODE)
+                .withStatusCode(HttpStatus.SEE_OTHER.code)
                 .withHeaders(headers)
                 .withMultiValueHeaders(multiValueHeaders)
                 .withBody("");
