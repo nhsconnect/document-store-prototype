@@ -11,8 +11,11 @@ import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 const OrgSelectPage = () => {
     const [session] = useSessionContext();
     const navigate = useNavigate();
-    // const { register, handleSubmit, formState, getFieldState } = useForm();
-    const { handleSubmit } = useForm();
+    const { register, handleSubmit, formState, getFieldState } = useForm();
+
+    const { ref: organisationRef, ...organisationProps } = register("organisation");
+    const { isDirty: isOrganisationDirty } = getFieldState("organisation", formState);
+
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
 
     useEffect(() => {
@@ -23,13 +26,11 @@ const OrgSelectPage = () => {
 
     const submit = (organisation) => {
         console.log(organisation);
-        const org = {
-            organisation: organisation,
-        };
+
         axios
             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
-                params: { org },
                 withCredentials: true,
+                params: { organisation },
             })
             .then((res) => {
                 console.log(JSON.stringify(res.data, null, 4));
@@ -39,22 +40,30 @@ const OrgSelectPage = () => {
                 navigate(routes.AUTH_ERROR);
             });
     };
+
     return (
         <>
             <form onSubmit={handleSubmit(submit)}>
                 <Fieldset>
                     <Fieldset.Legend headingLevel="h1" isPageHeading>
-                        How do you want to use the service?
+                        Select an organisation
                     </Fieldset.Legend>
-                    <Radios hint="Select an option">
+                    <Radios hint="You are associated to more than one organisation, select an organisation you would like to view">
                         {session.organisations.map((item, key) => (
-                            <Radios.Radio key={key} value={item.orgName}>
+                            <Radios.Radio
+                                {...organisationProps}
+                                key={key}
+                                value={item.orgName}
+                                inputRef={organisationRef}
+                            >
                                 {item.orgType}: {item.odsCode}
                             </Radios.Radio>
                         ))}
                     </Radios>
                 </Fieldset>
-                <Button type="submit">Continue</Button>
+                <Button type="submit" disabled={!isOrganisationDirty}>
+                    Continue
+                </Button>
             </form>
         </>
     );

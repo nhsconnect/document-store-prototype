@@ -44,7 +44,7 @@ const AppRoutes = () => {
         SEARCH_PATIENT_RESULT,
         SEARCH_RESULTS,
         SEARCH_RESULTS_DELETE,
-        ORG_SELECT
+        ORG_SELECT,
     } = routes;
 
     const ProtectedAuthRoutes = ({ children }) => {
