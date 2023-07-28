@@ -92,14 +92,17 @@ resource "aws_api_gateway_deployment" "api_deploy" {
       aws_api_gateway_resource.back_channel_logout_resource,
       aws_api_gateway_resource.auth_resource,
       aws_api_gateway_resource.token_request_resource,
+      aws_api_gateway_resource.verify_organisation_resource,
       aws_api_gateway_integration.back_channel_logout_lambda_integration,
       aws_api_gateway_integration.login_lambda_integration,
       aws_api_gateway_integration.logout_lambda_integration,
       aws_api_gateway_integration.token_request_lambda_integration,
+      aws_api_gateway_integration.verify_organisation_lambda_integration,
       aws_api_gateway_method.token_request_proxy_method,
       aws_api_gateway_method.login_proxy_method,
       aws_api_gateway_method.logout_proxy_method,
-      aws_api_gateway_method.back_channel_logout_proxy_method
+      aws_api_gateway_method.back_channel_logout_proxy_method,
+      aws_api_gateway_method.verify_organisation_request_proxy_method
     ]))
   }
 }
