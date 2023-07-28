@@ -30,7 +30,7 @@ const AuthCallbackRouter = () => {
                     isLoggedIn: true,
                 });
                 navigate(routes.ORG_SELECT);
-               /* if (session.organisations) {
+                /* if (session.organisations) {
                     navigate(routes.ORG_SELECT);
                 } else {
                     navigate(routes.HOME);
