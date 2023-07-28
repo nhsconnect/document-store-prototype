@@ -1,6 +1,7 @@
 package uk.nhs.digital.docstore.authoriser.handlers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
@@ -9,6 +10,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.SessionManager;
@@ -22,7 +24,7 @@ import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 class TokenRequestHandlerTest {
 
     @Test
-    void handleRequestRedirectsForSingleValidOrgUser() throws LoginException {
+    void handleRequestReturnsCookiesAndOrgForSingleValidOrgUser() throws LoginException {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
         var state = new State();
@@ -40,12 +42,11 @@ class TokenRequestHandlerTest {
         session.setId(UUID.randomUUID());
         session.setAccessTokenHash("AccesstokenHash");
 
-        HashMap<String, List<String>> usersOrgs = new HashMap<>();
-        usersOrgs.put("odsCode", List.of("R076"));
+        var org = List.of(new Organisation("ODS", "Name", PermittedOrgs.GPP.type));
+        var expectedJsonBody = new JSONObject();
+        expectedJsonBody.put("Organisations", org);
 
-        var orgs = List.of(new Organisation("ODS", "Name", PermittedOrgs.GPP.type));
-
-        var loginOutcome = new LoginEventResponse(session, orgs);
+        var loginOutcome = new LoginEventResponse(session, org);
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
@@ -70,12 +71,12 @@ class TokenRequestHandlerTest {
                                 + "; SameSite=None; Secure; Path=/; Max-Age="
                                 + maxCookieAgeInSeconds
                                 + "; HttpOnly");
-        // assertThat(response.getBody().contains())
+
+        assertTrue(expectedJsonBody.similar(new JSONObject(response.getBody())));
     }
 
     @Test
-    public void handleRequestRedirectsWithUserRoleWhenMultipleRolesAreFound()
-            throws LoginException {
+    public void handleRequestReturnsCookiesAndOrgsForSingleValidOrgUser() throws LoginException {
         var request = new TokenRequestEvent();
         var authCode = new AuthorizationCode();
         var state = new State();
@@ -98,6 +99,8 @@ class TokenRequestHandlerTest {
                         new Organisation("A100", "Town GP", PermittedOrgs.GPP.type),
                         new Organisation("A142", "City clinic", PermittedOrgs.DEV.type),
                         new Organisation("A410", "National care support", PermittedOrgs.PCSE.type));
+        var expectedJsonBody = new JSONObject();
+        expectedJsonBody.put("Organisations", orgs);
 
         var loginOutcome = new LoginEventResponse(session, orgs);
         var sessionManager = Mockito.mock(SessionManager.class);
@@ -124,6 +127,8 @@ class TokenRequestHandlerTest {
                                 + "; SameSite=None; Secure; Path=/; Max-Age="
                                 + maxCookieAgeInSeconds
                                 + "; HttpOnly");
+
+        assertTrue(expectedJsonBody.similar(new JSONObject(response.getBody())));
     }
 
     @Test
@@ -155,7 +160,7 @@ class TokenRequestHandlerTest {
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(401);
-        //        assertThat(response.getBody()).isEqualTo("");
+        assertThat(response.getBody()).isEmpty();
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
 
@@ -180,7 +185,7 @@ class TokenRequestHandlerTest {
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(400);
-        assertThat(response.getBody()).isEqualTo("");
+        assertThat(response.getBody()).isEmpty();
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
 
@@ -202,6 +207,7 @@ class TokenRequestHandlerTest {
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(400);
+        assertThat(response.getBody()).isEqualTo("");
         assertThat(response.getIsBase64Encoded()).isFalse();
     }
 }
