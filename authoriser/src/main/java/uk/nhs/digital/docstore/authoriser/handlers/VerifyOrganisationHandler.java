@@ -2,8 +2,8 @@ package uk.nhs.digital.docstore.authoriser.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.util.HashMap;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -11,10 +11,9 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.Utils;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
-import uk.nhs.digital.docstore.authoriser.requestEvents.OrganisationRequestEvent;
 
 public class VerifyOrganisationHandler extends BaseAuthRequestHandler
-        implements RequestHandler<OrganisationRequestEvent, APIGatewayProxyResponseEvent> {
+        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(VerifyOrganisationHandler.class);
     private final SessionStore sessionStore;
 
@@ -28,19 +27,21 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
-            OrganisationRequestEvent input, Context context) {
+            APIGatewayProxyRequestEvent input, Context context) {
+        LOGGER.debug("Lambda hit");
         LOGGER.debug("Path Params: {}", input.getPathParameters());
         LOGGER.debug("Query Params: {}", input.getQueryStringParameters());
         LOGGER.debug("Body: {}", input.getBody());
-        LOGGER.debug("Session ID: {}", input.getSessionId());
+        //        LOGGER.debug("Session ID: {}", input.getSessionId());
 
-        try {
-            var session =
-                    sessionStore.queryBySessionId(new SessionID(input.getSessionId().toString()));
-            LOGGER.debug(session.toString());
-        } catch (Exception e) {
-            return orgHandlerError(400);
-        }
+        //        try {
+        //            var session =
+        //                    sessionStore.queryBySessionId(new
+        // SessionID(input.getSessionId().toString()));
+        //            LOGGER.debug(session.toString());
+        //        } catch (Exception e) {
+        //            return orgHandlerError(400);
+        //        }
 
         var headers = new HashMap<String, String>();
         headers.put("Access-Control-Allow-Credentials", "true");
@@ -50,10 +51,9 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
         response.put("org", "test");
 
         return new APIGatewayProxyResponseEvent()
-                .withStatusCode(200)
                 .withIsBase64Encoded(false)
                 .withHeaders(headers)
-                .withBody(response.toString());
+                .withBody("");
     }
 
     private static APIGatewayProxyResponseEvent orgHandlerError(int statusCode) {
