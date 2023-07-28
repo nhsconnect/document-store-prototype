@@ -6,7 +6,7 @@ import { Button, Fieldset, Radios } from "nhsuk-react-components";
 import { useForm } from "react-hook-form";
 
 import axios from "axios";
-import {useBaseAPIUrl} from "../../providers/configProvider/ConfigProvider";
+import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 
 const OrgSelectPage = () => {
     const [session] = useSessionContext();
@@ -48,7 +48,9 @@ const OrgSelectPage = () => {
                     </Fieldset.Legend>
                     <Radios hint="Select an option">
                         {session.organisations.map((item, key) => (
-                            <Radios.Radio key={key} value={item.orgName}>{item.orgType}: {item.odsCode}</Radios.Radio>
+                            <Radios.Radio key={key} value={item.orgName}>
+                                {item.orgType}: {item.odsCode}
+                            </Radios.Radio>
                         ))}
                     </Radios>
                 </Fieldset>
