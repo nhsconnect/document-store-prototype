@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
+import uk.nhs.digital.docstore.authoriser.Utils;
 import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
@@ -22,26 +23,8 @@ import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 public class TokenRequestHandler extends BaseAuthRequestHandler
         implements RequestHandler<TokenRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(TokenRequestHandler.class);
-    public static final String AMPLIFY_BASE_URL_ENV_VAR = "AMPLIFY_BASE_URL";
     private final SessionManager sessionManager;
-
     private Clock clock = Clock.systemUTC();
-
-    public static String getAmplifyBaseUrl() {
-        String workspace = System.getenv("WORKSPACE");
-        String url =
-                (workspace == null || workspace.isEmpty())
-                        ? "https://access-request-fulfilment.patient-deductions.nhs.uk"
-                        : String.format(
-                                "https://%s.access-request-fulfilment.patient-deductions.nhs.uk",
-                                workspace);
-        if (url == null) {
-            LOGGER.warn("Missing required environment variable: " + AMPLIFY_BASE_URL_ENV_VAR);
-            return "__unset__AMPLIFY_BASE_URL";
-        }
-        LOGGER.debug("get amplify base url:" + url);
-        return url;
-    }
 
     @SuppressWarnings("unused")
     public TokenRequestHandler() {
@@ -116,7 +99,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         var headers = new HashMap<String, String>();
         headers.put("Access-Control-Allow-Credentials", "true");
-        headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
+        headers.put("Access-Control-Allow-Origin", Utils.getAmplifyBaseUrl());
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.getTimeToExist()).getSeconds();
         var sessionId = session.getId().toString();
@@ -149,7 +132,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
     private static APIGatewayProxyResponseEvent authError(int statusCode) {
         var headers = new HashMap<String, String>();
         headers.put("Access-Control-Allow-Credentials", "true");
-        headers.put("Access-Control-Allow-Origin", getAmplifyBaseUrl());
+        headers.put("Access-Control-Allow-Origin", Utils.getAmplifyBaseUrl());
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
                 .withStatusCode(statusCode)

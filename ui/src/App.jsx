@@ -22,6 +22,7 @@ import ProtectedRoutes from "./auth/protectedRoutes/ProtectedRoutes";
 import AuthSuccessRouter from "./auth/authSuccessRouter/AuthSuccessRouter";
 import SessionProvider from "./providers/sessionProvider/SessionProvider";
 import { PatientSummaryPage } from "./pages/patientSummaryPage/patientSummaryPage";
+import OrgSelectPage from "./pages/orgSelectPage/OrgSelectPage";
 
 const AppRoutes = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
@@ -41,6 +42,7 @@ const AppRoutes = () => {
         SEARCH_PATIENT_RESULT,
         SEARCH_RESULTS,
         SEARCH_RESULTS_DELETE,
+        ORG_SELECT,
     } = routes;
 
     const ProtectedAuthRoutes = ({ children }) => {
@@ -58,6 +60,7 @@ const AppRoutes = () => {
                 element={isOIDCAuthActive ? <OIDCAuthCallbackRouter /> : <AuthCallbackRouter />}
                 path={AUTH_CALLBACK}
             />
+            <Route path={ORG_SELECT} element={<OrgSelectPage />} />
             <Route element={<AuthSuccessRouter />} path={AUTH_SUCCESS} />
             <Route element={<AuthErrorPage />} path={AUTH_ERROR} />
             <Route
