@@ -18,6 +18,7 @@ import uk.nhs.digital.docstore.authoriser.Utils;
 import uk.nhs.digital.docstore.authoriser.config.Tracer;
 import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
+import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
@@ -120,8 +121,24 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 "Responding with auth cookies for session with ID ending in: "
                         + sessionId.substring(sessionId.length() - 4));
 
+        ArrayList<Organisation> organisations = new ArrayList();
+
         var response = new JSONObject();
-        var organisations = new ArrayList<>(loginResponse.getUsersOrgs());
+        if (System.getenv("PRMT_3542_TEST") != null
+                && System.getenv("PRMT_3542_TEST").equalsIgnoreCase("true")) {
+            organisations.add(new Organisation("X26", "NHS England", "All-seeing overlord"));
+            organisations.add(
+                    new Organisation(
+                            "A9A5A",
+                            "Crazy Alex's Discount Homeopathic Healthcare",
+                            "Quack medication"));
+            organisations.add(
+                    new Organisation(
+                            "123456", "You'll never see this on the frontend", "Not a real org"));
+        } else {
+            organisations.addAll(loginResponse.getUsersOrgs());
+        }
+
         response.put("Organisations", organisations);
 
         return new APIGatewayProxyResponseEvent()
