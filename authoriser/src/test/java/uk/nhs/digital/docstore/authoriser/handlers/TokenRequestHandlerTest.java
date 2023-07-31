@@ -2,6 +2,7 @@ package uk.nhs.digital.docstore.authoriser.handlers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
@@ -9,10 +10,17 @@ import com.nimbusds.oauth2.sdk.id.State;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.nhs.digital.docstore.authoriser.SessionManager;
 import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
@@ -21,19 +29,33 @@ import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
+@ExtendWith(MockitoExtension.class)
 class TokenRequestHandlerTest {
 
-    @Test
-    void handleRequestReturnsCookiesAndOrgForSingleValidOrgUser() throws LoginException {
-        var request = new TokenRequestEvent();
-        var authCode = new AuthorizationCode();
-        var state = new State();
+    TokenRequestEvent request = null;
+    AuthorizationCode authCode = null;
+    State state = null;
+    Session session = null;
+    Clock clock = null;
+    TokenRequestHandler handler = null;
+
+    final long maxCookieAgeInSeconds = 100L;
+    @Mock SessionManager sessionManager;
+    @Mock Context context;
+
+    @BeforeEach
+    public void setup() {
+        request = new TokenRequestEvent();
+        authCode = new AuthorizationCode();
+        state = new State();
+        session = new Session();
+        clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
+
         request.setQueryStringParameters(
                 Map.of("code", authCode.getValue(), "state", state.getValue()));
         request.setHeaders(Map.of("Cookie", "State=" + state.getValue()));
-        var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
+
         var fixedTime = Instant.now(clock);
-        var maxCookieAgeInSeconds = 100L;
         var cookieExpiryTime = fixedTime.plusSeconds(maxCookieAgeInSeconds);
         var session = new Session();
         session.setRole("Role");
@@ -42,16 +64,28 @@ class TokenRequestHandlerTest {
         session.setId(UUID.randomUUID());
         session.setAccessTokenHash("AccesstokenHash");
 
+        handler = new TokenRequestHandler(sessionManager, clock);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        request = null;
+        authCode = null;
+        state = null;
+        session = null;
+        clock = null;
+        handler = null;
+    }
+
+    @Test
+    void handleRequestReturnsCookiesAndOrgForSingleValidOrgUser() throws LoginException {
         var org = List.of(new Organisation("ODS", "Name", PermittedOrgs.GPP.type));
-        var expectedJsonBody = new JSONObject();
-        expectedJsonBody.put("Organisations", org);
+        var expectedJsonBody = new JSONObject().put("Organisations", org);
 
         var loginOutcome = new LoginEventResponse(session, org);
-        var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
-        var handler = new TokenRequestHandler(sessionManager, clock);
-        var response = handler.handleRequest(request, Mockito.mock(Context.class));
+        var response = handler.handleRequest(request, context);
 
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
@@ -77,23 +111,6 @@ class TokenRequestHandlerTest {
 
     @Test
     public void handleRequestReturnsCookiesAndOrgsForSingleValidOrgUser() throws LoginException {
-        var request = new TokenRequestEvent();
-        var authCode = new AuthorizationCode();
-        var state = new State();
-        request.setQueryStringParameters(
-                Map.of("code", authCode.getValue(), "state", state.getValue()));
-        request.setHeaders(Map.of("Cookie", "State=" + state.getValue()));
-        var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
-        var fixedTime = Instant.now(clock);
-        var maxCookieAgeInSeconds = 100L;
-        var cookieExpiryTime = fixedTime.plusSeconds(maxCookieAgeInSeconds);
-        var session = new Session();
-        session.setRole("Role");
-        session.setOIDCSubject("subject");
-        session.setTimeToExist(cookieExpiryTime);
-        session.setId(UUID.randomUUID());
-        session.setAccessTokenHash("AccesstokenHash");
-
         var orgs =
                 List.of(
                         new Organisation("A100", "Town GP", PermittedOrgs.GPP.type),
@@ -103,11 +120,9 @@ class TokenRequestHandlerTest {
         expectedJsonBody.put("Organisations", orgs);
 
         var loginOutcome = new LoginEventResponse(session, orgs);
-        var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
-        var handler = new TokenRequestHandler(sessionManager, clock);
-        var response = handler.handleRequest(request, Mockito.mock(Context.class));
+        var response = handler.handleRequest(request, context);
 
         assertThat(response.getIsBase64Encoded()).isFalse();
         assertThat(response.getMultiValueHeaders().get("Set-Cookie"))
@@ -133,31 +148,12 @@ class TokenRequestHandlerTest {
 
     @Test
     void handleRequestReturnsBadRequestResponseWhenUserHasNoValidOrgs() throws LoginException {
-        var request = new TokenRequestEvent();
-        var authCode = new AuthorizationCode();
-        var state = new State();
-        request.setQueryStringParameters(
-                Map.of("code", authCode.getValue(), "state", state.getValue()));
-        request.setHeaders(Map.of("Cookie", "State=" + state.getValue()));
-        var clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
-        var fixedTime = Instant.now(clock);
-        var maxCookieAgeInSeconds = 100L;
-        var cookieExpiryTime = fixedTime.plusSeconds(maxCookieAgeInSeconds);
-        var session = new Session();
-        session.setRole("Role");
-        session.setOIDCSubject("subject");
-        session.setTimeToExist(cookieExpiryTime);
-        session.setId(UUID.randomUUID());
-        session.setAccessTokenHash("AccesstokenHash");
-
         List<Organisation> orgs = List.of();
 
         var loginOutcome = new LoginEventResponse(session, orgs);
-        var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
-        var handler = new TokenRequestHandler(sessionManager, clock);
-        var response = handler.handleRequest(request, Mockito.mock(Context.class));
+        var response = handler.handleRequest(request, context);
 
         assertThat(response.getStatusCode()).isEqualTo(401);
         assertThat(response.getBody()).isEmpty();
@@ -167,22 +163,14 @@ class TokenRequestHandlerTest {
     @Test
     void handleRequestReturnsBadRequestResponseWhenTheRequestStateIsInvalid()
             throws LoginException {
-        var request = new TokenRequestEvent();
-        var authCode = new AuthorizationCode();
-        request.setQueryStringParameters(
-                Map.of("code", authCode.getValue(), "state", new State().getValue()));
-        request.setHeaders(Map.of("Cookie", "State=" + new State().getValue()));
-        var session = new Session();
         session.setRole("some-role");
 
         List<Organisation> orgs = List.of();
 
         var loginOutcome = new LoginEventResponse(session, orgs);
-        var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
-        var handler = new TokenRequestHandler(sessionManager);
-        var response = handler.handleRequest(request, Mockito.mock(Context.class));
+        var response = handler.handleRequest(request, context);
 
         assertThat(response.getStatusCode()).isEqualTo(400);
         assertThat(response.getBody()).isEmpty();
@@ -191,20 +179,16 @@ class TokenRequestHandlerTest {
 
     @Test
     void handleRequestReturnsBadRequestResponseWhenTheStateCookieIsMissing() throws LoginException {
-        var request = new TokenRequestEvent();
-        var authCode = new AuthorizationCode();
         request.setQueryStringParameters(Map.of("code", authCode.getValue()));
-        var session = new Session();
         session.setRole("some-role");
 
         List<Organisation> orgs = List.of();
 
         var loginOutcome = new LoginEventResponse(session, orgs);
-        var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
         var handler = new TokenRequestHandler(sessionManager);
-        var response = handler.handleRequest(request, Mockito.mock(Context.class));
+        var response = handler.handleRequest(request, context);
 
         assertThat(response.getStatusCode()).isEqualTo(400);
         assertThat(response.getBody()).isEqualTo("");
