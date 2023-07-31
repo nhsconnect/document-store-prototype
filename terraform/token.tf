@@ -11,7 +11,7 @@ resource "aws_lambda_function" "token_request_lambda" {
     "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:21"
   ]
   environment {
-    variables = merge({ AMPLIFY_BASE_URL = local.amplify_base_url, PRMT_3542_TEST = true }, local.authoriser_environment_variables)
+    variables = merge({ AMPLIFY_BASE_URL = local.amplify_base_url, PRMT_3542_TEST = "none" }, local.authoriser_environment_variables)
   }
 }
 

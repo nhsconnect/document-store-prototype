@@ -121,20 +121,25 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 "Responding with auth cookies for session with ID ending in: "
                         + sessionId.substring(sessionId.length() - 4));
 
-        ArrayList<Organisation> organisations = new ArrayList();
+        ArrayList<Organisation> organisations = new ArrayList<>();
 
         var response = new JSONObject();
-        if (System.getenv("PRMT_3542_TEST") != null
-                && System.getenv("PRMT_3542_TEST").equalsIgnoreCase("true")) {
-            organisations.add(new Organisation("X26", "NHS England", "All-seeing overlord"));
-            organisations.add(
-                    new Organisation(
-                            "A9A5A",
-                            "Crazy Alex's Discount Homeopathic Healthcare",
-                            "Quack medication"));
-            organisations.add(
-                    new Organisation(
-                            "123456", "You'll never see this on the frontend", "Not a real org"));
+        if (System.getenv("PRMT_3542_TEST") != null) {
+            if (!System.getenv("PRMT_3542_TEST").equalsIgnoreCase("none")) {
+                organisations.add(
+                        new Organisation("X26", "NHS England", "Dr. Duck's Quack Healthcare"));
+                if (System.getenv("PRMT_3542_TEST").equalsIgnoreCase("multi"))
+                    organisations.add(
+                            new Organisation(
+                                    "A9A5A",
+                                    "Homeopath",
+                                    "Crazy Alex's Discount Homeopathic Healthcare"));
+                organisations.add(
+                        new Organisation(
+                                "123456",
+                                "You'll never see this on the frontend",
+                                "Not a real org"));
+            }
         } else {
             organisations.addAll(loginResponse.getUsersOrgs());
         }
