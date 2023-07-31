@@ -27,12 +27,26 @@ const AuthCallbackRouter = () => {
                     organisations: Organisations,
                     isLoggedIn: true,
                 });
-                navigate(routes.ORG_SELECT);
-                /* if (session.organisations) {
-                    navigate(routes.ORG_SELECT);
+                if (session.organisations) {
+                    if (session.organisations.length > 1) {
+                        navigate(routes.ORG_SELECT);
+                    } else {
+                        axios
+                            .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
+                                withCredentials: true,
+                                params: { "organisations": session.organisations },
+                            })
+                            .then((res) => {
+                                console.log(JSON.stringify(res.data, null, 4));
+                                navigate(routes.HOME);
+                            })
+                            .catch(() => {
+                                navigate(routes.AUTH_ERROR);
+                            });
+                    }
                 } else {
                     navigate(routes.HOME);
-                }*/
+                }
             })
             .catch((err) => {
                 if (err.response.status === 401) {
