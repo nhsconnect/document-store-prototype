@@ -79,6 +79,7 @@ public class SessionManager {
                         .collect(Collectors.toList());
 
         if (!prospectiveOrgs.isEmpty()) {
+            session.setOrganisations(prospectiveOrgs);
             sessionStore.save(session);
         }
 

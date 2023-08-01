@@ -7,6 +7,7 @@ import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @DynamoDBTable(tableName = "ARFAuth")
@@ -20,6 +21,7 @@ public class Session {
     private String oidcSessionID;
     private String accessTokenHash;
     private String subClaim;
+    private List<Organisation> organisations;
     public static final String PARTITION_KEY_PREFIX = "OIDCSUBJECT#";
     public static final String SORT_KEY_PREFIX = "SESSION#";
 
@@ -126,6 +128,15 @@ public class Session {
 
     public void setOidcSessionID(String oidcSessionID) {
         this.oidcSessionID = oidcSessionID;
+    }
+
+    @DynamoDBAttribute(attributeName = "organisations")
+    public List<Organisation> getOrganisations() {
+        return organisations;
+    }
+
+    public void setOrganisations(List<Organisation> organisations) {
+        this.organisations = organisations;
     }
 
     @Override

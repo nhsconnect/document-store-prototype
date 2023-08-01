@@ -56,4 +56,14 @@ public class InMemorySessionStore implements SessionStore {
                 .filter(session -> session.getOidcSessionID().equals(sessionId.getValue()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<Session> queryBySessionIdWithKeys(String subjectClaim, String sessionId) {
+        var sessions =
+                sessionHashMap.values().stream()
+                        .filter(session -> session.getOidcSessionID().equals(sessionId))
+                        .collect(Collectors.toList());
+
+        return Optional.ofNullable(sessions.get(0));
+    }
 }
