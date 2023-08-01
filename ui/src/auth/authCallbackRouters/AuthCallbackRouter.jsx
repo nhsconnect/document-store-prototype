@@ -19,22 +19,22 @@ const AuthCallbackRouter = () => {
                 withCredentials: true,
             })
             .then((res) => {
-                console.log("<(o'.'o)> " + JSON.stringify(res.data, null, 4));
                 const { SessionId, Organisations } = res.data;
+                console.log(Organisations);
                 setSession({
                     ...session,
                     sessionId: SessionId,
                     organisations: Organisations,
                     isLoggedIn: true,
                 });
-                if (session.organisations) {
-                    if (session.organisations.length > 1) {
+                if (Organisations) {
+                    if (Organisations.length > 1) {
                         navigate(routes.ORG_SELECT);
                     } else {
                         axios
                             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
                                 withCredentials: true,
-                                params: { "organisations": session.organisations },
+                                params: { "organisations": Organisations },
                             })
                             .then((res) => {
                                 console.log(JSON.stringify(res.data, null, 4));
@@ -45,7 +45,7 @@ const AuthCallbackRouter = () => {
                             });
                     }
                 } else {
-                    navigate(routes.HOME);
+                    navigate(routes.AUTH_ERROR);
                 }
             })
             .catch((err) => {
