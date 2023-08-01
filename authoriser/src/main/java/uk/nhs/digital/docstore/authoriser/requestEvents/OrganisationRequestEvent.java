@@ -45,4 +45,8 @@ public class OrganisationRequestEvent extends APIGatewayProxyRequestEvent {
     public Optional<UUID> getSessionId() {
         return getCookie("SessionId").map(UUID::fromString);
     }
+
+    public Optional<String> getSubjectClaim() {
+        return getCookie("SubjectClaim");
+    }
 }

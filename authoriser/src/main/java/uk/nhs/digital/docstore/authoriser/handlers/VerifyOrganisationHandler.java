@@ -3,7 +3,6 @@ package uk.nhs.digital.docstore.authoriser.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.util.HashMap;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -17,6 +16,7 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
         implements RequestHandler<OrganisationRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(VerifyOrganisationHandler.class);
     private final SessionStore sessionStore;
+    private final String ORG = "organisation";
 
     public VerifyOrganisationHandler() {
         this(new DynamoDBSessionStore(createDynamoDbMapper()));
@@ -29,19 +29,35 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             OrganisationRequestEvent input, Context context) {
-        var params = input.getQueryStringParameters();
-        params.forEach(
-                (key, value) -> {
-                    LOGGER.debug("Key: {}, Val: {}", key, value);
-                });
-
+        var odsCode = Utils.getValueFromQueryStringParams(input.getQueryStringParameters(), ORG);
         var sessionId = input.getSessionId();
-        LOGGER.debug("Session ID: {}", sessionId);
+        var subjectClaim = input.getSubjectClaim();
+
+        if (odsCode.isEmpty() || sessionId.isEmpty() || subjectClaim.isEmpty()) {
+            LOGGER.error("ODS code, SessionId or SubjectClaim are missing");
+            return orgHandlerError(400);
+        }
 
         try {
             var session =
-                    sessionStore.queryBySessionId(new SessionID(input.getSessionId().toString()));
-            LOGGER.debug(session.toString());
+                    sessionStore.queryBySessionIdWithKeys(
+                            subjectClaim.get(), sessionId.get().toString());
+
+            if (session.isEmpty()) {
+                LOGGER.error(
+                        "Unable to find Session using the provided SessionId and SubjectClaim");
+                return orgHandlerError(404);
+            }
+
+            var match =
+                    session.get().getOrganisations().stream()
+                            .anyMatch(org -> org.getOdsCode().equals(odsCode.get()));
+
+            if (!match) {
+                LOGGER.error("ODS code did not match against user session");
+                return orgHandlerError(404);
+            }
+
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             return orgHandlerError(400);

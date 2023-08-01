@@ -1,5 +1,6 @@
 package uk.nhs.digital.docstore.authoriser.models;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import lombok.*;
@@ -7,6 +8,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamoDBDocument
 public class Organisation {
 
     @JsonProperty("ods_code")
