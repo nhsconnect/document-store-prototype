@@ -32,6 +32,8 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             OrganisationRequestEvent input, Context context) {
+
+        // TODO AKH Delete this block when the feature testing is complete
         if (System.getenv("PRMT_3542_TEST") != null
                 && System.getenv("PRMT_3542_TEST").equalsIgnoreCase("true")) {
             var headers = new HashMap<String, String>();

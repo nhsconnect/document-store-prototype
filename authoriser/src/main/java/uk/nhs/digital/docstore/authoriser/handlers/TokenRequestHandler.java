@@ -91,6 +91,27 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         var session = loginResponse.getSession();
 
+        // TODO AKH Delete this block when the feature testing is complete
+        if (System.getenv("PRMT_3542_TEST") != null) {
+            ArrayList<Organisation> organisations = new ArrayList<>();
+            if (!System.getenv("PRMT_3542_TEST").equalsIgnoreCase("none")) {
+                organisations.add(
+                        new Organisation("X26", "NHS England", "Dr. Duck's Quack Healthcare"));
+                if (System.getenv("PRMT_3542_TEST").equalsIgnoreCase("multi"))
+                    organisations.add(
+                            new Organisation(
+                                    "A9A5A",
+                                    "Homeopath",
+                                    "Crazy Alex's Discount Homeopathic Healthcare"));
+                organisations.add(
+                        new Organisation(
+                                "123456",
+                                "You'll never see this on the frontend",
+                                "Not a real org"));
+            }
+            loginResponse = new LoginEventResponse(session, organisations);
+        }
+
         if (loginResponse.getUsersOrgs().isEmpty()) {
             LOGGER.debug("user has no valid organisations to log in with");
             return authError(HttpStatus.UNAUTHORISED.code);
@@ -100,6 +121,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 "Successfully authorised session with state: "
                         + requestEvent.getCookieState().orElse(null));
 
+        var response = new JSONObject();
         var headers = new HashMap<String, String>();
         headers.put("Access-Control-Allow-Credentials", "true");
         headers.put("Access-Control-Allow-Origin", Utils.getAmplifyBaseUrl());
@@ -121,30 +143,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 "Responding with auth cookies for session with ID ending in: "
                         + sessionId.substring(sessionId.length() - 4));
 
-        ArrayList<Organisation> organisations = new ArrayList<>();
-
-        var response = new JSONObject();
-        if (System.getenv("PRMT_3542_TEST") != null) {
-            if (!System.getenv("PRMT_3542_TEST").equalsIgnoreCase("none")) {
-                organisations.add(
-                        new Organisation("X26", "NHS England", "Dr. Duck's Quack Healthcare"));
-                if (System.getenv("PRMT_3542_TEST").equalsIgnoreCase("multi"))
-                    organisations.add(
-                            new Organisation(
-                                    "A9A5A",
-                                    "Homeopath",
-                                    "Crazy Alex's Discount Homeopathic Healthcare"));
-                organisations.add(
-                        new Organisation(
-                                "123456",
-                                "You'll never see this on the frontend",
-                                "Not a real org"));
-            }
-        } else {
-            organisations.addAll(loginResponse.getUsersOrgs());
-        }
-
-        response.put("Organisations", organisations);
+        response.put("Organisations", loginResponse.getUsersOrgs());
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
