@@ -53,10 +53,10 @@ const OrgSelectPage = () => {
                             <Radios.Radio
                                 {...organisationProps}
                                 key={key}
-                                value={item.orgName}
+                                value={item.odsCode}
                                 inputRef={organisationRef}
                             >
-                                {item.orgType}: {item.odsCode}
+                                {item.orgType}: {item.orgName}
                             </Radios.Radio>
                         ))}
                     </Radios>

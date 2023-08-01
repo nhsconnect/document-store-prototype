@@ -1,6 +1,10 @@
 package uk.nhs.digital.docstore.authoriser;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,5 +30,17 @@ public class Utils {
         }
         LOGGER.debug("get amplify base url:" + url);
         return url;
+    }
+
+    public static Optional<String> getValueFromQueryStringParams(Map<String, String> queryParams, String key) {
+        var keyFormat = String.format("%s[%s]", key, key);
+
+        var result =
+                queryParams.entrySet().stream()
+                        .filter(entry -> keyFormat.equals(entry.getKey()))
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.joining());
+
+        return Optional.of(result);
     }
 }

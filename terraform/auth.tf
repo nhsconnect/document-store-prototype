@@ -36,6 +36,7 @@ resource "aws_iam_policy" "arf_auth_table_policy" {
         "Effect" : "Allow",
         "Action" : [
           "dynamodb:Query",
+          "dynamodb:Scan"
         ],
         "Resource" : [
           aws_dynamodb_table.access_request_fulfilment_auth.arn

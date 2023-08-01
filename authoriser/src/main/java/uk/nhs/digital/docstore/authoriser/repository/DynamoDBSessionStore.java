@@ -6,10 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.nimbusds.oauth2.sdk.id.Subject;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import uk.nhs.digital.docstore.authoriser.models.Session;
 
 public class DynamoDBSessionStore implements SessionStore {
@@ -18,6 +15,9 @@ public class DynamoDBSessionStore implements SessionStore {
     public DynamoDBSessionStore(DynamoDBMapper dynamoDBMapper) {
         this.dynamoDBMapper = dynamoDBMapper;
     }
+
+    public static final String PARTITION_KEY_PREFIX = "OIDCSUBJECT#";
+    public static final String SORT_KEY_PREFIX = "SESSION#";
 
     @Override
     public void save(Session session) {
@@ -67,5 +67,25 @@ public class DynamoDBSessionStore implements SessionStore {
                         .withExpressionAttributeValues(expressionAttributeValues);
 
         return dynamoDBMapper.query(Session.class, queryExpression);
+    }
+
+    @Override
+    public Optional<Session> queryBySessionIdWithKeys(String subjectClaim, String sessionId) {
+        var partitionKey = String.format("%s%s", PARTITION_KEY_PREFIX, subjectClaim);
+        var sortKey = String.format("%s%s", SORT_KEY_PREFIX, sessionId);
+
+        var expressionAttributeValues = new HashMap<String, AttributeValue>();
+        expressionAttributeValues.put(":pk", new AttributeValue().withS(partitionKey));
+        expressionAttributeValues.put(":sk", new AttributeValue().withS(sortKey));
+        expressionAttributeValues.put(":id", new AttributeValue().withS(sessionId));
+        var queryExpression =
+                new DynamoDBQueryExpression<Session>()
+                        .withKeyConditionExpression("PK= :pk and SK= :sk")
+                        .withFilterExpression("Id= :id")
+                        .withExpressionAttributeValues(expressionAttributeValues);
+
+        List<Session> result = dynamoDBMapper.query(Session.class, queryExpression);
+
+        return Optional.ofNullable(result.get(0));
     }
 }
