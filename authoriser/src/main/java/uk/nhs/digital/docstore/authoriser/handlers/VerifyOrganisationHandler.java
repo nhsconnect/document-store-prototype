@@ -3,7 +3,12 @@ package uk.nhs.digital.docstore.authoriser.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +21,16 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
         implements RequestHandler<OrganisationRequestEvent, APIGatewayProxyResponseEvent> {
     public static final Logger LOGGER = LoggerFactory.getLogger(VerifyOrganisationHandler.class);
     private final SessionStore sessionStore;
+    private Clock clock = Clock.systemUTC();
     private final String ORG = "organisation";
 
     public VerifyOrganisationHandler() {
         this(new DynamoDBSessionStore(createDynamoDbMapper()));
+    }
+
+    public VerifyOrganisationHandler(SessionStore sessionStore, Clock clock) {
+        this.sessionStore = sessionStore;
+        this.clock = clock;
     }
 
     public VerifyOrganisationHandler(SessionStore sessionStore) {
@@ -38,42 +49,45 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
             return orgHandlerError(400);
         }
 
-        try {
-            var session =
-                    sessionStore.queryBySessionIdWithKeys(
-                            subjectClaim.get(), sessionId.get().toString());
+        var session =
+                sessionStore.queryBySessionIdWithKeys(
+                        subjectClaim.get(), sessionId.get().toString());
 
-            if (session.isEmpty()) {
-                LOGGER.error(
-                        "Unable to find Session using the provided SessionId and SubjectClaim");
-                return orgHandlerError(404);
-            }
+        if (session.isEmpty()) {
+            LOGGER.error("Unable to find Session using the provided SessionId and SubjectClaim");
+            return orgHandlerError(404);
+        }
 
-            var match =
-                    session.get().getOrganisations().stream()
-                            .anyMatch(org -> org.getOdsCode().equals(odsCode.get()));
+        var match =
+                session.get().getOrganisations().stream()
+                        .filter(org -> org.getOdsCode().equals(odsCode.get()))
+                        .findFirst();
 
-            if (!match) {
-                LOGGER.error("ODS code did not match against user session");
-                return orgHandlerError(404);
-            }
-
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            return orgHandlerError(400);
+        if (match.isEmpty()) {
+            LOGGER.error("ODS code did not match against user session");
+            return orgHandlerError(404);
         }
 
         var headers = new HashMap<String, String>();
         headers.put("Access-Control-Allow-Credentials", "true");
         headers.put("Access-Control-Allow-Origin", Utils.getAmplifyBaseUrl());
 
+        var maxCookieAgeInSeconds =
+                Duration.between(Instant.now(clock), session.get().getTimeToExist()).getSeconds();
+
+        var userTypeCookie =
+                httpOnlyCookieBuilder("UserType", match.get().getOrgType(), maxCookieAgeInSeconds);
+        var cookies = List.of(userTypeCookie);
+        var multiValueHeaders = Map.of("Set-Cookie", cookies);
+
         var response = new JSONObject();
-        response.put("org", "test");
+        response.put("UserType", match.get().getOrgType());
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
                 .withHeaders(headers)
-                .withBody(response.toString());
+                .withBody(response.toString())
+                .withMultiValueHeaders(multiValueHeaders);
     }
 
     private static APIGatewayProxyResponseEvent orgHandlerError(int statusCode) {

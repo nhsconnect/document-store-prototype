@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +31,8 @@ public class Utils {
         return url;
     }
 
-    public static Optional<String> getValueFromQueryStringParams(Map<String, String> queryParams, String key) {
+    public static Optional<String> getValueFromQueryStringParams(
+            Map<String, String> queryParams, String key) {
         var keyFormat = String.format("%s[%s]", key, key);
 
         var result =
