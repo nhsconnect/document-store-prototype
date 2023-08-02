@@ -97,17 +97,18 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             if (!System.getenv("PRMT_3542_TEST").equalsIgnoreCase("none")) {
                 organisations.add(
                         new Organisation("X26", "NHS England", "Dr. Duck's Quack Healthcare"));
-                if (System.getenv("PRMT_3542_TEST").equalsIgnoreCase("multi"))
+                if (System.getenv("PRMT_3542_TEST").equalsIgnoreCase("multi")) {
                     organisations.add(
                             new Organisation(
                                     "A9A5A",
                                     "Homeopath",
                                     "Crazy Alex's Discount Homeopathic Healthcare"));
-                organisations.add(
-                        new Organisation(
-                                "123456",
-                                "You'll never see this on the frontend",
-                                "Not a real org"));
+                    organisations.add(
+                            new Organisation(
+                                    "123456",
+                                    "You'll never see this on the frontend",
+                                    "Not a real org"));
+                }
             }
             loginResponse = new LoginEventResponse(session, organisations);
         }
