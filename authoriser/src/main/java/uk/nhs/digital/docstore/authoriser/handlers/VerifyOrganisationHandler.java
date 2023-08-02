@@ -5,13 +5,10 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.nimbusds.openid.connect.sdk.claims.SessionID;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.Utils;
-import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.OrganisationRequestEvent;
@@ -32,27 +29,6 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             OrganisationRequestEvent input, Context context) {
-
-        // TODO AKH Delete this block when the feature testing is complete
-        if (System.getenv("PRMT_3542_TEST") != null
-                && System.getenv("PRMT_3542_TEST").equalsIgnoreCase("true")) {
-            var headers = new HashMap<String, String>();
-            headers.put("Access-Control-Allow-Credentials", "true");
-            headers.put("Access-Control-Allow-Origin", Utils.getAmplifyBaseUrl());
-
-            var roleCookie =
-                    List.of(httpOnlyCookieBuilder("RoleId", PermittedOrgs.GPP.type, 99999L));
-            var multiValueHeaders = Map.of("Set-Cookie", roleCookie);
-
-            var response = new JSONObject();
-            response.put("org", "test");
-
-            return new APIGatewayProxyResponseEvent()
-                    .withIsBase64Encoded(false)
-                    .withHeaders(headers)
-                    .withMultiValueHeaders(multiValueHeaders)
-                    .withBody(response.toString());
-        }
 
         var params = input.getQueryStringParameters();
         params.forEach(
