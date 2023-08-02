@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.authoriser.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.nimbusds.oauth2.sdk.id.Subject;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -49,14 +50,14 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
             return orgHandlerError(400);
         }
 
-        var session =
-                sessionStore.queryBySessionIdWithKeys(
-                        subjectClaim.get(), sessionId.get().toString());
+        var session = sessionStore.load(new Subject(subjectClaim.get()), sessionId.get());
 
         if (session.isEmpty()) {
             LOGGER.error("Unable to find Session using the provided SessionId and SubjectClaim");
             return orgHandlerError(404);
         }
+
+        LOGGER.debug("Session found, processing match for ODS code {}", odsCode);
 
         var match =
                 session.get().getOrganisations().stream()
@@ -65,8 +66,12 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
 
         if (match.isEmpty()) {
             LOGGER.error("ODS code did not match against user session");
-            return orgHandlerError(404);
+            return orgHandlerError(400);
         }
+
+        var userType = match.get().getOrgType();
+
+        LOGGER.debug("Match found for user ODS code, user type set to: {}", userType);
 
         var headers = new HashMap<String, String>();
         headers.put("Access-Control-Allow-Credentials", "true");
@@ -75,19 +80,19 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
         var maxCookieAgeInSeconds =
                 Duration.between(Instant.now(clock), session.get().getTimeToExist()).getSeconds();
 
-        var userTypeCookie =
-                httpOnlyCookieBuilder("UserType", match.get().getOrgType(), maxCookieAgeInSeconds);
+        var userTypeCookie = httpOnlyCookieBuilder("UserType", userType, maxCookieAgeInSeconds);
         var cookies = List.of(userTypeCookie);
         var multiValueHeaders = Map.of("Set-Cookie", cookies);
 
         var response = new JSONObject();
-        response.put("UserType", match.get().getOrgType());
+        response.put("UserType", userType);
 
         return new APIGatewayProxyResponseEvent()
                 .withIsBase64Encoded(false)
                 .withHeaders(headers)
                 .withBody(response.toString())
-                .withMultiValueHeaders(multiValueHeaders);
+                .withMultiValueHeaders(multiValueHeaders)
+                .withStatusCode(200);
     }
 
     private static APIGatewayProxyResponseEvent orgHandlerError(int statusCode) {

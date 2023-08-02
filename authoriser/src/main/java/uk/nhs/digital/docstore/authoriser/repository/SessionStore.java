@@ -19,6 +19,4 @@ public interface SessionStore {
     List<Session> queryByOIDCSubject(Subject subject);
 
     List<Session> queryBySessionId(SessionID sessionId);
-
-    Optional<Session> queryBySessionIdWithKeys(String subjectClaim, String sessionId);
 }
