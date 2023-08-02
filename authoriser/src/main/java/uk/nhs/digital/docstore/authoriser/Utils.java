@@ -1,5 +1,7 @@
 package uk.nhs.digital.docstore.authoriser;
 
+import static java.util.function.Predicate.not;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +43,6 @@ public class Utils {
                         .map(Map.Entry::getValue)
                         .collect(Collectors.joining());
 
-        return Optional.of(result);
+        return Optional.of(result).filter(not(String::isEmpty));
     }
 }
