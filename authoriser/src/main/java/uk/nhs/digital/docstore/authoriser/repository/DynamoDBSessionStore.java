@@ -68,24 +68,4 @@ public class DynamoDBSessionStore implements SessionStore {
 
         return dynamoDBMapper.query(Session.class, queryExpression);
     }
-
-    @Override
-    public Optional<Session> queryBySessionIdWithKeys(String subjectClaim, String sessionId) {
-        var partitionKey = String.format("%s%s", PARTITION_KEY_PREFIX, subjectClaim);
-        var sortKey = String.format("%s%s", SORT_KEY_PREFIX, sessionId);
-
-        var expressionAttributeValues = new HashMap<String, AttributeValue>();
-        expressionAttributeValues.put(":pk", new AttributeValue().withS(partitionKey));
-        expressionAttributeValues.put(":sk", new AttributeValue().withS(sortKey));
-        expressionAttributeValues.put(":id", new AttributeValue().withS(sessionId));
-        var queryExpression =
-                new DynamoDBQueryExpression<Session>()
-                        .withKeyConditionExpression("PK= :pk and SK= :sk")
-                        .withFilterExpression("Id= :id")
-                        .withExpressionAttributeValues(expressionAttributeValues);
-
-        List<Session> result = dynamoDBMapper.query(Session.class, queryExpression);
-
-        return Optional.ofNullable(result.get(0));
-    }
 }
