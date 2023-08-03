@@ -12,7 +12,6 @@ const AuthCallbackRouter = () => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const code = urlSearchParams.get("code");
         const state = urlSearchParams.get("state");
-        console.log(code, state);
         axios
             .get(`${baseAPIUrl}/Auth/TokenRequest`, {
                 params: { code, state },
@@ -23,7 +22,6 @@ const AuthCallbackRouter = () => {
                 console.log(Organisations);
                 setSession({
                     ...session,
-                    sessionId: SessionId,
                     organisations: Organisations,
                     isLoggedIn: true,
                 });
@@ -34,7 +32,7 @@ const AuthCallbackRouter = () => {
                         axios
                             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
                                 withCredentials: true,
-                                params: { "organisations": Organisations },
+                                params: { organisations: Organisations },
                             })
                             .then((res) => {
                                 console.log(JSON.stringify(res.data, null, 4));
