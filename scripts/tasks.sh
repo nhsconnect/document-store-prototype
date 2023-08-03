@@ -106,6 +106,7 @@ function tf_init {
   cd terraform
   terraform init \
     -backend-config ${ENVIRONMENT}.s3.tfbackend
+  echo "<o'.'o> Selecting terraform"
   terraform workspace select -or-create ${WORKSPACE}
 }
 
