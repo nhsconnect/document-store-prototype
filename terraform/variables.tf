@@ -207,11 +207,6 @@ variable "sqs_endpoint" {
   default = ""
 }
 
-variable "cognito_key_id" {
-  type    = string
-  default = ""
-}
-
 variable "cloud_storage_security_agent_role_arn" {
   type    = string
   default = ""

@@ -11,7 +11,6 @@ cis2_provider_user_info_url           = "https://am.nhsdev.auth-ptl.cis2.spinese
 cis2_provider_jwks_uri                = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/connect/jwk_uri"
 cis2_client_callback_urls             = ["http://localhost:3000/auth-callback"]
 cis2_client_signout_urls              = ["http://localhost:3000"]
-cognito_key_id                        = "owPwCSHr3lp0iS3IYF8OkOGFS/47dU6YOdDlVQztB5E="
 pds_fhir_is_stubbed                   = "false"
 cloud_storage_security_agent_role_arn = "arn:aws:iam::533825906475:role/CloudStorageSecAgentRole-miyho7d"
 quarantine_bucket_name                = "cloudstoragesecquarantine-miyho7d-533825906475-eu-west-2"

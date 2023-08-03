@@ -1,5 +1,7 @@
-environment                  = "pre-prod"
-account_id                   = "694282683086"
+environment                           = "pre-prod"
+NHS_CIS2_ENVIRONMENT                  = "development"
+arf_domain_name                       = "access-request-fulfilment.patient-deductions.nhs.uk"
+account_id                            = "694282683086"
 enable_session_auth                   = true
 oidc_providers                        = ["cis2devoidc"]
 cis2_provider_oidc_issuer             = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc"
@@ -9,7 +11,7 @@ cis2_provider_user_info_url           = "https://am.nhsdev.auth-ptl.cis2.spinese
 cis2_provider_jwks_uri                = "https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk:443/openam/oauth2/realms/root/realms/oidc/connect/jwk_uri"
 cis2_client_callback_urls             = ["https://main.d3ltn2own5cx4o.amplifyapp.com/auth-callback"]
 cis2_client_signout_urls              = ["https://main.d3ltn2own5cx4o.amplifyapp.com"]
-cognito_key_id               = "hkmsNYnD3kvYvyaOWcuqPT2K5lad8tT8mWZU1sF6n14="
-pds_fhir_is_stubbed          = "false"
+pds_fhir_is_stubbed                   = "false"
 cloud_storage_security_agent_role_arn = "arn:aws:iam::694282683086:role/CloudStorageSecAgentRole-ehrmcas"
 quarantine_bucket_name                = "cloudstoragesecquarantine-ehrmcas-694282683086-eu-west-2"
+arf_zone_id                           = "Z06083021GEVE2EE1U9QX"
