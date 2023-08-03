@@ -289,6 +289,7 @@ pipelines:
       - plan_terraform:
           environment_variables:
             ENVIRONMENT: pre-prod
+            WORKSPACE: pre-prod
             NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
@@ -299,6 +300,7 @@ pipelines:
             allow_only_on_success: true
           environment_variables:
             ENVIRONMENT: pre-prod
+            WORKSPACE: pre-prod
             NHS_CIS2_ENVIRONMENT: development
           clean_workspace: true
           jobs:
@@ -306,6 +308,7 @@ pipelines:
       - deploy_ui:
           environment_variables:
             ENVIRONMENT: pre-prod
+            WORKSPACE: pre-prod
             NHS_CIS2_ENVIRONMENT: development
             OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
@@ -314,6 +317,7 @@ pipelines:
       - e2e_tests:
           environment_variables:
             ENVIRONMENT: pre-prod
+            WORKSPACE: pre-prod
             NHS_CIS2_ENVIRONMENT: development
             OIDC_PROVIDER_ID: "cis2devoidc"
           clean_workspace: true
