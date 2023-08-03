@@ -89,10 +89,7 @@ function find_workspace(){
   printf "\n${yellow} Initialising local environment...\n\n${normal}"
   terraform init
   printf "\n${yellow} Finding workspace...\n\n${normal}"
-  if [ "$MODE" == "--or-create" ]; then
-    terraform workspace select -or-create $WORKSPACE || (printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && return 1)
-  else 
-    terraform workspace select $WORKSPACE || (printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && return 1)
+  terraform workspace select -or-create $WORKSPACE || (printf "\n${red} Unknown error, check AWS is authorised.\n\n${normal}" && return 1)
   fi
   printf "\n${green} Workspace $WORKSPACE selected!\n\n${normal}"
   printf "\n${yellow} Syncing Terraform config...\n\n${normal}"
