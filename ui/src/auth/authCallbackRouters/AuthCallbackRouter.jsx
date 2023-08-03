@@ -8,18 +8,19 @@ import Spinner from "../../components/spinner/Spinner";
 const AuthCallbackRouter = () => {
     const navigate = useNavigate();
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
+
     useEffect(() => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const code = urlSearchParams.get("code");
         const state = urlSearchParams.get("state");
+
         axios
             .get(`${baseAPIUrl}/Auth/TokenRequest`, {
                 params: { code, state },
                 withCredentials: true,
             })
             .then((res) => {
-                const { SessionId, Organisations } = res.data;
-                console.log(Organisations);
+                const { Organisations } = res.data;
                 setSession({
                     ...session,
                     organisations: Organisations,
@@ -43,7 +44,7 @@ const AuthCallbackRouter = () => {
                             });
                     }
                 } else {
-                    navigate(routes.AUTH_ERROR);
+                    navigate(routes.NO_VALID_ORGANISATION);
                 }
             })
             .catch((err) => {
