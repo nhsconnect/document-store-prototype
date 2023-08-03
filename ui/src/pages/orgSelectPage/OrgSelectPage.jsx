@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import routes from "../../enums/routes";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
@@ -12,7 +11,6 @@ import ErrorBox from "../../components/errorBox/ErrorBox";
 const OrgSelectPage = () => {
     const [session] = useSessionContext();
     const [inputError, setInputError] = useState("");
-
     const navigate = useNavigate();
     const { register, handleSubmit, formState, getFieldState } = useForm();
 
@@ -29,7 +27,9 @@ const OrgSelectPage = () => {
 
     const submit = (organisation) => {
         console.log(organisation);
-        console.log(organisation.odsCode);
+        if (!isOrganisationDirty) {
+            setInputError("Select one organisation you would like to view");
+        }
 
         axios
             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
@@ -44,6 +44,14 @@ const OrgSelectPage = () => {
                 navigate(routes.AUTH_ERROR);
             });
     };
+
+    const toSentenceCase = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    };
+
+    // const handleEmptySubmit = () => {
+    //     setInputError("Select one organisation you would like to view");
+    // };
 
     // for testing
     const organisations = [
@@ -64,14 +72,6 @@ const OrgSelectPage = () => {
         },
     ];
 
-    const toSentenceCase = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-    };
-    //
-    // const handleEmptySubmit = () => {
-    //     setInputError("Select one organisation you would like to view");
-    // };
-
     return (
         <div style={{ maxWidth: 720 }}>
             {inputError && (
@@ -82,14 +82,7 @@ const OrgSelectPage = () => {
                     errorBoxSummaryId={"error-box-summary"}
                 />
             )}
-            <form
-                onSubmit={
-                    isOrganisationDirty
-                        ? handleSubmit(submit)
-                        : setInputError("Select one organisation you would like to view")
-                }
-                style={{ maxWidth: 720 }}
-            >
+            <form onSubmit={handleSubmit(submit)} style={{ maxWidth: 720 }}>
                 <Fieldset>
                     <Fieldset.Legend headingLevel="h1" isPageHeading>
                         Select an organisation
