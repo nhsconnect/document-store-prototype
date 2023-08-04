@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.Utils;
+import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.OrganisationRequestEvent;
@@ -23,8 +24,9 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
     public static final Logger LOGGER = LoggerFactory.getLogger(VerifyOrganisationHandler.class);
     private final SessionStore sessionStore;
     private Clock clock = Clock.systemUTC();
-    private final String ORG = "organisation";
+    private static final String ORG = "organisation";
 
+    @SuppressWarnings("unused")
     public VerifyOrganisationHandler() {
         this(new DynamoDBSessionStore(createDynamoDbMapper()));
     }
@@ -47,14 +49,14 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
 
         if (odsCode.isEmpty() || sessionId.isEmpty() || subjectClaim.isEmpty()) {
             LOGGER.error("ODS code, SessionId or SubjectClaim are missing");
-            return orgHandlerError(400);
+            return orgHandlerError(HttpStatus.BAD_REQUEST.code);
         }
 
         var session = sessionStore.load(new Subject(subjectClaim.get()), sessionId.get());
 
         if (session.isEmpty()) {
             LOGGER.error("Unable to find Session using the provided SessionId and SubjectClaim");
-            return orgHandlerError(404);
+            return orgHandlerError(HttpStatus.NOT_FOUND.code);
         }
 
         LOGGER.debug("Session found, processing match for ODS code {}", odsCode);
@@ -66,7 +68,7 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
 
         if (match.isEmpty()) {
             LOGGER.error("ODS code did not match against user session");
-            return orgHandlerError(400);
+            return orgHandlerError(HttpStatus.BAD_REQUEST.code);
         }
 
         var userType = match.get().getOrgType();
@@ -92,7 +94,7 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
                 .withHeaders(headers)
                 .withBody(response.toString())
                 .withMultiValueHeaders(multiValueHeaders)
-                .withStatusCode(200);
+                .withStatusCode(HttpStatus.OK.code);
     }
 
     private static APIGatewayProxyResponseEvent orgHandlerError(int statusCode) {
