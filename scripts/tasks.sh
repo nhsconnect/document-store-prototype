@@ -98,7 +98,7 @@ function create_cypress_config_file() {
 }
 
 function export_cypress_base_url() {
-  echo "CYPRESS_BASE_URL=https://dev.access-request-fulfilment.patient-deductions.nhs.uk" >e2eTest/cypress.sh
+  echo "CYPRESS_BASE_URL=https://${WORKSPACE}.access-request-fulfilment.patient-deductions.nhs.uk" >e2eTest/cypress.sh
 }
 
 function tf_init {
