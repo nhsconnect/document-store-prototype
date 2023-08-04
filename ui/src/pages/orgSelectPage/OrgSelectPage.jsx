@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import routes from "../../enums/routes";
 import { Button, Fieldset, Radios } from "nhsuk-react-components";
@@ -21,6 +21,12 @@ const OrgSelectPage = () => {
     const { isDirty: isOrganisationDirty } = getFieldState("organisation", formState);
 
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
+
+    useEffect(() => {
+        if (!session.organisations) {
+            navigate(routes.HOME);
+        }
+    });
 
     const submit = (organisation) => {
         if (!isOrganisationDirty) {
