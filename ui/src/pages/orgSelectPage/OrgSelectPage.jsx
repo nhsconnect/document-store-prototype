@@ -7,11 +7,14 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import ErrorBox from "../../components/errorBox/ErrorBox";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
+import Spinner from "../../components/spinner/Spinner";
 
 const OrgSelectPage = () => {
     const [session] = useSessionContext();
-    const [inputError, setInputError] = useState("");
     const navigate = useNavigate();
+    const [inputError, setInputError] = useState("");
+    const [loading, setLoading] = useState(false);
     const { register, handleSubmit, formState, getFieldState } = useForm();
 
     const { ref: organisationRef, ...organisationProps } = register("organisation");
@@ -19,25 +22,20 @@ const OrgSelectPage = () => {
 
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
 
-    useEffect(() => {
-        if (!session.organisations) {
-            navigate(routes.HOME);
-        }
-    });
-
     const submit = (organisation) => {
-        console.log(organisation);
         if (!isOrganisationDirty) {
             setInputError("Select one organisation you would like to view");
+            return;
         }
+
+        setLoading(true);
 
         axios
             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
                 withCredentials: true,
                 params: { odsCode: organisation.odsCode },
             })
-            .then((res) => {
-                console.log(JSON.stringify(res.data, null, 4));
+            .then(() => {
                 navigate(routes.HOME);
             })
             .catch(() => {
@@ -49,31 +47,8 @@ const OrgSelectPage = () => {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     };
 
-    // const handleEmptySubmit = () => {
-    //     setInputError("Select one organisation you would like to view");
-    // };
-
-    // for testing
-    const organisations = [
-        {
-            orgName: "ORGANISATION ONEEEE",
-            odsCode: "A9A5A",
-            orgType: "Primary Care Support England",
-        },
-        {
-            orgName: "ORG TWO",
-            odsCode: "A9A6B",
-            orgType: "GP Practice",
-        },
-        {
-            orgName: "ORG THREEEEEE",
-            odsCode: "B1B1B",
-            orgType: "Primary Care Support England",
-        },
-    ];
-
-    return (
-        <div style={{ maxWidth: 720 }}>
+    return !loading ? (
+        <div style={{ maxWidth: 730 }}>
             {inputError && (
                 <ErrorBox
                     messageTitle={"There is a problem"}
@@ -82,25 +57,23 @@ const OrgSelectPage = () => {
                     errorBoxSummaryId={"error-box-summary"}
                 />
             )}
-            <form onSubmit={handleSubmit(submit)} style={{ maxWidth: 720 }}>
+            <form onSubmit={handleSubmit(submit)}>
                 <Fieldset>
                     <Fieldset.Legend headingLevel="h1" isPageHeading>
                         Select an organisation
                     </Fieldset.Legend>
                     <Radios
+                        id="#select-org-input"
                         error={inputError}
                         hint="You are associated to more than one organisation, select an organisation you would like to view."
                     >
-                        {organisations.map((item, key) => (
+                        {session.organisations.map((item, key) => (
                             <Radios.Radio
                                 {...organisationProps}
                                 key={key}
                                 value={item.odsCode}
                                 inputRef={organisationRef}
                             >
-                                {inputError && (
-                                    <p id={"select-org-input"}>Select one organisation you would like to view</p>
-                                )}
                                 <h4 style={{ margin: 0, padding: 0 }}>{toSentenceCase(item.orgName)}</h4>
                                 <p>
                                     [{item.odsCode}] {item.orgType}
@@ -112,6 +85,8 @@ const OrgSelectPage = () => {
                 <Button type="submit">Continue</Button>
             </form>
         </div>
+    ) : (
+        <Spinner status="Logging in..." />
     );
 };
 
