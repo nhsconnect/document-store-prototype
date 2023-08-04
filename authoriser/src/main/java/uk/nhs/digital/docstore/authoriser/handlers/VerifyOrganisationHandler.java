@@ -43,22 +43,30 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             OrganisationRequestEvent input, Context context) {
+        LOGGER.debug("Request event: " + input);
+
         var odsCode = Utils.getValueFromQueryStringParams(input.getQueryStringParameters(), ORG);
         var sessionId = input.getSessionId();
         var subjectClaim = input.getSubjectClaim();
 
+        var error = false;
+
         if (odsCode.isEmpty()) {
+            error = true;
             LOGGER.error("ODS code is missing");
-            return orgHandlerError(HttpStatus.BAD_REQUEST.code);
         }
 
         if (sessionId.isEmpty()) {
+            error = true;
             LOGGER.error("SessionId is missing");
-            return orgHandlerError(HttpStatus.BAD_REQUEST.code);
         }
 
         if (subjectClaim.isEmpty()) {
+            error = true;
             LOGGER.error("SubjectClaim is missing");
+        }
+
+        if (error) {
             return orgHandlerError(HttpStatus.BAD_REQUEST.code);
         }
 
