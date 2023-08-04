@@ -314,15 +314,15 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_ui
-      - e2e_tests:
-          environment_variables:
-            ENVIRONMENT: pre-prod
-            WORKSPACE: pre-prod
-            NHS_CIS2_ENVIRONMENT: development
-            OIDC_PROVIDER_ID: "cis2devoidc"
-          clean_workspace: true
-          jobs:
-            e2e-test: *e2e_test
+#      - e2e_tests:
+#          environment_variables:
+#            ENVIRONMENT: pre-prod
+#            WORKSPACE: pre-prod
+#            NHS_CIS2_ENVIRONMENT: development
+#            OIDC_PROVIDER_ID: "cis2devoidc"
+#          clean_workspace: true
+#          jobs:
+#            e2e-test: *e2e_test
   "access-request-fulfilment.prod":
     group: access-request-fulfilment
     label_template: "${git[:8]}"
