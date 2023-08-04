@@ -47,8 +47,18 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
         var sessionId = input.getSessionId();
         var subjectClaim = input.getSubjectClaim();
 
-        if (odsCode.isEmpty() || sessionId.isEmpty() || subjectClaim.isEmpty()) {
-            LOGGER.error("ODS code, SessionId or SubjectClaim are missing");
+        if (odsCode.isEmpty()) {
+            LOGGER.error("ODS code is missing");
+            return orgHandlerError(HttpStatus.BAD_REQUEST.code);
+        }
+
+        if (sessionId.isEmpty()) {
+            LOGGER.error("SessionId is missing");
+            return orgHandlerError(HttpStatus.BAD_REQUEST.code);
+        }
+
+        if (subjectClaim.isEmpty()) {
+            LOGGER.error("SubjectClaim is missing");
             return orgHandlerError(HttpStatus.BAD_REQUEST.code);
         }
 
