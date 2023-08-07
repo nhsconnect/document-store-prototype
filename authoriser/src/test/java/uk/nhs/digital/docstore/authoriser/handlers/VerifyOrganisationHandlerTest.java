@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -59,11 +58,10 @@ public class VerifyOrganisationHandlerTest {
         handler = new VerifyOrganisationHandler(inMemorySessionStore, clock);
     }
 
-    @Disabled
     @Test
     void handleRequestReturnsCookiesAndUserTypeForValidOrgUser() {
         var request = new OrganisationRequestEvent();
-        request.setQueryStringParameters(Map.of("organisation[organisation]", odsCode));
+        request.setQueryStringParameters(Map.of("odsCode", odsCode));
         request.setHeaders(
                 Map.of(
                         "Cookie",
@@ -90,7 +88,7 @@ public class VerifyOrganisationHandlerTest {
     @Test
     void handleRequestInvalidSubjectClaimOrSessionIdReturnsNotFound() {
         var request = new OrganisationRequestEvent();
-        request.setQueryStringParameters(Map.of("organisation[organisation]", odsCode));
+        request.setQueryStringParameters(Map.of("odsCode", odsCode));
         request.setHeaders(
                 Map.of(
                         "Cookie",
