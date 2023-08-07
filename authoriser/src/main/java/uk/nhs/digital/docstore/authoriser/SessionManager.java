@@ -78,12 +78,12 @@ public class SessionManager {
                         .map(Optional::get)
                         .collect(Collectors.toList());
 
+        prospectiveOrgs.clear();
+
         if (!prospectiveOrgs.isEmpty()) {
             session.setOrganisations(prospectiveOrgs);
             sessionStore.save(session);
         }
-
-        prospectiveOrgs.add(new Organisation("ABC123", "GP practice", "GP Practice"));
 
         return new LoginEventResponse(session, prospectiveOrgs);
     }
