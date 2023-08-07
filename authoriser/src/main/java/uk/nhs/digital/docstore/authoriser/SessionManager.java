@@ -78,8 +78,6 @@ public class SessionManager {
                         .map(Optional::get)
                         .collect(Collectors.toList());
 
-        prospectiveOrgs.clear();
-
         if (!prospectiveOrgs.isEmpty()) {
             session.setOrganisations(prospectiveOrgs);
             sessionStore.save(session);
