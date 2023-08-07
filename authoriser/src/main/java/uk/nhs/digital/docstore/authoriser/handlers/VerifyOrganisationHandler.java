@@ -24,7 +24,7 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
     public static final Logger LOGGER = LoggerFactory.getLogger(VerifyOrganisationHandler.class);
     private final SessionStore sessionStore;
     private Clock clock = Clock.systemUTC();
-    private static final String ORG = "organisation";
+    private static final String ODS_CODE_PARAM_KEY = "odsCode";
 
     @SuppressWarnings("unused")
     public VerifyOrganisationHandler() {
@@ -44,8 +44,11 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
     public APIGatewayProxyResponseEvent handleRequest(
             OrganisationRequestEvent input, Context context) {
         LOGGER.debug("Request event: " + input);
+        LOGGER.debug("QSPs: " + input.getQueryStringParameters().toString());
 
-        var odsCode = Utils.getValueFromQueryStringParams(input.getQueryStringParameters(), ORG);
+        var odsCode =
+                Utils.getValueFromQueryStringParams(
+                        input.getQueryStringParameters(), ODS_CODE_PARAM_KEY);
         var sessionId = input.getSessionId();
         var subjectClaim = input.getSubjectClaim();
 
