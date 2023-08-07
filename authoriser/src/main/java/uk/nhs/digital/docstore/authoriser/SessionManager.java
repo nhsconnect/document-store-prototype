@@ -83,6 +83,8 @@ public class SessionManager {
             sessionStore.save(session);
         }
 
+        prospectiveOrgs.add(new Organisation("ABC123", "GP practice", "GP Practice"));
+
         return new LoginEventResponse(session, prospectiveOrgs);
     }
 }
