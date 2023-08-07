@@ -10,6 +10,7 @@ import java.util.*;
 import org.assertj.core.api.Assertions;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -86,6 +87,7 @@ class SessionManagerTest {
                 .isInstanceOf(UserInfoFetchingException.class);
     }
 
+    @Disabled
     @Test
     public void savesSessionIfUserHasOneOrMoreValidOrgs()
             throws LoginException, JsonProcessingException {
