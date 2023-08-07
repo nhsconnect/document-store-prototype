@@ -39,7 +39,7 @@ resource "aws_route53_record" "ui_domain_records" {
 
 resource "aws_amplify_domain_association" "domain_name" {
   app_id      = aws_amplify_app.doc-store-ui[0].id
-  domain_name = "access-request-fulfilment.patient-deductions.nhs.uk"
+  domain_name = "${terraform.workspace}.access-request-fulfilment.patient-deductions.nhs.uk"
 
   # https://www.example.com
   sub_domain {
