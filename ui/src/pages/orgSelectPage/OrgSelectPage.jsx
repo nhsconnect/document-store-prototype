@@ -41,7 +41,7 @@ const OrgSelectPage = () => {
         axios
             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
                 withCredentials: true,
-                params: { "odsCode" : organisation[0]},
+                params: { "odsCode" : organisation.organisation },
             })
             .then(() => {
                 navigate(routes.HOME);
