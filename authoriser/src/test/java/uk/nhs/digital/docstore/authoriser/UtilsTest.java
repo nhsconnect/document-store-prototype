@@ -1,8 +1,5 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,38 +41,5 @@ public class UtilsTest {
         var result = Utils.getAmplifyBaseUrl();
 
         Assertions.assertEquals(expected, result);
-    }
-
-    @Test
-    void getValueFromQueryStringParamsTestWithValidParams() {
-        Map<String, String> testQueryParams =
-                new HashMap<>() {
-                    {
-                        put("organisation[organisation]", "A100");
-                    }
-                };
-
-        var expected = Optional.of("A100");
-
-        var actual = Utils.getValueFromQueryStringParams(testQueryParams, "organisation");
-
-        Assertions.assertTrue(actual.isPresent());
-        Assertions.assertEquals(expected.get(), actual.get());
-    }
-
-    @Test
-    void getValueFromQueryStringParamsTestWithInValidParams() {
-        Map<String, String> testQueryParams =
-                new HashMap<>() {
-                    {
-                        put("organisation[organisation]", "A100");
-                    }
-                };
-
-        var expected = Optional.empty();
-
-        var actual = Utils.getValueFromQueryStringParams(testQueryParams, "invalid");
-
-        Assertions.assertEquals(expected, actual);
     }
 }
