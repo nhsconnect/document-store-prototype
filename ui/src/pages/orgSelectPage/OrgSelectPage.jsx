@@ -24,7 +24,7 @@ const OrgSelectPage = () => {
 
     useEffect(() => {
         if (!session.organisations) {
-            navigate(routes.HOME);
+            navigate(routes.ROOT);
         }
     });
 
@@ -73,14 +73,14 @@ const OrgSelectPage = () => {
                         error={inputError}
                         hint="You are associated to more than one organisation, select an organisation you would like to view."
                     >
-                        {session.organisations.map((item, key) => (
+                        {session.organisations?.map((item, key) => (
                             <Radios.Radio
                                 {...organisationProps}
                                 key={key}
                                 value={item.odsCode}
                                 inputRef={organisationRef}
                             >
-                                <h4 style={{ margin: 0, padding: 0 }}>{toSentenceCase(item.orgName)}</h4>
+                                <p style={{ margin: 0, fontWeight: "bold" }}>{toSentenceCase(item.orgName)}</p>
                                 <p>
                                     [{item.odsCode}] {item.orgType}
                                 </p>
