@@ -30,7 +30,7 @@ const AuthCallbackRouter = () => {
                     if (Organisations.length > 1) {
                         navigate(routes.ORG_SELECT);
                     } else {
-                    console.log(Organisations[0].odsCode);
+                        console.log(Organisations[0].odsCode);
                         axios
                             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
                                 withCredentials: true,
