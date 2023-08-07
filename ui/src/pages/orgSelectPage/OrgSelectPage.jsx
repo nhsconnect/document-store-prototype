@@ -26,11 +26,10 @@ const OrgSelectPage = () => {
 
     const submit = (organisation) => {
         console.log(organisation);
-
-        axios
+        console.log(organisation.odsCode);
             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
                 withCredentials: true,
-                params: { organisation },
+                params: { odsCode : organisation.odsCode },
             })
             .then((res) => {
                 console.log(JSON.stringify(res.data, null, 4));
