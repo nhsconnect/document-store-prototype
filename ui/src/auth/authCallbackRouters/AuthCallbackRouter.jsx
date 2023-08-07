@@ -4,10 +4,12 @@ import routes from "../../enums/routes";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import Spinner from "../../components/spinner/Spinner";
+import { useSessionContext } from "../../providers/sessionProvider/SessionProvider";
 
 const AuthCallbackRouter = () => {
     const navigate = useNavigate();
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
+    const [session, setSession] = useSessionContext();
 
     useEffect(() => {
         const urlSearchParams = new URLSearchParams(window.location.search);

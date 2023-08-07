@@ -16,8 +16,6 @@ import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 
-import java.util.ArrayList;
-
 public class SessionManager {
     private final OIDCClient authenticationClient;
 
