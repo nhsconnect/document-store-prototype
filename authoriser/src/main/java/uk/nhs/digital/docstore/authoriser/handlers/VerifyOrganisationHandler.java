@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +48,7 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
         LOGGER.debug("Request event: " + input);
         LOGGER.debug("QSPs: " + input.getQueryStringParameters().toString());
 
-        var odsCode =
-                Utils.getValueFromQueryStringParams(
-                        input.getQueryStringParameters(), ODS_CODE_PARAM_KEY);
+        var odsCode = Optional.ofNullable(input.getQueryStringParameters().get(ODS_CODE_PARAM_KEY));
         var sessionId = input.getSessionId();
         var subjectClaim = input.getSubjectClaim();
 
