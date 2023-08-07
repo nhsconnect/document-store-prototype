@@ -33,7 +33,7 @@ const AuthCallbackRouter = () => {
                         axios
                             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
                                 withCredentials: true,
-                                params: { odsCode: organisations.odsCode },
+                                params: { odsCode: Organisations.odsCode },
                             })
                             .then((res) => {
                                 console.log(JSON.stringify(res.data, null, 4));
