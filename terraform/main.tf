@@ -190,6 +190,7 @@ locals {
 
   authoriser_environment_variables = {
     DYNAMODB_ENDPOINT  = var.dynamodb_endpoint
+    ENVIRONMENT        = var.environment
     OIDC_ISSUER_URL    = var.cis2_provider_oidc_issuer
     OIDC_AUTHORIZE_URL = var.cis2_provider_authorize_url
     OIDC_JWKS_URL      = var.cis2_provider_jwks_uri
