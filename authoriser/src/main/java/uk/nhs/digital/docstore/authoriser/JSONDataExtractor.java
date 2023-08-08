@@ -9,6 +9,13 @@ import uk.nhs.digital.docstore.authoriser.models.Organisation;
 
 public class JSONDataExtractor {
 
+    private final String env;
+    private static final String DEV_ENV = "dev";
+
+    public JSONDataExtractor() {
+        env = System.getenv("ENVIRONMENT");
+    }
+
     public List<String> getOdsCodesFromUserInfo(JSONObject userInfo) {
         ArrayList<String> codes = new ArrayList<>();
         var orgs = userInfo.getJSONArray("nhsid_nrbac_roles");
@@ -40,7 +47,7 @@ public class JSONDataExtractor {
                 return Optional.of(new Organisation(odsCode, orgName, PermittedOrgs.PCSE.type));
             } else if (roleCode.equals(PermittedOrgs.GPP.roleCode)) {
                 return Optional.of(new Organisation(odsCode, orgName, PermittedOrgs.GPP.type));
-            } else if (roleCode.equals(PermittedOrgs.DEV.roleCode)) {
+            } else if (roleCode.equals(PermittedOrgs.DEV.roleCode) && DEV_ENV.equals(env)) {
                 return Optional.of(new Organisation(odsCode, orgName, PermittedOrgs.GPP.type));
             }
         }
