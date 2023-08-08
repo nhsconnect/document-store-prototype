@@ -35,8 +35,6 @@ const OrgSelectPage = () => {
         }
 
         setLoading(true);
-        console.log(organisation);
-        console.log(organisation.odsCode);
 
         axios
             .get(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
