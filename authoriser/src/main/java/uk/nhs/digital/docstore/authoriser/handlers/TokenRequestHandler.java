@@ -82,8 +82,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         LoginEventResponse loginResponse;
 
-
-
         try {
             loginResponse = sessionManager.createSession(authCode.get());
         } catch (Exception exception) {
