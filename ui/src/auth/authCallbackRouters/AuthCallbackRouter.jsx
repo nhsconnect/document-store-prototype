@@ -37,8 +37,13 @@ const AuthCallbackRouter = () => {
                                 withCredentials: true,
                                 params: { odsCode: Organisations[0].odsCode },
                             })
-                            .then(() => {
-                                navigate(routes.HOME);
+                            .then((res) => {
+                                const { UserType } = res.data;
+                                if (UserType === "GP Practice") {
+                                    navigate(routes.UPLOAD_SEARCH_PATIENT);
+                                } else if (UserType === "Primary Care Support England") {
+                                    navigate(routes.SEARCH_PATIENT);
+                                }
                             })
                             .catch(() => {
                                 navigate(routes.AUTH_ERROR);
