@@ -18,7 +18,6 @@ import uk.nhs.digital.docstore.authoriser.Utils;
 import uk.nhs.digital.docstore.authoriser.config.Tracer;
 import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
-import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
