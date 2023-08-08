@@ -185,6 +185,7 @@ locals {
     SQS_ENDPOINT               = var.sqs_endpoint
     SQS_AUDIT_QUEUE_URL        = aws_sqs_queue.sensitive_audit.url
     WORKSPACE                  = terraform.workspace
+    ENVIRONMENT                = var.environment
   }
 
   authoriser_environment_variables = {
