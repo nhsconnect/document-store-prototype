@@ -46,28 +46,6 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
     public APIGatewayProxyResponseEvent handleRequest(
             OrganisationRequestEvent input, Context context) {
 
-        // TODO AKH Delete this block when the feature testing is complete
-        if (System.getenv("PRMT_3542_TEST") != null
-                && System.getenv("PRMT_3542_TEST").equalsIgnoreCase("true")) {
-            var headers = new HashMap<String, String>();
-            headers.put("Access-Control-Allow-Credentials", "true");
-            headers.put("Access-Control-Allow-Origin", Utils.getAmplifyBaseUrl());
-
-            var roleCookie =
-                    List.of(httpOnlyCookieBuilder("RoleId", PermittedOrgs.GPP.type, 99999L));
-            var multiValueHeaders = Map.of("Set-Cookie", roleCookie);
-
-            var response = new JSONObject();
-            response.put("org", "test");
-
-            return new APIGatewayProxyResponseEvent()
-                    .withIsBase64Encoded(false)
-                    .withHeaders(headers)
-                    .withBody(response.toString())
-                    .withMultiValueHeaders(multiValueHeaders)
-                    .withStatusCode(HttpStatus.OK.code);
-        }
-
         LOGGER.debug("Request event: " + input);
         LOGGER.debug("QSPs: " + input.getQueryStringParameters().toString());
 

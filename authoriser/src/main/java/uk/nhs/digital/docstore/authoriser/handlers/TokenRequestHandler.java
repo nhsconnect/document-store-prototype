@@ -91,28 +91,6 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         var session = loginResponse.getSession();
 
-        // TODO AKH Delete this block when the feature testing is complete
-        if (System.getenv("PRMT_3542_TEST") != null) {
-            ArrayList<Organisation> organisations = new ArrayList<>();
-            if (!System.getenv("PRMT_3542_TEST").equalsIgnoreCase("none")) {
-                organisations.add(
-                        new Organisation("X26", "NHS England", "Dr. Duck's Quack Healthcare"));
-                if (System.getenv("PRMT_3542_TEST").equalsIgnoreCase("multi")) {
-                    organisations.add(
-                            new Organisation(
-                                    "A9A5A",
-                                    "Homeopath",
-                                    "Crazy Alex's Discount Homeopathic Healthcare"));
-                    organisations.add(
-                            new Organisation(
-                                    "123456",
-                                    "You'll never see this on the frontend",
-                                    "Not a real org"));
-                }
-            }
-            loginResponse = new LoginEventResponse(session, organisations);
-        }
-
         if (loginResponse.getUsersOrgs().isEmpty()) {
             LOGGER.debug("user has no valid organisations to log in");
             return authError(HttpStatus.UNAUTHORISED.code);
