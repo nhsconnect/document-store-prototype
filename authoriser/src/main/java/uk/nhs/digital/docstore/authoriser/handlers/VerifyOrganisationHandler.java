@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.Utils;
 import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
+import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.repository.SessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.OrganisationRequestEvent;
@@ -44,6 +45,29 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
     @Override
     public APIGatewayProxyResponseEvent handleRequest(
             OrganisationRequestEvent input, Context context) {
+
+        // TODO AKH Delete this block when the feature testing is complete
+        if (System.getenv("PRMT_3542_TEST") != null
+                && System.getenv("PRMT_3542_TEST").equalsIgnoreCase("true")) {
+            var headers = new HashMap<String, String>();
+            headers.put("Access-Control-Allow-Credentials", "true");
+            headers.put("Access-Control-Allow-Origin", Utils.getAmplifyBaseUrl());
+
+            var roleCookie =
+                    List.of(httpOnlyCookieBuilder("RoleId", PermittedOrgs.GPP.type, 99999L));
+            var multiValueHeaders = Map.of("Set-Cookie", roleCookie);
+
+            var response = new JSONObject();
+            response.put("org", "test");
+
+            return new APIGatewayProxyResponseEvent()
+                    .withIsBase64Encoded(false)
+                    .withHeaders(headers)
+                    .withBody(response.toString())
+                    .withMultiValueHeaders(multiValueHeaders)
+                    .withStatusCode(HttpStatus.OK.code);
+        }
+
         LOGGER.debug("Request event: " + input);
         LOGGER.debug("QSPs: " + input.getQueryStringParameters().toString());
 

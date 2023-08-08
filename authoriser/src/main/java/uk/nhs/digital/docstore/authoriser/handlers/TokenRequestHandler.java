@@ -18,6 +18,7 @@ import uk.nhs.digital.docstore.authoriser.Utils;
 import uk.nhs.digital.docstore.authoriser.config.Tracer;
 import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
+import uk.nhs.digital.docstore.authoriser.models.Organisation;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
@@ -81,6 +82,8 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         LoginEventResponse loginResponse;
 
+
+
         try {
             loginResponse = sessionManager.createSession(authCode.get());
         } catch (Exception exception) {
@@ -90,8 +93,30 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         var session = loginResponse.getSession();
 
+        // TODO AKH Delete this block when the feature testing is complete
+        if (System.getenv("PRMT_3542_TEST") != null) {
+            ArrayList<Organisation> organisations = new ArrayList<>();
+            if (!System.getenv("PRMT_3542_TEST").equalsIgnoreCase("none")) {
+                organisations.add(
+                        new Organisation("X26", "NHS England", "Dr. Duck's Quack Healthcare"));
+                if (System.getenv("PRMT_3542_TEST").equalsIgnoreCase("multi")) {
+                    organisations.add(
+                            new Organisation(
+                                    "A9A5A",
+                                    "Homeopath",
+                                    "Crazy Alex's Discount Homeopathic Healthcare"));
+                    organisations.add(
+                            new Organisation(
+                                    "123456",
+                                    "You'll never see this on the frontend",
+                                    "Not a real org"));
+                }
+            }
+            loginResponse = new LoginEventResponse(session, organisations);
+        }
+
         if (loginResponse.getUsersOrgs().isEmpty()) {
-            LOGGER.debug("user has no valid organisations to log in with");
+            LOGGER.debug("user has no valid organisations to log in");
             return authError(HttpStatus.UNAUTHORISED.code);
         }
 
