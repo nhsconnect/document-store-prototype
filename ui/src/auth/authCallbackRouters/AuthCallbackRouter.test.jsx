@@ -51,7 +51,7 @@ describe("AuthCallbackRouter", () => {
         jest.clearAllMocks();
     });
 
-    it("navigates to the Home page if user has one valid org", async () => {
+    it("navigates to the Upload page if user has one valid GPP org", async () => {
         // Mock the GET request
         const responseData = {
             State: "State=some-state; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly",
@@ -61,6 +61,7 @@ describe("AuthCallbackRouter", () => {
             status: 200,
             data: {
                 Organisations: [{ orgType: "GP Practice", orgName: "PORTWAY LIFESTYLE CENTRE", odsCode: "A9A5A" }],
+                UserType: "GP Practice",
             },
         };
 
@@ -76,7 +77,39 @@ describe("AuthCallbackRouter", () => {
             });
 
             expect(axios.get).toHaveBeenCalledTimes(2);
-            expect(mockNavigate).toHaveBeenCalledWith(routes.HOME);
+            expect(mockNavigate).toHaveBeenCalledWith(routes.UPLOAD_SEARCH_PATIENT);
+        });
+    });
+
+    it("navigates to the Download page if user has one valid PCSE org", async () => {
+        // Mock the GET request
+        const responseData = {
+            State: "State=some-state; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly",
+            SessionId:
+                "SessionId=8634b700-fe04-4c30-a95c-c10ad378ec5c; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
+            RoleId: "RoleId=ADMIN; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
+            status: 200,
+            data: {
+                Organisations: [
+                    { orgType: "Primary Care Support England", orgName: "PCSE DARLINGTON", odsCode: "B1B1B" },
+                ],
+                UserType: "Primary Care Support England",
+            },
+        };
+
+        axios.get.mockResolvedValue(responseData);
+
+        render(<AuthCallbackRouter />);
+
+        // Wait for the navigation to occur
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith(`${baseAPIUrl}/Auth/TokenRequest`, {
+                params,
+                withCredentials: true,
+            });
+
+            expect(axios.get).toHaveBeenCalledTimes(2);
+            expect(mockNavigate).toHaveBeenCalledWith(routes.SEARCH_PATIENT);
         });
     });
 
