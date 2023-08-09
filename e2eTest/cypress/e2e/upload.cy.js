@@ -29,6 +29,7 @@ describe("Uploads docs and tests it looks OK", () => {
         }
 
         cy.url().should("eq", baseUrl + "/upload/search-patient");
+        cy.injectAxe();
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
