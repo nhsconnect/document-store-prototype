@@ -54,16 +54,13 @@ describe("AuthCallbackRouter", () => {
     it("navigates to the Upload page if user has one valid GPP org", async () => {
         // Mock the GET request
         const responseData = {
-            State: "State=some-state; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly",
-            SessionId:
-                "SessionId=8634b700-fe04-4c30-a95c-c10ad378ec5c; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
-            RoleId: "RoleId=ADMIN; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
-            status: 200,
             data: {
                 Organisations: [{ orgType: "GP Practice", orgName: "PORTWAY LIFESTYLE CENTRE", odsCode: "A9A5A" }],
                 UserType: "GP Practice",
             },
         };
+
+        const odsCode = { odsCode: responseData.data.Organisations[0].odsCode };
 
         axios.get.mockResolvedValue(responseData);
 
@@ -75,6 +72,10 @@ describe("AuthCallbackRouter", () => {
                 params,
                 withCredentials: true,
             });
+            expect(axios.get).toHaveBeenCalledWith(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
+                params: odsCode,
+                withCredentials: true,
+            });
 
             expect(axios.get).toHaveBeenCalledTimes(2);
             expect(mockNavigate).toHaveBeenCalledWith(routes.UPLOAD_SEARCH_PATIENT);
@@ -84,11 +85,6 @@ describe("AuthCallbackRouter", () => {
     it("navigates to the Download page if user has one valid PCSE org", async () => {
         // Mock the GET request
         const responseData = {
-            State: "State=some-state; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly",
-            SessionId:
-                "SessionId=8634b700-fe04-4c30-a95c-c10ad378ec5c; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
-            RoleId: "RoleId=ADMIN; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
-            status: 200,
             data: {
                 Organisations: [
                     { orgType: "Primary Care Support England", orgName: "PCSE DARLINGTON", odsCode: "B1B1B" },
@@ -96,6 +92,8 @@ describe("AuthCallbackRouter", () => {
                 UserType: "Primary Care Support England",
             },
         };
+
+        const odsCode = { odsCode: responseData.data.Organisations[0].odsCode };
 
         axios.get.mockResolvedValue(responseData);
 
@@ -105,6 +103,10 @@ describe("AuthCallbackRouter", () => {
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledWith(`${baseAPIUrl}/Auth/TokenRequest`, {
                 params,
+                withCredentials: true,
+            });
+            expect(axios.get).toHaveBeenCalledWith(`${baseAPIUrl}/Auth/VerifyOrganisation`, {
+                params: odsCode,
                 withCredentials: true,
             });
 
@@ -171,10 +173,6 @@ describe("AuthCallbackRouter", () => {
     it("navigates to the org selection page when response status code is 200 and more than one org is included", async () => {
         // Mock the expected response
         const responseData = {
-            State: "State=some-state; SameSite=None; Secure; Path=/; Max-Age=0; HttpOnly",
-            SessionId:
-                "SessionId=8634b700-fe04-4c30-a95c-c10ad378ec5c; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
-            RoleId: "RoleId=ADMIN; SameSite=None; Secure; Path=/; Max-Age=3592; HttpOnly",
             status: 200,
             data: {
                 Organisations: [
