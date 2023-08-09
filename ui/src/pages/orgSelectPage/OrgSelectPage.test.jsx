@@ -64,7 +64,7 @@ describe("OrgSelectPage", () => {
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
         await waitFor(() => {
-            expect(screen.getByRole("Spinner", { name: "Logging in..." })).toBeInTheDocument();
+            expect(screen.getByRole("Spinner", { name: "Verifying organisation..." })).toBeInTheDocument();
         });
     });
 

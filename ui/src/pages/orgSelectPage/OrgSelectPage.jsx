@@ -97,7 +97,7 @@ const OrgSelectPage = () => {
             </form>
         </div>
     ) : (
-        <Spinner status="Logging in..." />
+        <Spinner status="Verifying organisation..." />
     );
 };
 
