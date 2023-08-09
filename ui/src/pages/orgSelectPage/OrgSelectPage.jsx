@@ -41,8 +41,13 @@ const OrgSelectPage = () => {
                 withCredentials: true,
                 params: { odsCode: organisation.organisation },
             })
-            .then(() => {
-                navigate(routes.HOME);
+            .then((res) => {
+                const { UserType } = res.data;
+                if (UserType === "GP Practice") {
+                    navigate(routes.UPLOAD_SEARCH_PATIENT);
+                } else if (UserType === "Primary Care Support England") {
+                    navigate(routes.SEARCH_PATIENT);
+                }
             })
             .catch(() => {
                 navigate(routes.AUTH_ERROR);
@@ -92,7 +97,7 @@ const OrgSelectPage = () => {
             </form>
         </div>
     ) : (
-        <Spinner status="Logging in..." />
+        <Spinner status="Verifying organisation..." />
     );
 };
 

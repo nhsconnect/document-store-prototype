@@ -17,7 +17,7 @@ describe("OrgSelectPage", () => {
         isLoggedIn: false,
         organisations: [
             { orgType: "GP Practice", orgName: "PORTWAY LIFESTYLE CENTRE", odsCode: "A9A5A" },
-            { orgType: "Patient Care Support England", orgName: "PCSE DARLINGTON", odsCode: "B1B1B" },
+            { orgType: "Primary Care Support England", orgName: "PCSE DARLINGTON", odsCode: "B1B1B" },
         ],
     };
 
@@ -47,7 +47,7 @@ describe("OrgSelectPage", () => {
 
         expect(screen.getByRole("radio", { name: "Portway lifestyle centre [A9A5A] GP Practice" })).not.toBeChecked();
         expect(
-            screen.getByRole("radio", { name: "Pcse darlington [B1B1B] Patient Care Support England" })
+            screen.getByRole("radio", { name: "Pcse darlington [B1B1B] Primary Care Support England" })
         ).not.toBeChecked();
     });
 
@@ -64,7 +64,7 @@ describe("OrgSelectPage", () => {
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
         await waitFor(() => {
-            expect(screen.getByRole("Spinner", { name: "Logging in..." })).toBeInTheDocument();
+            expect(screen.getByRole("Spinner", { name: "Verifying organisation..." })).toBeInTheDocument();
         });
     });
 
@@ -79,27 +79,53 @@ describe("OrgSelectPage", () => {
                 screen.getByRole("radio", { name: "Portway lifestyle centre [A9A5A] GP Practice" })
             ).not.toBeChecked();
             expect(
-                screen.getByRole("radio", { name: "Pcse darlington [B1B1B] Patient Care Support England" })
+                screen.getByRole("radio", { name: "Pcse darlington [B1B1B] Primary Care Support England" })
             ).not.toBeChecked();
             expect(screen.queryByRole("Spinner")).not.toBeInTheDocument();
         });
     });
 
-    it("navigates to the Home page when an org has been selected and the Continue button clicked", async () => {
+    it("navigates to the Download page when a PCSE org has been selected and the Continue button clicked", async () => {
         const mockNavigate = jest.fn();
-        const responseData = { org: "test" };
+        const responseData = {
+            data: {
+                UserType: "Primary Care Support England",
+            },
+        };
 
         axios.get.mockResolvedValue(responseData);
         useNavigate.mockImplementation(() => mockNavigate);
 
         renderOrgSelectPage();
 
-        userEvent.click(screen.getByRole("radio", { name: "Pcse darlington [B1B1B] Patient Care Support England" }));
+        userEvent.click(screen.getByRole("radio", { name: "Pcse darlington [B1B1B] Primary Care Support England" }));
         userEvent.click(screen.getByRole("button", { name: "Continue" }));
 
         await waitFor(() => {
             expect(axios.get).toHaveBeenCalledTimes(1);
-            expect(mockNavigate).toHaveBeenCalledWith(routes.HOME);
+            expect(mockNavigate).toHaveBeenCalledWith(routes.SEARCH_PATIENT);
+        });
+    });
+
+    it("navigates to the Upload page when a GPP org has been selected and the Continue button clicked", async () => {
+        const mockNavigate = jest.fn();
+        const responseData = {
+            data: {
+                UserType: "GP Practice",
+            },
+        };
+
+        axios.get.mockResolvedValue(responseData);
+        useNavigate.mockImplementation(() => mockNavigate);
+
+        renderOrgSelectPage();
+
+        userEvent.click(screen.getByRole("radio", { name: "Portway lifestyle centre [A9A5A] GP Practice" }));
+        userEvent.click(screen.getByRole("button", { name: "Continue" }));
+
+        await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledTimes(1);
+            expect(mockNavigate).toHaveBeenCalledWith(routes.UPLOAD_SEARCH_PATIENT);
         });
     });
 });

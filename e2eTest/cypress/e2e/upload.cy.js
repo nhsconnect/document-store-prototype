@@ -28,18 +28,6 @@ describe("Uploads docs and tests it looks OK", () => {
             cy.findByRole("button", { name: "Continue" }).click();
         }
 
-        if (oidcProvider === "COGNITO") {
-            cy.get('input[name="username"]:visible').type(username);
-            cy.get('input[name="password"]:visible').type(password);
-            cy.get('input[name="signInSubmitButton"]:visible').click();
-        }
-
-        cy.url().should("eq", baseUrl + "/home");
-        cy.injectAxe();
-        cy.findByRole("radio", { name: /Upload/ }).check();
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        cy.findByRole("button", { name: "Continue" }).click();
-
         cy.url().should("eq", baseUrl + "/upload/search-patient");
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
