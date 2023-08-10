@@ -15,7 +15,7 @@ export const PatientSummaryPage = ({ nextPage }) => {
     };
 
     if (!patientDetails) {
-        navigate(routes.HOME);
+        navigate(routes.ROOT);
     }
 
     return (

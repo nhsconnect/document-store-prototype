@@ -46,7 +46,7 @@ describe("Uploads docs and tests it looks OK", () => {
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Start Again" }).click();
 
-        cy.url().should("eq", Cypress.config("baseUrl") + "/home");
+        cy.url().should("eq", Cypress.config("baseUrl") + "/");
 
         cy.findByRole("link", { name: "Log Out" }).click();
         cy.url().should("eq", baseUrl + "/");
