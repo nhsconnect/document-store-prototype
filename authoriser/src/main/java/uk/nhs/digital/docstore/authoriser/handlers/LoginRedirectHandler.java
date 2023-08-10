@@ -55,7 +55,8 @@ public class LoginRedirectHandler extends BaseAuthRequestHandler
                         + authRequestUri);
 
         try {
-            sensitiveIndex.publish(new StateAuditMessage(authRequestState));
+            sensitiveIndex.publish(
+                    new StateAuditMessage("Issuing new state cookie", authRequestState));
         } catch (JsonProcessingException e) {
             LOGGER.error("Error publishing to Splunk, malformed JSON: {}", e.getMessage());
         }

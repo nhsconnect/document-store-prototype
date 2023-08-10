@@ -23,7 +23,7 @@ import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
 public class LoginRedirectHandlerTest {
 
     private final AuditPublisher splunkPublisher = Mockito.mock(AuditPublisher.class);
-    private final StateAuditMessage auditMessage = new StateAuditMessage("state");
+    private final StateAuditMessage auditMessage = new StateAuditMessage("description", "state");
 
     @Test
     public void returnsAnHttpRedirectToTheOIDCAuthorizeEndpoint()

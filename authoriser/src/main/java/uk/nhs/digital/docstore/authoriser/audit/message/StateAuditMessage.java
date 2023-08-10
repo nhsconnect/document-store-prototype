@@ -2,10 +2,12 @@ package uk.nhs.digital.docstore.authoriser.audit.message;
 
 public class StateAuditMessage extends BaseAuditMessage implements AuditMessage {
     private final String state;
+    private final String description;
 
-    public StateAuditMessage(String state) {
+    public StateAuditMessage(String description, String state) {
         super();
         this.state = state;
+        this.description = description;
     }
 
     @SuppressWarnings("unused")
@@ -15,6 +17,6 @@ public class StateAuditMessage extends BaseAuditMessage implements AuditMessage 
 
     @Override
     public String getDescription() {
-        return "New request to start login process received";
+        return description;
     }
 }
