@@ -34,14 +34,14 @@ to `cypress.env.json`.
 
 Add the following values to [cypress.env.json](cypress.env.json):
 
-| Key                   | Value                    |
-| --------------------- | ------------------------ |
-| `username`            | `<AWS Cognito username>` |
-| `password`            | `<AWS Cognito password>` |
-| `REACT_APP_ENV`       | `local`                  |
-| `basic_auth_username` | `%basic_auth_username%`  |
-| `basic_auth_password` | `%basic_auth_username%`  |
-| `oidc_provider`       | `cis2devoidc`            |
+| Key                   | Value                   |
+| --------------------- |-------------------------|
+| `username`            | `<CIS2 username>`       |
+| `password`            | `<CIS2 password>`       |
+| `REACT_APP_ENV`       | `local`                 |
+| `basic_auth_username` | `%basic_auth_username%` |
+| `basic_auth_password` | `%basic_auth_username%` |
+| `oidc_provider`       | `cis2devoidc`           |
 
 ### 4. Run The Test
 

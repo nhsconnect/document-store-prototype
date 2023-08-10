@@ -161,8 +161,6 @@ fileignoreconfig:
   checksum: bd8545e9b73334a7226c1090ace3741749d7b1cae09e695b4cc0fc51b77027a2
 - filename: tasks
   checksum: db8f2fd58c5c073f49570905e13ed225f8a0146dbadbad220e5cc226ce7bf3c9
-- filename: terraform/cognito.tf
-  checksum: 66e15f7bc0431556f6524c5cced8369de7035bf911c4463dd7d31378c45e01b4
 - filename: terraform/main.tf
   checksum: 47245a578b883ec283c56f62cd700df3b9581ea371d06d452281950a9526f8bc
 - filename: ui/src/apiClients/documentStore.test.js

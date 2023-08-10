@@ -64,14 +64,6 @@ function deploy_ui() {
   aws amplify start-deployment --region "${aws_region}" --app-id "$app_id" --branch-name main --job-id "${jobId}"
 }
 
-function get_signout_url {
-  if [[ $ENVIRONMENT -eq "dev" ]]; then
-    echo '.cognito_redirect_signout.value[1]'
-  else
-    echo '.cognito_redirect_signout.value[0]'
-  fi
-}
-
 function create_ui_config_file() {
   cp ui/src/config.js.example ui/src/config.js
   api_endpoint="$(jq -r '.api_gateway_url.value' "$1")"
@@ -139,18 +131,10 @@ function check_env {
   fi
 }
 
-function get_user_pool_id {
-  echo "$(aws cognito-idp list-user-pools --region ${aws_region} --query 'UserPools[?Name==`doc-store-user-pool`].Id' --max-results 1 | jq -r '.[0]')"
-}
-
 function get_terraform_output() {
   tf_init
   terraform output -json >"../$1"
   cd ..
-}
-
-function create_cognito_user {
-  aws cognito-idp admin-create-user --user-pool-id $(get_user_pool_id) --username "$1" --temporary-password "$2"
 }
 
 function create_json_for_nhs_api_public_key() {
@@ -165,14 +149,6 @@ function create_workspace_ui_config_file() {
   sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
   sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
   sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
-}
-
-
-function delete_cognito_user {
-  aws cognito-idp admin-delete-user --user-pool-id $(get_user_pool_id) --username "$1"
-  if [[ $? -eq 0 ]]; then
-    echo "User deleted"
-  fi
 }
 
 readonly command="$1"
@@ -297,26 +273,6 @@ run-e2e-test)
   rm cypress.sh
   CYPRESS_BASE_URL=${CYPRESS_BASE_URL} ./node_modules/.bin/cypress run
   clear_assumed_iam_role
-  ;;
-create-cognito-user)
-  username=$2
-  password=$3
-  dojo "./tasks _create-cognito-user ${username} ${password}"
-  ;;
-_create-cognito-user)
-  username=$2
-  password=$3
-  confirm_current_role
-  create_cognito_user ${username} ${password}
-  ;;
-delete-cognito-user)
-  username=$2
-  dojo "./tasks _delete-cognito-user ${username}"
-  ;;
-_delete-cognito-user)
-  username=$2
-  confirm_current_role
-  delete_cognito_user ${username}
   ;;
 attach-policy-to-ci-role)
   dojo "./tasks _attach-policy-to-ci-role"

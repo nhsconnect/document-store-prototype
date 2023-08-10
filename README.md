@@ -197,23 +197,6 @@ to `false`.
    aws ssm get-parameter --name /prs/{ENVIRONMENT}/user-input/basic-auth-password --with-decryption
     ```
 
-### Managing Cognito Users
-
-There are commands available for creating and deleting Cognito users. You will need to assume a role with permission to
-create and delete users in the relevant AWS account before running them.
-
-#### Creating
-
-```bash
-./tasks create-cognito-user ${username} ${password}`
-```
-
-#### Deleting
-
-```bash
-./tasks delete-cognito-user ${username}
-```
-
 ## Monitoring
 
 We have configured AWS CloudWatch to provide alarm notifications whenever one of a number of metrics exceeds its normal

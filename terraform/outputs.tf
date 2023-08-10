@@ -17,23 +17,3 @@ output "api_gateway_rest_api_stage" {
 output "api_gateway_url" {
   value = aws_api_gateway_deployment.api_deploy.invoke_url
 }
-
-output "cognito_user_pool_ids" {
-  value = ""
-}
-
-output "cognito_client_ids" {
-  value = ""
-}
-
-output "cognito_user_pool_domain" {
-  value = ""
-}
-
-output "cognito_redirect_signin" {
-  value = ""
-}
-
-output "cognito_redirect_signout" {
-  value = ["", ""]
-}
