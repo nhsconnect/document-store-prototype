@@ -20,6 +20,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.OIDCTokenFetcher;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.TokenRequestClient;
 import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.exceptions.TokenFetchingException;
 

@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.ODSAPIRequestClient;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.OIDCClient;
 import uk.nhs.digital.docstore.authoriser.audit.message.UserInfoAuditMessage;
 import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;

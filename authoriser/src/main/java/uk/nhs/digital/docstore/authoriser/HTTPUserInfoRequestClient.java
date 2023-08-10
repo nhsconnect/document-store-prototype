@@ -4,6 +4,7 @@ import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.openid.connect.sdk.UserInfoRequest;
 import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import java.io.IOException;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.UserInfoRequestClient;
 
 public class HTTPUserInfoRequestClient implements UserInfoRequestClient {
     @Override
