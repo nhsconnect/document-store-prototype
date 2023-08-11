@@ -34,7 +34,7 @@ describe("Uploads docs and tests it looks OK", () => {
         cy.findByRole("button", { name: "Search" }).click();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.url().should("eq", baseUrl + "/upload/search-patient/result");
-        cy.findByRole("button", { name: "Next" }).click();
+        cy.findByRole("button", { name: "Accept details are correct" }).click();
 
         cy.url().should("eq", baseUrl + "/upload/submit");
         cy.get("input[type=file]").selectFile(uploadedFilePathNames);
