@@ -12,24 +12,20 @@ sequenceDiagram
     actor GP Practice/PCSE User
     GP Practice/PCSE User ->> React Web App: Clicks start button
     activate React Web App
-    React Web App ->> Cognito: Sends auth request
-    activate Cognito
+    React Web App ->> CIS2: Sends auth request
     deactivate React Web App
-    Cognito ->> CIS2: Forwards auth request
     activate CIS2
-    deactivate Cognito
     CIS2 -->> GP Practice/PCSE User: Requests login details
     GP Practice/PCSE User -->> CIS2: Submits login credentials
-    CIS2 ->> Cognito: Returns auth code
-    activate Cognito
-    Cognito ->> CIS2: Requests tokens
-    CIS2 ->> Cognito: Returns access & ID tokens
-    Cognito ->> CIS2: Requests user info
-    CIS2 ->> Cognito: Returns user info
-    deactivate CIS2
-    Cognito ->> React Web App: Returns access & ID tokens
+    CIS2 ->> React Web App: Returns auth code
     activate React Web App
-    deactivate Cognito
+    React Web App ->> CIS2: Requests tokens
+    CIS2 ->> React Web App: Returns access & ID tokens
+    React Web App ->> CIS2: Requests user info
+    CIS2 ->> React Web App: Returns user info
+    CIS2 ->> React Web App: Returns access & ID tokens
+    activate React Web App
+    deactivate CIS2
     React Web App ->> GP Practice/PCSE User: Redirects to /home
     deactivate React Web App
 ```
