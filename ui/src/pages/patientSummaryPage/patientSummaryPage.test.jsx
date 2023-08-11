@@ -26,7 +26,16 @@ describe("<PatientSummaryPage/>", () => {
 
             expect(screen.getByRole("heading", { name: "Verify patient details" })).toBeInTheDocument();
             expect(screen.getByText(familyName)).toBeInTheDocument();
-            expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "Accept details are correct" })).toBeInTheDocument();
+            expect(screen.getByText(/If patient details are incorrect/)).toBeInTheDocument();
+
+            const nationalServiceDeskLink = screen.getByRole("link", { name: /National Service Desk/ });
+
+            expect(nationalServiceDeskLink).toHaveAttribute(
+                "href",
+                "https://digital.nhs.uk/about-nhs-digital/contact-us#nhs-digital-service-desks"
+            );
+            expect(nationalServiceDeskLink).toHaveAttribute("target", "_blank");
         });
 
         it("displays text specific to upload path if user has selected upload", async () => {
@@ -102,7 +111,7 @@ describe("<PatientSummaryPage/>", () => {
                     <PatientSummaryPage nextPage={expectedNextPage} />
                 </PatientDetailsProvider>
             );
-            userEvent.click(await screen.getByRole("button", { name: "Next" }));
+            userEvent.click(await screen.getByRole("button", { name: "Accept details are correct" }));
             await waitFor(() => {
                 expect(mockNavigate).toHaveBeenCalledWith(expectedNextPage);
             });
