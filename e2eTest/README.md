@@ -35,7 +35,7 @@ to `cypress.env.json`.
 Add the following values to [cypress.env.json](cypress.env.json):
 
 | Key                   | Value                   |
-| --------------------- |-------------------------|
+| --------------------- | ----------------------- |
 | `username`            | `<CIS2 username>`       |
 | `password`            | `<CIS2 password>`       |
 | `REACT_APP_ENV`       | `local`                 |
