@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.audit.message.UserInfoAuditMessage;
 import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.authoriser.audit.publisher.SplunkPublisher;
+import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
@@ -77,6 +78,11 @@ public class SessionManager {
                         .collect(Collectors.toList());
 
         if (!prospectiveOrgs.isEmpty()) {
+            // Temp PCSE org
+            prospectiveOrgs.add(new Organisation("A9A5A", "Temp GP org", PermittedOrgs.GPP.type));
+            prospectiveOrgs.add(
+                    new Organisation("B9A5A", "Temp PSCE org", PermittedOrgs.PCSE.type));
+
             session.setOrganisations(prospectiveOrgs);
             sessionStore.save(session);
         }
