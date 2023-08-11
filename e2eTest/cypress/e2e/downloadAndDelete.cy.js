@@ -32,7 +32,7 @@ describe("downloads and deletes docs", () => {
         // cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         // cy.findByRole("button", { name: "Search" }).click();
         // cy.url().should("eq", baseUrl + "/search/patient/result");
-        // cy.findByRole("button", { name: "Next" }).click();
+        // cy.findByRole("button", { name: "Accept details are correct" }).click();
         //
         // cy.url().should("eq", baseUrl + "/search/results");
         // cy.readFile(downloadedDocumentPath).should("not.exist");
