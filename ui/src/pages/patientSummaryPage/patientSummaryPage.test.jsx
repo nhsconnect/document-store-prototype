@@ -108,9 +108,9 @@ describe("<PatientSummaryPage/>", () => {
             });
         });
 
-        it("navigates to home page when no patient details found", async () => {
+        it("navigates to Start page when no patient details found", async () => {
             const mockNavigate = jest.fn();
-            const expectedNextPage = "/home";
+            const expectedNextPage = "/";
 
             useNavigate.mockImplementation(() => mockNavigate);
 

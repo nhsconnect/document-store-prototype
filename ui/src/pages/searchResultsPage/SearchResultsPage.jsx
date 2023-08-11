@@ -188,7 +188,7 @@ const SearchResultsPage = () => {
             )}
             {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) && (
                 <p>
-                    <Link to="/home">Start Again</Link>
+                    <Link to="/">Start Again</Link>
                 </p>
             )}
         </>

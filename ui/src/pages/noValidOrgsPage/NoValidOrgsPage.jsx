@@ -32,7 +32,7 @@ const NoValidOrgsPage = () => {
                 </li>
             </ul>
             <p>
-                <ButtonLink href="/home">Return to start page</ButtonLink>
+                <ButtonLink href="/">Return to start page</ButtonLink>
             </p>
         </>
     );

@@ -58,12 +58,12 @@ describe("<SearchResultsPage />", () => {
             expect(await screen.findByRole("link", { name: "Start Again" })).toBeInTheDocument();
         });
 
-        it("goes to home page when user clicks on start again button", async () => {
+        it("goes to Start page when user clicks on start again button", async () => {
             usePatientDetailsContext.mockReturnValue([buildPatientDetails(), jest.fn()]);
 
             renderSearchResultsPage();
 
-            expect(await screen.findByRole("link", { name: "Start Again" })).toHaveAttribute("href", "/home");
+            expect(await screen.findByRole("link", { name: "Start Again" })).toHaveAttribute("href", "/");
         });
 
         it("displays a loading spinner when a document search is in progress", async () => {

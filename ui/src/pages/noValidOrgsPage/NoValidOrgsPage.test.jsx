@@ -9,7 +9,7 @@ describe("NoValidOrgsPage", () => {
         renderNoValidOrgsPage();
 
         expect(screen.getByRole("link", { name: "NHS National Service Desk" })).toHaveAttribute("href", helpDeskUrl);
-        expect(screen.getByRole("button", { name: "Return to start page" })).toHaveAttribute("href", "/home");
+        expect(screen.getByRole("button", { name: "Return to start page" })).toHaveAttribute("href", "/");
         expect(
             screen.getByRole("heading", { name: "You do not have a valid organisation to access this service" })
         ).toBeInTheDocument();
