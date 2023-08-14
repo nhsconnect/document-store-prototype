@@ -28,7 +28,7 @@ describe("Uploads docs and tests it looks OK", () => {
             cy.findByRole("button", { name: "Continue" }).click();
         }
 
-        cy.url().should("eq", baseUrl + "/upload/select-organisation");
+        cy.url().should("eq", baseUrl + "/select-organisation");
         cy.injectAxe();
         cy.get('[type="radio"]').check('A9A5A');
         cy.findByRole("button", { name: "Continue" }).click();
