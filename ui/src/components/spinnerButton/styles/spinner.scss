@@ -13,7 +13,7 @@
 }
 
 .spinner {
-  border: nhsuk-spacing(1) solid rgba($color_nhsuk-white, 0.6);
+  border: nhsuk-spacing(1) solid rgba($color_nhsuk-white, 0.8);
   border-top: nhsuk-spacing(1) solid $color_nhsuk-black;
   animation: spin 1s linear infinite;
   box-sizing: border-box;
