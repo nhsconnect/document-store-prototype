@@ -81,7 +81,9 @@ public class SessionManager {
             // Temp PCSE org
             String featureFlag = System.getenv("MULTI_ORG_FEATURE");
             if (featureFlag != null && featureFlag.equalsIgnoreCase("true")) {
-                LOGGER.warn("Adding an extra organisation as a PCSE user as the feature flag is turned ON.");
+                LOGGER.warn(
+                        "Adding an extra organisation as a PCSE user as the feature flag is turned"
+                                + " ON.");
                 prospectiveOrgs.add(
                         new Organisation("B9A5A", "Temp PSCE org", PermittedOrgs.PCSE.type));
             }
