@@ -1,12 +1,11 @@
 import React from "react";
 import { Button } from "nhsuk-react-components";
+import "./styles/spinner.scss";
 
 const SpinnerButton = ({ status }) => {
-    const buttonStyle = { display: "flex" };
-
     return (
-        <Button aria-label="SpinnerButton" style={buttonStyle} role="SpinnerButton">
-            <div className="spinner-button"></div>
+        <Button aria-label="SpinnerButton" className="spinner-button" role="SpinnerButton">
+            <div className="spinner"></div>
             <div role="status">{status}</div>
         </Button>
     );

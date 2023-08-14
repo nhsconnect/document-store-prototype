@@ -1,0 +1,25 @@
+@import "node_modules/nhsuk-frontend/packages/core/all";
+@import "node_modules/nhsuk-frontend/packages/components/button/button";
+
+.spinner-button {
+  display: flex;
+  color: $color_nhsuk-black;
+  background: $color_nhsuk-yellow;
+
+  &:hover{
+    color: $color_nhsuk-black;
+    background: $color_nhsuk-yellow;
+  }
+}
+
+.spinner {
+  border: nhsuk-spacing(1) solid rgba($color_nhsuk-white, 0.8);
+  border-top: nhsuk-spacing(1) solid $color_nhsuk-black;
+  animation: spin 1s linear infinite;
+  box-sizing: border-box;
+  margin: 5px;
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
