@@ -79,8 +79,11 @@ public class SessionManager {
 
         if (!prospectiveOrgs.isEmpty()) {
             // Temp PCSE org
-            prospectiveOrgs.add(
-                    new Organisation("B9A5A", "Temp PSCE org", PermittedOrgs.PCSE.type));
+            String featureFlag = System.getenv("MULTI_ORG_FEATURE");
+            if (featureFlag != null && featureFlag.equalsIgnoreCase("true")) {
+                prospectiveOrgs.add(
+                        new Organisation("B9A5A", "Temp PSCE org", PermittedOrgs.PCSE.type));
+            }
 
             session.setOrganisations(prospectiveOrgs);
             sessionStore.save(session);
