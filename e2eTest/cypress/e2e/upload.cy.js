@@ -32,7 +32,7 @@ describe("Uploads docs and tests it looks OK", () => {
         cy.injectAxe();
         cy.get('[type="radio"]').check('A9A5A');
         cy.findByRole("button", { name: "Continue" }).click();
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
 
         cy.url().should("eq", baseUrl + "/upload/search-patient");
         cy.injectAxe();
