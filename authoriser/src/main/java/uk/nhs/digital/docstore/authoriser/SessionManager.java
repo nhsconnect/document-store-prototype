@@ -79,7 +79,6 @@ public class SessionManager {
 
         if (!prospectiveOrgs.isEmpty()) {
             // Temp PCSE org
-            prospectiveOrgs.add(new Organisation("A9A5A", "Temp GP org", PermittedOrgs.GPP.type));
             prospectiveOrgs.add(
                     new Organisation("B9A5A", "Temp PSCE org", PermittedOrgs.PCSE.type));
 

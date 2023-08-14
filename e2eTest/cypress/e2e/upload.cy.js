@@ -28,6 +28,12 @@ describe("Uploads docs and tests it looks OK", () => {
             cy.findByRole("button", { name: "Continue" }).click();
         }
 
+        cy.url().should("eq", baseUrl + "/upload/select-organisation");
+        cy.injectAxe();
+        cy.get('[value="A9A5A"]').first().check();
+        cy.findByRole("button", { name: "Continue" }).click();
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
+
         cy.url().should("eq", baseUrl + "/upload/search-patient");
         cy.injectAxe();
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);

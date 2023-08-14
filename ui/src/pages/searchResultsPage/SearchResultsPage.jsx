@@ -153,19 +153,15 @@ const SearchResultsPage = () => {
                             </p>
                             <div style={{ display: "flex" }}>
                                 {downloadState === states.PENDING ? (
-                                    <SpinnerButton status="Downloading documents"/>
+                                    <SpinnerButton status="Downloading documents" />
                                 ) : (
-                                    <Button
-                                        type="button"
-                                        onClick={downloadAll}
-                                        disabled={numberOfCleanFiles < 1}
-                                    >
+                                    <Button type="button" onClick={downloadAll} disabled={numberOfCleanFiles < 1}>
                                         Download All Documents
                                     </Button>
                                 )}
                                 <Link
                                     className="nhsuk-button nhsuk-button--secondary"
-                                    style={{marginLeft: 72}}
+                                    style={{ marginLeft: 72 }}
                                     to={routes.SEARCH_RESULTS_DELETE}
                                     role="button"
                                 >
