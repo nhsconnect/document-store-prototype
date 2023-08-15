@@ -85,9 +85,9 @@ public class SessionManager {
             LOGGER.debug("Feature flag is {}", featureFlag);
             if (featureFlag != null) {
                 LOGGER.debug("Feature flag is not null");
-            }
-            if (featureFlag.equalsIgnoreCase("true")) {
-                LOGGER.debug("Feature flag is true");
+                if (featureFlag.equalsIgnoreCase("true")) {
+                    LOGGER.debug("Feature flag is true");
+                }
             }
             if (featureFlag != null && featureFlag.equalsIgnoreCase("true")) {
                 LOGGER.debug(
