@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.authoriser.builders.IDTokenClaimsSetBuilder;
 import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.models.Organisation;
@@ -37,6 +38,7 @@ public class VerifyOrganisationHandlerTest {
     private Session session;
     private final String odsCode = "A100";
     private final long maxCookieAgeInSeconds = 100L;
+    private final AuditPublisher splunkPublisher = Mockito.mock(AuditPublisher.class);
 
     @BeforeEach
     public void init() {
@@ -55,7 +57,7 @@ public class VerifyOrganisationHandlerTest {
 
         inMemorySessionStore.save(session);
 
-        handler = new VerifyOrganisationHandler(inMemorySessionStore, clock);
+        handler = new VerifyOrganisationHandler(inMemorySessionStore, clock, splunkPublisher);
     }
 
     @Test
