@@ -80,13 +80,18 @@ public class SessionManager {
         LOGGER.debug("Checking for prospective orgs");
         if (!prospectiveOrgs.isEmpty()) {
             // Temp PCSE org
-            LOGGER.debug("Checking for feature flag");
+            LOGGER.debug("Prospective orgs not empty. Checking for feature flag");
             String featureFlag = System.getenv("MULTI_ORG_FEATURE");
             LOGGER.debug("Feature flag is {}", featureFlag);
+            if (featureFlag != null) {
+                LOGGER.debug("Feature flag is not null");
+            }
+            if (featureFlag.equalsIgnoreCase("true")) {
+                LOGGER.debug("Feature flag is true");
+            }
             if (featureFlag != null && featureFlag.equalsIgnoreCase("true")) {
-                LOGGER.warn(
-                        "Adding an extra organisation as a PCSE user as the feature flag is turned"
-                                + " ON.");
+                LOGGER.debug(
+                        "Adding an extra organisation as a PCSE user as the feature flag is ON.");
                 prospectiveOrgs.add(
                         new Organisation("B9A5A", "Temp PSCE org", PermittedOrgs.PCSE.type));
             }
