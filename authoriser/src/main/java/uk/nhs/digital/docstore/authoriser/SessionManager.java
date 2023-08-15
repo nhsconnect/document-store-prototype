@@ -82,11 +82,13 @@ public class SessionManager {
             // Temp PCSE org
             LOGGER.debug("Prospective orgs not empty. Checking for feature flag");
             String featureFlag = System.getenv("MULTI_ORG_FEATURE");
-            LOGGER.debug("Feature flag is {}", featureFlag);
+            LOGGER.debug("Feature flag's value is is {}", featureFlag);
             if (featureFlag != null) {
                 LOGGER.debug("Feature flag is not null");
-                if (featureFlag.equalsIgnoreCase("true")) {
+                if (featureFlag.trim().equalsIgnoreCase("true")) {
                     LOGGER.debug("Feature flag is true");
+                } else {
+                    LOGGER.debug("Feature flag does not equal true as a String;");
                 }
             }
             if (featureFlag != null && featureFlag.equalsIgnoreCase("true")) {
