@@ -17,6 +17,7 @@ import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.Utils;
 import uk.nhs.digital.docstore.authoriser.config.Tracer;
 import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
+import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
 import uk.nhs.digital.docstore.authoriser.repository.DynamoDBSessionStore;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
@@ -83,7 +84,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
 
         try {
             loginResponse = sessionManager.createSession(authCode.get());
-        } catch (Exception exception) {
+        } catch (LoginException exception) {
             LOGGER.debug(exception.getMessage());
             return authError(HttpStatus.FORBIDDEN.code);
         }

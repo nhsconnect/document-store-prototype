@@ -2,7 +2,8 @@ package uk.nhs.digital.docstore.authoriser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import java.util.List;
+
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.json.JSONObject;
@@ -69,19 +70,20 @@ public class SessionManager {
         System.out.println("user info object: " + userInfo);
         var odsCodes = jsonDataExtractor.getOdsCodesFromUserInfo(userInfo);
 
-        List<Organisation> prospectiveOrgs =
+        ArrayList<Organisation> prospectiveOrgs =
                 odsCodes.stream()
                         .map(odsApiClient::getResponse)
                         .map(jsonDataExtractor::getProspectiveOrgs)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toCollection(ArrayList::new));
 
         LOGGER.debug("Checking for prospective orgs");
         if (!prospectiveOrgs.isEmpty()) {
             // Temp PCSE org
             LOGGER.debug("Checking for feature flag");
             String featureFlag = System.getenv("MULTI_ORG_FEATURE");
+            LOGGER.debug("Feature flag is {}", featureFlag);
             if (featureFlag != null && featureFlag.equalsIgnoreCase("true")) {
                 LOGGER.warn(
                         "Adding an extra organisation as a PCSE user as the feature flag is turned"
