@@ -2,7 +2,6 @@ package uk.nhs.digital.docstore.authoriser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
-
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
