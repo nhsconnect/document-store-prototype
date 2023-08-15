@@ -79,18 +79,9 @@ public class SessionManager {
 
         LOGGER.debug("Checking for prospective orgs");
         if (!prospectiveOrgs.isEmpty()) {
-            // Temp PCSE org
-            LOGGER.debug("Prospective orgs not empty. Checking for feature flag");
+
+            // Add a Temp PCSE org for dev testing
             String featureFlag = System.getenv("MULTI_ORG_FEATURE");
-            LOGGER.debug("Feature flag's value is is {}", featureFlag);
-            if (featureFlag != null) {
-                LOGGER.debug("Feature flag is not null");
-                if (featureFlag.trim().equalsIgnoreCase("true")) {
-                    LOGGER.debug("Feature flag is true");
-                } else {
-                    LOGGER.debug("Feature flag does not equal true as a String;");
-                }
-            }
             if (featureFlag != null && featureFlag.equalsIgnoreCase("true")) {
                 LOGGER.debug(
                         "Adding an extra organisation as a PCSE user as the feature flag is ON.");
