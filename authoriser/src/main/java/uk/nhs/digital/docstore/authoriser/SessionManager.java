@@ -77,8 +77,10 @@ public class SessionManager {
                         .map(Optional::get)
                         .collect(Collectors.toList());
 
+        LOGGER.debug("Checking for prospective orgs");
         if (!prospectiveOrgs.isEmpty()) {
             // Temp PCSE org
+            LOGGER.debug("Checking for feature flag");
             String featureFlag = System.getenv("MULTI_ORG_FEATURE");
             if (featureFlag != null && featureFlag.equalsIgnoreCase("true")) {
                 LOGGER.warn(
