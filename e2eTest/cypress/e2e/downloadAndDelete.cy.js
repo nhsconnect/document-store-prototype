@@ -8,12 +8,12 @@ describe("downloads and deletes docs", () => {
     });
 
     it("searches for a patient, downloads, and then deletes docs", () => {
-        // const baseUrl = Cypress.config("baseUrl");
-        // const nhsNumber = "9449305552";
+        const baseUrl = Cypress.config("baseUrl");
+        const nhsNumber = "9449305552";
         const username = Cypress.env("username");
         const password = Cypress.env("password");
         const oidcProvider = Cypress.env("oidc_provider");
-        // const downloadedDocumentPath = path.join(Cypress.config("downloadsFolder"), `patient-record-${nhsNumber}.zip`);
+        const downloadedDocumentPath = path.join(Cypress.config("downloadsFolder"), `patient-record-${nhsNumber}.zip`);
 
         cy.visit("/");
         cy.title().should("eq", "Inactive Patient Record Administration");
