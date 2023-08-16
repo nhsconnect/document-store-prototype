@@ -27,27 +27,32 @@ describe("downloads and deletes docs", () => {
             cy.findByRole("button", { name: "Continue" }).click();
         }
 
-        // Temporarily disabled until valid PCSE CIS2 user is provided
-        // cy.url().should("eq", baseUrl + "/search/patient");
-        // cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
-        // cy.findByRole("button", { name: "Search" }).click();
-        // cy.url().should("eq", baseUrl + "/search/patient/result");
-        // cy.findByRole("button", { name: "Accept details are correct" }).click();
-        //
-        // cy.url().should("eq", baseUrl + "/search/results");
-        // cy.readFile(downloadedDocumentPath).should("not.exist");
-        // cy.findByRole("button", { name: "Download All Documents" }).click();
-        // cy.readFile(downloadedDocumentPath).should("exist");
-        // cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        //
-        // cy.findByRole("button", { name: "Delete All Documents" }).click();
-        // cy.url().should("eq", baseUrl + "/search/results/delete");
-        // cy.findByRole("radio", { name: "Yes" }).check();
-        // cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
-        // cy.findByRole("button", { name: "Continue" }).click();
-        // cy.url().should("eq", baseUrl + "/search/results");
-        //
-        // cy.findByRole("link", { name: "Log Out" }).click();
-        // cy.url().should("eq", baseUrl + "/");
+        cy.url().should("eq", baseUrl + "/select-organisation");
+        cy.injectAxe();
+        cy.get('[type="radio"]').check('B9A5A');
+        cy.findByRole("button", { name: "Continue" }).click();
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+
+        cy.url().should("eq", baseUrl + "/search/patient");
+        cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
+        cy.findByRole("button", { name: "Search" }).click();
+        cy.url().should("eq", baseUrl + "/search/patient/result");
+        cy.findByRole("button", { name: "Accept details are correct" }).click();
+
+        cy.url().should("eq", baseUrl + "/search/results");
+        cy.readFile(downloadedDocumentPath).should("not.exist");
+        cy.findByRole("button", { name: "Download All Documents" }).click();
+        cy.readFile(downloadedDocumentPath).should("exist");
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
+
+        cy.findByRole("button", { name: "Delete All Documents" }).click();
+        cy.url().should("eq", baseUrl + "/search/results/delete");
+        cy.findByRole("radio", { name: "Yes" }).check();
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
+        cy.findByRole("button", { name: "Continue" }).click();
+        cy.url().should("eq", baseUrl + "/search/results");
+
+        cy.findByRole("link", { name: "Log Out" }).click();
+        cy.url().should("eq", baseUrl + "/");
     });
 });
