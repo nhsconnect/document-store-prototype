@@ -29,9 +29,9 @@ describe("downloads and deletes docs", () => {
 
         cy.url().should("eq", baseUrl + "/select-organisation");
         cy.injectAxe();
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
         cy.get('[type="radio"]').check('B9A5A');
         cy.findByRole("button", { name: "Continue" }).click();
-        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
 
         cy.url().should("eq", baseUrl + "/search/patient");
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
