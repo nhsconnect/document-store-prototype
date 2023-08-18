@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 ENVIRONMENT=${1:-local}
 REGION=eu-west-2
