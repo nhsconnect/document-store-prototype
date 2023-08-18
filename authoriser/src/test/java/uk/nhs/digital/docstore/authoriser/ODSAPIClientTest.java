@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.ODSAPIClient;
 
 class ODSAPIClientTest {
     @Test

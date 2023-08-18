@@ -3,6 +3,7 @@ package uk.nhs.digital.docstore.authoriser.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import java.net.MalformedURLException;
@@ -15,6 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.docstore.authoriser.*;
 import uk.nhs.digital.docstore.authoriser.Utils;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.OIDCHttpClient;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.OIDCTokenFetcher;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.UserInfoFetcher;
+import uk.nhs.digital.docstore.authoriser.audit.message.StateAuditMessage;
+import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
+import uk.nhs.digital.docstore.authoriser.audit.publisher.SplunkPublisher;
 import uk.nhs.digital.docstore.authoriser.config.Tracer;
 import uk.nhs.digital.docstore.authoriser.enums.HttpStatus;
 import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
@@ -28,6 +35,8 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
     private final SessionManager sessionManager;
     private Clock clock = Clock.systemUTC();
 
+    private final AuditPublisher sensitiveIndex;
+
     @SuppressWarnings("unused")
     public TokenRequestHandler() {
         this(
@@ -40,16 +49,19 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                                 new UserInfoFetcher(
                                         new HTTPUserInfoRequestClient(), getProviderMetadata()),
                                 makeIDTokenValidator()),
-                        new DynamoDBSessionStore(createDynamoDbMapper())));
+                        new DynamoDBSessionStore(createDynamoDbMapper())),
+                new SplunkPublisher(System.getenv("SQS_AUDIT_QUEUE_URL")));
     }
 
-    public TokenRequestHandler(SessionManager sessionManager, Clock clock) {
-        this.sessionManager = sessionManager;
+    public TokenRequestHandler(
+            SessionManager sessionManager, Clock clock, AuditPublisher sensitiveIndex) {
+        this(sessionManager, sensitiveIndex);
         this.clock = clock;
     }
 
-    public TokenRequestHandler(SessionManager sessionManager) {
+    public TokenRequestHandler(SessionManager sessionManager, AuditPublisher sensitiveIndex) {
         this.sessionManager = sessionManager;
+        this.sensitiveIndex = sensitiveIndex;
     }
 
     @Override
@@ -77,8 +89,7 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
             return authError(HttpStatus.BAD_REQUEST.code);
         }
 
-        LOGGER.debug(
-                "Authorising session for state: " + requestEvent.getCookieState().orElse(null));
+        logState(requestEvent.getCookieState().orElse(null).toString());
 
         LoginEventResponse loginResponse;
 
@@ -129,6 +140,21 @@ public class TokenRequestHandler extends BaseAuthRequestHandler
                 .withHeaders(headers)
                 .withBody(response.toString())
                 .withMultiValueHeaders(multiValueHeaders);
+    }
+
+    private void logState(String state) {
+
+        state = (state == null) ? "null" : state;
+
+        var messageDescription = "Authorising session for state";
+
+        LOGGER.debug(messageDescription + ": " + state);
+
+        try {
+            sensitiveIndex.publish(new StateAuditMessage(messageDescription, state));
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Error publishing to Splunk, malformed JSON: {}", e.getMessage());
+        }
     }
 
     private static APIGatewayProxyResponseEvent authError(int statusCode) {

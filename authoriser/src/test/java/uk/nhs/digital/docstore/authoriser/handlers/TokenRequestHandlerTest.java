@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.id.State;
 import java.time.Clock;
@@ -11,9 +12,12 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.nhs.digital.docstore.authoriser.SessionManager;
+import uk.nhs.digital.docstore.authoriser.audit.message.StateAuditMessage;
+import uk.nhs.digital.docstore.authoriser.audit.publisher.AuditPublisher;
 import uk.nhs.digital.docstore.authoriser.enums.PermittedOrgs;
 import uk.nhs.digital.docstore.authoriser.exceptions.LoginException;
 import uk.nhs.digital.docstore.authoriser.models.LoginEventResponse;
@@ -22,6 +26,14 @@ import uk.nhs.digital.docstore.authoriser.models.Session;
 import uk.nhs.digital.docstore.authoriser.requestEvents.TokenRequestEvent;
 
 class TokenRequestHandlerTest {
+
+    private final AuditPublisher splunkPublisher = Mockito.mock(AuditPublisher.class);
+    private final StateAuditMessage auditMessage = new StateAuditMessage("description", "state");
+
+    @BeforeEach
+    void setup() throws JsonProcessingException {
+        Mockito.doNothing().when(splunkPublisher).publish(auditMessage);
+    }
 
     @Test
     void handleRequestReturnsCookiesAndOrgForSingleValidOrgUser() throws LoginException {
@@ -50,7 +62,7 @@ class TokenRequestHandlerTest {
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
-        var handler = new TokenRequestHandler(sessionManager, clock);
+        var handler = new TokenRequestHandler(sessionManager, clock, splunkPublisher);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getIsBase64Encoded()).isFalse();
@@ -106,7 +118,7 @@ class TokenRequestHandlerTest {
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
-        var handler = new TokenRequestHandler(sessionManager, clock);
+        var handler = new TokenRequestHandler(sessionManager, clock, splunkPublisher);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getIsBase64Encoded()).isFalse();
@@ -156,7 +168,7 @@ class TokenRequestHandlerTest {
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
-        var handler = new TokenRequestHandler(sessionManager, clock);
+        var handler = new TokenRequestHandler(sessionManager, clock, splunkPublisher);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(401);
@@ -181,7 +193,7 @@ class TokenRequestHandlerTest {
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
-        var handler = new TokenRequestHandler(sessionManager);
+        var handler = new TokenRequestHandler(sessionManager, splunkPublisher);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(400);
@@ -203,7 +215,7 @@ class TokenRequestHandlerTest {
         var sessionManager = Mockito.mock(SessionManager.class);
         Mockito.when(sessionManager.createSession(authCode)).thenReturn(loginOutcome);
 
-        var handler = new TokenRequestHandler(sessionManager);
+        var handler = new TokenRequestHandler(sessionManager, splunkPublisher);
         var response = handler.handleRequest(request, Mockito.mock(Context.class));
 
         assertThat(response.getStatusCode()).isEqualTo(400);

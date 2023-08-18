@@ -15,6 +15,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.UserInfoFetcher;
+import uk.nhs.digital.docstore.authoriser.apiRequestClients.UserInfoRequestClient;
 import uk.nhs.digital.docstore.authoriser.exceptions.UserInfoFetchingException;
 
 class UserInfoFetcherTest {

@@ -1,4 +1,4 @@
-package uk.nhs.digital.docstore.authoriser;
+package uk.nhs.digital.docstore.authoriser.apiRequestClients;
 
 import java.io.BufferedReader;
 import java.io.IOException;
