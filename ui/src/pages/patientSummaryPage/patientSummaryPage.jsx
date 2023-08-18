@@ -15,11 +15,11 @@ export const PatientSummaryPage = ({ nextPage }) => {
     };
 
     if (!patientDetails) {
-        navigate(routes.HOME);
+        navigate(routes.ROOT);
     }
 
     return (
-        <>
+        <div style={{ maxWidth: 500 }}>
             <BackButton />
             <h1 role="heading">Verify patient details</h1>
             {patientDetails && (patientDetails.superseded || patientDetails.restricted) && (
@@ -38,7 +38,18 @@ export const PatientSummaryPage = ({ nextPage }) => {
                     upload.
                 </p>
             )}
-            <Button onClick={onNextClicked}>Next</Button>
-        </>
+
+            <Button onClick={onNextClicked}>Accept details are correct</Button>
+            <p>
+                If patient details are incorrect, please contact the{" "}
+                <a
+                    href="https://digital.nhs.uk/about-nhs-digital/contact-us#nhs-digital-service-desks"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    NHS National Service Desk
+                </a>
+            </p>
+        </div>
     );
 };

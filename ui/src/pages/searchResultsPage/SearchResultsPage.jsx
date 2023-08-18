@@ -151,27 +151,23 @@ const SearchResultsPage = () => {
                                 Only permanently delete all documents for this patient if you have a valid reason to.
                                 For example, if the retention period of these documents has been reached.
                             </p>
-                            <>
+                            <div style={{ display: "flex" }}>
                                 {downloadState === states.PENDING ? (
-                                    <SpinnerButton status="Downloading documents" style={{ marginRight: 72 }} />
+                                    <SpinnerButton status="Downloading documents" />
                                 ) : (
-                                    <Button
-                                        type="button"
-                                        style={{ marginRight: 72 }}
-                                        onClick={downloadAll}
-                                        disabled={numberOfCleanFiles < 1}
-                                    >
+                                    <Button type="button" onClick={downloadAll} disabled={numberOfCleanFiles < 1}>
                                         Download All Documents
                                     </Button>
                                 )}
                                 <Link
                                     className="nhsuk-button nhsuk-button--secondary"
+                                    style={{ marginLeft: 72 }}
                                     to={routes.SEARCH_RESULTS_DELETE}
                                     role="button"
                                 >
                                     Delete All Documents
                                 </Link>
-                            </>
+                            </div>
                             {downloadState === states.SUCCEEDED && (
                                 <p>
                                     <strong>All documents have been successfully downloaded.</strong>
@@ -188,7 +184,7 @@ const SearchResultsPage = () => {
             )}
             {(submissionState === states.FAILED || submissionState === states.SUCCEEDED) && (
                 <p>
-                    <Link to="/home">Start Again</Link>
+                    <Link to="/">Start Again</Link>
                 </p>
             )}
         </>

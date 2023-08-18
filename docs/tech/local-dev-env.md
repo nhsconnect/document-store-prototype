@@ -81,7 +81,7 @@ as differences between your envs (e.g. having a different version of Terraform a
 Yes. Whilst LocalStack is a brilliant project and offers pretty good representations of many AWS services, it does have
 some limitations. Here are a few that we've encountered so far relevant to this project:
 
-- There's no implementation of Cognito, SSM Parameter Store or AWS Amplify.
+- There's no implementation of SSM Parameter Store or AWS Amplify.
 - IAM permission checks are not applied, so policies cannot be tested locally.
 - API Gateway does not apply auth checks.
 

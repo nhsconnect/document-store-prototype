@@ -39,14 +39,10 @@ _Note: Ensure you have the correct Node version set before doing this (i.e. `nvm
 
 Create a config file by copying [config.js.local.example](src/config.js.local.example) and rename it to `config.js`.
 
-_Note: If Cognito user pool has been modified, `userPoolId` and `userPoolWebClientId` will need to be changed in the
-config
-file and replaced by the new values that can be found in Cognito user pool in the AWS Console._
-
 ### 3. Setup Config
 
 The [config.js](src/config.js) file must be modified to include values necessary to connect to backend services. This
-file needs to be modified to connect to a Cognito pool and the API Gateway. There are two placeholders to replace in the
+file needs to be modified to connect to the API Gateway. There are two placeholders to replace in the
 API gateway config. The placeholder values can be found in the Terraform output.
 
 | Placeholder           | Terraform output    |

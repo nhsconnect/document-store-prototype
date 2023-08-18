@@ -28,7 +28,14 @@ describe("Uploads docs and tests it looks OK", () => {
             cy.findByRole("button", { name: "Continue" }).click();
         }
 
+        cy.url().should("eq", baseUrl + "/select-organisation");
+        cy.injectAxe();
+        cy.get('[type="radio"]').check('A9A5A');
+        cy.findByRole("button", { name: "Continue" }).click();
+        cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+
         cy.url().should("eq", baseUrl + "/upload/search-patient");
+        cy.injectAxe();
         cy.findByRole("textbox", { name: "Enter NHS number" }).type(nhsNumber);
         cy.findByRole("button", { name: "Search" }).click();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
@@ -45,7 +52,7 @@ describe("Uploads docs and tests it looks OK", () => {
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, false);
         cy.findByRole("button", { name: "Start Again" }).click();
 
-        cy.url().should("eq", Cypress.config("baseUrl") + "/home");
+        cy.url().should("eq", Cypress.config("baseUrl") + "/");
 
         cy.findByRole("link", { name: "Log Out" }).click();
         cy.url().should("eq", baseUrl + "/");

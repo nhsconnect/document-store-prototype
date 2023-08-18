@@ -125,33 +125,24 @@ function create_sandbox_config() {
   TF_FILE=$1
   MODE=$2
   cp ui/src/config.js.example ui/src/config.js
-  user_pool="$(jq -r '.cognito_user_pool_ids.value' "$TF_FILE")"
-  user_pool_client_id="$(jq -r '.cognito_client_ids.value' "$TF_FILE")"
   api_endpoint="$(jq -r '.api_gateway_url.value' "$TF_FILE")"
-  cognito_domain="$(jq -r '.cognito_user_pool_domain.value' "$TF_FILE")"
   amplify_app_id="$(jq -r '.amplify_app_ids.value[0]' "$TF_FILE")"
   redirect_signin="https://${WORKSPACE}.access-request-fulfilment.patient-deductions.nhs.uk"
   redirect_signout="https://${WORKSPACE}.access-request-fulfilment.patient-deductions.nhs.uk"
   if [ $MODE == --osx ]; then
-    sed -i "" "s/%pool-id%/${user_pool}/" ui/src/config.js
-    sed -i "" "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
     sed -i "" "s/%region%/${aws_region}/" ui/src/config.js
     sed -i "" "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
-    sed -i "" "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
     sed -i "" "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
     sed -i "" "s/%oidc-provider-id%/$OIDC_PROVIDER_ID/" ui/src/config.js
-    sed -i "" "s~%cognito-redirect-signin%~${redirect_signin}~" ui/src/config.js
-    sed -i "" "s~%cognito-redirect-signout%~${redirect_signout}~" ui/src/config.js
+    sed -i "" "s~%redirect-signin%~${redirect_signin}~" ui/src/config.js
+    sed -i "" "s~%redirect-signout%~${redirect_signout}~" ui/src/config.js
   elif [ $MODE == --linux ]; then
-    sed -i "s/%pool-id%/${user_pool}/" ui/src/config.js
-    sed -i "s/%client-id%/${user_pool_client_id}/" ui/src/config.js
     sed -i "s/%region%/${aws_region}/" ui/src/config.js
     sed -i "s~%api-endpoint%~${api_endpoint}~" ui/src/config.js
-    sed -i "s/%cognito-domain%/${cognito_domain}/" ui/src/config.js
     sed -i "s/%amplify-app-id%/${amplify_app_id}/" ui/src/config.js
     sed -i "s/%oidc-provider-id%/${OIDC_PROVIDER_ID}/" ui/src/config.js
-    sed -i "s~%cognito-redirect-signin%~${redirect_signin}~" ui/src/config.js
-    sed -i "s~%cognito-redirect-signout%~${redirect_signout}~" ui/src/config.js
+    sed -i "s~%redirect-signin%~${redirect_signin}~" ui/src/config.js
+    sed -i "s~%redirect-signout%~${redirect_signout}~" ui/src/config.js
 
   fi
   cat ui/src/config.js

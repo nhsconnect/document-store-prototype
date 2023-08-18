@@ -3,18 +3,6 @@
 @import "node_modules/nhsuk-frontend/packages/components/input/input";
 @import "node_modules/nhsuk-frontend/packages/components/tables/tables";
 
-.spinner-button {
-    border: nhsuk-spacing(1) solid rgba($color_nhsuk-white, 0.3);
-    border-top: nhsuk-spacing(1) solid $color_nhsuk-white;
-    animation: spin 1s linear infinite;
-    box-sizing: border-box;
-    margin: 5px;
-    margin-right: 10px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-}
-
 .spinner-blue {
     animation: spin 2s linear infinite;
     border: nhsuk-spacing(3) solid $color_nhsuk-grey-4;

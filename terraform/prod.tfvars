@@ -1,8 +1,7 @@
 environment                  = "prod"
 account_id                   = "487224344892"
 enable_session_auth          = false
-cognito_domain_prefix        = "prod-"
-oidc_providers               = ["COGNITO"]
+oidc_providers               = ["cis2devoidc"]
 cis2_provider_oidc_issuer    = "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_IeQo9ubVl"
 cis2_provider_authorize_url  = "https://prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/authorize"
 cis2_provider_token_url      = "https://prod-doc-store-user-pool.auth.eu-west-2.amazoncognito.com/oauth2/token"
@@ -10,4 +9,3 @@ cis2_provider_user_info_url  = "https://prod-doc-store-user-pool.auth.eu-west-2.
 cis2_provider_jwks_uri       = "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_IeQo9ubVl/.well-known/jwks.json"
 cis2_client_callback_urls    = []
 cis2_client_signout_urls     = []
-cognito_key_id               = "cQxrtAvRbEfCQ71CNv4rNtdYQdO8fiTvFpypj4h+gj8="

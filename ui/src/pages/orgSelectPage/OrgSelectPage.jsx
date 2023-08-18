@@ -74,7 +74,7 @@ const OrgSelectPage = () => {
                         Select an organisation
                     </Fieldset.Legend>
                     <Radios
-                        id="#select-org-input"
+                        id="select-org-input"
                         error={inputError}
                         hint="You are associated to more than one organisation, select an organisation you would like to view."
                     >
