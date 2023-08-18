@@ -29,10 +29,10 @@ describe("Uploads docs and tests it looks OK", () => {
         }
 
         cy.url().should("eq", baseUrl + "/select-organisation");
-        cy.get('[type="radio"]').check('A9A5A');
-        cy.findByRole("button", { name: "Continue" }).click();
         cy.injectAxe();
         cy.checkA11y(undefined, undefined, logAccessibilityViolations, true);
+        cy.get('[type="radio"]').check('A9A5A');
+        cy.findByRole("button", { name: "Continue" }).click();
 
         cy.url().should("eq", baseUrl + "/upload/search-patient");
         cy.injectAxe();
