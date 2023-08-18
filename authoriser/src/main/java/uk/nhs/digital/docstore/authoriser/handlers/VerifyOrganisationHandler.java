@@ -170,7 +170,7 @@ public class VerifyOrganisationHandler extends BaseAuthRequestHandler
 
     private void logMissingRequiredValue(String missingValueName) {
 
-        LOGGER.debug(String.format("%s is missing", missingValueName));
+        LOGGER.debug("{} is missing", missingValueName);
 
         try {
             sensitiveIndex.publish(new VerifyOrgBadRequestAuditMessage(missingValueName));

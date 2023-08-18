@@ -1,5 +1,8 @@
 package uk.nhs.digital.docstore.authoriser.audit.message;
 
+import lombok.Getter;
+
+@Getter
 public class VerifyOrgRequestAuditMessage extends BaseAuditMessage implements AuditMessage {
     private final String sessionId;
 
@@ -11,13 +14,4 @@ public class VerifyOrgRequestAuditMessage extends BaseAuditMessage implements Au
         this.description = description;
     }
 
-    @SuppressWarnings("unused")
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
 }
