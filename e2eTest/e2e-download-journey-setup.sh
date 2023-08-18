@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo "Running download journey setup script" > AlexCool.log
 ENVIRONMENT=${1:-local}
 REGION=eu-west-2
 echo "Environment set" > AlexCool.log
