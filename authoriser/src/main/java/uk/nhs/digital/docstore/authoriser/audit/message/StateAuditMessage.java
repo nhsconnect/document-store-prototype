@@ -13,5 +13,4 @@ public class StateAuditMessage extends BaseAuditMessage implements AuditMessage 
         this.state = state;
         this.description = description;
     }
-
 }

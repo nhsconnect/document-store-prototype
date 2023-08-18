@@ -13,5 +13,4 @@ public class VerifyOrgRequestAuditMessage extends BaseAuditMessage implements Au
         this.sessionId = sessionId;
         this.description = description;
     }
-
 }
