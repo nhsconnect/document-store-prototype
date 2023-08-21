@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { ButtonLink } from "nhsuk-react-components";
+import { Button } from "nhsuk-react-components";
 import { useBaseAPIUrl } from "../../providers/configProvider/ConfigProvider";
 import Spinner from "../../components/spinner/Spinner";
 
 const StartPage = () => {
     const baseAPIUrl = useBaseAPIUrl("doc-store-api");
     const [loading, setLoading] = useState(false);
+
     return !loading ? (
         <>
             <h1>Inactive Patient Record Administration</h1>
@@ -35,17 +36,15 @@ const StartPage = () => {
             </p>
             <h2>Before You Start</h2>
             <p>You can only use this service if you have a valid NHS smartcard.</p>
-            <ButtonLink
-                role="button"
+            <Button
                 onClick={(e) => {
                     e.preventDefault();
                     setLoading(true);
-                    // window.location.replace(`${baseAPIUrl}/Auth/Login`);
+                    window.location.replace(`${baseAPIUrl}/Auth/Login`);
                 }}
-                href = {`${baseAPIUrl}/Auth/Login`}
             >
                 Start now
-            </ButtonLink>
+            </Button>
         </>
     ) : (
         <Spinner status="Logging in..." />
