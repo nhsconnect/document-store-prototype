@@ -40,8 +40,9 @@ const StartPage = () => {
                 onClick={(e) => {
                     e.preventDefault();
                     setLoading(true);
-                    window.location.replace(`${baseAPIUrl}/Auth/Login`);
+                    // window.location.replace(`${baseAPIUrl}/Auth/Login`);
                 }}
+                href = {`${baseAPIUrl}/Auth/Login`}
             >
                 Start now
             </ButtonLink>
