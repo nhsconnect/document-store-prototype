@@ -33,6 +33,7 @@ export const PatientTracePage = ({ nextPage }) => {
     const [session, setSession] = useSessionContext();
     const [inputError, setInputError] = useState(null);
     const [statusCode, setStatusCode] = useState(null);
+    const [searchDisabled, setSearchDisabled] = useState(false);
 
     const navigate = useNavigate();
 
@@ -67,6 +68,14 @@ export const PatientTracePage = ({ nextPage }) => {
     const onError = async () => {
         setSubmissionState(states.FAILED);
         setInputError("Enter patient's 10 digit NHS number");
+    };
+
+    const handleClick = () => {
+        setSearchDisabled(true);
+        setTimeout(() => {
+            setSearchDisabled(false);
+            console.log("Button reactivated");
+        }, 5000);
     };
 
     return (
@@ -105,7 +114,11 @@ export const PatientTracePage = ({ nextPage }) => {
                         />
                     </Fieldset>
                     {submissionState === states.SEARCHING ? (
-                        <SpinnerButton status="Searching..." disabled={true}></SpinnerButton>
+                        <SpinnerButton
+                            status="Searching..."
+                            disabled={searchDisabled}
+                            onClick={handleClick}
+                        ></SpinnerButton>
                     ) : (
                         <Button type="submit" disabled={false}>
                             Search
