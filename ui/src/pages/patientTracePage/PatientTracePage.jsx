@@ -107,9 +107,7 @@ export const PatientTracePage = ({ nextPage }) => {
                     {submissionState === states.SEARCHING ? (
                         <SpinnerButton status="Searching..." disabled={true}></SpinnerButton>
                     ) : (
-                        <Button type="submit" disabled={false}>
-                            Search
-                        </Button>
+                        <Button type="submit">Search</Button>
                     )}
                 </form>
             </>
