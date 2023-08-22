@@ -47,6 +47,7 @@ describe("<PatientTracePage/>", () => {
 
             await waitFor(() => {
                 expect(screen.getByRole("SpinnerButton")).toBeInTheDocument();
+                expect(screen.getByRole("SpinnerButton")).toBeDisabled();
             });
             expect(screen.queryByRole("SpinnerButton")).not.toBeInTheDocument();
         });
