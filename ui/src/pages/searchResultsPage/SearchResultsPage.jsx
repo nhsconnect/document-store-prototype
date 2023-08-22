@@ -65,7 +65,9 @@ const SearchResultsPage = () => {
 
             downloadFile(preSignedUrl, `patient-record-${patientDetails.nhsNumber}`);
 
-            setDownloadState(states.SUCCEEDED);
+            setSubmissionState(states.SUCCEEDED);
+
+            navigate(routes.SEARCH_DOWNLOAD_CONFIRMATION);
         } catch (e) {
             if (e.response?.status === 403) {
                 setSession({
@@ -168,11 +170,6 @@ const SearchResultsPage = () => {
                                     Delete All Documents
                                 </Link>
                             </div>
-                            {downloadState === states.SUCCEEDED && (
-                                <p>
-                                    <strong>All documents have been successfully downloaded.</strong>
-                                </p>
-                            )}
                         </>
                     )}
                     {searchResults.length === 0 && (

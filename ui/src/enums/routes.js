@@ -15,5 +15,6 @@ export const routes = Object.freeze({
     SEARCH_PATIENT_RESULT: "/search/patient/result",
     SEARCH_RESULTS: "/search/results",
     SEARCH_RESULTS_DELETE: "/search/results/delete",
+    SEARCH_DOWNLOAD_CONFIRMATION: "/search/download-confirmation",
 });
 export default routes;

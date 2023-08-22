@@ -24,6 +24,7 @@ import SessionProvider from "./providers/sessionProvider/SessionProvider";
 import { PatientSummaryPage } from "./pages/patientSummaryPage/patientSummaryPage";
 import OrgSelectPage from "./pages/orgSelectPage/OrgSelectPage";
 import NoValidOrgsPage from "./pages/noValidOrgsPage/NoValidOrgsPage";
+import DownloadConfirmationPage from "./pages/downloadConfirmationPage/DownloadConfirmationPage";
 
 const AppRoutes = () => {
     const isOIDCAuthActive = useFeatureToggle("OIDC_AUTHENTICATION");
@@ -44,6 +45,7 @@ const AppRoutes = () => {
         SEARCH_PATIENT_RESULT,
         SEARCH_RESULTS,
         SEARCH_RESULTS_DELETE,
+        SEARCH_DOWNLOAD_CONFIRMATION,
         ORG_SELECT,
     } = routes;
 
@@ -88,6 +90,7 @@ const AppRoutes = () => {
                     <Route path={SEARCH_PATIENT_RESULT} element={<PatientSummaryPage nextPage={SEARCH_RESULTS} />} />
 
                     <Route path={SEARCH_RESULTS} element={<SearchResultsPage />} />
+                    <Route path={SEARCH_DOWNLOAD_CONFIRMATION} element={<DownloadConfirmationPage />} />
                     <Route path={SEARCH_RESULTS_DELETE} element={<DeleteDocumentsPage />} />
                 </Route>
                 <Route
