@@ -80,7 +80,7 @@ resource "aws_cloudformation_stack" "s3_virus_scanning_stack" {
     VPC                                = aws_vpc.virus_scanning_vpc.id
     SubnetA                            = aws_subnet.virus_scanning_subnet1.id
     SubnetB                            = aws_subnet.virus_scanning_subnet2.id
-    ConsoleSecurityGroupCidrBlock      = var.black_hole_address
+    ConsoleSecurityGroupCidrBlock      = var.public_address
     Email                              = data.aws_ssm_parameter.cloud_security_admin_email.value
     OnlyScanWhenQueueThresholdExceeded = "Yes"
     MinRunningAgents                   = 0
