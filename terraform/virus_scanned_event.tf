@@ -83,7 +83,7 @@ resource "aws_lambda_function" "fake_virus_scanned_event_lambda" {
 }
 
 resource "aws_lambda_permission" "s3_permission_for_fake_virus_scanned_event" {
-  statement_id  = "AllowExecutionFromS3Bucket"
+  statement_id  = "AllowFakeScanExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.fake_virus_scanned_event_lambda.arn
   principal     = "s3.amazonaws.com"
@@ -91,7 +91,7 @@ resource "aws_lambda_permission" "s3_permission_for_fake_virus_scanned_event" {
 }
 
 resource "aws_lambda_permission" "s3_permission_for_virus_scanned_event" {
-  statement_id  = "AllowExecutionFromS3Bucket"
+  statement_id  = "AllowScanExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.fake_virus_scanned_event_lambda.arn
   principal     = "s3.amazonaws.com"
