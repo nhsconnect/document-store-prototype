@@ -323,6 +323,17 @@ resource "aws_s3_bucket_cors_configuration" "test_document_store_bucket_cors_con
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.document_store[0].id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.fake_virus_scanned_event_lambda.arn
+    events              = ["s3:ObjectCreated:*"]
+  }
+
+  depends_on = [aws_lambda_permission.s3_permission_for_virus_scanned_event]
+}
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
   bucket = aws_s3_bucket.test_document_store.id
 
   lambda_function {
