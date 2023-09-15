@@ -1,7 +1,5 @@
 package uk.nhs.digital.docstore.authoriser;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import uk.nhs.digital.docstore.authoriser.apiRequestClients.ODSAPIClient;
@@ -16,9 +14,9 @@ class ODSAPIClientTest {
         assert (response.toString().contains("PrimaryRoleId"));
     }
 
-//    @Test
-//    void throwsErrorIfResponseCodeIsNot200() {
-//        var odsClient = new ODSAPIClient();
-//        assertThrows(IOException.class, () -> odsClient.getOrgData(""));
-//    }
+    //    @Test
+    //    void throwsErrorIfResponseCodeIsNot200() {
+    //        var odsClient = new ODSAPIClient();
+    //        assertThrows(IOException.class, () -> odsClient.getOrgData(""));
+    //    }
 }
