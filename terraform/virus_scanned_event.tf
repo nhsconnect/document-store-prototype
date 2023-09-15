@@ -89,3 +89,11 @@ resource "aws_lambda_permission" "s3_permission_for_fake_virus_scanned_event" {
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.test_document_store.arn
 }
+
+resource "aws_lambda_permission" "s3_permission_for_virus_scanned_event" {
+  statement_id  = "AllowExecutionFromS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.fake_virus_scanned_event_lambda.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.document_store.arn
+}
