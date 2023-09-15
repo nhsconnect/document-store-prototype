@@ -333,7 +333,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
   depends_on = [aws_lambda_permission.s3_permission_for_virus_scanned_event]
 }
 
-resource "aws_s3_bucket_notification" "bucket_notification" {
+resource "aws_s3_bucket_notification" "test_bucket_notification" {
   bucket = aws_s3_bucket.test_document_store.id
 
   lambda_function {
