@@ -95,5 +95,5 @@ resource "aws_lambda_permission" "s3_permission_for_virus_scanned_event" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.fake_virus_scanned_event_lambda.arn
   principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.document_store.arn
+  source_arn    = aws_s3_bucket.document_store[0].arn
 }
