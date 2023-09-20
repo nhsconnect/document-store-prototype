@@ -78,19 +78,6 @@ data "aws_iam_policy_document" "document_encryption_key_policy" {
   }
 }
 
-resource "aws_kms_alias" "document_store_encryption_key_alias" {
-  name          = "alias/document-store-bucket-key-encryption-${terraform.workspace}"
-  target_key_id = aws_kms_key.document_store_encryption_key[0].id
-  count         = var.workspace_is_a_sandbox ? 0 : 1
-}
-
-resource "aws_kms_key" "document_store_encryption_key" {
-  description         = "Encryption key for document store so the virus scanner can read files inside"
-  enable_key_rotation = true
-  policy              = data.aws_iam_policy_document.document_encryption_key_policy.json
-  count               = var.workspace_is_a_sandbox ? 0 : 1
-}
-
 resource "aws_s3_bucket_server_side_encryption_configuration" "document_store_encryption" {
   bucket = aws_s3_bucket.document_store[0].id
   count  = var.workspace_is_a_sandbox ? 0 : 1
